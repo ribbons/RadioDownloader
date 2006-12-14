@@ -1,0 +1,9 @@
+frmMain = 46, 55, 597, 511, C, 44, 58, 595, 514, C
+modMain = -15, 90, 672, 420, C
+modDLURL = 88, 116, 777, 446, 
+modProgramInfo = 132, 174, 685, 630, 
+cSubclass = 110, 145, 663, 601, C
+frmPreferences = 0, 0, 0, 0, C, 88, 116, 641, 572, C
+clsProgData = -30, 61, 659, 391, C
+modDrawing = 132, 174, 685, 630, C
+clsView = 66, 87, 619, 543, Z

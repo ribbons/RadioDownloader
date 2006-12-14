@@ -1,0 +1,10 @@
+appicon      icon "graphics\\icon.ico"
+
+// nav_back     bmp  "graphics\\nav_back.bmp"
+// nav_disabled bmp  "graphics\\nav_disabled.bmp"
+// nav_enabled  bmp  "graphics\\nav_enabled.bmp"
+// nav_hot      bmp  "graphics\\nav_hot.bmp"
+// nav_pressed  bmp  "graphics\\nav_pressed.bmp"
+// crumb_arrow  bmp  "graphics\\crumb_arrow.bmp"
+
+1            24   "manifest.txt"
