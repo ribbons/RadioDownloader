@@ -22,24 +22,66 @@ Begin VB.Form frmMain
    ScaleHeight     =   7590
    ScaleWidth      =   11400
    StartUpPosition =   2  'CenterScreen
-   Begin ComctlLib.Toolbar Toolbar1 
+   Begin ComctlLib.Toolbar tbrToolbar 
       Height          =   390
       Left            =   120
-      TabIndex        =   16
+      TabIndex        =   7
       Top             =   600
       Width           =   6900
       _ExtentX        =   12171
       _ExtentY        =   688
       ButtonWidth     =   609
-      Appearance      =   1
+      ButtonHeight    =   582
+      Wrappable       =   0   'False
+      ImageList       =   "imlToolbar"
       _Version        =   327682
       BeginProperty Buttons {0713E452-850A-101B-AFC0-4210102A8DA7} 
-         NumButtons      =   1
+         NumButtons      =   6
          BeginProperty Button1 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Key             =   "Up"
+            Object.Tag             =   ""
+            ImageIndex      =   1
+         EndProperty
+         BeginProperty Button2 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Key             =   "Clean Up"
+            Object.Tag             =   ""
+            ImageIndex      =   3
+         EndProperty
+         BeginProperty Button3 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Key             =   ""
+            Object.Tag             =   ""
+            Style           =   4
+            Object.Width           =   1000
+            MixedState      =   -1  'True
+         EndProperty
+         BeginProperty Button4 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Key             =   "Search Box"
+            Object.Tag             =   ""
+            Style           =   4
+            Object.Width           =   2235
+            MixedState      =   -1  'True
+         EndProperty
+         BeginProperty Button5 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Enabled         =   0   'False
+            Key             =   "Do Search"
+            Object.Tag             =   ""
+            ImageIndex      =   2
+         EndProperty
+         BeginProperty Button6 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Enabled         =   0   'False
             Key             =   ""
             Object.Tag             =   ""
          EndProperty
       EndProperty
+      Begin VB.TextBox txtSearch 
+         Enabled         =   0   'False
+         Height          =   315
+         Left            =   1680
+         TabIndex        =   8
+         Text            =   "Search..."
+         Top             =   0
+         Width           =   2235
+      End
    End
    Begin ComctlLib.ListView lstNew 
       Height          =   1995
@@ -63,7 +105,7 @@ Begin VB.Form frmMain
    Begin ComctlLib.TabStrip tabMain 
       Height          =   315
       Left            =   0
-      TabIndex        =   15
+      TabIndex        =   6
       Top             =   120
       Width           =   11415
       _ExtentX        =   20135
@@ -91,120 +133,10 @@ Begin VB.Form frmMain
          EndProperty
       EndProperty
    End
-   Begin VB.PictureBox Picture1 
-      Height          =   555
-      Left            =   10080
-      ScaleHeight     =   495
-      ScaleWidth      =   11355
-      TabIndex        =   6
-      Top             =   7020
-      Visible         =   0   'False
-      Width           =   11415
-      Begin VB.PictureBox picBack 
-         AutoRedraw      =   -1  'True
-         AutoSize        =   -1  'True
-         BackColor       =   &H0000FF00&
-         BorderStyle     =   0  'None
-         Height          =   435
-         Left            =   0
-         ScaleHeight     =   29
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   29
-         TabIndex        =   14
-         Top             =   0
-         Width           =   440
-      End
-      Begin VB.PictureBox picForward 
-         AutoRedraw      =   -1  'True
-         BackColor       =   &H00C0C000&
-         BorderStyle     =   0  'None
-         Height          =   435
-         Left            =   440
-         ScaleHeight     =   29
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   28
-         TabIndex        =   13
-         Top             =   0
-         Width           =   420
-      End
-      Begin VB.TextBox Text1 
-         Height          =   360
-         Left            =   8400
-         TabIndex        =   12
-         Text            =   "Text1"
-         Top             =   40
-         Width           =   2535
-      End
-      Begin VB.PictureBox picSearchMenu 
-         BackColor       =   &H00FF8080&
-         BorderStyle     =   0  'None
-         Height          =   360
-         Left            =   10920
-         ScaleHeight     =   360
-         ScaleWidth      =   315
-         TabIndex        =   11
-         Top             =   40
-         Width           =   315
-      End
-      Begin VB.PictureBox picBreadcrumbs 
-         Appearance      =   0  'Flat
-         BackColor       =   &H80000005&
-         BorderStyle     =   0  'None
-         ForeColor       =   &H80000008&
-         Height          =   360
-         Left            =   1020
-         ScaleHeight     =   360
-         ScaleWidth      =   7275
-         TabIndex        =   7
-         Top             =   40
-         Width           =   7275
-         Begin VB.PictureBox picCrumbRoot 
-            BorderStyle     =   0  'None
-            Height          =   300
-            Left            =   30
-            ScaleHeight     =   300
-            ScaleWidth      =   300
-            TabIndex        =   9
-            Top             =   30
-            Width           =   300
-         End
-         Begin VB.PictureBox picCrumbArrow 
-            AutoRedraw      =   -1  'True
-            BorderStyle     =   0  'None
-            Height          =   110
-            Index           =   0
-            Left            =   420
-            ScaleHeight     =   7
-            ScaleMode       =   3  'Pixel
-            ScaleWidth      =   7
-            TabIndex        =   8
-            Top             =   130
-            Width           =   110
-         End
-         Begin VB.Shape shpCrumbBorder 
-            BorderColor     =   &H00CCCCCC&
-            Height          =   360
-            Left            =   0
-            Top             =   0
-            Width           =   7275
-         End
-         Begin VB.Label lblCrumbText 
-            AutoSize        =   -1  'True
-            BackStyle       =   0  'Transparent
-            Caption         =   "Some example text here"
-            Height          =   195
-            Index           =   0
-            Left            =   610
-            TabIndex        =   10
-            Top             =   80
-            Width           =   1755
-         End
-      End
-   End
    Begin VB.Timer tmrCheckSub 
       Interval        =   60000
-      Left            =   10860
-      Top             =   600
+      Left            =   10920
+      Top             =   1020
    End
    Begin ComctlLib.ListView lstSubscribed 
       Height          =   1875
@@ -226,8 +158,8 @@ Begin VB.Form frmMain
    End
    Begin VB.Timer tmrStartProcess 
       Interval        =   2000
-      Left            =   10440
-      Top             =   600
+      Left            =   10500
+      Top             =   1020
    End
    Begin ComctlLib.StatusBar staStatus 
       Align           =   2  'Align Bottom
@@ -251,9 +183,9 @@ Begin VB.Form frmMain
    End
    Begin ComctlLib.ProgressBar prgItemProgress 
       Height          =   315
-      Left            =   7200
+      Left            =   7380
       TabIndex        =   1
-      Top             =   480
+      Top             =   720
       Visible         =   0   'False
       Width           =   1935
       _ExtentX        =   3413
@@ -313,48 +245,74 @@ Begin VB.Form frmMain
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
       Location        =   "http:///"
    End
+   Begin ComctlLib.ImageList imlToolbar 
+      Left            =   10200
+      Top             =   360
+      _ExtentX        =   1005
+      _ExtentY        =   1005
+      BackColor       =   -2147483643
+      ImageWidth      =   16
+      ImageHeight     =   16
+      MaskColor       =   16777215
+      _Version        =   327682
+      BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
+         NumListImages   =   3
+         BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":000C
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":035E
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":06B0
+            Key             =   ""
+         EndProperty
+      EndProperty
+   End
    Begin ComctlLib.ImageList imlStations 
       Left            =   9600
-      Top             =   480
+      Top             =   360
       _ExtentX        =   1005
       _ExtentY        =   1005
       BackColor       =   -2147483643
       ImageWidth      =   24
       ImageHeight     =   24
-      MaskColor       =   12632256
+      MaskColor       =   16777215
       UseMaskColor    =   0   'False
       _Version        =   327682
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   6
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":000C
+            Picture         =   "frmMain.frx":0A02
             Key             =   "radio1"
          EndProperty
          BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":071E
+            Picture         =   "frmMain.frx":1114
             Key             =   "radio2"
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":0E30
+            Picture         =   "frmMain.frx":1826
             Key             =   "radio3"
          EndProperty
          BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1542
+            Picture         =   "frmMain.frx":1F38
             Key             =   "radio4"
          EndProperty
          BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1C54
+            Picture         =   "frmMain.frx":264A
             Key             =   "fivelive"
          EndProperty
          BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2366
+            Picture         =   "frmMain.frx":2D5C
             Key             =   "6music"
          EndProperty
       EndProperty
    End
    Begin ComctlLib.ImageList imlListIcons 
       Left            =   9000
-      Top             =   480
+      Top             =   360
       _ExtentX        =   1005
       _ExtentY        =   1005
       BackColor       =   -2147483643
@@ -365,31 +323,31 @@ Begin VB.Form frmMain
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   7
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2A78
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2DCA
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":311C
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":346E
             Key             =   ""
          EndProperty
-         BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":37C0
             Key             =   ""
          EndProperty
-         BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":3B12
             Key             =   ""
          EndProperty
-         BeginProperty ListImage7 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":3E64
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":41B6
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":4508
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage7 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":485A
             Key             =   ""
          EndProperty
       EndProperty
@@ -404,6 +362,9 @@ Begin VB.Form frmMain
       Caption         =   "&Tools"
       Begin VB.Menu mnuToolsPrefs 
          Caption         =   "&Preferences"
+      End
+      Begin VB.Menu mnuToolsCleanup 
+         Caption         =   "&Clean Up"
       End
    End
    Begin VB.Menu mnuHelp 
@@ -451,6 +412,8 @@ Private lngLastState As Long
 Const lngDLStatCol As Long = 2
 
 Private Sub SetNewView(ByVal booStations As Boolean)
+    lstNew.ListItems.Clear
+    
     If booStations Then
         lstNew.View = lvwIcon
     Else
@@ -467,7 +430,7 @@ Private Sub AddStations()
     Call AddStation("Radio 4", "radio4", "BBCLA")
     Call AddStation("Five Live", "fivelive", "BBCLA")
     Call AddStation("Six Music", "6music", "BBCLA")
-    Call AddStation("BBC 7", "bbc7", "BBCLA")
+    'Call AddStation("BBC 7", "bbc7", "BBCLA")
 End Sub
 
 Private Sub AddStation(strStationName As String, strStationId As String, strStationType As String)
@@ -476,7 +439,7 @@ Private Sub AddStation(strStationName As String, strStationId As String, strStat
     Set lstAdd = lstNew.ListItems.Add
     lstAdd.Text = strStationName
     lstAdd.Tag = strStationType + "||" + strStationId
-    lstAdd.Icon = imlStations.ListImages("radio1").Index
+    lstAdd.Icon = imlStations.ListImages(strStationId).Index
 End Sub
 
 Private Sub clsBackground_Error(ByVal strError As String)
@@ -543,8 +506,8 @@ Private Sub Form_Load()
     
     Call SetParent(prgItemProgress.hWnd, lstDownloads.hWnd)
     
-    Call TabAdjustments
     Call AddStations
+    Call TabAdjustments
     Call AddToSystray(Me)
     
     Set clsExtender = New clsWbExtender
@@ -634,8 +597,12 @@ Private Sub Form_Resize()
     'Tabs
     tabMain.Width = Me.ScaleWidth
     
-    'Stations Toolbar
-    'tbrStations.Width = lstDownloads.Width - (tbrStations.Left - lstDownloads.Left)
+    'Toolbar
+    tbrToolbar.Width = lstDownloads.Width - (tbrToolbar.Left - lstDownloads.Left)
+    
+    'Search box in toolbar
+    txtSearch.Left = tbrToolbar.Buttons("Search Box").Left
+    txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
     
     On Error GoTo 0
 End Sub
@@ -734,12 +701,31 @@ Private Sub lstDownloads_ItemClick(ByVal Item As ComctlLib.ListItem)
     End If
 End Sub
 
+Private Sub lstNew_DblClick()
+    Dim strSplit() As String
+    strSplit = Split(lstNew.SelectedItem.Tag, "||")
+    
+    If lstNew.View = lvwIcon Then
+        If strSplit(0) <> "BBCLA" Then Stop
+        
+        lstNew.View = lvwReport
+        tbrToolbar.Buttons("Up").Enabled = True
+        
+        Call CreateHtml(lstNew.SelectedItem.Text, "", None)
+        Call ListviewStartAdd
+        Call ListStation(strSplit(1), lstNew)
+        Call ListviewEndAdd
+    Else
+        ' Do nothing
+    End If
+End Sub
+
 Private Sub lstNew_ItemClick(ByVal Item As ComctlLib.ListItem)
     Dim strSplit() As String
     strSplit = Split(Item.Tag, "||")
     
     If lstNew.View = lvwIcon Then
-        MsgBox (strSplit(0) + strSplit(1))
+        ' Do nothing
     Else
         Call CreateHtml("Program Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
     End If
@@ -751,19 +737,22 @@ Private Sub TabAdjustments()
             lstNew.Visible = True
             lstSubscribed.Visible = False
             lstDownloads.Visible = False
-            'tbrToolbar.Buttons("Clean Up").Enabled = False
+            tbrToolbar.Buttons("Clean Up").Enabled = False
+            tbrToolbar.Buttons("Up").Enabled = lstNew.View = lvwReport
             Call CreateHtml("Choose New Program", "<p>This view allows you to browse all of the programs that are available for you to download or subscribe to.</p><p>Select a station icon to show the programs available from it.</p>", None)
         Case 2:
             lstNew.Visible = False
             lstSubscribed.Visible = True
             lstDownloads.Visible = False
-            'tbrToolbar.Buttons("Clean Up").Enabled = False
+            tbrToolbar.Buttons("Clean Up").Enabled = False
+            tbrToolbar.Buttons("Up").Enabled = False
             Call CreateHtml("Subscribed Programs", "", None)
         Case 3:
             lstNew.Visible = False
             lstSubscribed.Visible = False
             lstDownloads.Visible = True
             'tbrToolbar.Buttons("Clean Up").Enabled = True
+            tbrToolbar.Buttons("Up").Enabled = False
             Call CreateHtml("Program Downloads", "<p>Here you can see programs that are being downloaded, or have been downloaded already.</p>", None)
     End Select
 End Sub
@@ -863,25 +852,14 @@ Private Sub tabMain_Click()
     Call TabAdjustments
 End Sub
 
-Private Sub tbrStations_ButtonClick(ByVal Button As ComctlLib.Button)
-    Static butButton As ComctlLib.Button
-    If Not butButton Is Nothing Then
-        butButton.Value = tbrUnpressed
-    End If
-    Set butButton = Button
-    
-    Button.Value = tbrPressed
-    
-    DoEvents
-    
-    Call CreateHtml(Button.Description, "", None)
-    Call ListviewStartAdd
-    Call ListStation(Button.Key, lstNew)
-    Call ListviewEndAdd
-End Sub
-
 Private Sub tbrToolbar_ButtonClick(ByVal Button As ComctlLib.Button)
-
+    Select Case Button.Key
+        Case "Up"
+            Button.Enabled = False
+            If lstNew.View = lvwReport Then
+                Call AddStations
+            End If
+    End Select
 End Sub
 
 Private Sub tmrCheckSub_Timer()
