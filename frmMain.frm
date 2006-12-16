@@ -3,10 +3,10 @@ Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "ieframe.dll"
 Object = "{6B7E6392-850A-101B-AFC0-4210102A8DA7}#1.3#0"; "comctl32.ocx"
 Begin VB.Form frmMain 
    Caption         =   "Radio Downloader"
-   ClientHeight    =   7590
+   ClientHeight    =   7470
    ClientLeft      =   165
    ClientTop       =   555
-   ClientWidth     =   11400
+   ClientWidth     =   11355
    BeginProperty Font 
       Name            =   "Tahoma"
       Size            =   8.25
@@ -19,54 +19,84 @@ Begin VB.Form frmMain
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
    LockControls    =   -1  'True
-   ScaleHeight     =   7590
-   ScaleWidth      =   11400
+   ScaleHeight     =   7470
+   ScaleWidth      =   11355
    StartUpPosition =   2  'CenterScreen
    Begin ComctlLib.Toolbar tbrToolbar 
-      Height          =   390
-      Left            =   120
+      Align           =   1  'Align Top
+      Height          =   720
+      Left            =   0
       TabIndex        =   7
-      Top             =   600
-      Width           =   6900
-      _ExtentX        =   12171
-      _ExtentY        =   688
-      ButtonWidth     =   609
-      ButtonHeight    =   582
+      Top             =   0
+      Width           =   11355
+      _ExtentX        =   20029
+      _ExtentY        =   1270
+      ButtonWidth     =   1349
+      ButtonHeight    =   1164
       Wrappable       =   0   'False
       ImageList       =   "imlToolbar"
       _Version        =   327682
       BeginProperty Buttons {0713E452-850A-101B-AFC0-4210102A8DA7} 
-         NumButtons      =   6
+         NumButtons      =   9
          BeginProperty Button1 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Caption         =   "Find New"
+            Key             =   ""
+            Description     =   ""
+            Object.ToolTipText     =   ""
+            Object.Tag             =   ""
+         EndProperty
+         BeginProperty Button2 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Key             =   ""
+            Object.Tag             =   ""
+         EndProperty
+         BeginProperty Button3 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Key             =   ""
+            Object.Tag             =   ""
+         EndProperty
+         BeginProperty Button4 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Caption         =   ""
             Key             =   "Up"
+            Description     =   ""
+            Object.ToolTipText     =   ""
             Object.Tag             =   ""
             ImageIndex      =   1
          EndProperty
-         BeginProperty Button2 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty Button5 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Caption         =   ""
+            Key             =   "Refresh"
+            Description     =   ""
+            Object.ToolTipText     =   ""
+            Object.Tag             =   ""
+            ImageIndex      =   2
+         EndProperty
+         BeginProperty Button6 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Caption         =   ""
             Key             =   "Clean Up"
+            Description     =   ""
+            Object.ToolTipText     =   ""
             Object.Tag             =   ""
             ImageIndex      =   3
          EndProperty
-         BeginProperty Button3 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Enabled         =   0   'False
-            Key             =   ""
-            Object.Tag             =   ""
-            ImageIndex      =   4
-         EndProperty
-         BeginProperty Button4 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Key             =   ""
+         BeginProperty Button7 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Caption         =   ""
+            Key             =   "Search Box"
+            Description     =   ""
+            Object.ToolTipText     =   ""
             Object.Tag             =   ""
             Style           =   4
             Object.Width           =   2234
             MixedState      =   -1  'True
          EndProperty
-         BeginProperty Button5 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty Button8 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Enabled         =   0   'False
+            Caption         =   ""
             Key             =   "Do Search"
+            Description     =   ""
+            Object.ToolTipText     =   ""
             Object.Tag             =   ""
-            ImageIndex      =   2
+            ImageIndex      =   4
          EndProperty
-         BeginProperty Button6 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty Button9 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Enabled         =   0   'False
             Key             =   ""
             Object.Tag             =   ""
@@ -75,21 +105,21 @@ Begin VB.Form frmMain
       Begin VB.TextBox txtSearch 
          Enabled         =   0   'False
          Height          =   315
-         Left            =   1020
+         Left            =   1380
          TabIndex        =   8
          Text            =   "Search..."
-         Top             =   0
+         Top             =   60
          Width           =   2235
       End
    End
    Begin ComctlLib.ListView lstNew 
-      Height          =   1995
-      Left            =   120
+      Height          =   1455
+      Left            =   3150
       TabIndex        =   4
       Top             =   1140
-      Width           =   6915
-      _ExtentX        =   12197
-      _ExtentY        =   3519
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   2566
       View            =   3
       Arrange         =   2
       LabelEdit       =   1
@@ -98,16 +128,16 @@ Begin VB.Form frmMain
       _Version        =   327682
       ForeColor       =   -2147483640
       BackColor       =   -2147483643
-      Appearance      =   1
+      Appearance      =   0
       NumItems        =   0
    End
    Begin ComctlLib.TabStrip tabMain 
       Height          =   315
-      Left            =   0
+      Left            =   1560
       TabIndex        =   6
-      Top             =   120
-      Width           =   11415
-      _ExtentX        =   20135
+      Top             =   540
+      Width           =   4335
+      _ExtentX        =   7646
       _ExtentY        =   556
       _Version        =   327682
       BeginProperty Tabs {0713E432-850A-101B-AFC0-4210102A8DA7} 
@@ -134,16 +164,16 @@ Begin VB.Form frmMain
    End
    Begin VB.Timer tmrCheckSub 
       Interval        =   60000
-      Left            =   10920
-      Top             =   1020
+      Left            =   5520
+      Top             =   2640
    End
    Begin ComctlLib.ListView lstSubscribed 
       Height          =   1875
-      Left            =   120
+      Left            =   3120
       TabIndex        =   5
       Top             =   3240
-      Width           =   6915
-      _ExtentX        =   12197
+      Width           =   8235
+      _ExtentX        =   14526
       _ExtentY        =   3307
       View            =   3
       LabelEdit       =   1
@@ -157,17 +187,17 @@ Begin VB.Form frmMain
    End
    Begin VB.Timer tmrStartProcess 
       Interval        =   2000
-      Left            =   10500
-      Top             =   1020
+      Left            =   5100
+      Top             =   2640
    End
    Begin ComctlLib.StatusBar staStatus 
       Align           =   2  'Align Bottom
       Height          =   315
       Left            =   0
       TabIndex        =   3
-      Top             =   7275
-      Width           =   11400
-      _ExtentX        =   20108
+      Top             =   7155
+      Width           =   11355
+      _ExtentX        =   20029
       _ExtentY        =   556
       Style           =   1
       SimpleText      =   ""
@@ -182,9 +212,9 @@ Begin VB.Form frmMain
    End
    Begin ComctlLib.ProgressBar prgItemProgress 
       Height          =   315
-      Left            =   7380
+      Left            =   6120
       TabIndex        =   1
-      Top             =   720
+      Top             =   2640
       Visible         =   0   'False
       Width           =   1935
       _ExtentX        =   3413
@@ -194,11 +224,11 @@ Begin VB.Form frmMain
    End
    Begin ComctlLib.ListView lstDownloads 
       Height          =   1935
-      Left            =   120
+      Left            =   3120
       TabIndex        =   0
       Top             =   5220
-      Width           =   6915
-      _ExtentX        =   12197
+      Width           =   8235
+      _ExtentX        =   14526
       _ExtentY        =   3413
       View            =   3
       LabelEdit       =   1
@@ -220,13 +250,13 @@ Begin VB.Form frmMain
       NumItems        =   0
    End
    Begin SHDocVwCtl.WebBrowser webDetails 
-      Height          =   6555
-      Left            =   7200
+      Height          =   5835
+      Left            =   0
       TabIndex        =   2
-      Top             =   600
-      Width           =   4155
-      ExtentX         =   7329
-      ExtentY         =   11562
+      Top             =   1140
+      Width           =   3150
+      ExtentX         =   5556
+      ExtentY         =   10292
       ViewMode        =   0
       Offline         =   0
       Silent          =   0
@@ -245,13 +275,13 @@ Begin VB.Form frmMain
       Location        =   "http:///"
    End
    Begin ComctlLib.ImageList imlToolbar 
-      Left            =   10200
-      Top             =   360
+      Left            =   4380
+      Top             =   2640
       _ExtentX        =   1005
       _ExtentY        =   1005
       BackColor       =   -2147483643
-      ImageWidth      =   16
-      ImageHeight     =   16
+      ImageWidth      =   24
+      ImageHeight     =   24
       MaskColor       =   16777215
       _Version        =   327682
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
@@ -261,25 +291,25 @@ Begin VB.Form frmMain
             Key             =   ""
          EndProperty
          BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":035E
+            Picture         =   "frmMain.frx":071E
             Key             =   ""
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":06B0
+            Picture         =   "frmMain.frx":0E30
             Key             =   ""
          EndProperty
          BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":0A02
+            Picture         =   "frmMain.frx":1542
             Key             =   ""
          EndProperty
       EndProperty
    End
    Begin ComctlLib.ImageList imlStations 
-      Left            =   9600
-      Top             =   360
+      Left            =   3780
+      Top             =   2640
       _ExtentX        =   1005
       _ExtentY        =   1005
-      BackColor       =   -2147483643
+      BackColor       =   16777215
       ImageWidth      =   24
       ImageHeight     =   24
       MaskColor       =   16777215
@@ -288,34 +318,34 @@ Begin VB.Form frmMain
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   6
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":0D54
+            Picture         =   "frmMain.frx":1C54
             Key             =   "radio1"
          EndProperty
          BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1466
+            Picture         =   "frmMain.frx":2366
             Key             =   "radio2"
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1B78
+            Picture         =   "frmMain.frx":2A78
             Key             =   "radio3"
          EndProperty
          BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":228A
+            Picture         =   "frmMain.frx":318A
             Key             =   "radio4"
          EndProperty
          BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":299C
+            Picture         =   "frmMain.frx":389C
             Key             =   "fivelive"
          EndProperty
          BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":30AE
+            Picture         =   "frmMain.frx":3FAE
             Key             =   "6music"
          EndProperty
       EndProperty
    End
    Begin ComctlLib.ImageList imlListIcons 
-      Left            =   9000
-      Top             =   360
+      Left            =   3180
+      Top             =   2640
       _ExtentX        =   1005
       _ExtentY        =   1005
       BackColor       =   -2147483643
@@ -326,31 +356,31 @@ Begin VB.Form frmMain
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   7
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":37C0
+            Picture         =   "frmMain.frx":46C0
             Key             =   ""
          EndProperty
          BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":3B12
+            Picture         =   "frmMain.frx":4A12
             Key             =   ""
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":3E64
+            Picture         =   "frmMain.frx":4D64
             Key             =   ""
          EndProperty
          BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":41B6
+            Picture         =   "frmMain.frx":50B6
             Key             =   ""
          EndProperty
          BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":4508
+            Picture         =   "frmMain.frx":5408
             Key             =   ""
          EndProperty
          BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":485A
+            Picture         =   "frmMain.frx":575A
             Key             =   ""
          EndProperty
          BeginProperty ListImage7 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":4BAC
+            Picture         =   "frmMain.frx":5AAC
             Key             =   ""
          EndProperty
       EndProperty
@@ -567,7 +597,7 @@ Private Sub Form_Resize()
     
     Static lngLastHeight As Long
     
-    If staStatus.Top - (lstNew.Top + lstNew.Left) < 10 * Screen.TwipsPerPixelY Then
+    If staStatus.Top - (lstNew.Top) < 10 * Screen.TwipsPerPixelY Then
         If Me.Height < lngLastHeight Then
             Me.Height = lngLastHeight
             
@@ -580,17 +610,16 @@ Private Sub Form_Resize()
     
     lngLastHeight = Me.Height
     
-    On Error Resume Next ' Just ignore resizing errors - they are non-critical
+    'On Error Resume Next ' Just ignore resizing errors - they are non-critical
     
     'WebBrowser
-    webDetails.Height = staStatus.Top - (webDetails.Top + lstDownloads.Left)
-    webDetails.Left = Me.ScaleWidth - (webDetails.Width + lstDownloads.Left)
+    webDetails.Height = staStatus.Top - webDetails.Top
     
-    'Listview Heights
-    lstDownloads.Height = staStatus.Top - (lstDownloads.Top + lstDownloads.Left)
-    lstNew.Height = staStatus.Top - (lstNew.Top + lstNew.Left)
-    lstSubscribed.Height = staStatus.Top - (lstSubscribed.Top + lstSubscribed.Left)
-    lstDownloads.Width = Me.ScaleWidth - (webDetails.Width + (lstDownloads.Left * 3))
+    'Listviews
+    lstDownloads.Height = staStatus.Top - lstDownloads.Top
+    lstNew.Height = lstDownloads.Height
+    lstSubscribed.Height = lstDownloads.Height
+    lstDownloads.Width = Me.ScaleWidth - webDetails.Width
     lstNew.Width = lstDownloads.Width
     lstSubscribed.Width = lstDownloads.Width
     
@@ -603,8 +632,6 @@ Private Sub Form_Resize()
     'Search box in toolbar
     txtSearch.Left = tbrToolbar.Buttons("Search Box").Left
     txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
-    
-    On Error GoTo 0
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -761,7 +788,7 @@ Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As Strin
     Dim strHtml As String
     
     Const strHtmlBBCInfoStyles As String = " #show big { font-weight: bold; font-size: 10pt; }  #show img { margin-right: 10px; } #showtitle { padding-bottom: 10px; } .txinfo { color:#666; font-weight:normal; font-size: 8pt; } "
-    Const strHtmlStyles As String = "body { background-color: buttonface; font: 10pt tahoma; } html, body, table { height: 100%; margin: 0px; } h1 { font-size: 12pt; margin-bottom: 8px; } table { width: 100%; border-collapse: collapse; } td { vertical-align: top; margin: 0px; } .bottomrow { vertical-align: bottom; }" + strHtmlBBCInfoStyles
+    Const strHtmlStyles As String = "body { background-color: #3F3F3F; font: 10pt tahoma; } html, body, table { height: 100%; margin: 0px; } h1 { font-size: 12pt; margin-bottom: 8px; } table { width: 100%; border-collapse: collapse; } td { vertical-align: top; margin: 0px; } .bottomrow { vertical-align: bottom; }" + strHtmlBBCInfoStyles
     Const strHtmlStart As String = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" + strHtmlStyles + "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td>"
     Const strHtmlEnd As String = "</td></tr></table></body></html>"
     
