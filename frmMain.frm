@@ -48,17 +48,16 @@ Begin VB.Form frmMain
             ImageIndex      =   3
          EndProperty
          BeginProperty Button3 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Enabled         =   0   'False
+            Key             =   ""
+            Object.Tag             =   ""
+            ImageIndex      =   4
+         EndProperty
+         BeginProperty Button4 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Key             =   ""
             Object.Tag             =   ""
             Style           =   4
-            Object.Width           =   1000
-            MixedState      =   -1  'True
-         EndProperty
-         BeginProperty Button4 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Key             =   "Search Box"
-            Object.Tag             =   ""
-            Style           =   4
-            Object.Width           =   2235
+            Object.Width           =   2234
             MixedState      =   -1  'True
          EndProperty
          BeginProperty Button5 {0713F354-850A-101B-AFC0-4210102A8DA7} 
@@ -76,7 +75,7 @@ Begin VB.Form frmMain
       Begin VB.TextBox txtSearch 
          Enabled         =   0   'False
          Height          =   315
-         Left            =   1680
+         Left            =   1020
          TabIndex        =   8
          Text            =   "Search..."
          Top             =   0
@@ -256,7 +255,7 @@ Begin VB.Form frmMain
       MaskColor       =   16777215
       _Version        =   327682
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
-         NumListImages   =   3
+         NumListImages   =   4
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":000C
             Key             =   ""
@@ -267,6 +266,10 @@ Begin VB.Form frmMain
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":06B0
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":0A02
             Key             =   ""
          EndProperty
       EndProperty
@@ -285,27 +288,27 @@ Begin VB.Form frmMain
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   6
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":0A02
+            Picture         =   "frmMain.frx":0D54
             Key             =   "radio1"
          EndProperty
          BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1114
+            Picture         =   "frmMain.frx":1466
             Key             =   "radio2"
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1826
+            Picture         =   "frmMain.frx":1B78
             Key             =   "radio3"
          EndProperty
          BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1F38
+            Picture         =   "frmMain.frx":228A
             Key             =   "radio4"
          EndProperty
          BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":264A
+            Picture         =   "frmMain.frx":299C
             Key             =   "fivelive"
          EndProperty
          BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2D5C
+            Picture         =   "frmMain.frx":30AE
             Key             =   "6music"
          EndProperty
       EndProperty
@@ -323,31 +326,31 @@ Begin VB.Form frmMain
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   7
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":346E
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":37C0
             Key             =   ""
          EndProperty
-         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":3B12
             Key             =   ""
          EndProperty
-         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":3E64
             Key             =   ""
          EndProperty
-         BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":41B6
             Key             =   ""
          EndProperty
-         BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":4508
             Key             =   ""
          EndProperty
-         BeginProperty ListImage7 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":485A
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage7 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":4BAC
             Key             =   ""
          EndProperty
       EndProperty
@@ -362,9 +365,6 @@ Begin VB.Form frmMain
       Caption         =   "&Tools"
       Begin VB.Menu mnuToolsPrefs 
          Caption         =   "&Preferences"
-      End
-      Begin VB.Menu mnuToolsCleanup 
-         Caption         =   "&Clean Up"
       End
    End
    Begin VB.Menu mnuHelp 
