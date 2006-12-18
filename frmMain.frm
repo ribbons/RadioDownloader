@@ -3,7 +3,7 @@ Object = "{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}#1.1#0"; "ieframe.dll"
 Object = "{6B7E6392-850A-101B-AFC0-4210102A8DA7}#1.3#0"; "comctl32.ocx"
 Begin VB.Form frmMain 
    Caption         =   "Radio Downloader"
-   ClientHeight    =   7470
+   ClientHeight    =   6930
    ClientLeft      =   165
    ClientTop       =   555
    ClientWidth     =   11355
@@ -18,108 +18,179 @@ Begin VB.Form frmMain
    EndProperty
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
-   LockControls    =   -1  'True
-   ScaleHeight     =   7470
+   ScaleHeight     =   6930
    ScaleWidth      =   11355
    StartUpPosition =   2  'CenterScreen
    Begin ComctlLib.Toolbar tbrToolbar 
       Align           =   1  'Align Top
-      Height          =   720
+      Height          =   600
       Left            =   0
-      TabIndex        =   7
+      TabIndex        =   6
       Top             =   0
       Width           =   11355
       _ExtentX        =   20029
-      _ExtentY        =   1270
-      ButtonWidth     =   1349
-      ButtonHeight    =   1164
+      _ExtentY        =   1058
+      ButtonWidth     =   1852
+      ButtonHeight    =   953
       Wrappable       =   0   'False
       ImageList       =   "imlToolbar"
       _Version        =   327682
       BeginProperty Buttons {0713E452-850A-101B-AFC0-4210102A8DA7} 
-         NumButtons      =   9
+         NumButtons      =   10
          BeginProperty Button1 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Caption         =   "Find New"
-            Key             =   ""
-            Description     =   ""
-            Object.ToolTipText     =   ""
-            Object.Tag             =   ""
-         EndProperty
-         BeginProperty Button2 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Key             =   ""
-            Object.Tag             =   ""
-         EndProperty
-         BeginProperty Button3 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Key             =   ""
-            Object.Tag             =   ""
-         EndProperty
-         BeginProperty Button4 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Caption         =   ""
-            Key             =   "Up"
-            Description     =   ""
-            Object.ToolTipText     =   ""
+            Key             =   "Find New"
             Object.Tag             =   ""
             ImageIndex      =   1
+            Style           =   2
+            Value           =   1
+         EndProperty
+         BeginProperty Button2 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Caption         =   "Subscriptions"
+            Key             =   "Subscriptions"
+            Object.Tag             =   ""
+            Style           =   2
+         EndProperty
+         BeginProperty Button3 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Caption         =   "Downloads"
+            Key             =   "Downloads"
+            Object.Tag             =   ""
+            Style           =   2
+         EndProperty
+         BeginProperty Button4 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Key             =   "-"
+            Object.Tag             =   ""
+            Style           =   3
+            MixedState      =   -1  'True
          EndProperty
          BeginProperty Button5 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Caption         =   ""
-            Key             =   "Refresh"
-            Description     =   ""
-            Object.ToolTipText     =   ""
+            Caption         =   "Up"
+            Key             =   "Up"
             Object.Tag             =   ""
-            ImageIndex      =   2
          EndProperty
          BeginProperty Button6 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Caption         =   ""
-            Key             =   "Clean Up"
-            Description     =   ""
-            Object.ToolTipText     =   ""
+            Caption         =   "Refresh"
+            Key             =   "Refresh"
             Object.Tag             =   ""
-            ImageIndex      =   3
          EndProperty
          BeginProperty Button7 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Caption         =   ""
+            Caption         =   "Clean Up"
+            Key             =   "Clean Up"
+            Object.Tag             =   ""
+         EndProperty
+         BeginProperty Button8 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Key             =   "Search Box"
-            Description     =   ""
-            Object.ToolTipText     =   ""
             Object.Tag             =   ""
             Style           =   4
             Object.Width           =   2234
             MixedState      =   -1  'True
          EndProperty
-         BeginProperty Button8 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Enabled         =   0   'False
-            Caption         =   ""
-            Key             =   "Do Search"
-            Description     =   ""
-            Object.ToolTipText     =   ""
-            Object.Tag             =   ""
-            ImageIndex      =   4
-         EndProperty
          BeginProperty Button9 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Enabled         =   0   'False
+            Caption         =   "Search"
+            Key             =   "Do Search"
+            Object.Tag             =   ""
+         EndProperty
+         BeginProperty Button10 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Enabled         =   0   'False
             Key             =   ""
             Object.Tag             =   ""
          EndProperty
       EndProperty
+      Begin VB.PictureBox picShadow 
+         BorderStyle     =   0  'None
+         Height          =   50
+         Left            =   0
+         ScaleHeight     =   45
+         ScaleWidth      =   4395
+         TabIndex        =   9
+         Top             =   560
+         Width           =   4395
+         Begin VB.Image imgShadow 
+            Height          =   45
+            Left            =   0
+            Picture         =   "frmMain.frx":000C
+            Stretch         =   -1  'True
+            Top             =   0
+            Width           =   9990
+         End
+      End
+      Begin VB.PictureBox picSeperator 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000011&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   435
+         Left            =   3240
+         ScaleHeight     =   435
+         ScaleWidth      =   15
+         TabIndex        =   8
+         Top             =   120
+         Width           =   20
+      End
       Begin VB.TextBox txtSearch 
          Enabled         =   0   'False
          Height          =   315
-         Left            =   1380
-         TabIndex        =   8
+         Left            =   6540
+         TabIndex        =   7
          Text            =   "Search..."
-         Top             =   60
+         Top             =   120
          Width           =   2235
       End
    End
-   Begin ComctlLib.ListView lstNew 
-      Height          =   1455
+   Begin ComctlLib.ListView lstDownloads 
+      Height          =   1935
       Left            =   3150
-      TabIndex        =   4
-      Top             =   1140
+      TabIndex        =   0
+      Top             =   4680
       Width           =   8175
       _ExtentX        =   14420
-      _ExtentY        =   2566
+      _ExtentY        =   3413
+      View            =   3
+      LabelEdit       =   1
+      LabelWrap       =   -1  'True
+      HideSelection   =   0   'False
+      _Version        =   327682
+      ForeColor       =   -2147483640
+      BackColor       =   -2147483643
+      Appearance      =   0
+      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Tahoma"
+         Size            =   8.25
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      NumItems        =   0
+   End
+   Begin ComctlLib.ListView lstSubscribed 
+      Height          =   1875
+      Left            =   3150
+      TabIndex        =   5
+      Top             =   2700
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   3307
+      View            =   3
+      LabelEdit       =   1
+      LabelWrap       =   -1  'True
+      HideSelection   =   -1  'True
+      _Version        =   327682
+      ForeColor       =   -2147483640
+      BackColor       =   -2147483643
+      Appearance      =   0
+      NumItems        =   0
+   End
+   Begin ComctlLib.ListView lstNew 
+      Height          =   1335
+      Left            =   3150
+      TabIndex        =   4
+      Top             =   600
+      Width           =   8175
+      _ExtentX        =   14420
+      _ExtentY        =   2355
       View            =   3
       Arrange         =   2
       LabelEdit       =   1
@@ -131,71 +202,22 @@ Begin VB.Form frmMain
       Appearance      =   0
       NumItems        =   0
    End
-   Begin ComctlLib.TabStrip tabMain 
-      Height          =   315
-      Left            =   1560
-      TabIndex        =   6
-      Top             =   540
-      Width           =   4335
-      _ExtentX        =   7646
-      _ExtentY        =   556
-      _Version        =   327682
-      BeginProperty Tabs {0713E432-850A-101B-AFC0-4210102A8DA7} 
-         NumTabs         =   3
-         BeginProperty Tab1 {0713F341-850A-101B-AFC0-4210102A8DA7} 
-            Caption         =   "Find New"
-            Key             =   ""
-            Object.Tag             =   ""
-            ImageVarType    =   2
-         EndProperty
-         BeginProperty Tab2 {0713F341-850A-101B-AFC0-4210102A8DA7} 
-            Caption         =   "Subscriptions"
-            Key             =   ""
-            Object.Tag             =   ""
-            ImageVarType    =   2
-         EndProperty
-         BeginProperty Tab3 {0713F341-850A-101B-AFC0-4210102A8DA7} 
-            Caption         =   "Downloads"
-            Key             =   ""
-            Object.Tag             =   ""
-            ImageVarType    =   2
-         EndProperty
-      EndProperty
-   End
    Begin VB.Timer tmrCheckSub 
       Interval        =   60000
       Left            =   5520
-      Top             =   2640
-   End
-   Begin ComctlLib.ListView lstSubscribed 
-      Height          =   1875
-      Left            =   3120
-      TabIndex        =   5
-      Top             =   3240
-      Width           =   8235
-      _ExtentX        =   14526
-      _ExtentY        =   3307
-      View            =   3
-      LabelEdit       =   1
-      LabelWrap       =   -1  'True
-      HideSelection   =   -1  'True
-      _Version        =   327682
-      ForeColor       =   -2147483640
-      BackColor       =   -2147483643
-      Appearance      =   1
-      NumItems        =   0
+      Top             =   2100
    End
    Begin VB.Timer tmrStartProcess 
       Interval        =   2000
       Left            =   5100
-      Top             =   2640
+      Top             =   2100
    End
    Begin ComctlLib.StatusBar staStatus 
       Align           =   2  'Align Bottom
       Height          =   315
       Left            =   0
       TabIndex        =   3
-      Top             =   7155
+      Top             =   6615
       Width           =   11355
       _ExtentX        =   20029
       _ExtentY        =   556
@@ -214,7 +236,7 @@ Begin VB.Form frmMain
       Height          =   315
       Left            =   6120
       TabIndex        =   1
-      Top             =   2640
+      Top             =   2100
       Visible         =   0   'False
       Width           =   1935
       _ExtentX        =   3413
@@ -222,41 +244,14 @@ Begin VB.Form frmMain
       _Version        =   327682
       Appearance      =   1
    End
-   Begin ComctlLib.ListView lstDownloads 
-      Height          =   1935
-      Left            =   3120
-      TabIndex        =   0
-      Top             =   5220
-      Width           =   8235
-      _ExtentX        =   14526
-      _ExtentY        =   3413
-      View            =   3
-      LabelEdit       =   1
-      LabelWrap       =   -1  'True
-      HideSelection   =   0   'False
-      _Version        =   327682
-      ForeColor       =   -2147483640
-      BackColor       =   -2147483643
-      Appearance      =   1
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.25
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      NumItems        =   0
-   End
    Begin SHDocVwCtl.WebBrowser webDetails 
-      Height          =   5835
+      Height          =   6015
       Left            =   0
       TabIndex        =   2
-      Top             =   1140
+      Top             =   600
       Width           =   3150
       ExtentX         =   5556
-      ExtentY         =   10292
+      ExtentY         =   10610
       ViewMode        =   0
       Offline         =   0
       Silent          =   0
@@ -276,76 +271,64 @@ Begin VB.Form frmMain
    End
    Begin ComctlLib.ImageList imlToolbar 
       Left            =   4380
-      Top             =   2640
+      Top             =   2100
       _ExtentX        =   1005
       _ExtentY        =   1005
       BackColor       =   -2147483643
-      ImageWidth      =   24
-      ImageHeight     =   24
+      ImageWidth      =   16
+      ImageHeight     =   16
       MaskColor       =   16777215
+      UseMaskColor    =   0   'False
       _Version        =   327682
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
-         NumListImages   =   4
+         NumListImages   =   1
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":000C
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":071E
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":0E30
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1542
+            Picture         =   "frmMain.frx":0186
             Key             =   ""
          EndProperty
       EndProperty
    End
    Begin ComctlLib.ImageList imlStations 
       Left            =   3780
-      Top             =   2640
+      Top             =   2100
       _ExtentX        =   1005
       _ExtentY        =   1005
       BackColor       =   16777215
       ImageWidth      =   24
       ImageHeight     =   24
       MaskColor       =   16777215
-      UseMaskColor    =   0   'False
       _Version        =   327682
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   6
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1C54
+            Picture         =   "frmMain.frx":04D8
             Key             =   "radio1"
          EndProperty
          BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2366
+            Picture         =   "frmMain.frx":0BEA
             Key             =   "radio2"
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2A78
+            Picture         =   "frmMain.frx":12FC
             Key             =   "radio3"
          EndProperty
          BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":318A
+            Picture         =   "frmMain.frx":1A0E
             Key             =   "radio4"
          EndProperty
          BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":389C
+            Picture         =   "frmMain.frx":2120
             Key             =   "fivelive"
          EndProperty
          BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":3FAE
+            Picture         =   "frmMain.frx":2832
             Key             =   "6music"
          EndProperty
       EndProperty
    End
    Begin ComctlLib.ImageList imlListIcons 
       Left            =   3180
-      Top             =   2640
+      Top             =   2100
       _ExtentX        =   1005
       _ExtentY        =   1005
       BackColor       =   -2147483643
@@ -356,31 +339,31 @@ Begin VB.Form frmMain
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   7
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":46C0
+            Picture         =   "frmMain.frx":2F44
             Key             =   ""
          EndProperty
          BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":4A12
+            Picture         =   "frmMain.frx":3296
             Key             =   ""
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":4D64
+            Picture         =   "frmMain.frx":35E8
             Key             =   ""
          EndProperty
          BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":50B6
+            Picture         =   "frmMain.frx":393A
             Key             =   ""
          EndProperty
          BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":5408
+            Picture         =   "frmMain.frx":3C8C
             Key             =   ""
          EndProperty
          BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":575A
+            Picture         =   "frmMain.frx":3FDE
             Key             =   ""
          EndProperty
          BeginProperty ListImage7 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":5AAC
+            Picture         =   "frmMain.frx":4330
             Key             =   ""
          EndProperty
       EndProperty
@@ -537,6 +520,7 @@ Private Sub Form_Load()
     Call SetParent(prgItemProgress.hWnd, lstDownloads.hWnd)
     
     Call AddStations
+    Call SetupToolbar
     Call TabAdjustments
     Call AddToSystray(Me)
     
@@ -623,15 +607,18 @@ Private Sub Form_Resize()
     lstNew.Width = lstDownloads.Width
     lstSubscribed.Width = lstDownloads.Width
     
-    'Tabs
-    tabMain.Width = Me.ScaleWidth
-    
-    'Toolbar
-    tbrToolbar.Width = lstDownloads.Width - (tbrToolbar.Left - lstDownloads.Left)
-    
     'Search box in toolbar
     txtSearch.Left = tbrToolbar.Buttons("Search Box").Left
     txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
+    
+    'Toolbar seperator
+    picSeperator.Top = tbrToolbar.Buttons("-").Top + 2 * Screen.TwipsPerPixelX
+    picSeperator.Left = tbrToolbar.Buttons("-").Left + (tbrToolbar.Buttons("-").Width / 2)
+    picSeperator.Height = tbrToolbar.Buttons("-").Height - 4 * Screen.TwipsPerPixelX
+    
+    'Toolbar shadow
+    picShadow.Width = tbrToolbar.Width
+    imgShadow.Width = tbrToolbar.Width
 End Sub
 
 Private Sub Form_Unload(Cancel As Integer)
@@ -759,29 +746,28 @@ Private Sub lstNew_ItemClick(ByVal Item As ComctlLib.ListItem)
 End Sub
 
 Private Sub TabAdjustments()
-    Select Case tabMain.SelectedItem.Index
-        Case 1:
-            lstNew.Visible = True
-            lstSubscribed.Visible = False
-            lstDownloads.Visible = False
-            tbrToolbar.Buttons("Clean Up").Enabled = False
-            tbrToolbar.Buttons("Up").Enabled = lstNew.View = lvwReport
-            Call CreateHtml("Choose New Program", "<p>This view allows you to browse all of the programs that are available for you to download or subscribe to.</p><p>Select a station icon to show the programs available from it.</p>", None)
-        Case 2:
-            lstNew.Visible = False
-            lstSubscribed.Visible = True
-            lstDownloads.Visible = False
-            tbrToolbar.Buttons("Clean Up").Enabled = False
-            tbrToolbar.Buttons("Up").Enabled = False
-            Call CreateHtml("Subscribed Programs", "", None)
-        Case 3:
-            lstNew.Visible = False
-            lstSubscribed.Visible = False
-            lstDownloads.Visible = True
-            'tbrToolbar.Buttons("Clean Up").Enabled = True
-            tbrToolbar.Buttons("Up").Enabled = False
-            Call CreateHtml("Program Downloads", "<p>Here you can see programs that are being downloaded, or have been downloaded already.</p>", None)
-    End Select
+    If tbrToolbar.Buttons("Find New").Value = tbrPressed Then
+        lstNew.Visible = True
+        lstSubscribed.Visible = False
+        lstDownloads.Visible = False
+        'tbrToolbar.Buttons("Clean Up").Enabled = False
+        'tbrToolbar.Buttons("Up").Enabled = lstNew.View = lvwReport
+        Call CreateHtml("Choose New Program", "<p>This view allows you to browse all of the programs that are available for you to download or subscribe to.</p><p>Select a station icon to show the programs available from it.</p>", None)
+    ElseIf tbrToolbar.Buttons("Subscriptions").Value = tbrPressed Then
+        lstNew.Visible = False
+        lstSubscribed.Visible = True
+        lstDownloads.Visible = False
+        'tbrToolbar.Buttons("Clean Up").Enabled = False
+        'tbrToolbar.Buttons("Up").Enabled = False
+        Call CreateHtml("Subscribed Programs", "", None)
+    ElseIf tbrToolbar.Buttons("Downloads").Value = tbrPressed Then
+        lstNew.Visible = False
+        lstSubscribed.Visible = False
+        lstDownloads.Visible = True
+        'tbrToolbar.Buttons("Clean Up").Enabled = True
+        'tbrToolbar.Buttons("Up").Enabled = False
+        Call CreateHtml("Program Downloads", "<p>Here you can see programs that are being downloaded, or have been downloaded already.</p>", None)
+    End If
 End Sub
 
 Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
@@ -875,19 +861,21 @@ Private Sub mnuTrayShow_Click()
     End If
 End Sub
 
-Private Sub tabMain_Click()
-    Call TabAdjustments
+Private Sub tbrToolbar_ButtonClick(ByVal Button As ComctlLib.Button)
+    If Button.Key = "Find New" Or Button.Key = "Subscriptions" Or Button.Key = "Downloads" Then
+        Call TabAdjustments
+    End If
 End Sub
 
-Private Sub tbrToolbar_ButtonClick(ByVal Button As ComctlLib.Button)
-    Select Case Button.Key
-        Case "Up"
-            Button.Enabled = False
-            If lstNew.View = lvwReport Then
-                Call AddStations
-            End If
-    End Select
-End Sub
+'Private Sub tbrToolbar_ButtonClick(ByVal lButton As Long)
+'    Select Case tbrToolbar.ButtonKey(lButton)
+'        Case "Up"
+'            tbrToolbar.ButtonEnabled(lButton) = False
+'            If lstNew.View = lvwReport Then
+'                Call AddStations
+'            End If
+'    End Select
+'End Sub
 
 Private Sub tmrCheckSub_Timer()
     Call clsProgData.CheckSubscriptions(lstDownloads, tmrStartProcess)
@@ -971,6 +959,21 @@ Private Sub ListviewEndAdd()
 '            End If
 '        End If
 '    Next prgBar
+End Sub
+
+Private Sub SetupToolbar()
+'    With tbrToolbar
+'        Call .CreateToolbar(24, , True, False)
+'        .ImageSource = CTBExternalImageList
+'        Call .SetImageList(imlToolbar)
+'        '.buttonte
+'        Call .AddButton(, 0, , , "Test", CTBNormal, "test")
+'    End With
+'
+'    With rbrRebar
+'        Call .CreateRebar(Me.hWnd)
+'        Call .AddBandByHwnd(tbrToolbar.hWnd)
+'    End With
 End Sub
 
 ' Called from JavaScript in embedded XHTML -------------------------------------

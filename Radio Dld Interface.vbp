@@ -19,6 +19,7 @@ Module=modDrawing; modDrawing.bas
 Class=clsView; clsView.cls
 Class=clsTypeBBCLA; clsTypeBBCLA.cls
 ResFile32="interface.res"
+Object={38911DA0-E448-11D0-84A3-00DD01104159}#1.1#0; COMCT332.OCX
 IconForm="frmMain"
 Startup="frmMain"
 HelpFile=""
