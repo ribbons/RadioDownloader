@@ -18,6 +18,7 @@ Begin VB.Form frmMain
    EndProperty
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
+   LockControls    =   -1  'True
    ScaleHeight     =   6930
    ScaleWidth      =   11355
    StartUpPosition =   2  'CenterScreen
@@ -49,12 +50,14 @@ Begin VB.Form frmMain
             Caption         =   "Subscriptions"
             Key             =   "Subscriptions"
             Object.Tag             =   ""
+            ImageIndex      =   2
             Style           =   2
          EndProperty
          BeginProperty Button3 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Caption         =   "Downloads"
             Key             =   "Downloads"
             Object.Tag             =   ""
+            ImageIndex      =   3
             Style           =   2
          EndProperty
          BeginProperty Button4 {0713F354-850A-101B-AFC0-4210102A8DA7} 
@@ -67,16 +70,19 @@ Begin VB.Form frmMain
             Caption         =   "Up"
             Key             =   "Up"
             Object.Tag             =   ""
+            ImageIndex      =   4
          EndProperty
          BeginProperty Button6 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Caption         =   "Refresh"
             Key             =   "Refresh"
             Object.Tag             =   ""
+            ImageIndex      =   5
          EndProperty
          BeginProperty Button7 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Caption         =   "Clean Up"
             Key             =   "Clean Up"
             Object.Tag             =   ""
+            ImageIndex      =   6
          EndProperty
          BeginProperty Button8 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Key             =   "Search Box"
@@ -281,9 +287,29 @@ Begin VB.Form frmMain
       UseMaskColor    =   0   'False
       _Version        =   327682
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
-         NumListImages   =   1
+         NumListImages   =   6
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":0186
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":04D8
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":082A
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":0B7C
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":0ECE
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":1220
             Key             =   ""
          EndProperty
       EndProperty
@@ -301,27 +327,27 @@ Begin VB.Form frmMain
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   6
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":04D8
+            Picture         =   "frmMain.frx":1572
             Key             =   "radio1"
          EndProperty
          BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":0BEA
+            Picture         =   "frmMain.frx":1C84
             Key             =   "radio2"
          EndProperty
          BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":12FC
+            Picture         =   "frmMain.frx":2396
             Key             =   "radio3"
          EndProperty
          BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":1A0E
+            Picture         =   "frmMain.frx":2AA8
             Key             =   "radio4"
          EndProperty
          BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2120
+            Picture         =   "frmMain.frx":31BA
             Key             =   "fivelive"
          EndProperty
          BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2832
+            Picture         =   "frmMain.frx":38CC
             Key             =   "6music"
          EndProperty
       EndProperty
@@ -339,31 +365,31 @@ Begin VB.Form frmMain
       BeginProperty Images {0713E8C2-850A-101B-AFC0-4210102A8DA7} 
          NumListImages   =   7
          BeginProperty ListImage1 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":2F44
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":3296
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":35E8
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":393A
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
-            Picture         =   "frmMain.frx":3C8C
-            Key             =   ""
-         EndProperty
-         BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":3FDE
             Key             =   ""
          EndProperty
-         BeginProperty ListImage7 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+         BeginProperty ListImage2 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
             Picture         =   "frmMain.frx":4330
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage3 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":4682
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage4 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":49D4
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage5 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":4D26
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage6 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":5078
+            Key             =   ""
+         EndProperty
+         BeginProperty ListImage7 {0713E8C3-850A-101B-AFC0-4210102A8DA7} 
+            Picture         =   "frmMain.frx":53CA
             Key             =   ""
          EndProperty
       EndProperty
@@ -593,8 +619,6 @@ Private Sub Form_Resize()
     End If
     
     lngLastHeight = Me.Height
-    
-    'On Error Resume Next ' Just ignore resizing errors - they are non-critical
     
     'WebBrowser
     webDetails.Height = staStatus.Top - webDetails.Top
