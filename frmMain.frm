@@ -18,7 +18,6 @@ Begin VB.Form frmMain
    EndProperty
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
-   LockControls    =   -1  'True
    ScaleHeight     =   6930
    ScaleWidth      =   11355
    StartUpPosition =   2  'CenterScreen
@@ -33,11 +32,12 @@ Begin VB.Form frmMain
       _ExtentY        =   1058
       ButtonWidth     =   1852
       ButtonHeight    =   953
+      AllowCustomize  =   0   'False
       Wrappable       =   0   'False
       ImageList       =   "imlToolbar"
       _Version        =   327682
       BeginProperty Buttons {0713E452-850A-101B-AFC0-4210102A8DA7} 
-         NumButtons      =   10
+         NumButtons      =   9
          BeginProperty Button1 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Caption         =   "Find New"
             Key             =   "Find New"
@@ -85,22 +85,17 @@ Begin VB.Form frmMain
             ImageIndex      =   6
          EndProperty
          BeginProperty Button8 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Key             =   "--"
+            Object.Tag             =   ""
+            Style           =   3
+            MixedState      =   -1  'True
+         EndProperty
+         BeginProperty Button9 {0713F354-850A-101B-AFC0-4210102A8DA7} 
             Key             =   "Search Box"
             Object.Tag             =   ""
             Style           =   4
             Object.Width           =   2234
             MixedState      =   -1  'True
-         EndProperty
-         BeginProperty Button9 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Enabled         =   0   'False
-            Caption         =   "Search"
-            Key             =   "Do Search"
-            Object.Tag             =   ""
-         EndProperty
-         BeginProperty Button10 {0713F354-850A-101B-AFC0-4210102A8DA7} 
-            Enabled         =   0   'False
-            Key             =   ""
-            Object.Tag             =   ""
          EndProperty
       EndProperty
       Begin VB.PictureBox picShadow 
@@ -127,6 +122,7 @@ Begin VB.Form frmMain
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
          Height          =   435
+         Index           =   0
          Left            =   3240
          ScaleHeight     =   435
          ScaleWidth      =   15
@@ -137,11 +133,25 @@ Begin VB.Form frmMain
       Begin VB.TextBox txtSearch 
          Enabled         =   0   'False
          Height          =   315
-         Left            =   6540
+         Left            =   9060
          TabIndex        =   7
          Text            =   "Search..."
          Top             =   120
          Width           =   2235
+      End
+      Begin VB.PictureBox picSeperator 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000011&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   435
+         Index           =   1
+         Left            =   6420
+         ScaleHeight     =   435
+         ScaleWidth      =   15
+         TabIndex        =   10
+         Top             =   120
+         Width           =   20
       End
    End
    Begin ComctlLib.ListView lstDownloads 
@@ -632,13 +642,21 @@ Private Sub Form_Resize()
     lstSubscribed.Width = lstDownloads.Width
     
     'Search box in toolbar
-    txtSearch.Left = tbrToolbar.Buttons("Search Box").Left
-    txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
+    If tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width) < tbrToolbar.Buttons("Search Box").Left Then
+        txtSearch.Visible = False
+    Else
+        txtSearch.Visible = True
+        txtSearch.Left = tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width)
+        txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
+    End If
     
-    'Toolbar seperator
-    picSeperator.Top = tbrToolbar.Buttons("-").Top + 2 * Screen.TwipsPerPixelX
-    picSeperator.Left = tbrToolbar.Buttons("-").Left + (tbrToolbar.Buttons("-").Width / 2)
-    picSeperator.Height = tbrToolbar.Buttons("-").Height - 4 * Screen.TwipsPerPixelX
+    'Toolbar seperators
+    picSeperator(0).Top = tbrToolbar.Buttons("-").Top + 2 * Screen.TwipsPerPixelX
+    picSeperator(0).Left = tbrToolbar.Buttons("-").Left + (tbrToolbar.Buttons("-").Width / 2)
+    picSeperator(0).Height = tbrToolbar.Buttons("-").Height - 4 * Screen.TwipsPerPixelX
+    picSeperator(1).Top = tbrToolbar.Buttons("--").Top + 2 * Screen.TwipsPerPixelX
+    picSeperator(1).Left = tbrToolbar.Buttons("--").Left + (tbrToolbar.Buttons("-").Width / 2)
+    picSeperator(1).Height = tbrToolbar.Buttons("--").Height - 4 * Screen.TwipsPerPixelX
     
     'Toolbar shadow
     picShadow.Width = tbrToolbar.Width
