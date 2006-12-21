@@ -1,2 +1,5 @@
-appicon  icon "graphics\\greyicon.ico"
-1        24   "manifest.txt"
+#define RT_HTML     23
+#define RT_MANIFEST 24
+
+appicon  ICON        "graphics\\greyicon.ico"
+1        RT_MANIFEST "manifest.txt"

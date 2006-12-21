@@ -18,6 +18,7 @@ Begin VB.Form frmMain
    EndProperty
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
+   LockControls    =   -1  'True
    ScaleHeight     =   6930
    ScaleWidth      =   11355
    StartUpPosition =   2  'CenterScreen
@@ -73,6 +74,7 @@ Begin VB.Form frmMain
             ImageIndex      =   4
          EndProperty
          BeginProperty Button6 {0713F354-850A-101B-AFC0-4210102A8DA7} 
+            Enabled         =   0   'False
             Caption         =   "Refresh"
             Key             =   "Refresh"
             Object.Tag             =   ""
@@ -118,16 +120,16 @@ Begin VB.Form frmMain
       End
       Begin VB.PictureBox picSeperator 
          Appearance      =   0  'Flat
-         BackColor       =   &H80000011&
+         BackColor       =   &H00AFC6CA&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
-         Height          =   435
+         Height          =   540
          Index           =   0
          Left            =   3240
-         ScaleHeight     =   435
+         ScaleHeight     =   540
          ScaleWidth      =   15
          TabIndex        =   8
-         Top             =   120
+         Top             =   50
          Width           =   20
       End
       Begin VB.TextBox txtSearch 
@@ -141,16 +143,16 @@ Begin VB.Form frmMain
       End
       Begin VB.PictureBox picSeperator 
          Appearance      =   0  'Flat
-         BackColor       =   &H80000011&
+         BackColor       =   &H00AFC6CA&
          BorderStyle     =   0  'None
          ForeColor       =   &H80000008&
-         Height          =   435
+         Height          =   540
          Index           =   1
          Left            =   6420
-         ScaleHeight     =   435
+         ScaleHeight     =   540
          ScaleWidth      =   15
          TabIndex        =   10
-         Top             =   120
+         Top             =   50
          Width           =   20
       End
    End
@@ -539,9 +541,9 @@ Private Sub Form_Load()
     lstSubscribed.Top = lstNew.Top
     lstDownloads.Top = lstNew.Top
     
-    Call lstNew.ColumnHeaders.Add(1, , "Program Name", 5500)
+    Call lstNew.ColumnHeaders.Add(1, , "Programme Name", 5500)
     
-    Call lstSubscribed.ColumnHeaders.Add(1, , "Program Name", 5500)
+    Call lstSubscribed.ColumnHeaders.Add(1, , "Programme Name", 5500)
     
     Call lstDownloads.ColumnHeaders.Add(1, , "Name", 2250)
     Call lstDownloads.ColumnHeaders.Add(2, , "Date", 750)
@@ -556,7 +558,6 @@ Private Sub Form_Load()
     Call SetParent(prgItemProgress.hWnd, lstDownloads.hWnd)
     
     Call AddStations
-    Call SetupToolbar
     Call TabAdjustments
     Call AddToSystray(Me)
     
@@ -615,6 +616,11 @@ Private Sub Form_Resize()
         lngLastState = Me.WindowState
     End If
     
+    If Me.ScaleWidth = 0 Then
+        ' Looks like we are minimized, stop before we get resizing errors
+        Exit Sub
+    End If
+    
     Static lngLastHeight As Long
     
     If staStatus.Top - (lstNew.Top) < 10 * Screen.TwipsPerPixelY Then
@@ -653,10 +659,10 @@ Private Sub Form_Resize()
     'Toolbar seperators
     picSeperator(0).Top = tbrToolbar.Buttons("-").Top + 2 * Screen.TwipsPerPixelX
     picSeperator(0).Left = tbrToolbar.Buttons("-").Left + (tbrToolbar.Buttons("-").Width / 2)
-    picSeperator(0).Height = tbrToolbar.Buttons("-").Height - 4 * Screen.TwipsPerPixelX
+    picSeperator(0).Height = tbrToolbar.Buttons("-").Height - 1 * Screen.TwipsPerPixelX
     picSeperator(1).Top = tbrToolbar.Buttons("--").Top + 2 * Screen.TwipsPerPixelX
     picSeperator(1).Left = tbrToolbar.Buttons("--").Left + (tbrToolbar.Buttons("-").Width / 2)
-    picSeperator(1).Height = tbrToolbar.Buttons("--").Height - 4 * Screen.TwipsPerPixelX
+    picSeperator(1).Height = tbrToolbar.Buttons("--").Height - 1 * Screen.TwipsPerPixelX
     
     'Toolbar shadow
     picShadow.Width = tbrToolbar.Width
@@ -767,7 +773,7 @@ Private Sub lstNew_DblClick()
         lstNew.View = lvwReport
         tbrToolbar.Buttons("Up").Enabled = True
         
-        Call CreateHtml(lstNew.SelectedItem.Text, "", None)
+        Call CreateHtml("Choose New Programme", lstNew.SelectedItem.Text, "", None)
         Call ListviewStartAdd
         Call ListStation(strSplit(1), lstNew)
         Call ListviewEndAdd
@@ -783,7 +789,7 @@ Private Sub lstNew_ItemClick(ByVal Item As ComctlLib.ListItem)
     If lstNew.View = lvwIcon Then
         ' Do nothing
     Else
-        Call CreateHtml("Program Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
+        Call CreateHtml("Choose New Programme", "Programme Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
     End If
 End Sub
 
@@ -792,35 +798,37 @@ Private Sub TabAdjustments()
         lstNew.Visible = True
         lstSubscribed.Visible = False
         lstDownloads.Visible = False
-        'tbrToolbar.Buttons("Clean Up").Enabled = False
-        'tbrToolbar.Buttons("Up").Enabled = lstNew.View = lvwReport
-        Call CreateHtml("Choose New Program", "<p>This view allows you to browse all of the programs that are available for you to download or subscribe to.</p><p>Select a station icon to show the programs available from it.</p>", None)
+        tbrToolbar.Buttons("Clean Up").Enabled = False
+        tbrToolbar.Buttons("Up").Enabled = lstNew.View = lvwReport
+        Call CreateHtml("Choose New Programme", "View Information", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p><p>Select a station icon to show the programmes available from it.</p>", None)
     ElseIf tbrToolbar.Buttons("Subscriptions").Value = tbrPressed Then
         lstNew.Visible = False
         lstSubscribed.Visible = True
         lstDownloads.Visible = False
-        'tbrToolbar.Buttons("Clean Up").Enabled = False
-        'tbrToolbar.Buttons("Up").Enabled = False
-        Call CreateHtml("Subscribed Programs", "", None)
+        tbrToolbar.Buttons("Clean Up").Enabled = False
+        tbrToolbar.Buttons("Up").Enabled = False
+        Call CreateHtml("Subscribed Programmes", "View Information", "", None)
     ElseIf tbrToolbar.Buttons("Downloads").Value = tbrPressed Then
         lstNew.Visible = False
         lstSubscribed.Visible = False
         lstDownloads.Visible = True
         'tbrToolbar.Buttons("Clean Up").Enabled = True
-        'tbrToolbar.Buttons("Up").Enabled = False
-        Call CreateHtml("Program Downloads", "<p>Here you can see programs that are being downloaded, or have been downloaded already.</p>", None)
+        tbrToolbar.Buttons("Up").Enabled = False
+        Call CreateHtml("Programme Downloads", "View Information", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p>", None)
     End If
 End Sub
 
-Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
+Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
     Dim strHtml As String
     
-    Const strHtmlBBCInfoStyles As String = " #show big { font-weight: bold; font-size: 10pt; }  #show img { margin-right: 10px; } #showtitle { padding-bottom: 10px; } .txinfo { color:#666; font-weight:normal; font-size: 8pt; } "
-    Const strHtmlStyles As String = "body { background-color: #3F3F3F; font: 10pt tahoma; } html, body, table { height: 100%; margin: 0px; } h1 { font-size: 12pt; margin-bottom: 8px; } table { width: 100%; border-collapse: collapse; } td { vertical-align: top; margin: 0px; } .bottomrow { vertical-align: bottom; }" + strHtmlBBCInfoStyles
-    Const strHtmlStart As String = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" + strHtmlStyles + "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td>"
+    Dim strCss As String
+    Dim strHtmlStart As String
+    
+    strCss = StrConv(LoadResData("styles", "css"), vbUnicode)
+    strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" + strCss + "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
     Const strHtmlEnd As String = "</td></tr></table></body></html>"
     
-    strHtml = strHtmlStart + "<h1>" + strTitle + "</h1>" + strMiddleContent + "</td></tr><tr><td class=""bottomrow"">"
+    strHtml = strHtmlStart + "<h1>" + strTitle + "</h1><div class=""contentbox""><h2>" + strMiddleTitle + "</h2>" + strMiddleContent + "</div></td></tr><tr><td class=""maintd bottomrow"">"
     
     Dim strSplitLinks() As String
     Dim strLoopLinks
@@ -830,21 +838,26 @@ Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As Strin
     For Each strLoopLinks In strSplitLinks
         Select Case strLoopLinks
             Case "Download":
-                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Download Now", "FlDownload", "Download this program now"))
+                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Download Now", "FlDownload", "Download this programme now"))
             Case "Subscribe":
-                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Subscribe", "FlSubscribe", "Get this program downloaded regularly"))
+                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Subscribe", "FlSubscribe", "Get this programme downloaded regularly"))
             Case "Unsubscribe":
-                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Unsubscribe", "FlUnsubscribe", "Stop getting this program downloaded regularly"))
+                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Unsubscribe", "FlUnsubscribe", "Stop getting this programme downloaded regularly"))
             Case "Play"
-                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Play", "FlPlay", "Play this program"))
+                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Play", "FlPlay", "Play this programme"))
             Case "Cancel"
-                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Cancel", "FlCancel", "Cancel downloading this program"))
+                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Cancel", "FlCancel", "Cancel downloading this programme"))
             Case "Retry"
-                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Retry", "FlRetry", "Try downloading this program again"))
+                strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Retry", "FlRetry", "Try downloading this programme again"))
         End Select
     Next strLoopLinks
     
-    strHtml = strHtml + strBuiltLinks
+    If strBuiltLinks <> "" Then
+        strHtml = strHtml + "<div class=""contentbox""><h2>Actions</h2>"
+        strHtml = strHtml + strBuiltLinks
+        strHtml = strHtml + "</div>"
+    End If
+    
     strHtml = strHtml + strHtmlEnd
     
     Call ShowHtml(strHtml)
@@ -877,7 +890,7 @@ Private Sub lstSubscribed_ItemClick(ByVal Item As ComctlLib.ListItem)
     Dim strSplit() As String
     strSplit = Split(Item.Tag, "||")
     
-    Call CreateHtml("Subscribed Program", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
+    Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
 End Sub
 
 Private Sub mnuFileExit_Click()
@@ -904,20 +917,16 @@ Private Sub mnuTrayShow_Click()
 End Sub
 
 Private Sub tbrToolbar_ButtonClick(ByVal Button As ComctlLib.Button)
-    If Button.Key = "Find New" Or Button.Key = "Subscriptions" Or Button.Key = "Downloads" Then
-        Call TabAdjustments
-    End If
+    Select Case Button.Key
+        Case "Find New", "Subscriptions", "Downloads"
+            Call TabAdjustments
+        Case "Up"
+            Button.Enabled = False
+            If lstNew.View = lvwReport Then
+                Call AddStations
+            End If
+    End Select
 End Sub
-
-'Private Sub tbrToolbar_ButtonClick(ByVal lButton As Long)
-'    Select Case tbrToolbar.ButtonKey(lButton)
-'        Case "Up"
-'            tbrToolbar.ButtonEnabled(lButton) = False
-'            If lstNew.View = lvwReport Then
-'                Call AddStations
-'            End If
-'    End Select
-'End Sub
 
 Private Sub tmrCheckSub_Timer()
     Call clsProgData.CheckSubscriptions(lstDownloads, tmrStartProcess)
@@ -1003,21 +1012,6 @@ Private Sub ListviewEndAdd()
 '    Next prgBar
 End Sub
 
-Private Sub SetupToolbar()
-'    With tbrToolbar
-'        Call .CreateToolbar(24, , True, False)
-'        .ImageSource = CTBExternalImageList
-'        Call .SetImageList(imlToolbar)
-'        '.buttonte
-'        Call .AddButton(, 0, , , "Test", CTBNormal, "test")
-'    End With
-'
-'    With rbrRebar
-'        Call .CreateRebar(Me.hWnd)
-'        Call .AddBandByHwnd(tbrToolbar.hWnd)
-'    End With
-End Sub
-
 ' Called from JavaScript in embedded XHTML -------------------------------------
 
 Public Sub FlDownload()
@@ -1026,13 +1020,13 @@ Public Sub FlDownload()
     
     If clsProgData.IsDownloading(strSplit(0), strSplit(1)) Then
         staStatus.SimpleText = ""
-        Call MsgBox("You cannot download this program more than once at the same time!", vbExclamation, "Radio Downloader")
+        Call MsgBox("You cannot download this programme more than once at the same time!", vbExclamation, "Radio Downloader")
         Exit Sub
     End If
     
     If clsProgData.AddDownload(strSplit(0), strSplit(1)) = False Then
         staStatus.SimpleText = ""
-        Call MsgBox("You have already downloaded this program!", vbExclamation, "Radio Downloader")
+        Call MsgBox("You have already downloaded this programme!", vbExclamation, "Radio Downloader")
     Else
         'Set tabMain.SelectedItem = tabMain.Tabs(3)
         Call clsProgData.UpdateDlList(lstDownloads)
@@ -1053,7 +1047,7 @@ Public Sub FlSubscribe()
     
     If clsProgData.AddSubscription(strSplit(0), strSplit(1)) = False Then
         staStatus.SimpleText = ""
-        Call MsgBox("You are already subscribed to this program!", vbExclamation, "Radio Downloader")
+        Call MsgBox("You are already subscribed to this programme!", vbExclamation, "Radio Downloader")
     Else
         'Set tabMain.SelectedItem = tabMain.Tabs(2)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
@@ -1066,7 +1060,7 @@ Public Sub FlUnsubscribe()
 
     staStatus.SimpleText = ""
     
-    If MsgBox("Are you sure that you would like to stop having this program downloaded regularly?", vbQuestion + vbYesNo, "Radio Downloader") = vbYes Then
+    If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", vbQuestion + vbYesNo, "Radio Downloader") = vbYes Then
         Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1))
         Call clsProgData.UpdateSubscrList(lstSubscribed)
     End If
@@ -1087,7 +1081,7 @@ End Sub
 Public Sub FlCancel()
     staStatus.SimpleText = ""
     
-    If MsgBox("Are you sure that you would like to stop downloading this program?", vbQuestion + vbYesNo, "Radio Downloader") = vbYes Then
+    If MsgBox("Are you sure that you would like to stop downloading this programme?", vbQuestion + vbYesNo, "Radio Downloader") = vbYes Then
         Dim strSplit() As String
         strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
         
