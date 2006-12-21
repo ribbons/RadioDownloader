@@ -201,7 +201,39 @@ Public Function ProgramHTML(ByVal strProgramType As String, ByVal strProgramID A
     End If
     
     rstRecordset.MoveFirst
-    ProgramHTML = rstRecordset![HTML]
+    
+    With rstRecordset
+        ProgramHTML = "<h2>" + ![Name] + "</h2>"
+        ProgramHTML = ProgramHTML + "<p><img src=""" + ![ImageURL] + """ />"
+        ProgramHTML = ProgramHTML + ![Description] + "</p>"
+        
+        ProgramHTML = ProgramHTML + "<div style=""clear: both;""></div>"
+        
+        ProgramHTML = ProgramHTML + Format(![Date], "ddd dd/mmm/yy hh:mm") + " "
+        
+        Dim lngHours As Long
+        Dim lngMins As Long
+        
+        lngMins = ![Duration] Mod 60
+        lngHours = ![Duration] \ 60
+        
+        ProgramHTML = ProgramHTML + "<span style=""white-space: nowrap;"">"
+        
+        If lngHours > 0 Then
+            ProgramHTML = ProgramHTML + Format(lngHours) + "hr"
+            If lngHours > 1 Then
+                ProgramHTML = ProgramHTML + "s"
+            End If
+        End If
+        If lngHours > 0 And lngMins > 0 Then
+            ProgramHTML = ProgramHTML + " "
+        End If
+        If lngMins > 0 Then
+            ProgramHTML = ProgramHTML + Format(lngMins) + "min"
+        End If
+        
+        ProgramHTML = ProgramHTML + "</span>"
+    End With
     
     rstRecordset.Close
     Set rstRecordset = Nothing
@@ -438,10 +470,11 @@ Private Sub StoreLatestInfo(ByVal strProgramType As String, strProgramID As Stri
         Stop
     End If
     
-    Dim strProgHTML As String
     Dim strProgTitle As String
+    Dim strProgDescription As String
     Dim lngProgDuration As Long
     Dim dteProgDate As Date
+    Dim strProgImgUrl As String
     
     Dim strInfo As String
     strInfo = GetUrlAsString("http://www.bbc.co.uk/radio/aod/networks/radio1/aod.shtml?" + strProgramID)
@@ -464,9 +497,7 @@ Private Sub StoreLatestInfo(ByVal strProgramType As String, strProgramID As Stri
     Set colMatches = objRegExp.Execute(strInfo)
     Set objMatch = colMatches(0)
     
-    strProgHTML = objMatch.Value
-    
-    ' Program Title
+    ' objMatch.SubMatches(0) is Program Title
     strProgTitle = objMatch.SubMatches(0)
     
     ' objMatch.SubMatches(1) is Duration String, eg 1hr 30min
@@ -476,6 +507,12 @@ Private Sub StoreLatestInfo(ByVal strProgramType As String, strProgramID As Stri
     ' objMatch.SubMatches(3) is Date Sting eg Wed 26 Jul - 14:00
     Dim strDateString As String
     strDateString = objMatch.SubMatches(3)
+    
+    ' objMatch.SubMatches(4) is Image URL
+    strProgImgUrl = objMatch.SubMatches(4)
+    
+    ' objMatch.SubMatches(5) is Program Description
+    strProgDescription = objMatch.SubMatches(5)
     
     objRegExp.Pattern = "(([0-9]*?) hr)? ?(([0-9]*?) min)?"
     If objRegExp.Test(strDuration) = False Then
@@ -500,7 +537,8 @@ Private Sub StoreLatestInfo(ByVal strProgramType As String, strProgramID As Stri
             ![ID] = strProgramID
             ![Date] = dteProgDate
             ![Name] = strProgTitle
-            ![HTML] = strProgHTML
+            ![Description] = strProgDescription
+            ![ImageURL] = strProgImgUrl
             ![Duration] = lngProgDuration
             .Update
         End If

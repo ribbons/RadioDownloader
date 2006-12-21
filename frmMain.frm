@@ -18,7 +18,6 @@ Begin VB.Form frmMain
    EndProperty
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
-   LockControls    =   -1  'True
    ScaleHeight     =   6930
    ScaleWidth      =   11355
    StartUpPosition =   2  'CenterScreen
@@ -155,6 +154,11 @@ Begin VB.Form frmMain
          Top             =   50
          Width           =   20
       End
+   End
+   Begin VB.Timer tmrResizeHack 
+      Interval        =   500
+      Left            =   9420
+      Top             =   2100
    End
    Begin ComctlLib.ListView lstDownloads 
       Height          =   1935
@@ -773,7 +777,7 @@ Private Sub lstNew_DblClick()
         lstNew.View = lvwReport
         tbrToolbar.Buttons("Up").Enabled = True
         
-        Call CreateHtml("Choose New Programme", lstNew.SelectedItem.Text, "", None)
+        Call CreateHtml(lstNew.SelectedItem.Text, "", None)
         Call ListviewStartAdd
         Call ListStation(strSplit(1), lstNew)
         Call ListviewEndAdd
@@ -789,7 +793,7 @@ Private Sub lstNew_ItemClick(ByVal Item As ComctlLib.ListItem)
     If lstNew.View = lvwIcon Then
         ' Do nothing
     Else
-        Call CreateHtml("Choose New Programme", "Programme Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
+        Call CreateHtml("Programme Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
     End If
 End Sub
 
@@ -800,25 +804,25 @@ Private Sub TabAdjustments()
         lstDownloads.Visible = False
         tbrToolbar.Buttons("Clean Up").Enabled = False
         tbrToolbar.Buttons("Up").Enabled = lstNew.View = lvwReport
-        Call CreateHtml("Choose New Programme", "View Information", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p><p>Select a station icon to show the programmes available from it.</p>", None)
+        Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", None)
     ElseIf tbrToolbar.Buttons("Subscriptions").Value = tbrPressed Then
         lstNew.Visible = False
         lstSubscribed.Visible = True
         lstDownloads.Visible = False
         tbrToolbar.Buttons("Clean Up").Enabled = False
         tbrToolbar.Buttons("Up").Enabled = False
-        Call CreateHtml("Subscribed Programmes", "View Information", "", None)
+        Call CreateHtml("Subscribed Programmes", "", None)
     ElseIf tbrToolbar.Buttons("Downloads").Value = tbrPressed Then
         lstNew.Visible = False
         lstSubscribed.Visible = False
         lstDownloads.Visible = True
         'tbrToolbar.Buttons("Clean Up").Enabled = True
         tbrToolbar.Buttons("Up").Enabled = False
-        Call CreateHtml("Programme Downloads", "View Information", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p>", None)
+        Call CreateHtml("Programme Downloads", "Here you can see programmes that are being downloaded, or have been downloaded already.", None)
     End If
 End Sub
 
-Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
+Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
     Dim strHtml As String
     
     Dim strCss As String
@@ -828,7 +832,7 @@ Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleTitle As String,
     strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" + strCss + "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
     Const strHtmlEnd As String = "</td></tr></table></body></html>"
     
-    strHtml = strHtmlStart + "<h1>" + strTitle + "</h1><div class=""contentbox""><h2>" + strMiddleTitle + "</h2>" + strMiddleContent + "</div></td></tr><tr><td class=""maintd bottomrow"">"
+    strHtml = strHtmlStart + "<h1>" + strTitle + "</h1><div class=""contentbox"">" + strMiddleContent + "</div></td></tr><tr><td class=""maintd bottomrow"">"
     
     Dim strSplitLinks() As String
     Dim strLoopLinks
@@ -930,6 +934,10 @@ End Sub
 
 Private Sub tmrCheckSub_Timer()
     Call clsProgData.CheckSubscriptions(lstDownloads, tmrStartProcess)
+End Sub
+
+Private Sub tmrResizeHack_Timer()
+    Call Form_Resize
 End Sub
 
 Private Sub tmrStartProcess_Timer()

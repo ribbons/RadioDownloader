@@ -90,6 +90,8 @@ Private Sub cmdOK_Click()
 End Sub
 
 Private Sub Form_Load()
+    Call SetIcon(Me.hWnd, "appicon", False)
+    
     txtSaveIn.Text = GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(App.Path) + "Downloads")
     
     If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(App.Path) + "Downloads")) = False Then

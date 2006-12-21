@@ -1,25 +1,6 @@
-#show big {
-	font-weight: bold;
-	font-size: 10pt;
-}
-
-#show img {
-	margin-right: 10px;
-}
-
-#showtitle {
-	padding-bottom: 10px;
-}
-
-.txinfo {
-	color:#666;
-	font-weight: normal;
-	font-size: 8pt;
-}
-
 body { 
 	background-color: #3F3F3F;
-	font: 9pt verdana;
+	font: 8pt verdana;
 	color: white;
 }
 
@@ -37,8 +18,8 @@ h1 {
 h2 {
 	color: #999999;
 	font-size: 8pt;
-	font-weight: normal;
 	margin-top: 0px;
+	margin-bottom: 5px;
 }
 
 table {
@@ -66,6 +47,21 @@ td {
 }
 
 p {
-	margin-bottom: 0px;
-	margin-top: 10px;
+	margin-bottom: 10px;
+	margin-top: 0px;
+}
+
+img {
+	float: left;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	margin-top: 3px;
+}
+
+a {
+	color: #dddddd;
+}
+
+a:hover {
+	color: white;
 }
