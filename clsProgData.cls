@@ -16,7 +16,7 @@ Option Explicit
 Private dbDatabase As Database
 
 Private Sub Class_Initialize()
-    Set dbDatabase = OpenDatabase(AddSlash(App.Path) + "Store.mdb")
+    Set dbDatabase = OpenDatabase(AddSlash(App.Path) + "store.mdb", False, False, ";pwd=JitwanPK2c")
 End Sub
 
 Private Sub Class_Terminate()
