@@ -18,6 +18,7 @@ Begin VB.Form frmMain
    EndProperty
    Icon            =   "frmMain.frx":0000
    LinkTopic       =   "Form1"
+   LockControls    =   -1  'True
    ScaleHeight     =   6930
    ScaleWidth      =   11355
    StartUpPosition =   2  'CenterScreen
@@ -497,7 +498,7 @@ Private Sub AddStation(strStationName As String, strStationId As String, strStat
     lstAdd.Icon = imlStations.ListImages(strStationId).Index
 End Sub
 
-Private Sub clsBackground_Error(ByVal strError As String)
+Private Sub clsBackground_Error(ByVal strError As String, ByVal strOutput As String)
     Call clsProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, stError)
     Call clsProgData.UpdateDlList(lstDownloads)
     
@@ -510,10 +511,10 @@ Private Sub clsBackground_Finished()
     
     If clsProgData.GetNextActionVal(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate) = NextAction.None Then
         ' All done, set status to completed, and save file path
-        Call clsProgData.SetStatus(clsBackground.ProgramID, clsBackground.ProgramDate, False, stCompleted)
+        Call clsProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, stCompleted)
         Call clsProgData.SetDownloadPath(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, clsBackground.FinalName)
     Else
-        Call clsProgData.SetStatus(clsBackground.ProgramID, clsBackground.ProgramDate, False, stWaiting)
+        Call clsProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, stWaiting)
     End If
     
     Call clsProgData.UpdateDlList(lstDownloads)
@@ -526,7 +527,7 @@ Private Sub clsBackground_Progress(ByVal lngPercent As Long)
     Dim lstChangeItem As ListItem
     Set lstChangeItem = lstDownloads.FindItem(Format(clsBackground.ProgramDate) + "||" + clsBackground.ProgramID + "||" + clsBackground.ProgramType, lvwTag)
     
-    lstChangeItem.SubItems(3) = lngPercent
+    lstChangeItem.SubItems(3) = Format(lngPercent) + "%"
 End Sub
 
 Private Sub clsExtender_GetExternal(oIDispatch As Object)
@@ -585,6 +586,9 @@ Private Sub Form_Load()
     Call clsProgData.CleanupUnfinished
     Call clsProgData.UpdateDlList(lstDownloads)
     Call clsProgData.UpdateSubscrList(lstSubscribed)
+    
+    tbrToolbar.Buttons("Clean Up").Visible = False
+    tbrToolbar.Buttons("Refresh").Visible = False
     
     'picBack.BackColor = Me.BackColor
     'picForward.BackColor = Me.BackColor
@@ -652,13 +656,13 @@ Private Sub Form_Resize()
     lstSubscribed.Width = lstDownloads.Width
     
     'Search box in toolbar
-    If tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width) < tbrToolbar.Buttons("Search Box").Left Then
+    'If tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width) < tbrToolbar.Buttons("Search Box").Left Then
         txtSearch.Visible = False
-    Else
-        txtSearch.Visible = True
-        txtSearch.Left = tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width)
-        txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
-    End If
+    'Else
+    '    txtSearch.Visible = True
+    '    txtSearch.Left = tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width)
+    '    txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
+    'End If
     
     'Toolbar seperators
     picSeperator(0).Top = tbrToolbar.Buttons("-").Top + 2 * Screen.TwipsPerPixelX
@@ -761,7 +765,7 @@ Private Sub lstDownloads_ItemClick(ByVal Item As ComctlLib.ListItem)
             Call CreateHtml(strTitle, clsProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "")
         End If
     ElseIf clsProgData.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = stError Then
-        Call CreateHtml(strTitle, clsProgData.ProgramHTML(strSplit(1), CDate(strSplit(0))), "Retry,Cancel")
+        Call CreateHtml(strTitle, clsProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Retry,Cancel")
     Else
         Call CreateHtml(strTitle, clsProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
     End If
@@ -1058,7 +1062,8 @@ Public Sub FlSubscribe()
         staStatus.SimpleText = ""
         Call MsgBox("You are already subscribed to this programme!", vbExclamation, "Radio Downloader")
     Else
-        'Set tabMain.SelectedItem = tabMain.Tabs(2)
+        tbrToolbar.Buttons("Subscriptions").Value = tbrPressed
+        Call TabAdjustments
         Call clsProgData.UpdateSubscrList(lstSubscribed)
     End If
 End Sub
@@ -1071,6 +1076,7 @@ Public Sub FlUnsubscribe()
     
     If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", vbQuestion + vbYesNo, "Radio Downloader") = vbYes Then
         Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1))
+        Call TabAdjustments ' Revert back to tab info so prog info goes
         Call clsProgData.UpdateSubscrList(lstSubscribed)
     End If
 End Sub
@@ -1099,6 +1105,7 @@ Public Sub FlCancel()
         End If
         
         Call clsProgData.CancelDownload(strSplit(2), strSplit(1), strSplit(0))
+        Call TabAdjustments ' Revert back to tab info so prog info goes
         Call clsProgData.UpdateDlList(lstDownloads)
     End If
 End Sub

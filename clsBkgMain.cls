@@ -60,7 +60,7 @@ Private sngPrevSpeeds As Single
 Private sngStartTime As Single
 
 Public Event Finished()
-Public Event Error(ByVal strError As String)
+Public Event Error(ByVal strError As String, ByVal strCommandOutput As String)
 Public Event Progress(ByVal lngPercent As Long)
 
 Public Property Get ProgramType() As String
@@ -96,11 +96,6 @@ Private Sub Runnable_Start()
     ' Set up static var in showprogress
     Call ReturnProgress(-2)
     
-    If booLog Then
-        lngLogFile = FreeFile
-        Open AddSlash(App.Path) + "backgroundlog.txt" For Output As lngLogFile
-    End If
-    
     Select Case enmAction
         Case Download
             Call ActDownload
@@ -109,14 +104,8 @@ Private Sub Runnable_Start()
         Case EncodeMp3
             Call ActToMp3
         Case Else
-            If booLog Then
-                Print #lngLogFile, "Nowhere to go"
-            End If
+            strOutput = strOutput + "Nowhere to go"
     End Select
-    
-    If booLog Then
-        Close #lngLogFile
-    End If
 End Sub
 
 Public Sub ReturnProgress(lngPercent As Long)
@@ -159,7 +148,7 @@ Private Sub ActDownload()
         Call ReturnProgress(100)
         RaiseEvent Finished
     Else
-        RaiseEvent Error("Download Error")
+        RaiseEvent Error("Download Error", strOutput)
     End If
 End Sub
 
@@ -199,7 +188,7 @@ Private Sub ActToWav()
         Call Kill(AddSlash(App.Path) + "temp\" + strJustName + ".ram")
         RaiseEvent Finished
     Else
-        RaiseEvent Error("Decoding Error")
+        RaiseEvent Error("Decoding Error", strOutput)
     End If
 End Sub
 
@@ -260,7 +249,7 @@ Private Sub ActToMp3()
         
         RaiseEvent Finished
     Else
-        RaiseEvent Error("Error Converting to MP3")
+        RaiseEvent Error("Error Converting to MP3", strOutput)
     End If
 End Sub
 

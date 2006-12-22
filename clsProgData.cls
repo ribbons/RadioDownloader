@@ -120,6 +120,7 @@ Public Sub CleanupUnfinished()
             Do While .EOF = False
                 .Edit
                 ![Status] = stWaiting
+                ![NextAction] = NextAction.Download
                 .Update
                 
                 .MoveNext
@@ -337,7 +338,7 @@ Public Sub CheckSubscriptions(ByRef lstList As ListView, ByRef tmrTimer As Timer
                 Call GetLatest(![Type], ![ID])
                 
                 Dim rstCheckDld As Recordset
-                Set rstCheckDld = dbDatabase.OpenRecordset("select * from tblDownloads where type=""+strProgramType+"" ID=""" + ![ID] + """ and Date=#" + Format(LatestDate(![Type], ![ID]), "mm/dd/yyyy Hh:Nn") + "#")
+                Set rstCheckDld = dbDatabase.OpenRecordset("select * from tblDownloads where type=""" + ![Type] + """ and ID=""" + ![ID] + """ and Date=#" + Format(LatestDate(![Type], ![ID]), "mm/dd/yyyy Hh:Nn") + "#")
                 
                 If rstCheckDld.EOF Then
                     Call AddDownload(![Type], ![ID])

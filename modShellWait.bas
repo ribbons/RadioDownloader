@@ -1,7 +1,8 @@
 Attribute VB_Name = "modShellWait"
 Option Explicit
 
-Public Const booLog As Boolean = True
+' Store for command output (for passing back on error)
+Public strOutput As String
 
 Private Type SECURITY_ATTRIBUTES
     nLength As Long
@@ -128,9 +129,7 @@ Dim lBytesRead        As Long
                 
                 sOutput = Left$(StrConv(baOutput(), vbUnicode), lBytesRead)
                 
-                If booLog Then
-                    Print #lngLogFile, sOutput
-                End If
+                strOutput = strOutput + sOutput
                 
                 Select Case strCallback
                     Case "Download"
