@@ -289,7 +289,7 @@ Begin VB.Form frmMain
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   "http:///"
+      Location        =   ""
    End
    Begin ComctlLib.ImageList imlToolbar 
       Left            =   4380
@@ -524,7 +524,7 @@ End Sub
 
 Private Sub clsBackground_Progress(ByVal lngPercent As Long)
     Dim lstChangeItem As ListItem
-    Set lstChangeItem = lstDownloads.FindItem(Format(clsBackground.ProgramDate) + "||" + clsBackground.ProgramID, lvwTag)
+    Set lstChangeItem = lstDownloads.FindItem(Format(clsBackground.ProgramDate) + "||" + clsBackground.ProgramID + "||" + clsBackground.ProgramType, lvwTag)
     
     lstChangeItem.SubItems(3) = lngPercent
 End Sub
@@ -763,7 +763,7 @@ Private Sub lstDownloads_ItemClick(ByVal Item As ComctlLib.ListItem)
     ElseIf clsProgData.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = stError Then
         Call CreateHtml(strTitle, clsProgData.ProgramHTML(strSplit(1), CDate(strSplit(0))), "Retry,Cancel")
     Else
-        Call CreateHtml(strTitle, clsProgData.ProgramHTML(strSplit(1), CDate(strSplit(0))), "Cancel")
+        Call CreateHtml(strTitle, clsProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
     End If
 End Sub
 
@@ -1024,7 +1024,7 @@ End Sub
 
 Public Sub FlDownload()
     Dim strSplit() As String
-    strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
+    strSplit = Split(lstNew.SelectedItem.Tag, "||")
     
     If clsProgData.IsDownloading(strSplit(0), strSplit(1)) Then
         staStatus.SimpleText = ""
@@ -1036,7 +1036,8 @@ Public Sub FlDownload()
         staStatus.SimpleText = ""
         Call MsgBox("You have already downloaded this programme!", vbExclamation, "Radio Downloader")
     Else
-        'Set tabMain.SelectedItem = tabMain.Tabs(3)
+        tbrToolbar.Buttons("Downloads").Value = tbrPressed
+        Call TabAdjustments
         Call clsProgData.UpdateDlList(lstDownloads)
         tmrStartProcess.Enabled = True
     End If

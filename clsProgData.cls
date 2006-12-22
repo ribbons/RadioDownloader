@@ -241,7 +241,7 @@ End Function
 
 Public Function IsDownloading(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
     Dim rstRecordset As Recordset
-    Set rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads where type=""+strProgramType+"" id='" + strProgramID + "' and status<" + Format(Status.stCompleted))
+    Set rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads where type='" + strProgramType + "' and id='" + strProgramID + "' and status<" + Format(Status.stCompleted))
     
     IsDownloading = rstRecordset.EOF = False
     

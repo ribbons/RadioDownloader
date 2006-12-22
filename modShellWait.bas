@@ -1,7 +1,7 @@
 Attribute VB_Name = "modShellWait"
 Option Explicit
 
-Public Const booLog As Boolean = False
+Public Const booLog As Boolean = True
 
 Private Type SECURITY_ATTRIBUTES
     nLength As Long
