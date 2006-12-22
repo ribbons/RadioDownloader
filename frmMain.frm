@@ -498,7 +498,7 @@ Private Sub AddStation(strStationName As String, strStationId As String, strStat
 End Sub
 
 Private Sub clsBackground_Error(ByVal strError As String)
-    Call clsProgData.SetStatus(clsBackground.ProgramID, clsBackground.ProgramDate, False, stError)
+    Call clsProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, stError)
     Call clsProgData.UpdateDlList(lstDownloads)
     
     Set clsBackground = Nothing

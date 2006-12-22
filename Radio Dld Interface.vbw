@@ -1,10 +1,10 @@
-frmMain = -9, 14, 542, 470, , 44, 58, 595, 514, C
+frmMain = -9, 14, 542, 470, Z, 44, 58, 595, 514, C
 modMain = -15, 90, 672, 420, 
 modDLURL = 13, 139, 702, 469, C
 modProgramInfo = 132, 174, 685, 630, 
 cSubclass = 110, 145, 663, 601, C
 frmPreferences = 132, 174, 685, 630, , 88, 116, 641, 572, C
-clsProgData = -30, 61, 659, 391, 
+clsProgData = 21, 42, 710, 372, 
 modDrawing = 132, 174, 685, 630, C
 clsView = 66, 87, 619, 543, C
 clsTypeBBCLA = 0, 0, 553, 456, 
