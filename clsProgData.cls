@@ -524,7 +524,15 @@ Private Sub StoreLatestInfo(ByVal strProgramType As String, strProgramID As Stri
     Set objMatch = colMatches(0)
     
     lngProgDuration = objMatch.SubMatches(1) * 60 + objMatch.SubMatches(3)
-    dteProgDate = Mid$(Replace$(strDateString, "- ", ""), 5)
+    ' Because the year isn't included in the program date, guess it is the
+    ' current year (normally right).  If this guess ends up as a date in the
+    ' future, then we have just passed the end of a year, and it is actually
+    ' a program from last year.
+    If DateDiff("n", CDate(Mid$(Replace$(strDateString, "- ", ""), 5)), Now()) < 0 Then
+        dteProgDate = Mid$(Replace$(strDateString, "- ", Format(Year(Now) - 1) + " "), 5)
+    Else
+        dteProgDate = Mid$(Replace$(strDateString, "- ", ""), 5)
+    End If
     
     ' Now store in DB
     
