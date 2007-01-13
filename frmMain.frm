@@ -290,7 +290,7 @@ Begin VB.Form frmMain
       NoFolders       =   0   'False
       Transparent     =   0   'False
       ViewID          =   "{0057D0E0-3573-11CF-AE69-08002B2E1262}"
-      Location        =   ""
+      Location        =   "http:///"
    End
    Begin ComctlLib.ImageList imlToolbar 
       Left            =   4380
@@ -781,7 +781,7 @@ Private Sub lstNew_DblClick()
         lstNew.View = lvwReport
         tbrToolbar.Buttons("Up").Enabled = True
         
-        Call CreateHtml(lstNew.SelectedItem.Text, "", None)
+        Call CreateHtml(lstNew.SelectedItem.Text, "<p>This view is a list of programmes available from " + lstNew.SelectedItem.Text + ".</p>Select a programme for more information, and to download or subscribe to it.", None)
         Call ListviewStartAdd
         Call ListStation(strSplit(1), lstNew)
         Call ListviewEndAdd
@@ -815,14 +815,14 @@ Private Sub TabAdjustments()
         lstDownloads.Visible = False
         tbrToolbar.Buttons("Clean Up").Enabled = False
         tbrToolbar.Buttons("Up").Enabled = False
-        Call CreateHtml("Subscribed Programmes", "", None)
+        Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", None)
     ElseIf tbrToolbar.Buttons("Downloads").Value = tbrPressed Then
         lstNew.Visible = False
         lstSubscribed.Visible = False
         lstDownloads.Visible = True
         'tbrToolbar.Buttons("Clean Up").Enabled = True
         tbrToolbar.Buttons("Up").Enabled = False
-        Call CreateHtml("Programme Downloads", "Here you can see programmes that are being downloaded, or have been downloaded already.", None)
+        Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", None)
     End If
 End Sub
 
@@ -933,6 +933,7 @@ Private Sub tbrToolbar_ButtonClick(ByVal Button As ComctlLib.Button)
             If lstNew.View = lvwReport Then
                 Call AddStations
             End If
+            Call TabAdjustments
     End Select
 End Sub
 
