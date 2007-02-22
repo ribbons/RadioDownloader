@@ -35,20 +35,20 @@ Module modDrawing
 	Private Declare Function SendMessageLong Lib "user32"  Alias "SendMessageA"(ByVal hWnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
 	Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Integer, ByVal wCmd As Integer) As Integer
 	
-	Private Declare Function VarPtrArray Lib "msvbvm60.dll"  Alias "VarPtr"(ByRef Ptr() As Any) As Integer
+    'Private Declare Function VarPtrArray Lib "msvbvm60.dll"  Alias "VarPtr"(ByRef Ptr() As Any) As Integer
 	Private Declare Function AlphaBlend Lib "msimg32.dll" (ByVal hdcDest As Integer, ByVal nXOriginDest As Integer, ByVal nYOriginDest As Integer, ByVal nWidthDest As Integer, ByVal nHeightDest As Integer, ByVal hdcSrc As Integer, ByVal nXOriginSrc As Integer, ByVal nYOriginSrc As Integer, ByVal nWidthSrc As Integer, ByVal nHeightSrc As Integer, ByVal lBlendFunction As Integer) As Integer
 	'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
-	Private Declare Function GetGDIObject Lib "gdi32.dll"  Alias "GetObjectA"(ByVal hObject As Integer, ByVal nCount As Integer, ByRef lpObject As Any) As Integer
+    'Private Declare Function GetGDIObject Lib "gdi32.dll"  Alias "GetObjectA"(ByVal hObject As Integer, ByVal nCount As Integer, ByRef lpObject As Any) As Integer
 	
 	' used for workaround of VB not exposing IStream interface
 	'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
-	Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Integer, ByVal fDeleteOnRelease As Integer, ByRef ppstm As Any) As Integer
+    'Private Declare Function CreateStreamOnHGlobal Lib "ole32" (ByVal hGlobal As Integer, ByVal fDeleteOnRelease As Integer, ByRef ppstm As Any) As Integer
 	Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Integer) As Integer
 	Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Integer) As Integer
 	'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
 	'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
 	'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
-	Private Declare Function OleLoadPicture Lib "olepro32" (ByRef pStream As Any, ByVal lSize As Integer, ByVal fRunmode As Integer, ByRef riid As Any, ByRef ppvObj As Any) As Integer
+    'Private Declare Function OleLoadPicture Lib "olepro32" (ByRef pStream As Any, ByVal lSize As Integer, ByVal fRunmode As Integer, ByRef riid As Any, ByRef ppvObj As Any) As Integer
 	
 	Private Const SM_CXICON As Short = 11
 	Private Const SM_CYICON As Short = 12
@@ -140,7 +140,7 @@ Module modDrawing
 		
 		'UPGRADE_WARNING: Couldn't resolve default property of object tBMP. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
 		'UPGRADE_ISSUE: Picture property picLoad.Handle was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
-		Call GetGDIObject(picLoad.Handle, Len(tBMP), tBMP)
+        'Call GetGDIObject(picLoad.Handle, Len(tBMP), tBMP)
 		
 		With tSA
 			.cbElements = 1 ' byte elements
@@ -151,7 +151,7 @@ Module modDrawing
 		' overlay now
 		'UPGRADE_ISSUE: VarPtr function is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="367764E5-F3F8-4E43-AC3E-7FE0B5E074E2"'
 		'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-		WinSubHook2.Kernel32.CopyMemory(VarPtrArray(dibBytes), VarPtr(tSA), 4)
+        'WinSubHook2.Kernel32.CopyMemory(VarPtrArray(dibBytes), VarPtr(tSA), 4)
 		
 		' premultiply RGBs
 		For X = 3 To tSA.rgSABound.cElements - 1 Step 4
@@ -162,7 +162,7 @@ Module modDrawing
 		
 		' remove overlay
 		'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-		WinSubHook2.Kernel32.CopyMemory(VarPtrArray(dibBytes), 0, 4)
+        'WinSubHook2.Kernel32.CopyMemory(VarPtrArray(dibBytes), 0, 4)
 		
 		'picPicturebox.Cls
 		
@@ -174,40 +174,40 @@ Module modDrawing
 		
 		' may be premultiplying a copy of the image for AlphaBlend's use.
 		'UPGRADE_ISSUE: Picture property picLoad.Handle was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
-		imgHandle = picLoad.Handle
+        'imgHandle = picLoad.Handle
 		
 		With bf ' fill in the blend function
-			.AlphaFormat = WinSubHook2.eLayeredConsts.AC_SRC_ALPHA
-			.BlendOp = WinSubHook2.eLayeredConsts.AC_SRC_OVER
+            '.AlphaFormat = WinSubHook2.eLayeredConsts.AC_SRC_ALPHA
+            '.BlendOp = WinSubHook2.eLayeredConsts.AC_SRC_OVER
 			.SourceConstantAlpha = 255
 		End With
 		'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-		WinSubHook2.Kernel32.CopyMemory(lBlend, bf, 4)
+        'WinSubHook2.Kernel32.CopyMemory(lBlend, bf, 4)
 		
 		' get image width/height
 		'UPGRADE_ISSUE: Constant vbPixels was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
 		'UPGRADE_ISSUE: Constant vbHimetric was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
 		'UPGRADE_ISSUE: Picture property picLoad.Width was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
 		'UPGRADE_ISSUE: Form method frmMain.ScaleX was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
-		imgCx = frmMain.ScaleX(picLoad.Width, vbHimetric, vbPixels)
+        'imgCx = frmMain.ScaleX(picLoad.Width, vbHimetric, vbPixels)
 		'UPGRADE_ISSUE: Constant vbPixels was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
 		'UPGRADE_ISSUE: Constant vbHimetric was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
 		'UPGRADE_ISSUE: Picture property picLoad.Height was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
 		'UPGRADE_ISSUE: Form method frmMain.ScaleY was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
-		imgCy = frmMain.ScaleY(picLoad.Height, vbHimetric, vbPixels)
+        'imgCy = frmMain.ScaleY(picLoad.Height, vbHimetric, vbPixels)
 		' select image into a DC
 		'UPGRADE_ISSUE: Form property frmMain.hDC was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
 		'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-		tDC = WinSubHook2.Gdi32.CreateCompatibleDC(frmMain.hDC)
+        'tDC = WinSubHook2.Gdi32.CreateCompatibleDC(frmMain.hDC)
 		'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-		tOldBmp = WinSubHook2.Gdi32.SelectObject(tDC, imgHandle)
+        'tOldBmp = WinSubHook2.Gdi32.SelectObject(tDC, imgHandle)
 		'UPGRADE_ISSUE: PictureBox property picPicturebox.hDC was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
-		AlphaBlend(picPicturebox.hDC, lngContainerX, lngContainerY, imgCx - lngImageX, imgCy - lngImageY, tDC, lngImageX, lngImageY, imgCx - lngImageX, imgCy - lngImageY, lBlend)
+        'AlphaBlend(picPicturebox.hDC, lngContainerX, lngContainerY, imgCx - lngImageX, imgCy - lngImageY, tDC, lngImageX, lngImageY, imgCx - lngImageX, imgCy - lngImageY, lBlend)
 		
 		'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-		WinSubHook2.Gdi32.SelectObject(tDC, tOldBmp)
+        'WinSubHook2.Gdi32.SelectObject(tDC, tOldBmp)
 		'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-		WinSubHook2.Gdi32.DeleteDC(tDC)
+        'WinSubHook2.Gdi32.DeleteDC(tDC)
 	End Sub
 	
 	Private Function CreateStdPicFromArray(ByRef bytContent() As Byte, Optional ByRef byteOffset As Integer = 0) As System.Drawing.Image
@@ -217,7 +217,7 @@ Module modDrawing
 		Dim o_lpMem As Integer
 		
 		Dim aGUID(4) As Integer
-		Dim tStream As stdole.IUnknown
+        'Dim tStream As stdole.IUnknown
 		' IPicture GUID {7BF80980-BF32-101A-8BBB-00AA00300CAB}
 		aGUID(0) = &H7BF80980
 		aGUID(1) = &H101ABF32
@@ -226,20 +226,20 @@ Module modDrawing
 		
 		o_lngByteCount = UBound(bytContent) - byteOffset + 1
 		'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-		o_hMem = WinSubHook2.Kernel32.GlobalAlloc(&H2s, o_lngByteCount)
+        'o_hMem = WinSubHook2.Kernel32.GlobalAlloc(&H2s, o_lngByteCount)
 		If o_hMem <> 0 Then
 			o_lpMem = GlobalLock(o_hMem)
 			If o_lpMem <> 0 Then
 				'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-				WinSubHook2.Kernel32.CopyMemory(o_lpMem, bytContent(byteOffset), o_lngByteCount)
+                'WinSubHook2.Kernel32.CopyMemory(o_lpMem, bytContent(byteOffset), o_lngByteCount)
 				Call GlobalUnlock(o_hMem)
 				'UPGRADE_WARNING: Couldn't resolve default property of object tStream. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-				If CreateStreamOnHGlobal(o_hMem, 1, tStream) = 0 Then
-					'UPGRADE_WARNING: Couldn't resolve default property of object CreateStdPicFromArray. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-					'UPGRADE_ISSUE: ObjPtr function is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="367764E5-F3F8-4E43-AC3E-7FE0B5E074E2"'
-					Call OleLoadPicture(ObjPtr(tStream), 0, 0, aGUID(0), CreateStdPicFromArray)
-				End If
-			End If
-		End If
+                'If CreateStreamOnHGlobal(o_hMem, 1, tStream) = 0 Then
+                'UPGRADE_WARNING: Couldn't resolve default property of object CreateStdPicFromArray. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+                'UPGRADE_ISSUE: ObjPtr function is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="367764E5-F3F8-4E43-AC3E-7FE0B5E074E2"'
+                'Call OleLoadPicture(ObjPtr(tStream), 0, 0, aGUID(0), CreateStdPicFromArray)
+                'End If
+            End If
+        End If
 	End Function
 End Module

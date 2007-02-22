@@ -17,49 +17,37 @@
 	'Required by the Windows Form Designer
 	Private components As System.ComponentModel.IContainer
 	Public ToolTip1 As System.Windows.Forms.ToolTip
-	Public WithEvents imgShadow As System.Windows.Forms.PictureBox
-	Public WithEvents picShadow As System.Windows.Forms.Panel
-	Public WithEvents _picSeperator_0 As System.Windows.Forms.PictureBox
-	Public WithEvents txtSearch As System.Windows.Forms.TextBox
-	Public WithEvents _picSeperator_1 As System.Windows.Forms.PictureBox
-	Public WithEvents tbrToolbar As AxComctlLib.AxToolbar
-	Public WithEvents tmrResizeHack As System.Windows.Forms.Timer
-	Public WithEvents lstDownloads As AxComctlLib.AxListView
-	Public WithEvents lstSubscribed As AxComctlLib.AxListView
-	Public WithEvents lstNew As AxComctlLib.AxListView
-	Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
-	Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
-	Public WithEvents staStatus As AxComctlLib.AxStatusBar
-	Public WithEvents prgItemProgress As AxComctlLib.AxProgressBar
-	Public WithEvents webDetails As System.Windows.Forms.WebBrowser
-	Public WithEvents imlToolbar As AxComctlLib.AxImageList
-	Public WithEvents imlStations As AxComctlLib.AxImageList
-	Public WithEvents imlListIcons As AxComctlLib.AxImageList
-	Public WithEvents picSeperator As Microsoft.VisualBasic.Compatibility.VB6.PictureBoxArray
-	Public WithEvents mnuFileExit As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents File As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents mnuToolsPrefs As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents mnuTools As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents mnuHelpAbout As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents mnuHelp As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents mnuTrayShow As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents mnuTraySpacer As System.Windows.Forms.ToolStripSeparator
-	Public WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents mnuTray As System.Windows.Forms.ToolStripMenuItem
-	Public WithEvents MainMenu1 As System.Windows.Forms.MenuStrip
-	'NOTE: The following procedure is required by the Windows Form Designer
-	'It can be modified using the Windows Form Designer.
-	'Do not modify it using the code editor.
-	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
+    Public WithEvents tmrResizeHack As System.Windows.Forms.Timer
+    Public WithEvents lstDownloads As AxComctlLib.AxListView
+    Public WithEvents lstSubscribed As AxComctlLib.AxListView
+    Public WithEvents lstNew As AxComctlLib.AxListView
+    Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
+    Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
+    Public WithEvents staStatus As AxComctlLib.AxStatusBar
+    Public WithEvents prgItemProgress As AxComctlLib.AxProgressBar
+    Public WithEvents webDetails As System.Windows.Forms.WebBrowser
+    Public WithEvents imlToolbar As AxComctlLib.AxImageList
+    Public WithEvents imlStations As AxComctlLib.AxImageList
+    Public WithEvents imlListIcons As AxComctlLib.AxImageList
+    Public WithEvents picSeperator As Microsoft.VisualBasic.Compatibility.VB6.PictureBoxArray
+    Public WithEvents mnuFileExit As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents File As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents mnuToolsPrefs As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents mnuTools As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents mnuHelpAbout As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents mnuHelp As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents mnuTrayShow As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents mnuTraySpacer As System.Windows.Forms.ToolStripSeparator
+    Public WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents mnuTray As System.Windows.Forms.ToolStripMenuItem
+    Public WithEvents MainMenu1 As System.Windows.Forms.MenuStrip
+    'NOTE: The following procedure is required by the Windows Form Designer
+    'It can be modified using the Windows Form Designer.
+    'Do not modify it using the code editor.
+    <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.tbrToolbar = New AxComctlLib.AxToolbar
-        Me.picShadow = New System.Windows.Forms.Panel
-        Me.imgShadow = New System.Windows.Forms.PictureBox
-        Me._picSeperator_0 = New System.Windows.Forms.PictureBox
-        Me.txtSearch = New System.Windows.Forms.TextBox
-        Me._picSeperator_1 = New System.Windows.Forms.PictureBox
         Me.tmrResizeHack = New System.Windows.Forms.Timer(Me.components)
         Me.lstDownloads = New AxComctlLib.AxListView
         Me.lstSubscribed = New AxComctlLib.AxListView
@@ -84,12 +72,16 @@
         Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuTraySpacer = New System.Windows.Forms.ToolStripSeparator
         Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
-        CType(Me.tbrToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.tbrToolbar.SuspendLayout()
-        Me.picShadow.SuspendLayout()
-        CType(Me.imgShadow, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me._picSeperator_0, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me._picSeperator_1, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tbrToolbar = New System.Windows.Forms.ToolStrip
+        Me.tsbFindNew = New System.Windows.Forms.ToolStripButton
+        Me.ToolStripButton2 = New System.Windows.Forms.ToolStripButton
+        Me.ToolStripButton3 = New System.Windows.Forms.ToolStripButton
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
+        Me.ToolStripButton1 = New System.Windows.Forms.ToolStripButton
+        Me.ToolStripButton4 = New System.Windows.Forms.ToolStripButton
+        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
+        Me.ToolStripButton5 = New System.Windows.Forms.ToolStripButton
+        Me.txtSearch = New System.Windows.Forms.TextBox
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstNew, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -100,85 +92,8 @@
         CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.picSeperator, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.MainMenu1.SuspendLayout()
+        Me.tbrToolbar.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'tbrToolbar
-        '
-        Me.tbrToolbar.Controls.Add(Me.picShadow)
-        Me.tbrToolbar.Controls.Add(Me._picSeperator_0)
-        Me.tbrToolbar.Controls.Add(Me.txtSearch)
-        Me.tbrToolbar.Controls.Add(Me._picSeperator_1)
-        Me.tbrToolbar.Dock = System.Windows.Forms.DockStyle.Top
-        Me.tbrToolbar.Location = New System.Drawing.Point(0, 24)
-        Me.tbrToolbar.Name = "tbrToolbar"
-        Me.tbrToolbar.OcxState = CType(resources.GetObject("tbrToolbar.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.tbrToolbar.Size = New System.Drawing.Size(757, 42)
-        Me.tbrToolbar.TabIndex = 6
-        '
-        'picShadow
-        '
-        Me.picShadow.BackColor = System.Drawing.SystemColors.Control
-        Me.picShadow.Controls.Add(Me.imgShadow)
-        Me.picShadow.Cursor = System.Windows.Forms.Cursors.Default
-        Me.picShadow.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.picShadow.Location = New System.Drawing.Point(0, 38)
-        Me.picShadow.Name = "picShadow"
-        Me.picShadow.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.picShadow.Size = New System.Drawing.Size(293, 4)
-        Me.picShadow.TabIndex = 9
-        Me.picShadow.TabStop = True
-        '
-        'imgShadow
-        '
-        Me.imgShadow.Cursor = System.Windows.Forms.Cursors.Default
-        Me.imgShadow.Image = CType(resources.GetObject("imgShadow.Image"), System.Drawing.Image)
-        Me.imgShadow.Location = New System.Drawing.Point(0, 0)
-        Me.imgShadow.Name = "imgShadow"
-        Me.imgShadow.Size = New System.Drawing.Size(666, 3)
-        Me.imgShadow.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
-        Me.imgShadow.TabIndex = 0
-        Me.imgShadow.TabStop = False
-        '
-        '_picSeperator_0
-        '
-        Me._picSeperator_0.BackColor = System.Drawing.Color.FromArgb(CType(CType(202, Byte), Integer), CType(CType(198, Byte), Integer), CType(CType(175, Byte), Integer))
-        Me._picSeperator_0.Cursor = System.Windows.Forms.Cursors.Default
-        Me._picSeperator_0.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.picSeperator.SetIndex(Me._picSeperator_0, CType(0, Short))
-        Me._picSeperator_0.Location = New System.Drawing.Point(216, 4)
-        Me._picSeperator_0.Name = "_picSeperator_0"
-        Me._picSeperator_0.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me._picSeperator_0.Size = New System.Drawing.Size(2, 36)
-        Me._picSeperator_0.TabIndex = 8
-        Me._picSeperator_0.TabStop = False
-        '
-        'txtSearch
-        '
-        Me.txtSearch.AcceptsReturn = True
-        Me.txtSearch.BackColor = System.Drawing.SystemColors.Window
-        Me.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam
-        Me.txtSearch.Enabled = False
-        Me.txtSearch.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtSearch.Location = New System.Drawing.Point(604, 8)
-        Me.txtSearch.MaxLength = 0
-        Me.txtSearch.Name = "txtSearch"
-        Me.txtSearch.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.txtSearch.Size = New System.Drawing.Size(149, 21)
-        Me.txtSearch.TabIndex = 7
-        Me.txtSearch.Text = "Search..."
-        '
-        '_picSeperator_1
-        '
-        Me._picSeperator_1.BackColor = System.Drawing.Color.FromArgb(CType(CType(202, Byte), Integer), CType(CType(198, Byte), Integer), CType(CType(175, Byte), Integer))
-        Me._picSeperator_1.Cursor = System.Windows.Forms.Cursors.Default
-        Me._picSeperator_1.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.picSeperator.SetIndex(Me._picSeperator_1, CType(1, Short))
-        Me._picSeperator_1.Location = New System.Drawing.Point(428, 4)
-        Me._picSeperator_1.Name = "_picSeperator_1"
-        Me._picSeperator_1.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me._picSeperator_1.Size = New System.Drawing.Size(2, 36)
-        Me._picSeperator_1.TabIndex = 10
-        Me._picSeperator_1.TabStop = False
         '
         'tmrResizeHack
         '
@@ -203,10 +118,10 @@
         '
         'lstNew
         '
-        Me.lstNew.Location = New System.Drawing.Point(210, 40)
+        Me.lstNew.Location = New System.Drawing.Point(212, 94)
         Me.lstNew.Name = "lstNew"
         Me.lstNew.OcxState = CType(resources.GetObject("lstNew.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.lstNew.Size = New System.Drawing.Size(545, 89)
+        Me.lstNew.Size = New System.Drawing.Size(545, 40)
         Me.lstNew.TabIndex = 4
         '
         'tmrCheckSub
@@ -239,9 +154,9 @@
         '
         'webDetails
         '
-        Me.webDetails.Location = New System.Drawing.Point(0, 40)
+        Me.webDetails.Location = New System.Drawing.Point(0, 52)
         Me.webDetails.Name = "webDetails"
-        Me.webDetails.Size = New System.Drawing.Size(210, 401)
+        Me.webDetails.Size = New System.Drawing.Size(210, 389)
         Me.webDetails.TabIndex = 2
         '
         'imlToolbar
@@ -343,12 +258,101 @@
         Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
         Me.mnuTrayExit.Text = "E&xit"
         '
+        'tbrToolbar
+        '
+        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsbFindNew, Me.ToolStripButton2, Me.ToolStripButton3, Me.ToolStripSeparator1, Me.ToolStripButton1, Me.ToolStripSeparator2, Me.ToolStripButton4, Me.ToolStripButton5})
+        Me.tbrToolbar.Location = New System.Drawing.Point(0, 24)
+        Me.tbrToolbar.Name = "tbrToolbar"
+        Me.tbrToolbar.Size = New System.Drawing.Size(757, 25)
+        Me.tbrToolbar.TabIndex = 11
+        Me.tbrToolbar.Text = "ToolStrip1"
+        '
+        'tsbFindNew
+        '
+        Me.tsbFindNew.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tsbFindNew.Image = CType(resources.GetObject("tsbFindNew.Image"), System.Drawing.Image)
+        Me.tsbFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tsbFindNew.Name = "tsbFindNew"
+        Me.tsbFindNew.Size = New System.Drawing.Size(23, 22)
+        Me.tsbFindNew.Text = "ToolStripButton1"
+        '
+        'ToolStripButton2
+        '
+        Me.ToolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton2.Image = CType(resources.GetObject("ToolStripButton2.Image"), System.Drawing.Image)
+        Me.ToolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton2.Name = "ToolStripButton2"
+        Me.ToolStripButton2.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripButton2.Text = "ToolStripButton2"
+        '
+        'ToolStripButton3
+        '
+        Me.ToolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
+        Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton3.Name = "ToolStripButton3"
+        Me.ToolStripButton3.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripButton3.Text = "ToolStripButton3"
+        '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripButton1
+        '
+        Me.ToolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton1.Image = CType(resources.GetObject("ToolStripButton1.Image"), System.Drawing.Image)
+        Me.ToolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton1.Name = "ToolStripButton1"
+        Me.ToolStripButton1.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripButton1.Text = "ToolStripButton1"
+        '
+        'ToolStripButton4
+        '
+        Me.ToolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton4.Image = CType(resources.GetObject("ToolStripButton4.Image"), System.Drawing.Image)
+        Me.ToolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton4.Name = "ToolStripButton4"
+        Me.ToolStripButton4.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripButton4.Text = "ToolStripButton4"
+        '
+        'ToolStripSeparator2
+        '
+        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 25)
+        '
+        'ToolStripButton5
+        '
+        Me.ToolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.ToolStripButton5.Image = CType(resources.GetObject("ToolStripButton5.Image"), System.Drawing.Image)
+        Me.ToolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.ToolStripButton5.Name = "ToolStripButton5"
+        Me.ToolStripButton5.Size = New System.Drawing.Size(23, 22)
+        Me.ToolStripButton5.Text = "ToolStripButton5"
+        '
+        'txtSearch
+        '
+        Me.txtSearch.AcceptsReturn = True
+        Me.txtSearch.BackColor = System.Drawing.SystemColors.Window
+        Me.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam
+        Me.txtSearch.Enabled = False
+        Me.txtSearch.ForeColor = System.Drawing.SystemColors.WindowText
+        Me.txtSearch.Location = New System.Drawing.Point(304, 221)
+        Me.txtSearch.MaxLength = 0
+        Me.txtSearch.Name = "txtSearch"
+        Me.txtSearch.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.txtSearch.Size = New System.Drawing.Size(149, 21)
+        Me.txtSearch.TabIndex = 12
+        Me.txtSearch.Text = "Search..."
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 462)
+        Me.Controls.Add(Me.txtSearch)
         Me.Controls.Add(Me.tbrToolbar)
         Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.lstSubscribed)
@@ -367,13 +371,6 @@
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
-        CType(Me.tbrToolbar, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.tbrToolbar.ResumeLayout(False)
-        Me.tbrToolbar.PerformLayout()
-        Me.picShadow.ResumeLayout(False)
-        CType(Me.imgShadow, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me._picSeperator_0, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me._picSeperator_1, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.lstNew, System.ComponentModel.ISupportInitialize).EndInit()
@@ -385,9 +382,21 @@
         CType(Me.picSeperator, System.ComponentModel.ISupportInitialize).EndInit()
         Me.MainMenu1.ResumeLayout(False)
         Me.MainMenu1.PerformLayout()
+        Me.tbrToolbar.ResumeLayout(False)
+        Me.tbrToolbar.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
+    Friend WithEvents tbrToolbar As System.Windows.Forms.ToolStrip
+    Friend WithEvents tsbFindNew As System.Windows.Forms.ToolStripButton
+    Friend WithEvents ToolStripButton2 As System.Windows.Forms.ToolStripButton
+    Friend WithEvents ToolStripButton3 As System.Windows.Forms.ToolStripButton
+    Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents ToolStripButton1 As System.Windows.Forms.ToolStripButton
+    Friend WithEvents ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents ToolStripButton4 As System.Windows.Forms.ToolStripButton
+    Friend WithEvents ToolStripButton5 As System.Windows.Forms.ToolStripButton
+    Public WithEvents txtSearch As System.Windows.Forms.TextBox
 #End Region 
 End Class

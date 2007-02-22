@@ -157,6 +157,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
+    <Compile Include="MyResources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MyResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="UpgradeSupport.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -166,7 +171,10 @@
     <EmbeddedResource Include="frmPreferences.resX">
       <DependentUpon>frmPreferences.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MyResources.resx" />
+    <EmbeddedResource Include="MyResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MyResources.Designer.vb</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="My Project\Application.myapp">

@@ -72,11 +72,11 @@ Module modMain
 	
 	Public Declare Function SetParent Lib "user32" (ByVal hWndChild As Integer, ByVal hWndNewParent As Integer) As Integer
 	'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
-	Public Declare Function SendMessage Lib "user32"  Alias "SendMessageA"(ByVal hWnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByRef lParam As Any) As Integer
+    'Public Declare Function SendMessage Lib "user32"  Alias "SendMessageA"(ByVal hWnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByRef lParam As Any) As Integer
 	'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
-	Public Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Integer, ByRef lpRect As Any, ByVal bErase As Integer) As Integer
+    'Public Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Integer, ByRef lpRect As Any, ByVal bErase As Integer) As Integer
 	'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
-	Public Declare Function ValidateRect Lib "user32" (ByVal hWnd As Integer, ByRef lpRect As Any) As Integer
+    'Public Declare Function ValidateRect Lib "user32" (ByVal hWnd As Integer, ByRef lpRect As Any) As Integer
 	Public Declare Function ShellExecute Lib "shell32.dll"  Alias "ShellExecuteA"(ByVal hWnd As Integer, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Integer) As Integer
 	Public Declare Sub CoTaskMemFree Lib "ole32.dll" (ByVal hMem As Integer)
 	Public Declare Function lstrcat Lib "kernel32"  Alias "lstrcatA"(ByVal lpString1 As String, ByVal lpString2 As String) As Integer
@@ -86,7 +86,7 @@ Module modMain
 	Public Declare Function PathFileExists Lib "shlwapi.dll"  Alias "PathFileExistsA"(ByVal pszPath As String) As Integer
 	Public Declare Function PathIsDirectory Lib "shlwapi.dll"  Alias "PathIsDirectoryA"(ByVal pszPath As String) As Integer
 	'UPGRADE_WARNING: Structure NOTIFYICONDATA may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
-	Public Declare Function Shell_NotifyIcon Lib "shell32"  Alias "Shell_NotifyIconA"(ByVal dwMessage As Integer, ByRef pnid As NOTIFYICONDATA) As Boolean
+    'Public Declare Function Shell_NotifyIcon Lib "shell32"  Alias "Shell_NotifyIconA"(ByVal dwMessage As Integer, ByRef pnid As NOTIFYICONDATA) As Boolean
 	'UPGRADE_WARNING: Structure RECT may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
 	'UPGRADE_WARNING: Structure RECT may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
 	Public Declare Function DrawAnimatedRects Lib "user32" (ByVal hWnd As Integer, ByVal idAni As Integer, ByRef lprcFrom As RECT, ByRef lprcTo As RECT) As Integer
@@ -111,11 +111,11 @@ Module modMain
 		nid.hIcon = SystrayIcon("appicon")
 		
 		nid.szTip = "Radio Downloader" & vbNullChar
-		Shell_NotifyIcon(NIM_ADD, nid)
+        'Shell_NotifyIcon(NIM_ADD, nid)
 	End Sub
 	
 	Public Sub RemoveFromSystray()
-		Shell_NotifyIcon(NIM_DELETE, nid)
+        'Shell_NotifyIcon(NIM_DELETE, nid)
 	End Sub
 	
 	Public Function GetSubItemRect(ByVal hWndLV As Integer, ByVal iItem As Integer, ByVal iSubItem As Integer, ByVal code As Integer, ByRef lpRect As RECT) As Boolean
@@ -124,7 +124,7 @@ Module modMain
 		lpRect.Left_Renamed = code
 		
 		'UPGRADE_WARNING: Couldn't resolve default property of object lpRect. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-		GetSubItemRect = SendMessage(hWndLV, LVM_GETSUBITEMRECT, iItem, lpRect)
+        'GetSubItemRect = SendMessage(hWndLV, LVM_GETSUBITEMRECT, iItem, lpRect)
 	End Function
 	
 	Public Function AddSlash(ByVal strString As String) As String
@@ -156,7 +156,7 @@ Module modMain
 			.lpszTitle = lstrcat(strPrompt, "")
 			.ulFlags = BIF_RETURNONLYFSDIRS + BIF_NEWDIALOGSTYLE
 			'UPGRADE_WARNING: Add a delegate for AddressOf BrowseCallbackProc Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="E9E157F7-EF0C-4016-87B7-7D7FBBC6EE08"'
-			.lpfnCallback = Address_Of(AddressOf BrowseCallbackProc)
+            '.lpfnCallback = Address_Of(AddressOf BrowseCallbackProc)
 		End With
 		
 		'Display the browse folder...
@@ -207,18 +207,10 @@ ehBrowseForFolder:
 		If uMsg = BFFM_INITIALIZED Then
 			'UPGRADE_ISSUE: Constant vbFromUnicode was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
 			'UPGRADE_TODO: Code was upgraded to use System.Text.UnicodeEncoding.Unicode.GetBytes() which may not have the same behavior. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="93DD716C-10E3-41BE-A4A8-3BA40157905B"'
-			default_path = System.Text.UnicodeEncoding.Unicode.GetBytes(StrConv(strBaseFolder, vbFromUnicode) & vbNullString)
+            'default_path = System.Text.UnicodeEncoding.Unicode.GetBytes(StrConv(strBaseFolder, vbFromUnicode) & vbNullString)
 			'UPGRADE_ISSUE: VarPtr function is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="367764E5-F3F8-4E43-AC3E-7FE0B5E074E2"'
-			SendMessage(hWnd, BFFM_SETSELECTIONA, 1, VarPtr(default_path(0)))
+            'SendMessage(hWnd, BFFM_SETSELECTIONA, 1, VarPtr(default_path(0)))
 		End If
-	End Function
-	
-	'UPGRADE_NOTE: IsNothing was upgraded to IsNothing_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
-	Public Function IsNothing_Renamed(ByRef pvar As Object) As Boolean
-		On Error Resume Next
-		IsNothing_Renamed = (pvar Is Nothing)
-		Err.Clear()
-		On Error GoTo 0
 	End Function
 	
 	Public Sub TrayAnimate(ByRef frmForm As System.Windows.Forms.Form, ByRef booDown As Boolean)

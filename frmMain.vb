@@ -114,9 +114,9 @@ Friend Class frmMain
 		
         'Call SetParent(prgItemProgress.hWnd, lstDownloads.hWnd)
 		
-		Call AddStations()
-		Call TabAdjustments()
-		Call AddToSystray(Me)
+        'Call AddStations()
+        'Call TabAdjustments()
+        'Call AddToSystray(Me)
 		
         'clsExtender = New IEDevKit.clsWbExtender
         'clsExtender.HookWebBrowser(webDetails)
@@ -139,111 +139,111 @@ Friend Class frmMain
         'Call clsProgData_Renamed.UpdateDlList(lstDownloads)
         'Call clsProgData_Renamed.UpdateSubscrList(lstSubscribed)
 		
-		tbrToolbar.Buttons("Clean Up").Visible = False
-		tbrToolbar.Buttons("Refresh").Visible = False
-		
-		'picBack.BackColor = Me.BackColor
-		'picForward.BackColor = Me.BackColor
-		'picCrumbArrow.BackColor = vbWhite
-		
-		'Call DrawTransp("NAV_BACK", picForward, 29, 0, 0, 0)
-		'Call DrawTransp("NAV_DISABLED", picForward, 27, 0, 0, 0)
-		'Call DrawTransp("NAV_BACK", picBack, 0, 0, 0, 0)
-		'Call DrawTransp("NAV_DISABLED", picBack, 0, 0, 1, 0)
-		'Call DrawTransp("CRUMB_ARROW", picCrumbArrow, 0, 0, 0, 0)
-		
-		Call SetIcon(Me.Handle.ToInt32, "appicon", True)
-		
-		System.Windows.Forms.Application.DoEvents()
-		
-		Me.Show()
-		
-		If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) = False Then
-			Call frmPreferences.ShowDialog()
-		End If
-	End Sub
-	
-	Private Sub frmMain_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
-		Dim Cancel As Boolean = eventArgs.Cancel
-		Dim UnloadMode As System.Windows.Forms.CloseReason = eventArgs.CloseReason
-		If UnloadMode = System.Windows.Forms.CloseReason.UserClosing Then
-			Call TrayAnimate(Me, True)
-			Me.Visible = False
-			Cancel = True
-		End If
-		eventArgs.Cancel = Cancel
-	End Sub
-	
-	'UPGRADE_WARNING: Event frmMain.Resize may fire when form is initialized. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="88B12AE1-6DE0-48A0-86F1-60C0686C026A"'
-	Private Sub frmMain_Resize(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Resize
-		If Me.WindowState <> System.Windows.Forms.FormWindowState.Minimized Then
-			lngLastState = Me.WindowState
-		End If
-		
-		If VB6.PixelsToTwipsX(Me.ClientRectangle.Width) = 0 Then
-			' Looks like we are minimized, stop before we get resizing errors
-			Exit Sub
-		End If
-		
-		Static lngLastHeight As Integer
-		
-		If VB6.PixelsToTwipsY(staStatus.Top) - (VB6.PixelsToTwipsY(lstNew.Top)) < 10 * VB6.TwipsPerPixelY Then
-			If VB6.PixelsToTwipsY(Me.Height) < lngLastHeight Then
-				Me.Height = VB6.TwipsToPixelsY(lngLastHeight)
-				
-				' Nothing to do with webdetails, just a hack to flip the user out
-				' of window resizing mode - webdetails being shown does just that
-				webDetails.Visible = False
-				webDetails.Visible = True
-			End If
-		End If
-		
-		lngLastHeight = VB6.PixelsToTwipsY(Me.Height)
-		
-		'WebBrowser
-		webDetails.Height = VB6.TwipsToPixelsY(VB6.PixelsToTwipsY(staStatus.Top) - VB6.PixelsToTwipsY(webDetails.Top))
-		
-		'Listviews
-		lstDownloads.Height = VB6.TwipsToPixelsY(VB6.PixelsToTwipsY(staStatus.Top) - VB6.PixelsToTwipsY(lstDownloads.Top))
-		lstNew.Height = lstDownloads.Height
-		lstSubscribed.Height = lstDownloads.Height
-		lstDownloads.Width = VB6.TwipsToPixelsX(VB6.PixelsToTwipsX(Me.ClientRectangle.Width) - VB6.PixelsToTwipsX(webDetails.Width))
-		lstNew.Width = lstDownloads.Width
-		lstSubscribed.Width = lstDownloads.Width
-		
-		'Search box in toolbar
-		'If tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width) < tbrToolbar.Buttons("Search Box").Left Then
-		txtSearch.Visible = False
-		'Else
-		'    txtSearch.Visible = True
-		'    txtSearch.Left = tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width)
-		'    txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
-		'End If
-		
-		'Toolbar seperators
-		picSeperator(0).Top = VB6.TwipsToPixelsY(tbrToolbar.Buttons("-").Top + 2 * VB6.TwipsPerPixelX)
-		picSeperator(0).Left = VB6.TwipsToPixelsX(tbrToolbar.Buttons("-").Left + (tbrToolbar.Buttons("-").Width / 2))
-		picSeperator(0).Height = VB6.TwipsToPixelsY(tbrToolbar.Buttons("-").Height - 1 * VB6.TwipsPerPixelX)
-		picSeperator(1).Top = VB6.TwipsToPixelsY(tbrToolbar.Buttons("--").Top + 2 * VB6.TwipsPerPixelX)
-		picSeperator(1).Left = VB6.TwipsToPixelsX(tbrToolbar.Buttons("--").Left + (tbrToolbar.Buttons("-").Width / 2))
-		picSeperator(1).Height = VB6.TwipsToPixelsY(tbrToolbar.Buttons("--").Height - 1 * VB6.TwipsPerPixelX)
-		
-		'Toolbar shadow
-		picShadow.Width = tbrToolbar.Width
-		imgShadow.Width = tbrToolbar.Width
-	End Sub
-	
-	Private Sub frmMain_FormClosed(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
-		'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		clsBackground = Nothing
-		
-		Call RemoveFromSystray()
-		
-		On Error Resume Next
-		Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm")
-		Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp\*.*")
-	End Sub
-	
+        'tbrOldToolbar.Buttons("Clean Up").Visible = False
+        'tbrOldToolbar.Buttons("Refresh").Visible = False
+
+        'picBack.BackColor = Me.BackColor
+        'picForward.BackColor = Me.BackColor
+        'picCrumbArrow.BackColor = vbWhite
+
+        'Call DrawTransp("NAV_BACK", picForward, 29, 0, 0, 0)
+        'Call DrawTransp("NAV_DISABLED", picForward, 27, 0, 0, 0)
+        'Call DrawTransp("NAV_BACK", picBack, 0, 0, 0, 0)
+        'Call DrawTransp("NAV_DISABLED", picBack, 0, 0, 1, 0)
+        'Call DrawTransp("CRUMB_ARROW", picCrumbArrow, 0, 0, 0, 0)
+
+        'Call SetIcon(Me.Handle.ToInt32, "appicon", True)
+
+        System.Windows.Forms.Application.DoEvents()
+
+        Me.Show()
+
+        'If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) = False Then
+        'Call frmPreferences.ShowDialog()
+        'End If
+    End Sub
+
+    Private Sub frmMain_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+        Dim Cancel As Boolean = eventArgs.Cancel
+        Dim UnloadMode As System.Windows.Forms.CloseReason = eventArgs.CloseReason
+        If UnloadMode = System.Windows.Forms.CloseReason.UserClosing Then
+            Call TrayAnimate(Me, True)
+            Me.Visible = False
+            Cancel = True
+        End If
+        eventArgs.Cancel = Cancel
+    End Sub
+
+    'UPGRADE_WARNING: Event frmMain.Resize may fire when form is initialized. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="88B12AE1-6DE0-48A0-86F1-60C0686C026A"'
+    Private Sub frmMain_Resize(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Resize
+        If Me.WindowState <> System.Windows.Forms.FormWindowState.Minimized Then
+            lngLastState = Me.WindowState
+        End If
+
+        If VB6.PixelsToTwipsX(Me.ClientRectangle.Width) = 0 Then
+            ' Looks like we are minimized, stop before we get resizing errors
+            Exit Sub
+        End If
+
+        Static lngLastHeight As Integer
+
+        If VB6.PixelsToTwipsY(staStatus.Top) - (VB6.PixelsToTwipsY(lstNew.Top)) < 10 * VB6.TwipsPerPixelY Then
+            If VB6.PixelsToTwipsY(Me.Height) < lngLastHeight Then
+                Me.Height = VB6.TwipsToPixelsY(lngLastHeight)
+
+                ' Nothing to do with webdetails, just a hack to flip the user out
+                ' of window resizing mode - webdetails being shown does just that
+                webDetails.Visible = False
+                webDetails.Visible = True
+            End If
+        End If
+
+        lngLastHeight = VB6.PixelsToTwipsY(Me.Height)
+
+        'WebBrowser
+        webDetails.Height = VB6.TwipsToPixelsY(VB6.PixelsToTwipsY(staStatus.Top) - VB6.PixelsToTwipsY(webDetails.Top))
+
+        'Listviews
+        lstDownloads.Height = VB6.TwipsToPixelsY(VB6.PixelsToTwipsY(staStatus.Top) - VB6.PixelsToTwipsY(lstDownloads.Top))
+        lstNew.Height = lstDownloads.Height
+        lstSubscribed.Height = lstDownloads.Height
+        lstDownloads.Width = VB6.TwipsToPixelsX(VB6.PixelsToTwipsX(Me.ClientRectangle.Width) - VB6.PixelsToTwipsX(webDetails.Width))
+        lstNew.Width = lstDownloads.Width
+        lstSubscribed.Width = lstDownloads.Width
+
+        'Search box in toolbar
+        'If tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width) < tbrToolbar.Buttons("Search Box").Left Then
+        txtSearch.Visible = False
+        'Else
+        '    txtSearch.Visible = True
+        '    txtSearch.Left = tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width)
+        '    txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
+        'End If
+
+        'Toolbar seperators
+        'picSeperator(0).Top = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("-").Top + 2 * VB6.TwipsPerPixelX)
+        'picSeperator(0).Left = VB6.TwipsToPixelsX(tbrOldToolbar.Buttons("-").Left + (tbrOldToolbar.Buttons("-").Width / 2))
+        'picSeperator(0).Height = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("-").Height - 1 * VB6.TwipsPerPixelX)
+        'picSeperator(1).Top = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("--").Top + 2 * VB6.TwipsPerPixelX)
+        'picSeperator(1).Left = VB6.TwipsToPixelsX(tbrOldToolbar.Buttons("--").Left + (tbrOldToolbar.Buttons("-").Width / 2))
+        'picSeperator(1).Height = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("--").Height - 1 * VB6.TwipsPerPixelX)
+
+        'Toolbar shadow
+        'picShadow.Width = tbrToolbar.Width
+        'imgShadow.Width = tbrToolbar.Width
+    End Sub
+
+    Private Sub frmMain_FormClosed(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
+        'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        clsBackground = Nothing
+
+        Call RemoveFromSystray()
+
+        On Error Resume Next
+        Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm")
+        Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp\*.*")
+    End Sub
+
     'Private Sub iSubclass_Proc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Integer, ByRef hWnd As Integer, ByRef uMsg As WinSubHook2.eMsg, ByRef wParam As Integer, ByRef lParam As Integer) Implements WinSubHook2.iSubclass.Proc
     '	Dim nmh As NMHDR
     '	Select Case uMsg
@@ -310,13 +310,13 @@ Friend Class frmMain
     '			End Select
     '	End Select
     'End Sub
-	
-	Private Sub lstDownloads_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstDownloads.ItemClick
-		Dim strSplit() As String
-		strSplit = Split(eventArgs.Item.Tag, "||")
-		
-		Const strTitle As String = "Download Info"
-		
+
+    Private Sub lstDownloads_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstDownloads.ItemClick
+        Dim strSplit() As String
+        strSplit = Split(eventArgs.Item.Tag, "||")
+
+        Const strTitle As String = "Download Info"
+
         If clsProgData_Renamed.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stCompleted Then
             If PathFileExists(clsProgData_Renamed.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
                 Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Play")
@@ -328,311 +328,311 @@ Friend Class frmMain
         Else
             Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
         End If
-	End Sub
-	
-	Private Sub lstNew_DblClick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles lstNew.DblClick
-		Dim strSplit() As String
-		strSplit = Split(lstNew.SelectedItem.Tag, "||")
-		
-		If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
-			If strSplit(0) <> "BBCLA" Then Stop
-			
-			lstNew.View = ComctlLib.ListViewConstants.lvwReport
-			tbrToolbar.Buttons("Up").Enabled = True
-			
+    End Sub
+
+    Private Sub lstNew_DblClick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles lstNew.DblClick
+        Dim strSplit() As String
+        strSplit = Split(lstNew.SelectedItem.Tag, "||")
+
+        If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
+            If strSplit(0) <> "BBCLA" Then Stop
+
+            lstNew.View = ComctlLib.ListViewConstants.lvwReport
+            'tbrOldToolbar.Buttons("Up").Enabled = True
+
             Call CreateHtml(lstNew.SelectedItem.Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItem.Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(clsBackground.NextAction.None))
-			Call ListviewStartAdd()
-			Call ListStation(strSplit(1), lstNew)
-			Call ListviewEndAdd()
-		Else
-			' Do nothing
-		End If
-	End Sub
-	
-	Private Sub lstNew_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstNew.ItemClick
-		Dim strSplit() As String
-		strSplit = Split(eventArgs.Item.Tag, "||")
-		
-		If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
-			' Do nothing
-		Else
-			Call CreateHtml("Programme Info", clsProgData_Renamed.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
-		End If
-	End Sub
-	
-	Private Sub TabAdjustments()
-		If tbrToolbar.Buttons("Find New").Value = ComctlLib.ValueConstants.tbrPressed Then
-			lstNew.Visible = True
-			lstSubscribed.Visible = False
-			lstDownloads.Visible = False
-			tbrToolbar.Buttons("Clean Up").Enabled = False
-			tbrToolbar.Buttons("Up").Enabled = lstNew.View = ComctlLib.ListViewConstants.lvwReport
-            Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", CStr(clsBackground.NextAction.None))
-		ElseIf tbrToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed Then 
-			lstNew.Visible = False
-			lstSubscribed.Visible = True
-			lstDownloads.Visible = False
-			tbrToolbar.Buttons("Clean Up").Enabled = False
-			tbrToolbar.Buttons("Up").Enabled = False
-            Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", CStr(clsBackground.NextAction.None))
-		ElseIf tbrToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed Then 
-			lstNew.Visible = False
-			lstSubscribed.Visible = False
-			lstDownloads.Visible = True
-			'tbrToolbar.Buttons("Clean Up").Enabled = True
-			tbrToolbar.Buttons("Up").Enabled = False
-            Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", CStr(clsBackground.NextAction.None))
-		End If
-	End Sub
-	
-	Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
-		Dim strHtml As String
-		
-		Dim strCss As String
-		Dim strHtmlStart As String
-		
-		'UPGRADE_ISSUE: Constant vbUnicode was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
-		'UPGRADE_ISSUE: Global method LoadResData was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
+            Call ListviewStartAdd()
+            Call ListStation(strSplit(1), lstNew)
+            Call ListviewEndAdd()
+        Else
+            ' Do nothing
+        End If
+    End Sub
+
+    Private Sub lstNew_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstNew.ItemClick
+        Dim strSplit() As String
+        strSplit = Split(eventArgs.Item.Tag, "||")
+
+        If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
+            ' Do nothing
+        Else
+            Call CreateHtml("Programme Info", clsProgData_Renamed.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
+        End If
+    End Sub
+
+    Private Sub TabAdjustments()
+        'If tbrOldToolbar.Buttons("Find New").Value = ComctlLib.ValueConstants.tbrPressed Then
+        '    lstNew.Visible = True
+        '    lstSubscribed.Visible = False
+        '    lstDownloads.Visible = False
+        '    tbrOldToolbar.Buttons("Clean Up").Enabled = False
+        '    tbrOldToolbar.Buttons("Up").Enabled = lstNew.View = ComctlLib.ListViewConstants.lvwReport
+        '    Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", CStr(clsBackground.NextAction.None))
+        'ElseIf tbrOldToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed Then
+        '    lstNew.Visible = False
+        '    lstSubscribed.Visible = True
+        '    lstDownloads.Visible = False
+        '    tbrOldToolbar.Buttons("Clean Up").Enabled = False
+        '    tbrOldToolbar.Buttons("Up").Enabled = False
+        '    Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", CStr(clsBackground.NextAction.None))
+        'ElseIf tbrOldToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed Then
+        '    lstNew.Visible = False
+        '    lstSubscribed.Visible = False
+        '    lstDownloads.Visible = True
+        '    'tbrToolbar.Buttons("Clean Up").Enabled = True
+        '    tbrOldToolbar.Buttons("Up").Enabled = False
+        '    Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", CStr(clsBackground.NextAction.None))
+        'End If
+    End Sub
+
+    Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
+        Dim strHtml As String
+
+        Dim strCss As String
+        Dim strHtmlStart As String
+
+        'UPGRADE_ISSUE: Constant vbUnicode was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
+        'UPGRADE_ISSUE: Global method LoadResData was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
         strCss = "" 'StrConv(CStr(VB6.LoadResData("styles", "css")), vbUnicode)
-		strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
-		Const strHtmlEnd As String = "</td></tr></table></body></html>"
-		
-		strHtml = strHtmlStart & "<h1>" & strTitle & "</h1><div class=""contentbox"">" & strMiddleContent & "</div></td></tr><tr><td class=""maintd bottomrow"">"
-		
-		Dim strSplitLinks() As String
-		Dim strLoopLinks As Object
-		Dim strBuiltLinks As String
-		strSplitLinks = Split(strBottomLinks, ",")
-		
-		For	Each strLoopLinks In strSplitLinks
-			Select Case strLoopLinks
-				Case "Download"
-					strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Download Now", "FlDownload", "Download this programme now"))
-				Case "Subscribe"
-					strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Subscribe", "FlSubscribe", "Get this programme downloaded regularly"))
-				Case "Unsubscribe"
-					strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Unsubscribe", "FlUnsubscribe", "Stop getting this programme downloaded regularly"))
-				Case "Play"
-					strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Play", "FlPlay", "Play this programme"))
-				Case "Cancel"
-					strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Cancel", "FlCancel", "Cancel downloading this programme"))
-				Case "Retry"
-					strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Retry", "FlRetry", "Try downloading this programme again"))
-			End Select
-		Next strLoopLinks
-		
-		If strBuiltLinks <> "" Then
-			strHtml = strHtml & "<div class=""contentbox""><h2>Actions</h2>"
-			strHtml = strHtml & strBuiltLinks
-			strHtml = strHtml & "</div>"
-		End If
-		
-		strHtml = strHtml & strHtmlEnd
-		
-		Call ShowHtml(strHtml)
-	End Sub
-	
-	Private Function BuildLink(ByRef strTitle As String, ByRef strCall As String, ByRef strStatusText As String) As String
-		BuildLink = "<a href=""#"" onclick=""window.external." & strCall & "(); return false;"" onmouseover=""window.external.FlStatusText('" & strStatusText & "'); return true;"" onmouseout=""window.external.FlStatusText(''); return true;"">" & strTitle & "</a>"
-	End Function
-	
-	Private Function AddLink(ByVal strCurrentLinks As String, ByVal strNewlink As String) As String
-		If Len(strCurrentLinks) > 0 Then
-			AddLink = strCurrentLinks & " | "
-		End If
-		
-		AddLink = AddLink & strNewlink
-	End Function
-	
-	Private Sub ShowHtml(ByRef strHtml As String)
-		Dim lngFileNo As Integer
-		lngFileNo = FreeFile
-		
-		FileOpen(lngFileNo, AddSlash(My.Application.Info.DirectoryPath) & "temp.htm", OpenMode.Output)
-		PrintLine(lngFileNo, strHtml)
-		FileClose(lngFileNo)
-		
-		'UPGRADE_WARNING: Navigate2 was upgraded to Navigate and has a new behavior. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-		webDetails.Navigate(New System.URI(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm"))
-	End Sub
-	
-	Private Sub lstSubscribed_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstSubscribed.ItemClick
-		Dim strSplit() As String
-		strSplit = Split(eventArgs.Item.Tag, "||")
-		
-		Call CreateHtml("Subscribed Programme", clsProgData_Renamed.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
-	End Sub
-	
-	Public Sub mnuFileExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuFileExit.Click
-		Call mnuTrayExit_Click(mnuTrayExit, New System.EventArgs())
-	End Sub
-	
-	Public Sub mnuToolsPrefs_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuToolsPrefs.Click
-		Call frmPreferences.ShowDialog()
-	End Sub
-	
-	Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
-		Me.Close()
-	End Sub
-	
-	Public Sub mnuTrayShow_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayShow.Click
-		If Me.WindowState = System.Windows.Forms.FormWindowState.Minimized Then
-			Me.WindowState = lngLastState
-		End If
-		
-		If Me.Visible = False Then
-			Call TrayAnimate(Me, False)
-			Me.Visible = True
-		End If
-	End Sub
-	
-	Private Sub tbrToolbar_ButtonClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.IToolbarEvents_ButtonClickEvent) Handles tbrToolbar.ButtonClick
-		Select Case eventArgs.Button.Key
-			Case "Find New", "Subscriptions", "Downloads"
-				Call TabAdjustments()
-			Case "Up"
-				eventArgs.Button.Enabled = False
-				If lstNew.View = ComctlLib.ListViewConstants.lvwReport Then
-					Call AddStations()
-				End If
-				Call TabAdjustments()
-		End Select
-	End Sub
-	
-	Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-		Call clsProgData_Renamed.CheckSubscriptions(lstDownloads, tmrStartProcess)
-	End Sub
-	
-	Private Sub tmrResizeHack_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrResizeHack.Tick
-		Call frmMain_Resize(Me, New System.EventArgs())
-	End Sub
-	
-	Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
-		' Make sure that it isn't currently working
+        strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
+        Const strHtmlEnd As String = "</td></tr></table></body></html>"
+
+        strHtml = strHtmlStart & "<h1>" & strTitle & "</h1><div class=""contentbox"">" & strMiddleContent & "</div></td></tr><tr><td class=""maintd bottomrow"">"
+
+        Dim strSplitLinks() As String
+        Dim strLoopLinks As Object
+        Dim strBuiltLinks As String
+        strSplitLinks = Split(strBottomLinks, ",")
+
+        For Each strLoopLinks In strSplitLinks
+            Select Case strLoopLinks
+                Case "Download"
+                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Download Now", "FlDownload", "Download this programme now"))
+                Case "Subscribe"
+                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Subscribe", "FlSubscribe", "Get this programme downloaded regularly"))
+                Case "Unsubscribe"
+                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Unsubscribe", "FlUnsubscribe", "Stop getting this programme downloaded regularly"))
+                Case "Play"
+                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Play", "FlPlay", "Play this programme"))
+                Case "Cancel"
+                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Cancel", "FlCancel", "Cancel downloading this programme"))
+                Case "Retry"
+                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Retry", "FlRetry", "Try downloading this programme again"))
+            End Select
+        Next strLoopLinks
+
+        If strBuiltLinks <> "" Then
+            strHtml = strHtml & "<div class=""contentbox""><h2>Actions</h2>"
+            strHtml = strHtml & strBuiltLinks
+            strHtml = strHtml & "</div>"
+        End If
+
+        strHtml = strHtml & strHtmlEnd
+
+        Call ShowHtml(strHtml)
+    End Sub
+
+    Private Function BuildLink(ByRef strTitle As String, ByRef strCall As String, ByRef strStatusText As String) As String
+        BuildLink = "<a href=""#"" onclick=""window.external." & strCall & "(); return false;"" onmouseover=""window.external.FlStatusText('" & strStatusText & "'); return true;"" onmouseout=""window.external.FlStatusText(''); return true;"">" & strTitle & "</a>"
+    End Function
+
+    Private Function AddLink(ByVal strCurrentLinks As String, ByVal strNewlink As String) As String
+        If Len(strCurrentLinks) > 0 Then
+            AddLink = strCurrentLinks & " | "
+        End If
+
+        AddLink = AddLink & strNewlink
+    End Function
+
+    Private Sub ShowHtml(ByRef strHtml As String)
+        Dim lngFileNo As Integer
+        lngFileNo = FreeFile
+
+        FileOpen(lngFileNo, AddSlash(My.Application.Info.DirectoryPath) & "temp.htm", OpenMode.Output)
+        PrintLine(lngFileNo, strHtml)
+        FileClose(lngFileNo)
+
+        'UPGRADE_WARNING: Navigate2 was upgraded to Navigate and has a new behavior. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
+        webDetails.Navigate(New System.URI(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm"))
+    End Sub
+
+    Private Sub lstSubscribed_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstSubscribed.ItemClick
+        Dim strSplit() As String
+        strSplit = Split(eventArgs.Item.Tag, "||")
+
+        Call CreateHtml("Subscribed Programme", clsProgData_Renamed.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
+    End Sub
+
+    Public Sub mnuFileExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuFileExit.Click
+        Call mnuTrayExit_Click(mnuTrayExit, New System.EventArgs())
+    End Sub
+
+    Public Sub mnuToolsPrefs_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuToolsPrefs.Click
+        Call frmPreferences.ShowDialog()
+    End Sub
+
+    Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
+        Me.Close()
+    End Sub
+
+    Public Sub mnuTrayShow_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayShow.Click
+        If Me.WindowState = System.Windows.Forms.FormWindowState.Minimized Then
+            Me.WindowState = lngLastState
+        End If
+
+        If Me.Visible = False Then
+            Call TrayAnimate(Me, False)
+            Me.Visible = True
+        End If
+    End Sub
+
+    Private Sub tbrToolbar_ButtonClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.IToolbarEvents_ButtonClickEvent)
+        Select Case eventArgs.button.Key
+            Case "Find New", "Subscriptions", "Downloads"
+                Call TabAdjustments()
+            Case "Up"
+                eventArgs.button.Enabled = False
+                If lstNew.View = ComctlLib.ListViewConstants.lvwReport Then
+                    Call AddStations()
+                End If
+                Call TabAdjustments()
+        End Select
+    End Sub
+
+    Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
+        Call clsProgData_Renamed.CheckSubscriptions(lstDownloads, tmrStartProcess)
+    End Sub
+
+    Private Sub tmrResizeHack_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrResizeHack.Tick
+        Call frmMain_Resize(Me, New System.EventArgs())
+    End Sub
+
+    Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
+        ' Make sure that it isn't currently working
         Dim dldAction As clsBackground.DownloadAction
-		If IsNothing_Renamed(clsBackground) Then
-			'UPGRADE_WARNING: Couldn't resolve default property of object dldAction. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			dldAction = clsProgData_Renamed.FindNextAction
-			
-			If dldAction.booFound Then
-                clsBackground = New clsBackground
-				Call clsProgData_Renamed.SetStatus(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate, True)
-				Call clsBackground.Start(dldAction.nxtNextAction, dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, clsProgData_Renamed.ProgramDuration(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate), dldAction.dldDownloadID.dteDate, clsProgData_Renamed.ProgramTitle(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate))
-				Call clsProgData_Renamed.UpdateDlList(lstDownloads)
-			End If
-		End If
-		
-		tmrStartProcess.Enabled = False
-	End Sub
-	
-	'UPGRADE_ISSUE: ShDocW.WebBrowser.NavigateComplete2 pDisp was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
+        'If IsNothing(clsBackground) Then
+        '    'UPGRADE_WARNING: Couldn't resolve default property of object dldAction. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+        '    dldAction = clsProgData_Renamed.FindNextAction
+
+        '    If dldAction.booFound Then
+        '        clsBackground = New clsBackground
+        '        Call clsProgData_Renamed.SetStatus(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate, True)
+        '        Call clsBackground.Start(dldAction.nxtNextAction, dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, clsProgData_Renamed.ProgramDuration(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate), dldAction.dldDownloadID.dteDate, clsProgData_Renamed.ProgramTitle(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate))
+        '        Call clsProgData_Renamed.UpdateDlList(lstDownloads)
+        '    End If
+        'End If
+
+        tmrStartProcess.Enabled = False
+    End Sub
+
+    'UPGRADE_ISSUE: ShDocW.WebBrowser.NavigateComplete2 pDisp was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
     'Private Sub webDetails_Navigated(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.WebBrowserNavigatedEventArgs) Handles webDetails.Navigated
     '	Dim url As String = eventArgs.URL.ToString()
     '	' Take away scrollbars, border, and interaction
     '	clsExtender.WbAttributes = IEDevKit.HostAttributes.haNoScrollBars Or IEDevKit.HostAttributes.haNo3DBorder Or IEDevKit.HostAttributes.haDisableSelections
     '	webDetails.Refresh()
     'End Sub
-	
-	Private Sub MoveBars()
-		'    Dim prgBar As ProgressBar
-		'
-		'    Call InvalidateRect(lstDownloads.hWnd, ByVal 0&, 0)
-		'
-		'    Dim recPos As RECT
-		'    Call GetSubItemRect(lstDownloads.hWnd, prgBar.Index - 1, 3, LVIR_LABEL, recPos)
-		'
-		'    With prgBar
-		'        .Left = (recPos.Left) * Screen.TwipsPerPixelX
-		'        .Width = (recPos.Right - recPos.Left) * Screen.TwipsPerPixelX
-		'        .Height = ((recPos.Bottom - recPos.Top) * Screen.TwipsPerPixelY)
-		'        .Top = recPos.Top * Screen.TwipsPerPixelY
-		'    End With
-		'
-		'            If recPos.Top <= 10 Then
-		'                prgBar.Visible = False
-		'            Else
-		'                prgBar.Visible = True
-		'
-		'                Call ValidateRect(lstDownloads.hWnd, recPos)
-		'                Call InvalidateRect(prgBar.hWnd, ByVal 0&, 0)
-		'            End If
-		'        End If
-		'    Next prgBar
-	End Sub
-	
-	Private Sub ListviewStartAdd()
-		booLvAdding = True
-	End Sub
-	
-	Private Sub ListviewEndAdd()
-		booLvAdding = False
-		
-		System.Windows.Forms.Application.DoEvents()
-		
-		'Add the contents of the listview to the update region
-		Call InvalidateRect(lstDownloads.hWnd, 0, 0)
-		
-		'Then loop round and remove the areas where progressbars are to
-		'prevent flickering as they are blanked out and then redrawn
-		
-		'    Dim prgBar As ProgressBar
-		'
-		'    For Each prgBar In prgItemProgress
-		'        If prgBar.Index > 0 Then
-		'            'Only process visible progressbars to be most efficient
-		'            If prgBar.Visible = True Then
-		'                Dim recPos As RECT
-		'
-		'                Call GetSubItemRect(lstDownloads.hwnd, prgBar.Index - 1, 2, LVIR_LABEL, recPos)
-		'                Call ValidateRect(lstDownloads.hwnd, recPos)
-		'            End If
-		'        End If
-		'    Next prgBar
-	End Sub
-	
-	' Called from JavaScript in embedded XHTML -------------------------------------
-	
-	Public Sub FlDownload()
-		Dim strSplit() As String
-		strSplit = Split(lstNew.SelectedItem.Tag, "||")
-		
-		If clsProgData_Renamed.IsDownloading(strSplit(0), strSplit(1)) Then
-			staStatus.SimpleText = ""
-			Call MsgBox("You cannot download this programme more than once at the same time!", MsgBoxStyle.Exclamation, "Radio Downloader")
-			Exit Sub
-		End If
-		
-		If clsProgData_Renamed.AddDownload(strSplit(0), strSplit(1)) = False Then
-			staStatus.SimpleText = ""
-			Call MsgBox("You have already downloaded this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
-		Else
-			tbrToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed
-			Call TabAdjustments()
-			Call clsProgData_Renamed.UpdateDlList(lstDownloads)
-			tmrStartProcess.Enabled = True
-		End If
-	End Sub
-	
-	Public Sub FlPlay()
-		Dim strSplit() As String
-		strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
-		
-		Call ShellExecute(Me.Handle.ToInt32, "open", clsProgData_Renamed.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0))), CStr(0), CStr(0), SW_SHOWNORMAL)
-	End Sub
-	
-	Public Sub FlSubscribe()
-		Dim strSplit() As String
-		strSplit = Split(lstNew.SelectedItem.Tag, "||")
-		
-		If clsProgData_Renamed.AddSubscription(strSplit(0), strSplit(1)) = False Then
-			staStatus.SimpleText = ""
-			Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
-		Else
-			tbrToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed
-			Call TabAdjustments()
-			Call clsProgData_Renamed.UpdateSubscrList(lstSubscribed)
-		End If
-	End Sub
+
+    Private Sub MoveBars()
+        '    Dim prgBar As ProgressBar
+        '
+        '    Call InvalidateRect(lstDownloads.hWnd, ByVal 0&, 0)
+        '
+        '    Dim recPos As RECT
+        '    Call GetSubItemRect(lstDownloads.hWnd, prgBar.Index - 1, 3, LVIR_LABEL, recPos)
+        '
+        '    With prgBar
+        '        .Left = (recPos.Left) * Screen.TwipsPerPixelX
+        '        .Width = (recPos.Right - recPos.Left) * Screen.TwipsPerPixelX
+        '        .Height = ((recPos.Bottom - recPos.Top) * Screen.TwipsPerPixelY)
+        '        .Top = recPos.Top * Screen.TwipsPerPixelY
+        '    End With
+        '
+        '            If recPos.Top <= 10 Then
+        '                prgBar.Visible = False
+        '            Else
+        '                prgBar.Visible = True
+        '
+        '                Call ValidateRect(lstDownloads.hWnd, recPos)
+        '                Call InvalidateRect(prgBar.hWnd, ByVal 0&, 0)
+        '            End If
+        '        End If
+        '    Next prgBar
+    End Sub
+
+    Private Sub ListviewStartAdd()
+        booLvAdding = True
+    End Sub
+
+    Private Sub ListviewEndAdd()
+        booLvAdding = False
+
+        System.Windows.Forms.Application.DoEvents()
+
+        'Add the contents of the listview to the update region
+        'Call InvalidateRect(lstDownloads.hWnd, 0, 0)
+
+        'Then loop round and remove the areas where progressbars are to
+        'prevent flickering as they are blanked out and then redrawn
+
+        '    Dim prgBar As ProgressBar
+        '
+        '    For Each prgBar In prgItemProgress
+        '        If prgBar.Index > 0 Then
+        '            'Only process visible progressbars to be most efficient
+        '            If prgBar.Visible = True Then
+        '                Dim recPos As RECT
+        '
+        '                Call GetSubItemRect(lstDownloads.hwnd, prgBar.Index - 1, 2, LVIR_LABEL, recPos)
+        '                Call ValidateRect(lstDownloads.hwnd, recPos)
+        '            End If
+        '        End If
+        '    Next prgBar
+    End Sub
+
+    ' Called from JavaScript in embedded XHTML -------------------------------------
+
+    Public Sub FlDownload()
+        Dim strSplit() As String
+        strSplit = Split(lstNew.SelectedItem.Tag, "||")
+
+        If clsProgData_Renamed.IsDownloading(strSplit(0), strSplit(1)) Then
+            staStatus.SimpleText = ""
+            Call MsgBox("You cannot download this programme more than once at the same time!", MsgBoxStyle.Exclamation, "Radio Downloader")
+            Exit Sub
+        End If
+
+        If clsProgData_Renamed.AddDownload(strSplit(0), strSplit(1)) = False Then
+            staStatus.SimpleText = ""
+            Call MsgBox("You have already downloaded this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
+        Else
+            'tbrOldToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed
+            Call TabAdjustments()
+            Call clsProgData_Renamed.UpdateDlList(lstDownloads)
+            tmrStartProcess.Enabled = True
+        End If
+    End Sub
+
+    Public Sub FlPlay()
+        Dim strSplit() As String
+        strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
+
+        Call ShellExecute(Me.Handle.ToInt32, "open", clsProgData_Renamed.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0))), CStr(0), CStr(0), SW_SHOWNORMAL)
+    End Sub
+
+    Public Sub FlSubscribe()
+        Dim strSplit() As String
+        strSplit = Split(lstNew.SelectedItem.Tag, "||")
+
+        If clsProgData_Renamed.AddSubscription(strSplit(0), strSplit(1)) = False Then
+            staStatus.SimpleText = ""
+            Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
+        Else
+            'tbrOldToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed
+            Call TabAdjustments()
+            Call clsProgData_Renamed.UpdateSubscrList(lstSubscribed)
+        End If
+    End Sub
 	
 	Public Sub FlUnsubscribe()
 		Dim strSplit() As String
