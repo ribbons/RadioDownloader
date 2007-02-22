@@ -130,6 +130,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.vb" />
+    <Compile Include="clsBkgMain.vb" />
     <Compile Include="clsProgData.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -156,6 +157,7 @@
     <Compile Include="frmPreferences.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="modAsyncStart.vb" />
     <Compile Include="modDLURL.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -168,6 +170,7 @@
     <Compile Include="modProgramInfo.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="modShellWait.vb" />
     <Compile Include="UpgradeSupport.vb">
       <SubType>Code</SubType>
     </Compile>

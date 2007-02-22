@@ -150,6 +150,7 @@
         Me._picSeperator_0.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me._picSeperator_0.Size = New System.Drawing.Size(2, 36)
         Me._picSeperator_0.TabIndex = 8
+        Me._picSeperator_0.TabStop = False
         '
         'txtSearch
         '
@@ -177,6 +178,7 @@
         Me._picSeperator_1.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me._picSeperator_1.Size = New System.Drawing.Size(2, 36)
         Me._picSeperator_1.TabIndex = 10
+        Me._picSeperator_1.TabStop = False
         '
         'tmrResizeHack
         '
@@ -287,7 +289,7 @@
         'mnuFileExit
         '
         Me.mnuFileExit.Name = "mnuFileExit"
-        Me.mnuFileExit.Size = New System.Drawing.Size(152, 22)
+        Me.mnuFileExit.Size = New System.Drawing.Size(92, 22)
         Me.mnuFileExit.Text = "E&xit"
         '
         'mnuTools
@@ -300,7 +302,7 @@
         'mnuToolsPrefs
         '
         Me.mnuToolsPrefs.Name = "mnuToolsPrefs"
-        Me.mnuToolsPrefs.Size = New System.Drawing.Size(152, 22)
+        Me.mnuToolsPrefs.Size = New System.Drawing.Size(135, 22)
         Me.mnuToolsPrefs.Text = "&Preferences"
         '
         'mnuHelp
@@ -313,7 +315,7 @@
         'mnuHelpAbout
         '
         Me.mnuHelpAbout.Name = "mnuHelpAbout"
-        Me.mnuHelpAbout.Size = New System.Drawing.Size(152, 22)
+        Me.mnuHelpAbout.Size = New System.Drawing.Size(107, 22)
         Me.mnuHelpAbout.Text = "&About"
         '
         'mnuTray
@@ -367,6 +369,7 @@
         Me.Text = "Radio Downloader"
         CType(Me.tbrToolbar, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tbrToolbar.ResumeLayout(False)
+        Me.tbrToolbar.PerformLayout()
         Me.picShadow.ResumeLayout(False)
         CType(Me.imgShadow, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me._picSeperator_0, System.ComponentModel.ISupportInitialize).EndInit()
