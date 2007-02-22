@@ -181,9 +181,9 @@
       <DependentUpon>frmPreferences.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MyResources.resx" />
-    <None Include="_UpgradeReport.htm">
-      <SubType>Preview</SubType>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="My Project\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Basic Express 2005
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Radio Dld Interface.vbproj.vs7", "Radio Dld Interface.vbproj.vs7.vbproj", "{0B79D58E-5E08-493F-AC06-CC4922583572}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Radio Downloader", "Radio Downloader.vbproj", "{0B79D58E-5E08-493F-AC06-CC4922583572}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
