@@ -1,5 +1,0 @@
-#define RT_MANIFEST 24
-
-appicon icon        "graphics\\icon.ico"
-styles  CSS         "sidebar.css"
-1       RT_MANIFEST "manifest.txt"
