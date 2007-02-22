@@ -116,7 +116,7 @@
   <ItemGroup>
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AssemblyInfo.vb" />
-    <Compile Include="clsBkgMain.vb" />
+    <Compile Include="clsBackground.vb" />
     <Compile Include="clsProgData.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -140,7 +140,6 @@
     <Compile Include="frmPreferences.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="modAsyncStart.vb" />
     <Compile Include="modDLURL.vb">
       <SubType>Code</SubType>
     </Compile>

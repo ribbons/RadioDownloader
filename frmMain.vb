@@ -2,16 +2,15 @@ Option Strict Off
 Option Explicit On
 Friend Class frmMain
 	Inherits System.Windows.Forms.Form
-	Implements WinSubHook2.iSubclass
-	
+    'Implements WinSubHook2.iSubclass
 	
 	Private lngStatus As Integer
 	
 	Private booLvAdding As Boolean
 	
-	Private WithEvents clsExtender As IEDevKit.clsWbExtender
-	Private WithEvents clsBackground As Background.clsBkgMain
-	Private clsSubclass As cSubclass
+    'Private WithEvents clsExtender As IEDevKit.clsWbExtender
+    Private WithEvents clsBackground As clsBackground
+    'Private clsSubclass As cSubclass
 	'UPGRADE_NOTE: clsProgData was upgraded to clsProgData_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
 	Private clsProgData_Renamed As clsProgData
 	
@@ -50,25 +49,25 @@ Friend Class frmMain
 		lstAdd.Icon = imlStations.ListImages(strStationId).Index
 	End Sub
 	
-	Private Sub clsBackground_Error(ByVal strError As String, ByVal strOutput As String) Handles clsBackground.Error
-		Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, Background.Status.stError)
-		Call clsProgData_Renamed.UpdateDlList(lstDownloads)
-		
-		'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		clsBackground = Nothing
-		tmrStartProcess.Enabled = True
-	End Sub
+    Private Sub clsBackground_Error(ByVal strError As String, ByVal strOutput As String) Handles clsBackground.DldError
+        Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stError)
+        Call clsProgData_Renamed.UpdateDlList(lstDownloads)
+
+        'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        clsBackground = Nothing
+        tmrStartProcess.Enabled = True
+    End Sub
 	
 	Private Sub clsBackground_Finished() Handles clsBackground.Finished
 		Call clsProgData_Renamed.AdvanceNextAction(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate)
 		
-		If clsProgData_Renamed.GetNextActionVal(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate) = Background.NextAction.None Then
-			' All done, set status to completed, and save file path
-			Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, Background.Status.stCompleted)
-			Call clsProgData_Renamed.SetDownloadPath(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, clsBackground.FinalName)
-		Else
-			Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, Background.Status.stWaiting)
-		End If
+        If clsProgData_Renamed.GetNextActionVal(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate) = clsBackground.NextAction.None Then
+            ' All done, set status to completed, and save file path
+            Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stCompleted)
+            Call clsProgData_Renamed.SetDownloadPath(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, clsBackground.FinalName)
+        Else
+            Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stWaiting)
+        End If
 		
 		Call clsProgData_Renamed.UpdateDlList(lstDownloads)
 		
@@ -78,18 +77,18 @@ Friend Class frmMain
 	End Sub
 	
 	Private Sub clsBackground_Progress(ByVal lngPercent As Integer) Handles clsBackground.Progress
-		Dim lstChangeItem As ComctlLib.ListItem
-		lstChangeItem = lstDownloads.FindItem(VB6.Format(clsBackground.ProgramDate) & "||" & clsBackground.ProgramID & "||" & clsBackground.ProgramType, ComctlLib.ListFindItemWhereConstants.lvwTag)
+        'Dim lstChangeItem As ComctlLib.ListItem
+        'lstChangeItem = lstDownloads.FindItem(VB6.Format(clsBackground.ProgramDate) & "||" & clsBackground.ProgramID & "||" & clsBackground.ProgramType, ComctlLib.ListFindItemWhereConstants.lvwTag)
 		
-		lstChangeItem.SubItems(3) = VB6.Format(lngPercent) & "%"
+        'lstChangeItem.SubItems(3) = VB6.Format(lngPercent) & "%"
 	End Sub
 	
-	Private Sub clsExtender_GetExternal(ByRef oIDispatch As Object) Handles clsExtender.GetExternal
-		'this allows javascript to access the objects we return
-		'here is it set so javascript will have access to all functions
-		'and objects on this form.
-		oIDispatch = Me
-	End Sub
+    'Private Sub clsExtender_GetExternal(ByRef oIDispatch As Object) Handles clsExtender.GetExternal
+    '	'this allows javascript to access the objects we return
+    '	'here is it set so javascript will have access to all functions
+    '	'and objects on this form.
+    '	oIDispatch = Me
+    'End Sub
 	
 	Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         lstSubscribed.Top = lstNew.Top
@@ -119,8 +118,8 @@ Friend Class frmMain
 		Call TabAdjustments()
 		Call AddToSystray(Me)
 		
-		clsExtender = New IEDevKit.clsWbExtender
-		clsExtender.HookWebBrowser(webDetails)
+        'clsExtender = New IEDevKit.clsWbExtender
+        'clsExtender.HookWebBrowser(webDetails)
 		
         '      clsSubclass = New cSubclass
         '      Call clsSubclass.Subclass(Me.Handle.ToInt32, Me)
@@ -245,72 +244,72 @@ Friend Class frmMain
 		Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp\*.*")
 	End Sub
 	
-	Private Sub iSubclass_Proc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Integer, ByRef hWnd As Integer, ByRef uMsg As WinSubHook2.eMsg, ByRef wParam As Integer, ByRef lParam As Integer) Implements WinSubHook2.iSubclass.Proc
-		Dim nmh As NMHDR
-		Select Case uMsg
-			'        '---------------------------------------------------------------
-			'        ' For scrollbar adjustment
-			'        '---------------------------------------------------------------
-			'        Case WM_VSCROLL, WM_HSCROLL
-			'            Call MoveBars
-			'        Case WM_KEYDOWN
-			'            Debug.Print wParam
-			'            'If key is up, down, left, right, pgup or pgdown then move the bars
-			'            If wParam >= 33 And wParam <= 40 Then
-			'                Call MoveBars
-			'            End If
-			'        Case WM_NOTIFY
-			'            ' Find out what the message was
-			'            Dim uWMNOTIFY_Message As NMHDR
-			'            Call CopyMemory(uWMNOTIFY_Message, ByVal lParam, Len(uWMNOTIFY_Message))
-			'
-			'            If uWMNOTIFY_Message.code = HDN_ENDTRACK Then
-			'                ' User adjusted column width
-			'                Call MoveBars
-			'            End If
-			'        '---------------------------------------------------------------
-			'        ' To deal with flickering when adding / changing info in listview
-			'        '---------------------------------------------------------------
-			'        Case WM_STYLECHANGING
-			'            ' Only stop redraw when requested
-			'            If booLvAdding Then
-			'                ' If the flag is set and the ListView's LVS_NOLABELWRAP style
-			'                ' bit is changing (the ListView's LabelWrap property), prevent
-			'                ' the style change and the resultant unnecessary redrawing,
-			'                ' flickering, and a serious degradation in loading speed.
-			'
-			'                Dim ss As STYLESTRUCT
-			'                CopyMemory ss, ByVal lParam, Len(ss)
-			'
-			'                If ((ss.styleOld Xor ss.styleNew) And LVS_NOLABELWRAP) Then
-			'                    ss.styleNew = ss.styleOld
-			'                    CopyMemory ByVal lParam, ss, Len(ss)
-			'                End If
-			'            End If
-			Case TRAY_CALLBACK
-				Select Case lParam
-					Case WinSubHook2.eMsg.WM_LBUTTONDBLCLK
-						Call mnuTrayShow_Click(mnuTrayShow, New System.EventArgs())
-					Case WinSubHook2.eMsg.WM_RBUTTONUP
-						'UPGRADE_ISSUE: Form method frmMain.PopupMenu was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
-						Call PopupMenu(mnuTray,  ,  ,  , mnuTrayShow)
-				End Select
-			Case WinSubHook2.eMsg.WM_NOTIFY
-				' Fill the NMHDR struct from the lParam pointer.
-				' (for any WM_NOTIFY msg, lParam always points to a struct which is
-				' either the NMHDR struct, or whose 1st member is the NMHDR struct)
-				'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-				Call WinSubHook2.Kernel32.CopyMemory(nmh, lParam, Len(nmh))
-				
-				Select Case nmh.code
-					Case LVN_BEGINDRAG
-						'Notifies a list view control's parent window that a
-						'drag-and-drop operation involving the left mouse button
-						'is being initiated.
-						bHandled = True
-				End Select
-		End Select
-	End Sub
+    'Private Sub iSubclass_Proc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Integer, ByRef hWnd As Integer, ByRef uMsg As WinSubHook2.eMsg, ByRef wParam As Integer, ByRef lParam As Integer) Implements WinSubHook2.iSubclass.Proc
+    '	Dim nmh As NMHDR
+    '	Select Case uMsg
+    '		'        '---------------------------------------------------------------
+    '		'        ' For scrollbar adjustment
+    '		'        '---------------------------------------------------------------
+    '		'        Case WM_VSCROLL, WM_HSCROLL
+    '		'            Call MoveBars
+    '		'        Case WM_KEYDOWN
+    '		'            Debug.Print wParam
+    '		'            'If key is up, down, left, right, pgup or pgdown then move the bars
+    '		'            If wParam >= 33 And wParam <= 40 Then
+    '		'                Call MoveBars
+    '		'            End If
+    '		'        Case WM_NOTIFY
+    '		'            ' Find out what the message was
+    '		'            Dim uWMNOTIFY_Message As NMHDR
+    '		'            Call CopyMemory(uWMNOTIFY_Message, ByVal lParam, Len(uWMNOTIFY_Message))
+    '		'
+    '		'            If uWMNOTIFY_Message.code = HDN_ENDTRACK Then
+    '		'                ' User adjusted column width
+    '		'                Call MoveBars
+    '		'            End If
+    '		'        '---------------------------------------------------------------
+    '		'        ' To deal with flickering when adding / changing info in listview
+    '		'        '---------------------------------------------------------------
+    '		'        Case WM_STYLECHANGING
+    '		'            ' Only stop redraw when requested
+    '		'            If booLvAdding Then
+    '		'                ' If the flag is set and the ListView's LVS_NOLABELWRAP style
+    '		'                ' bit is changing (the ListView's LabelWrap property), prevent
+    '		'                ' the style change and the resultant unnecessary redrawing,
+    '		'                ' flickering, and a serious degradation in loading speed.
+    '		'
+    '		'                Dim ss As STYLESTRUCT
+    '		'                CopyMemory ss, ByVal lParam, Len(ss)
+    '		'
+    '		'                If ((ss.styleOld Xor ss.styleNew) And LVS_NOLABELWRAP) Then
+    '		'                    ss.styleNew = ss.styleOld
+    '		'                    CopyMemory ByVal lParam, ss, Len(ss)
+    '		'                End If
+    '		'            End If
+    '		Case TRAY_CALLBACK
+    '			Select Case lParam
+    '				Case WinSubHook2.eMsg.WM_LBUTTONDBLCLK
+    '					Call mnuTrayShow_Click(mnuTrayShow, New System.EventArgs())
+    '				Case WinSubHook2.eMsg.WM_RBUTTONUP
+    '					'UPGRADE_ISSUE: Form method frmMain.PopupMenu was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
+    '					Call PopupMenu(mnuTray,  ,  ,  , mnuTrayShow)
+    '			End Select
+    '		Case WinSubHook2.eMsg.WM_NOTIFY
+    '			' Fill the NMHDR struct from the lParam pointer.
+    '			' (for any WM_NOTIFY msg, lParam always points to a struct which is
+    '			' either the NMHDR struct, or whose 1st member is the NMHDR struct)
+    '			'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
+    '			Call WinSubHook2.Kernel32.CopyMemory(nmh, lParam, Len(nmh))
+
+    '			Select Case nmh.code
+    '				Case LVN_BEGINDRAG
+    '					'Notifies a list view control's parent window that a
+    '					'drag-and-drop operation involving the left mouse button
+    '					'is being initiated.
+    '					bHandled = True
+    '			End Select
+    '	End Select
+    'End Sub
 	
 	Private Sub lstDownloads_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstDownloads.ItemClick
 		Dim strSplit() As String
@@ -318,17 +317,17 @@ Friend Class frmMain
 		
 		Const strTitle As String = "Download Info"
 		
-		If clsProgData_Renamed.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = Background.Status.stCompleted Then
-			If PathFileExists(clsProgData_Renamed.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
-				Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Play")
-			Else
-				Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "")
-			End If
-		ElseIf clsProgData_Renamed.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = Background.Status.stError Then 
-			Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Retry,Cancel")
-		Else
-			Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
-		End If
+        If clsProgData_Renamed.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stCompleted Then
+            If PathFileExists(clsProgData_Renamed.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
+                Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Play")
+            Else
+                Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "")
+            End If
+        ElseIf clsProgData_Renamed.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stError Then
+            Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Retry,Cancel")
+        Else
+            Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
+        End If
 	End Sub
 	
 	Private Sub lstNew_DblClick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles lstNew.DblClick
@@ -341,7 +340,7 @@ Friend Class frmMain
 			lstNew.View = ComctlLib.ListViewConstants.lvwReport
 			tbrToolbar.Buttons("Up").Enabled = True
 			
-			Call CreateHtml(lstNew.SelectedItem.Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItem.Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(Background.NextAction.None))
+            Call CreateHtml(lstNew.SelectedItem.Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItem.Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(clsBackground.NextAction.None))
 			Call ListviewStartAdd()
 			Call ListStation(strSplit(1), lstNew)
 			Call ListviewEndAdd()
@@ -368,21 +367,21 @@ Friend Class frmMain
 			lstDownloads.Visible = False
 			tbrToolbar.Buttons("Clean Up").Enabled = False
 			tbrToolbar.Buttons("Up").Enabled = lstNew.View = ComctlLib.ListViewConstants.lvwReport
-			Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", CStr(Background.NextAction.None))
+            Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", CStr(clsBackground.NextAction.None))
 		ElseIf tbrToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed Then 
 			lstNew.Visible = False
 			lstSubscribed.Visible = True
 			lstDownloads.Visible = False
 			tbrToolbar.Buttons("Clean Up").Enabled = False
 			tbrToolbar.Buttons("Up").Enabled = False
-			Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", CStr(Background.NextAction.None))
+            Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", CStr(clsBackground.NextAction.None))
 		ElseIf tbrToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed Then 
 			lstNew.Visible = False
 			lstSubscribed.Visible = False
 			lstDownloads.Visible = True
 			'tbrToolbar.Buttons("Clean Up").Enabled = True
 			tbrToolbar.Buttons("Up").Enabled = False
-			Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", CStr(Background.NextAction.None))
+            Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", CStr(clsBackground.NextAction.None))
 		End If
 	End Sub
 	
@@ -394,7 +393,7 @@ Friend Class frmMain
 		
 		'UPGRADE_ISSUE: Constant vbUnicode was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
 		'UPGRADE_ISSUE: Global method LoadResData was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
-		strCss = StrConv(CStr(VB6.LoadResData("styles", "css")), vbUnicode)
+        strCss = "" 'StrConv(CStr(VB6.LoadResData("styles", "css")), vbUnicode)
 		strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
 		Const strHtmlEnd As String = "</td></tr></table></body></html>"
 		
@@ -510,13 +509,13 @@ Friend Class frmMain
 	
 	Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
 		' Make sure that it isn't currently working
-		Dim dldAction As Background.DownloadAction
+        Dim dldAction As clsBackground.DownloadAction
 		If IsNothing_Renamed(clsBackground) Then
 			'UPGRADE_WARNING: Couldn't resolve default property of object dldAction. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
 			dldAction = clsProgData_Renamed.FindNextAction
 			
 			If dldAction.booFound Then
-				clsBackground = New Background.clsBkgMain
+                clsBackground = New clsBackground
 				Call clsProgData_Renamed.SetStatus(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate, True)
 				Call clsBackground.Start(dldAction.nxtNextAction, dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, clsProgData_Renamed.ProgramDuration(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate), dldAction.dldDownloadID.dteDate, clsProgData_Renamed.ProgramTitle(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate))
 				Call clsProgData_Renamed.UpdateDlList(lstDownloads)
@@ -527,12 +526,12 @@ Friend Class frmMain
 	End Sub
 	
 	'UPGRADE_ISSUE: ShDocW.WebBrowser.NavigateComplete2 pDisp was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
-	Private Sub webDetails_Navigated(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.WebBrowserNavigatedEventArgs) Handles webDetails.Navigated
-		Dim url As String = eventArgs.URL.ToString()
-		' Take away scrollbars, border, and interaction
-		clsExtender.WbAttributes = IEDevKit.HostAttributes.haNoScrollBars Or IEDevKit.HostAttributes.haNo3DBorder Or IEDevKit.HostAttributes.haDisableSelections
-		webDetails.Refresh()
-	End Sub
+    'Private Sub webDetails_Navigated(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.WebBrowserNavigatedEventArgs) Handles webDetails.Navigated
+    '	Dim url As String = eventArgs.URL.ToString()
+    '	' Take away scrollbars, border, and interaction
+    '	clsExtender.WbAttributes = IEDevKit.HostAttributes.haNoScrollBars Or IEDevKit.HostAttributes.haNo3DBorder Or IEDevKit.HostAttributes.haDisableSelections
+    '	webDetails.Refresh()
+    'End Sub
 	
 	Private Sub MoveBars()
 		'    Dim prgBar As ProgressBar

@@ -71,110 +71,98 @@ Module modShellWait
 	
 	Public lngLogFile As Integer
 	
-	Public Function AddSlash(ByVal strString As String) As String
-		If Len(strString) Then
-			If Right(strString, 1) <> "\" Then
-				If Right(strString, 1) <> "/" Then
-					strString = strString & "\"
-				End If
-			End If
-		End If
-		
-		AddSlash = strString
-	End Function
-	
-	Public Function ExecAndCapture(ByRef clsCaller As clsBkgMain, ByVal sCommandLine As String, ByVal strCallback As String, Optional ByVal sStartInFolder As String = vbNullString) As Boolean
-		Const BUFSIZE As Integer = 1024 * 10
-		Dim hPipeRead As Integer
-		Dim hPipeWrite As Integer
-		Dim sa As SECURITY_ATTRIBUTES
-		Dim si As STARTUPINFO
-		Dim pi As PROCESS_INFORMATION
-		Dim baOutput(BUFSIZE) As Byte
-		Dim sOutput As String
-		Dim lBytesRead As Integer
-		
-		With sa
-			.nLength = Len(sa)
-			.bInheritHandle = 1 ' get inheritable pipe
-			' handles
-		End With 'SA
-		
-		If CreatePipe(hPipeRead, hPipeWrite, sa, 0) = 0 Then
-			Exit Function
-		End If
-		
-		With si
-			.cb = Len(si)
-			.dwFlags = STARTF_USESHOWWINDOW Or STARTF_USESTDHANDLES
-			.wShowWindow = SW_HIDE ' hide the window
-			.hStdOutput = hPipeWrite
-			.hStdError = hPipeWrite
-		End With 'SI
-		
-		
-		Dim secProcess As SECURITY_ATTRIBUTES
-		Dim secThread As SECURITY_ATTRIBUTES
-		
-		Dim ovlOverlapped As OVERLAPPED
-		Dim lngInPipe As Integer
-		If CreateProcess(vbNullString, sCommandLine, secProcess, secThread, 1, 0, 0, sStartInFolder, si, pi) Then
-			Call CloseHandle(hPipeWrite)
-			Call CloseHandle(pi.hThread)
-			hPipeWrite = 0
-			Do 
-				System.Windows.Forms.Application.DoEvents()
-				
-				
-				' Following chunk added by mjr - checks if any data is in pipe
-				' before calling readfile, which prevents blocking of this process
-				If PeekNamedPipe(hPipeRead, 0, 0, 0, lngInPipe, 0) = 0 Then
-					Exit Do
-				End If
-				
-				If lngInPipe > 0 Then ' Only try reading if there is data in pipe
-					If ReadFile(hPipeRead, baOutput(0), BUFSIZE, lBytesRead, ovlOverlapped) = 0 Then
-						Exit Do
-					End If
-					
-					'UPGRADE_ISSUE: Constant vbUnicode was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
-					sOutput = Left(StrConv(System.Text.UnicodeEncoding.Unicode.GetString(baOutput), vbUnicode), lBytesRead)
-					
-					strOutput = strOutput & sOutput
-					
-					Select Case strCallback
-						Case "Download"
-							If InStr(1, sOutput, "Core dumped ;)") > 0 Then
-								ExecAndCapture = True
-							End If
-							' No callback as no progress messages
-						Case "ConvWav"
-							If InStr(1, sOutput, "Exiting... (End of file)") > 0 Then
-								ExecAndCapture = True
-							End If
-							Call clsCaller.ConvWavCallback(sOutput)
-						Case "ConvMp3"
-							If InStr(1, sOutput, "done") > 0 Then
-								ExecAndCapture = True
-							End If
-							Call clsCaller.ConvMp3Callback(sOutput)
-						Case Else
-							MsgBox(sOutput)
-					End Select
-				Else
-					'faked callback for download - just call function every 1/2
-					' second with no data
-					If strCallback = "Download" Then
-						Call clsCaller.DownloadCallback()
-					End If
-					
-					Call Sleep(500)
-				End If
-			Loop 
-			Call CloseHandle(pi.hProcess)
-		End If
-		' To make sure...
-		Call CloseHandle(hPipeRead)
-		Call CloseHandle(hPipeWrite)
-	End Function
+    Public Function ExecAndCapture(ByRef clsCaller As clsBackground, ByVal sCommandLine As String, ByVal strCallback As String, Optional ByVal sStartInFolder As String = vbNullString) As Boolean
+        Const BUFSIZE As Integer = 1024 * 10
+        Dim hPipeRead As Integer
+        Dim hPipeWrite As Integer
+        Dim sa As SECURITY_ATTRIBUTES
+        Dim si As STARTUPINFO
+        Dim pi As PROCESS_INFORMATION
+        Dim baOutput(BUFSIZE) As Byte
+        Dim sOutput As String
+        Dim lBytesRead As Integer
+
+        With sa
+            .nLength = Len(sa)
+            .bInheritHandle = 1 ' get inheritable pipe
+            ' handles
+        End With 'SA
+
+        If CreatePipe(hPipeRead, hPipeWrite, sa, 0) = 0 Then
+            Exit Function
+        End If
+
+        With si
+            .cb = Len(si)
+            .dwFlags = STARTF_USESHOWWINDOW Or STARTF_USESTDHANDLES
+            .wShowWindow = SW_HIDE ' hide the window
+            .hStdOutput = hPipeWrite
+            .hStdError = hPipeWrite
+        End With 'SI
+
+
+        Dim secProcess As SECURITY_ATTRIBUTES
+        Dim secThread As SECURITY_ATTRIBUTES
+
+        Dim ovlOverlapped As OVERLAPPED
+        Dim lngInPipe As Integer
+        If CreateProcess(vbNullString, sCommandLine, secProcess, secThread, 1, 0, 0, sStartInFolder, si, pi) Then
+            Call CloseHandle(hPipeWrite)
+            Call CloseHandle(pi.hThread)
+            hPipeWrite = 0
+            Do
+                System.Windows.Forms.Application.DoEvents()
+
+
+                ' Following chunk added by mjr - checks if any data is in pipe
+                ' before calling readfile, which prevents blocking of this process
+                If PeekNamedPipe(hPipeRead, 0, 0, 0, lngInPipe, 0) = 0 Then
+                    Exit Do
+                End If
+
+                If lngInPipe > 0 Then ' Only try reading if there is data in pipe
+                    If ReadFile(hPipeRead, baOutput(0), BUFSIZE, lBytesRead, ovlOverlapped) = 0 Then
+                        Exit Do
+                    End If
+
+                    'UPGRADE_ISSUE: Constant vbUnicode was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
+                    sOutput = Left(StrConv(System.Text.UnicodeEncoding.Unicode.GetString(baOutput), vbUnicode), lBytesRead)
+
+                    strOutput = strOutput & sOutput
+
+                    Select Case strCallback
+                        Case "Download"
+                            If InStr(1, sOutput, "Core dumped ;)") > 0 Then
+                                ExecAndCapture = True
+                            End If
+                            ' No callback as no progress messages
+                        Case "ConvWav"
+                            If InStr(1, sOutput, "Exiting... (End of file)") > 0 Then
+                                ExecAndCapture = True
+                            End If
+                            Call clsCaller.ConvWavCallback(sOutput)
+                        Case "ConvMp3"
+                            If InStr(1, sOutput, "done") > 0 Then
+                                ExecAndCapture = True
+                            End If
+                            Call clsCaller.ConvMp3Callback(sOutput)
+                        Case Else
+                            MsgBox(sOutput)
+                    End Select
+                Else
+                    'faked callback for download - just call function every 1/2
+                    ' second with no data
+                    If strCallback = "Download" Then
+                        Call clsCaller.DownloadCallback()
+                    End If
+
+                    Call Sleep(500)
+                End If
+            Loop
+            Call CloseHandle(pi.hProcess)
+        End If
+        ' To make sure...
+        Call CloseHandle(hPipeRead)
+        Call CloseHandle(hPipeWrite)
+    End Function
 End Module

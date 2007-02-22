@@ -24,52 +24,52 @@ Friend Class clsProgData
 		MyBase.Finalize()
 	End Sub
 	
-	Public Function GetNextActionVal(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Background.NextAction
-		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-		Dim rstRecordset As DAO.Recordset
-		rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
-		
-		With rstRecordset
-			If .EOF = False Then
-				.MoveFirst()
-				GetNextActionVal = .Fields("NextAction").Value
-			End If
-		End With
-		
-		rstRecordset.Close()
-		'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		rstRecordset = Nothing
-	End Function
+    Public Function GetNextActionVal(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.NextAction
+        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstRecordset As DAO.Recordset
+        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+
+        With rstRecordset
+            If .EOF = False Then
+                .MoveFirst()
+                GetNextActionVal = .Fields("NextAction").Value
+            End If
+        End With
+
+        rstRecordset.Close()
+        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        rstRecordset = Nothing
+    End Function
 	
-	Public Sub SetStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByRef booAuto As Boolean, Optional ByRef staValue As Background.Status = 0)
-		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-		Dim rstRecordset As DAO.Recordset
-		rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
-		
-		With rstRecordset
-			If .EOF = False Then
-				.MoveFirst()
-				.Edit()
-				If booAuto Then
-					Select Case .Fields("NextAction").Value
-						Case Background.NextAction.Download
-							.Fields("Status").Value = Background.Status.stDownloading
-						Case Background.NextAction.Decode
-							.Fields("Status").Value = Background.Status.stDecoding
-						Case Background.NextAction.EncodeMp3
-							.Fields("Status").Value = Background.Status.stEncoding
-					End Select
-				Else
-					.Fields("Status").Value = staValue
-				End If
-				.Update()
-			End If
-		End With
-		
-		rstRecordset.Close()
-		'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		rstRecordset = Nothing
-	End Sub
+    Public Sub SetStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByRef booAuto As Boolean, Optional ByRef staValue As clsBackground.Status = 0)
+        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstRecordset As DAO.Recordset
+        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+
+        With rstRecordset
+            If .EOF = False Then
+                .MoveFirst()
+                .Edit()
+                If booAuto Then
+                    Select Case .Fields("NextAction").Value
+                        Case clsBackground.NextAction.Download
+                            .Fields("Status").Value = clsBackground.Status.stDownloading
+                        Case clsBackground.NextAction.Decode
+                            .Fields("Status").Value = clsBackground.Status.stDecoding
+                        Case clsBackground.NextAction.EncodeMp3
+                            .Fields("Status").Value = clsBackground.Status.stEncoding
+                    End Select
+                Else
+                    .Fields("Status").Value = staValue
+                End If
+                .Update()
+            End If
+        End With
+
+        rstRecordset.Close()
+        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        rstRecordset = Nothing
+    End Sub
 	
 	Public Sub AdvanceNextAction(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
 		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
@@ -90,37 +90,37 @@ Friend Class clsProgData
 		rstRecordset = Nothing
 	End Sub
 	
-	Public Function FindNextAction() As Background.DownloadAction
-		Const lngMaxErrors As Integer = 2
-		
-		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-		Dim rstRecordset As DAO.Recordset
-		rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE status=" & VB6.Format(Background.Status.stWaiting) & " or (status=" & VB6.Format(Background.Status.stError) & " and errors<" & VB6.Format(lngMaxErrors) & ") order by status")
-		
-		With rstRecordset
-			If .EOF = False Then
-				If .Fields("Status").Value = Background.Status.stError Then
-					Call ResetDownload(.Fields("Type").Value, .Fields("ID").Value, .Fields("Date").Value, True)
-				End If
-				
-				.MoveFirst()
-				FindNextAction.dldDownloadID.strProgramType = .Fields("Type").Value
-				FindNextAction.dldDownloadID.strProgramID = .Fields("ID").Value
-				FindNextAction.dldDownloadID.dteDate = .Fields("Date").Value
-				FindNextAction.nxtNextAction = .Fields("NextAction").Value
-				FindNextAction.booFound = True
-			End If
-		End With
-		
-		rstRecordset.Close()
-		'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		rstRecordset = Nothing
-	End Function
+    Public Function FindNextAction() As clsBackground.DownloadAction
+        Const lngMaxErrors As Integer = 2
+
+        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstRecordset As DAO.Recordset
+        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE status=" & VB6.Format(clsBackground.Status.stWaiting) & " or (status=" & VB6.Format(clsBackground.Status.stError) & " and errors<" & VB6.Format(lngMaxErrors) & ") order by status")
+
+        With rstRecordset
+            If .EOF = False Then
+                If .Fields("Status").Value = clsBackground.Status.stError Then
+                    Call ResetDownload(.Fields("Type").Value, .Fields("ID").Value, .Fields("Date").Value, True)
+                End If
+
+                .MoveFirst()
+                FindNextAction.dldDownloadID.strProgramType = .Fields("Type").Value
+                FindNextAction.dldDownloadID.strProgramID = .Fields("ID").Value
+                FindNextAction.dldDownloadID.dteDate = .Fields("Date").Value
+                FindNextAction.nxtNextAction = .Fields("NextAction").Value
+                FindNextAction.booFound = True
+            End If
+        End With
+
+        rstRecordset.Close()
+        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        rstRecordset = Nothing
+    End Function
 	
 	Public Sub CleanupUnfinished()
 		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
 		Dim rstRecordset As DAO.Recordset
-		rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE status<>" & VB6.Format(Background.Status.stWaiting) & " AND status<>" & VB6.Format(Background.Status.stCompleted) & " AND status<>" & VB6.Format(Background.Status.stError))
+        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE status<>" & VB6.Format(clsBackground.Status.stWaiting) & " AND status<>" & VB6.Format(clsBackground.Status.stCompleted) & " AND status<>" & VB6.Format(clsBackground.Status.stError))
 		
 		With rstRecordset
 			If .EOF = False Then
@@ -128,8 +128,8 @@ Friend Class clsProgData
 				
 				Do While .EOF = False
 					.Edit()
-					.Fields("Status").Value = Background.Status.stWaiting
-					.Fields("NextAction").Value = Background.NextAction.Download
+                    .Fields("Status").Value = clsBackground.Status.stWaiting
+                    .Fields("NextAction").Value = clsBackground.NextAction.Download
 					.Update()
 					
 					.MoveNext()
@@ -172,18 +172,18 @@ Friend Class clsProgData
 		rstRecordset = Nothing
 	End Function
 	
-	Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Background.Status
-		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-		Dim rstRecordset As DAO.Recordset
-		rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
-		
-		rstRecordset.MoveFirst()
-		DownloadStatus = rstRecordset.Fields("Status").Value
-		
-		rstRecordset.Close()
-		'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		rstRecordset = Nothing
-	End Function
+    Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.Status
+        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstRecordset As DAO.Recordset
+        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+
+        rstRecordset.MoveFirst()
+        DownloadStatus = rstRecordset.Fields("Status").Value
+
+        rstRecordset.Close()
+        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        rstRecordset = Nothing
+    End Function
 	
 	Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
 		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
@@ -265,7 +265,7 @@ Friend Class clsProgData
 	Public Function IsDownloading(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
 		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
 		Dim rstRecordset As DAO.Recordset
-		rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads where type='" & strProgramType & "' and id='" & strProgramID & "' and status<" & VB6.Format(Background.Status.stCompleted))
+        rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads where type='" & strProgramType & "' and id='" & strProgramID & "' and status<" & VB6.Format(clsBackground.Status.stCompleted))
 		
 		IsDownloading = rstRecordset.EOF = False
 		
@@ -294,25 +294,25 @@ Friend Class clsProgData
 					lstAdd.Tag = VB6.Format(.Fields("Date").Value) & "||" + .Fields("ID").Value + "||" + .Fields("Type").Value
 					
 					Select Case .Fields("Status").Value
-						Case Background.Status.stWaiting
-							lstAdd.SubItems(2) = "Waiting"
-							lstAdd.SmallIcon = 2
-						Case Background.Status.stDownloading
-							lstAdd.SubItems(2) = "(1/3) Downloading"
-							lstAdd.SmallIcon = 1
-						Case Background.Status.stDecoding
-							lstAdd.SubItems(2) = "(2/3) Decoding"
-							lstAdd.SmallIcon = 3
-						Case Background.Status.stEncoding
-							lstAdd.SubItems(2) = "(3/3) Encoding"
-							lstAdd.SmallIcon = 3
-						Case Background.Status.stCompleted
-							lstAdd.SubItems(2) = "Completed"
-							lstAdd.SmallIcon = 4
-						Case Background.Status.stError
-							lstAdd.SubItems(2) = "Error"
-							lstAdd.SmallIcon = 7
-					End Select
+                        Case clsBackground.Status.stWaiting
+                            lstAdd.SubItems(2) = "Waiting"
+                            lstAdd.SmallIcon = 2
+                        Case clsBackground.Status.stDownloading
+                            lstAdd.SubItems(2) = "(1/3) Downloading"
+                            lstAdd.SmallIcon = 1
+                        Case clsBackground.Status.stDecoding
+                            lstAdd.SubItems(2) = "(2/3) Decoding"
+                            lstAdd.SmallIcon = 3
+                        Case clsBackground.Status.stEncoding
+                            lstAdd.SubItems(2) = "(3/3) Encoding"
+                            lstAdd.SmallIcon = 3
+                        Case clsBackground.Status.stCompleted
+                            lstAdd.SubItems(2) = "Completed"
+                            lstAdd.SmallIcon = 4
+                        Case clsBackground.Status.stError
+                            lstAdd.SubItems(2) = "Error"
+                            lstAdd.SmallIcon = 7
+                    End Select
 					.MoveNext()
 				Loop 
 			End If
@@ -400,8 +400,8 @@ Friend Class clsProgData
 			.Fields("Type").Value = strProgramType
 			.Fields("ID").Value = strProgramID
 			.Fields("Date").Value = LatestDate(strProgramType, strProgramID)
-			.Fields("NextAction").Value = Background.NextAction.Download
-			.Fields("Status").Value = Background.Status.stWaiting
+            .Fields("NextAction").Value = clsBackground.NextAction.Download
+            .Fields("Status").Value = clsBackground.Status.stWaiting
 			.Update()
 		End With
 		
@@ -613,8 +613,8 @@ Error_Renamed:
 			If .EOF = False Then
 				.MoveFirst()
 				.Edit()
-				.Fields("NextAction").Value = Background.NextAction.Download
-				.Fields("Status").Value = Background.Status.stWaiting
+                .Fields("NextAction").Value = clsBackground.NextAction.Download
+                .Fields("Status").Value = clsBackground.Status.stWaiting
 				If booAuto Then
 					.Fields("Errors").Value = .Fields("Errors").Value + 1
 				Else
