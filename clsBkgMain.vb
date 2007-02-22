@@ -222,7 +222,7 @@ Imports VB = Microsoft.VisualBasic
 			
 			
 			'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-			lngPercent = ((objMatch.SubMatches(0) / (lngDuration * 60)) * 100) * 0.99
+            lngPercent = ((objMatch.SubMatches(0) / (lngDuration * 60)) * 100) * 0.99
 			If lngPercent > 99 Then lngPercent = 99
 			
 			Call ReturnProgress(lngPercent)

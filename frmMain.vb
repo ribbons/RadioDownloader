@@ -92,13 +92,7 @@ Friend Class frmMain
 	End Sub
 	
 	Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
-		'UPGRADE_ISSUE: App property App.PrevInstance was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="076C26E5-B7A9-4E77-B69C-B4448DF39E58"'
-		If App.PrevInstance Then
-			Me.Close()
-			Exit Sub
-		End If
-		
-		lstSubscribed.Top = lstNew.Top
+        lstSubscribed.Top = lstNew.Top
 		lstDownloads.Top = lstNew.Top
 		
 		Call lstNew.ColumnHeaders.Add(1,  , "Programme Name", 5500)
@@ -110,16 +104,16 @@ Friend Class frmMain
 		Call lstDownloads.ColumnHeaders.Add(3,  , "Status", 1250)
 		Call lstDownloads.ColumnHeaders.Add(4,  , "Progress", 1000)
 		
-		'UPGRADE_WARNING: Couldn't resolve default property of object lstNew.Icons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-		lstNew.Icons = imlStations.GetOCX
-		'UPGRADE_WARNING: Couldn't resolve default property of object lstNew.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-		lstNew.SmallIcons = imlListIcons.GetOCX
-		'UPGRADE_WARNING: Couldn't resolve default property of object lstSubscribed.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-		lstSubscribed.SmallIcons = imlListIcons.GetOCX
-		'UPGRADE_WARNING: Couldn't resolve default property of object lstDownloads.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-		lstDownloads.SmallIcons = imlListIcons.GetOCX
+        ''UPGRADE_WARNING: Couldn't resolve default property of object lstNew.Icons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+        'lstNew.Icons = imlStations.GetOCX
+        ''UPGRADE_WARNING: Couldn't resolve default property of object lstNew.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+        'lstNew.SmallIcons = imlListIcons.GetOCX
+        ''UPGRADE_WARNING: Couldn't resolve default property of object lstSubscribed.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+        'lstSubscribed.SmallIcons = imlListIcons.GetOCX
+        ''UPGRADE_WARNING: Couldn't resolve default property of object lstDownloads.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+        'lstDownloads.SmallIcons = imlListIcons.GetOCX
 		
-		Call SetParent(prgItemProgress.hWnd, lstDownloads.hWnd)
+        'Call SetParent(prgItemProgress.hWnd, lstDownloads.hWnd)
 		
 		Call AddStations()
 		Call TabAdjustments()
@@ -128,23 +122,23 @@ Friend Class frmMain
 		clsExtender = New IEDevKit.clsWbExtender
 		clsExtender.HookWebBrowser(webDetails)
 		
-		clsSubclass = New cSubclass
-		Call clsSubclass.Subclass(Me.Handle.ToInt32, Me)
-		
-		' When the listview is scrolled (mouse or keyboard) or the columns are
-		' resized, the scrollbars need to be moved too
-		'Call clsSubclass.AddMsg(WM_HSCROLL, MSG_AFTER)
-		'Call clsSubclass.AddMsg(WM_VSCROLL, MSG_AFTER)
-		'Call clsSubclass.AddMsg(WM_KEYDOWN, MSG_AFTER)
-		'Call clsSubclass.AddMsg(WM_NOTIFY, MSG_AFTER)
-		'Call clsSubclass.AddMsg(WM_STYLECHANGING, MSG_BEFORE)
-		Call clsSubclass.AddMsg(TRAY_CALLBACK, WinSubHook2.eMsgWhen.MSG_BEFORE)
-		Call clsSubclass.AddMsg(WinSubHook2.eMsg.WM_NOTIFY, WinSubHook2.eMsgWhen.MSG_BEFORE)
-		
-		clsProgData_Renamed = New clsProgData
-		Call clsProgData_Renamed.CleanupUnfinished()
-		Call clsProgData_Renamed.UpdateDlList(lstDownloads)
-		Call clsProgData_Renamed.UpdateSubscrList(lstSubscribed)
+        '      clsSubclass = New cSubclass
+        '      Call clsSubclass.Subclass(Me.Handle.ToInt32, Me)
+
+        '' When the listview is scrolled (mouse or keyboard) or the columns are
+        '' resized, the scrollbars need to be moved too
+        ''Call clsSubclass.AddMsg(WM_HSCROLL, MSG_AFTER)
+        ''Call clsSubclass.AddMsg(WM_VSCROLL, MSG_AFTER)
+        ''Call clsSubclass.AddMsg(WM_KEYDOWN, MSG_AFTER)
+        ''Call clsSubclass.AddMsg(WM_NOTIFY, MSG_AFTER)
+        ''Call clsSubclass.AddMsg(WM_STYLECHANGING, MSG_BEFORE)
+        'Call clsSubclass.AddMsg(TRAY_CALLBACK, WinSubHook2.eMsgWhen.MSG_BEFORE)
+        'Call clsSubclass.AddMsg(WinSubHook2.eMsg.WM_NOTIFY, WinSubHook2.eMsgWhen.MSG_BEFORE)
+
+        'clsProgData_Renamed = New clsProgData
+        'Call clsProgData_Renamed.CleanupUnfinished()
+        'Call clsProgData_Renamed.UpdateDlList(lstDownloads)
+        'Call clsProgData_Renamed.UpdateSubscrList(lstSubscribed)
 		
 		tbrToolbar.Buttons("Clean Up").Visible = False
 		tbrToolbar.Buttons("Refresh").Visible = False
