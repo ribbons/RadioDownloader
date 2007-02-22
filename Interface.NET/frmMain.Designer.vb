@@ -51,287 +51,340 @@
 	'It can be modified using the Windows Form Designer.
 	'Do not modify it using the code editor.
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-		Dim resources As System.Resources.ResourceManager = New System.Resources.ResourceManager(GetType(frmMain))
-		Me.components = New System.ComponentModel.Container()
-		Me.ToolTip1 = New System.Windows.Forms.ToolTip(components)
-		Me.tbrToolbar = New AxComctlLib.AxToolbar
-		Me.picShadow = New System.Windows.Forms.Panel
-		Me.imgShadow = New System.Windows.Forms.PictureBox
-		Me._picSeperator_0 = New System.Windows.Forms.PictureBox
-		Me.txtSearch = New System.Windows.Forms.TextBox
-		Me._picSeperator_1 = New System.Windows.Forms.PictureBox
-		Me.tmrResizeHack = New System.Windows.Forms.Timer(components)
-		Me.lstDownloads = New AxComctlLib.AxListView
-		Me.lstSubscribed = New AxComctlLib.AxListView
-		Me.lstNew = New AxComctlLib.AxListView
-		Me.tmrCheckSub = New System.Windows.Forms.Timer(components)
-		Me.tmrStartProcess = New System.Windows.Forms.Timer(components)
-		Me.staStatus = New AxComctlLib.AxStatusBar
-		Me.prgItemProgress = New AxComctlLib.AxProgressBar
-		Me.webDetails = New System.Windows.Forms.WebBrowser
-		Me.imlToolbar = New AxComctlLib.AxImageList
-		Me.imlStations = New AxComctlLib.AxImageList
-		Me.imlListIcons = New AxComctlLib.AxImageList
-		Me.picSeperator = New Microsoft.VisualBasic.Compatibility.VB6.PictureBoxArray(components)
-		Me.MainMenu1 = New System.Windows.Forms.MenuStrip
-		Me.File = New System.Windows.Forms.ToolStripMenuItem
-		Me.mnuFileExit = New System.Windows.Forms.ToolStripMenuItem
-		Me.mnuTools = New System.Windows.Forms.ToolStripMenuItem
-		Me.mnuToolsPrefs = New System.Windows.Forms.ToolStripMenuItem
-		Me.mnuHelp = New System.Windows.Forms.ToolStripMenuItem
-		Me.mnuHelpAbout = New System.Windows.Forms.ToolStripMenuItem
-		Me.mnuTray = New System.Windows.Forms.ToolStripMenuItem
-		Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
-		Me.mnuTraySpacer = New System.Windows.Forms.ToolStripSeparator
-		Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
-		Me.tbrToolbar.SuspendLayout()
-		Me.picShadow.SuspendLayout()
-		Me.MainMenu1.SuspendLayout()
-		Me.SuspendLayout()
-		Me.ToolTip1.Active = True
-		CType(Me.tbrToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.lstNew, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.staStatus, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.prgItemProgress, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.imlStations, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).BeginInit()
-		CType(Me.picSeperator, System.ComponentModel.ISupportInitialize).BeginInit()
-		Me.Text = "Radio Downloader"
-		Me.ClientSize = New System.Drawing.Size(757, 462)
-		Me.Location = New System.Drawing.Point(11, 37)
-		Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-		Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		Me.BackColor = System.Drawing.SystemColors.Control
-		Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
-		Me.ControlBox = True
-		Me.Enabled = True
-		Me.KeyPreview = False
-		Me.MaximizeBox = True
-		Me.MinimizeBox = True
-		Me.Cursor = System.Windows.Forms.Cursors.Default
-		Me.RightToLeft = System.Windows.Forms.RightToLeft.No
-		Me.ShowInTaskbar = True
-		Me.HelpButton = False
-		Me.WindowState = System.Windows.Forms.FormWindowState.Normal
-		Me.Name = "frmMain"
-		tbrToolbar.OcxState = CType(resources.GetObject("tbrToolbar.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.tbrToolbar.Dock = System.Windows.Forms.DockStyle.Top
-		Me.tbrToolbar.Size = New System.Drawing.Size(757, 40)
-		Me.tbrToolbar.Location = New System.Drawing.Point(0, 0)
-		Me.tbrToolbar.TabIndex = 6
-		Me.tbrToolbar.Name = "tbrToolbar"
-		Me.picShadow.Size = New System.Drawing.Size(293, 4)
-		Me.picShadow.Location = New System.Drawing.Point(0, 38)
-		Me.picShadow.TabIndex = 9
-		Me.picShadow.Dock = System.Windows.Forms.DockStyle.None
-		Me.picShadow.BackColor = System.Drawing.SystemColors.Control
-		Me.picShadow.CausesValidation = True
-		Me.picShadow.Enabled = True
-		Me.picShadow.ForeColor = System.Drawing.SystemColors.ControlText
-		Me.picShadow.Cursor = System.Windows.Forms.Cursors.Default
-		Me.picShadow.RightToLeft = System.Windows.Forms.RightToLeft.No
-		Me.picShadow.TabStop = True
-		Me.picShadow.Visible = True
-		Me.picShadow.BorderStyle = System.Windows.Forms.BorderStyle.None
-		Me.picShadow.Name = "picShadow"
-		Me.imgShadow.Size = New System.Drawing.Size(666, 3)
-		Me.imgShadow.Location = New System.Drawing.Point(0, 0)
-		Me.imgShadow.Image = CType(resources.GetObject("imgShadow.Image"), System.Drawing.Image)
-		Me.imgShadow.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
-		Me.imgShadow.Enabled = True
-		Me.imgShadow.Cursor = System.Windows.Forms.Cursors.Default
-		Me.imgShadow.Visible = True
-		Me.imgShadow.BorderStyle = System.Windows.Forms.BorderStyle.None
-		Me.imgShadow.Name = "imgShadow"
-		Me._picSeperator_0.BackColor = System.Drawing.Color.FromARGB(202, 198, 175)
-		Me._picSeperator_0.ForeColor = System.Drawing.SystemColors.WindowText
-		Me._picSeperator_0.Size = New System.Drawing.Size(2, 36)
-		Me._picSeperator_0.Location = New System.Drawing.Point(216, 4)
-		Me._picSeperator_0.TabIndex = 8
-		Me._picSeperator_0.Dock = System.Windows.Forms.DockStyle.None
-		Me._picSeperator_0.CausesValidation = True
-		Me._picSeperator_0.Enabled = True
-		Me._picSeperator_0.Cursor = System.Windows.Forms.Cursors.Default
-		Me._picSeperator_0.RightToLeft = System.Windows.Forms.RightToLeft.No
-		Me._picSeperator_0.TabStop = True
-		Me._picSeperator_0.Visible = True
-		Me._picSeperator_0.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Normal
-		Me._picSeperator_0.BorderStyle = System.Windows.Forms.BorderStyle.None
-		Me._picSeperator_0.Name = "_picSeperator_0"
-		Me.txtSearch.AutoSize = False
-		Me.txtSearch.Enabled = False
-		Me.txtSearch.Size = New System.Drawing.Size(149, 21)
-		Me.txtSearch.Location = New System.Drawing.Point(604, 8)
-		Me.txtSearch.TabIndex = 7
-		Me.txtSearch.Text = "Search..."
-		Me.txtSearch.AcceptsReturn = True
-		Me.txtSearch.TextAlign = System.Windows.Forms.HorizontalAlignment.Left
-		Me.txtSearch.BackColor = System.Drawing.SystemColors.Window
-		Me.txtSearch.CausesValidation = True
-		Me.txtSearch.ForeColor = System.Drawing.SystemColors.WindowText
-		Me.txtSearch.HideSelection = True
-		Me.txtSearch.ReadOnly = False
-		Me.txtSearch.Maxlength = 0
-		Me.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam
-		Me.txtSearch.MultiLine = False
-		Me.txtSearch.RightToLeft = System.Windows.Forms.RightToLeft.No
-		Me.txtSearch.ScrollBars = System.Windows.Forms.ScrollBars.None
-		Me.txtSearch.TabStop = True
-		Me.txtSearch.Visible = True
-		Me.txtSearch.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-		Me.txtSearch.Name = "txtSearch"
-		Me._picSeperator_1.BackColor = System.Drawing.Color.FromARGB(202, 198, 175)
-		Me._picSeperator_1.ForeColor = System.Drawing.SystemColors.WindowText
-		Me._picSeperator_1.Size = New System.Drawing.Size(2, 36)
-		Me._picSeperator_1.Location = New System.Drawing.Point(428, 4)
-		Me._picSeperator_1.TabIndex = 10
-		Me._picSeperator_1.Dock = System.Windows.Forms.DockStyle.None
-		Me._picSeperator_1.CausesValidation = True
-		Me._picSeperator_1.Enabled = True
-		Me._picSeperator_1.Cursor = System.Windows.Forms.Cursors.Default
-		Me._picSeperator_1.RightToLeft = System.Windows.Forms.RightToLeft.No
-		Me._picSeperator_1.TabStop = True
-		Me._picSeperator_1.Visible = True
-		Me._picSeperator_1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Normal
-		Me._picSeperator_1.BorderStyle = System.Windows.Forms.BorderStyle.None
-		Me._picSeperator_1.Name = "_picSeperator_1"
-		Me.tmrResizeHack.Interval = 500
-		Me.tmrResizeHack.Enabled = True
-		lstDownloads.OcxState = CType(resources.GetObject("lstDownloads.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.lstDownloads.Size = New System.Drawing.Size(545, 129)
-		Me.lstDownloads.Location = New System.Drawing.Point(210, 312)
-		Me.lstDownloads.TabIndex = 0
-		Me.lstDownloads.Name = "lstDownloads"
-		lstSubscribed.OcxState = CType(resources.GetObject("lstSubscribed.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.lstSubscribed.Size = New System.Drawing.Size(545, 125)
-		Me.lstSubscribed.Location = New System.Drawing.Point(210, 180)
-		Me.lstSubscribed.TabIndex = 5
-		Me.lstSubscribed.Name = "lstSubscribed"
-		lstNew.OcxState = CType(resources.GetObject("lstNew.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.lstNew.Size = New System.Drawing.Size(545, 89)
-		Me.lstNew.Location = New System.Drawing.Point(210, 40)
-		Me.lstNew.TabIndex = 4
-		Me.lstNew.Name = "lstNew"
-		Me.tmrCheckSub.Interval = 60000
-		Me.tmrCheckSub.Enabled = True
-		Me.tmrStartProcess.Interval = 2000
-		Me.tmrStartProcess.Enabled = True
-		staStatus.OcxState = CType(resources.GetObject("staStatus.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.staStatus.Dock = System.Windows.Forms.DockStyle.Bottom
-		Me.staStatus.Size = New System.Drawing.Size(757, 21)
-		Me.staStatus.Location = New System.Drawing.Point(0, 441)
-		Me.staStatus.TabIndex = 3
-		Me.staStatus.Name = "staStatus"
-		prgItemProgress.OcxState = CType(resources.GetObject("prgItemProgress.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.prgItemProgress.Size = New System.Drawing.Size(129, 21)
-		Me.prgItemProgress.Location = New System.Drawing.Point(408, 140)
-		Me.prgItemProgress.TabIndex = 1
-		Me.prgItemProgress.Visible = False
-		Me.prgItemProgress.Name = "prgItemProgress"
-		Me.webDetails.Size = New System.Drawing.Size(210, 401)
-		Me.webDetails.Location = New System.Drawing.Point(0, 40)
-		Me.webDetails.TabIndex = 2
-		Me.webDetails.AllowWebBrowserDrop = True
-		Me.webDetails.Name = "webDetails"
-		imlToolbar.OcxState = CType(resources.GetObject("imlToolbar.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.imlToolbar.Location = New System.Drawing.Point(292, 140)
-		Me.imlToolbar.Name = "imlToolbar"
-		imlStations.OcxState = CType(resources.GetObject("imlStations.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.imlStations.Location = New System.Drawing.Point(252, 140)
-		Me.imlStations.Name = "imlStations"
-		imlListIcons.OcxState = CType(resources.GetObject("imlListIcons.OcxState"), System.Windows.Forms.AxHost.State)
-		Me.imlListIcons.Location = New System.Drawing.Point(212, 140)
-		Me.imlListIcons.Name = "imlListIcons"
-		Me.File.Name = "File"
-		Me.File.Text = "&File"
-		Me.File.Checked = False
-		Me.File.Enabled = True
-		Me.File.Visible = True
-		Me.mnuFileExit.Name = "mnuFileExit"
-		Me.mnuFileExit.Text = "E&xit"
-		Me.mnuFileExit.Checked = False
-		Me.mnuFileExit.Enabled = True
-		Me.mnuFileExit.Visible = True
-		Me.mnuTools.Name = "mnuTools"
-		Me.mnuTools.Text = "&Tools"
-		Me.mnuTools.Checked = False
-		Me.mnuTools.Enabled = True
-		Me.mnuTools.Visible = True
-		Me.mnuToolsPrefs.Name = "mnuToolsPrefs"
-		Me.mnuToolsPrefs.Text = "&Preferences"
-		Me.mnuToolsPrefs.Checked = False
-		Me.mnuToolsPrefs.Enabled = True
-		Me.mnuToolsPrefs.Visible = True
-		Me.mnuHelp.Name = "mnuHelp"
-		Me.mnuHelp.Text = "&Help"
-		Me.mnuHelp.Checked = False
-		Me.mnuHelp.Enabled = True
-		Me.mnuHelp.Visible = True
-		Me.mnuHelpAbout.Name = "mnuHelpAbout"
-		Me.mnuHelpAbout.Text = "&About"
-		Me.mnuHelpAbout.Checked = False
-		Me.mnuHelpAbout.Enabled = True
-		Me.mnuHelpAbout.Visible = True
-		Me.mnuTray.Name = "mnuTray"
-		Me.mnuTray.Text = "Tray"
-		Me.mnuTray.Visible = False
-		Me.mnuTray.Checked = False
-		Me.mnuTray.Enabled = True
-		Me.mnuTrayShow.Name = "mnuTrayShow"
-		Me.mnuTrayShow.Text = "&Show Radio Downloader"
-		Me.mnuTrayShow.Checked = False
-		Me.mnuTrayShow.Enabled = True
-		Me.mnuTrayShow.Visible = True
-		Me.mnuTraySpacer.Enabled = True
-		Me.mnuTraySpacer.Visible = True
-		Me.mnuTraySpacer.Name = "mnuTraySpacer"
-		Me.mnuTrayExit.Name = "mnuTrayExit"
-		Me.mnuTrayExit.Text = "E&xit"
-		Me.mnuTrayExit.Checked = False
-		Me.mnuTrayExit.Enabled = True
-		Me.mnuTrayExit.Visible = True
-		Me.Controls.Add(tbrToolbar)
-		Me.Controls.Add(lstDownloads)
-		Me.Controls.Add(lstSubscribed)
-		Me.Controls.Add(lstNew)
-		Me.Controls.Add(staStatus)
-		Me.Controls.Add(prgItemProgress)
-		Me.Controls.Add(webDetails)
-		Me.Controls.Add(imlToolbar)
-		Me.Controls.Add(imlStations)
-		Me.Controls.Add(imlListIcons)
-		Me.tbrToolbar.Controls.Add(picShadow)
-		Me.tbrToolbar.Controls.Add(_picSeperator_0)
-		Me.tbrToolbar.Controls.Add(txtSearch)
-		Me.tbrToolbar.Controls.Add(_picSeperator_1)
-		Me.picShadow.Controls.Add(imgShadow)
-		Me.picSeperator.SetIndex(_picSeperator_0, CType(0, Short))
-		Me.picSeperator.SetIndex(_picSeperator_1, CType(1, Short))
-		CType(Me.picSeperator, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.imlStations, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.prgItemProgress, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.staStatus, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.lstNew, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).EndInit()
-		CType(Me.tbrToolbar, System.ComponentModel.ISupportInitialize).EndInit()
-		MainMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem(){Me.File, Me.mnuTools, Me.mnuHelp, Me.mnuTray})
-		File.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem(){Me.mnuFileExit})
-		mnuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem(){Me.mnuToolsPrefs})
-		mnuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem(){Me.mnuHelpAbout})
-		mnuTray.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem(){Me.mnuTrayShow, Me.mnuTraySpacer, Me.mnuTrayExit})
-		Me.Controls.Add(MainMenu1)
-		Me.tbrToolbar.ResumeLayout(False)
-		Me.picShadow.ResumeLayout(False)
-		Me.MainMenu1.ResumeLayout(False)
-		Me.ResumeLayout(False)
-		Me.PerformLayout()
-	End Sub
+        Me.components = New System.ComponentModel.Container
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
+        Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
+        Me.tbrToolbar = New AxComctlLib.AxToolbar
+        Me.picShadow = New System.Windows.Forms.Panel
+        Me.imgShadow = New System.Windows.Forms.PictureBox
+        Me._picSeperator_0 = New System.Windows.Forms.PictureBox
+        Me.txtSearch = New System.Windows.Forms.TextBox
+        Me._picSeperator_1 = New System.Windows.Forms.PictureBox
+        Me.tmrResizeHack = New System.Windows.Forms.Timer(Me.components)
+        Me.lstDownloads = New AxComctlLib.AxListView
+        Me.lstSubscribed = New AxComctlLib.AxListView
+        Me.lstNew = New AxComctlLib.AxListView
+        Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
+        Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
+        Me.staStatus = New AxComctlLib.AxStatusBar
+        Me.prgItemProgress = New AxComctlLib.AxProgressBar
+        Me.webDetails = New System.Windows.Forms.WebBrowser
+        Me.imlToolbar = New AxComctlLib.AxImageList
+        Me.imlStations = New AxComctlLib.AxImageList
+        Me.imlListIcons = New AxComctlLib.AxImageList
+        Me.picSeperator = New Microsoft.VisualBasic.Compatibility.VB6.PictureBoxArray(Me.components)
+        Me.MainMenu1 = New System.Windows.Forms.MenuStrip
+        Me.File = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuFileExit = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuTools = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuToolsPrefs = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuHelp = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuHelpAbout = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuTray = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuTraySpacer = New System.Windows.Forms.ToolStripSeparator
+        Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
+        CType(Me.tbrToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tbrToolbar.SuspendLayout()
+        Me.picShadow.SuspendLayout()
+        CType(Me.imgShadow, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me._picSeperator_0, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me._picSeperator_1, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.lstNew, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.staStatus, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.prgItemProgress, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.imlStations, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).BeginInit()
+        CType(Me.picSeperator, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.MainMenu1.SuspendLayout()
+        Me.SuspendLayout()
+        '
+        'tbrToolbar
+        '
+        Me.tbrToolbar.Controls.Add(Me.picShadow)
+        Me.tbrToolbar.Controls.Add(Me._picSeperator_0)
+        Me.tbrToolbar.Controls.Add(Me.txtSearch)
+        Me.tbrToolbar.Controls.Add(Me._picSeperator_1)
+        Me.tbrToolbar.Dock = System.Windows.Forms.DockStyle.Top
+        Me.tbrToolbar.Location = New System.Drawing.Point(0, 24)
+        Me.tbrToolbar.Name = "tbrToolbar"
+        Me.tbrToolbar.OcxState = CType(resources.GetObject("tbrToolbar.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.tbrToolbar.Size = New System.Drawing.Size(757, 42)
+        Me.tbrToolbar.TabIndex = 6
+        '
+        'picShadow
+        '
+        Me.picShadow.BackColor = System.Drawing.SystemColors.Control
+        Me.picShadow.Controls.Add(Me.imgShadow)
+        Me.picShadow.Cursor = System.Windows.Forms.Cursors.Default
+        Me.picShadow.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.picShadow.Location = New System.Drawing.Point(0, 38)
+        Me.picShadow.Name = "picShadow"
+        Me.picShadow.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.picShadow.Size = New System.Drawing.Size(293, 4)
+        Me.picShadow.TabIndex = 9
+        Me.picShadow.TabStop = True
+        '
+        'imgShadow
+        '
+        Me.imgShadow.Cursor = System.Windows.Forms.Cursors.Default
+        Me.imgShadow.Image = CType(resources.GetObject("imgShadow.Image"), System.Drawing.Image)
+        Me.imgShadow.Location = New System.Drawing.Point(0, 0)
+        Me.imgShadow.Name = "imgShadow"
+        Me.imgShadow.Size = New System.Drawing.Size(666, 3)
+        Me.imgShadow.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage
+        Me.imgShadow.TabIndex = 0
+        Me.imgShadow.TabStop = False
+        '
+        '_picSeperator_0
+        '
+        Me._picSeperator_0.BackColor = System.Drawing.Color.FromArgb(CType(CType(202, Byte), Integer), CType(CType(198, Byte), Integer), CType(CType(175, Byte), Integer))
+        Me._picSeperator_0.Cursor = System.Windows.Forms.Cursors.Default
+        Me._picSeperator_0.ForeColor = System.Drawing.SystemColors.WindowText
+        Me.picSeperator.SetIndex(Me._picSeperator_0, CType(0, Short))
+        Me._picSeperator_0.Location = New System.Drawing.Point(216, 4)
+        Me._picSeperator_0.Name = "_picSeperator_0"
+        Me._picSeperator_0.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me._picSeperator_0.Size = New System.Drawing.Size(2, 36)
+        Me._picSeperator_0.TabIndex = 8
+        '
+        'txtSearch
+        '
+        Me.txtSearch.AcceptsReturn = True
+        Me.txtSearch.BackColor = System.Drawing.SystemColors.Window
+        Me.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam
+        Me.txtSearch.Enabled = False
+        Me.txtSearch.ForeColor = System.Drawing.SystemColors.WindowText
+        Me.txtSearch.Location = New System.Drawing.Point(604, 8)
+        Me.txtSearch.MaxLength = 0
+        Me.txtSearch.Name = "txtSearch"
+        Me.txtSearch.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.txtSearch.Size = New System.Drawing.Size(149, 21)
+        Me.txtSearch.TabIndex = 7
+        Me.txtSearch.Text = "Search..."
+        '
+        '_picSeperator_1
+        '
+        Me._picSeperator_1.BackColor = System.Drawing.Color.FromArgb(CType(CType(202, Byte), Integer), CType(CType(198, Byte), Integer), CType(CType(175, Byte), Integer))
+        Me._picSeperator_1.Cursor = System.Windows.Forms.Cursors.Default
+        Me._picSeperator_1.ForeColor = System.Drawing.SystemColors.WindowText
+        Me.picSeperator.SetIndex(Me._picSeperator_1, CType(1, Short))
+        Me._picSeperator_1.Location = New System.Drawing.Point(428, 4)
+        Me._picSeperator_1.Name = "_picSeperator_1"
+        Me._picSeperator_1.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me._picSeperator_1.Size = New System.Drawing.Size(2, 36)
+        Me._picSeperator_1.TabIndex = 10
+        '
+        'tmrResizeHack
+        '
+        Me.tmrResizeHack.Enabled = True
+        Me.tmrResizeHack.Interval = 500
+        '
+        'lstDownloads
+        '
+        Me.lstDownloads.Location = New System.Drawing.Point(210, 312)
+        Me.lstDownloads.Name = "lstDownloads"
+        Me.lstDownloads.OcxState = CType(resources.GetObject("lstDownloads.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.lstDownloads.Size = New System.Drawing.Size(545, 129)
+        Me.lstDownloads.TabIndex = 0
+        '
+        'lstSubscribed
+        '
+        Me.lstSubscribed.Location = New System.Drawing.Point(210, 180)
+        Me.lstSubscribed.Name = "lstSubscribed"
+        Me.lstSubscribed.OcxState = CType(resources.GetObject("lstSubscribed.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.lstSubscribed.Size = New System.Drawing.Size(545, 125)
+        Me.lstSubscribed.TabIndex = 5
+        '
+        'lstNew
+        '
+        Me.lstNew.Location = New System.Drawing.Point(210, 40)
+        Me.lstNew.Name = "lstNew"
+        Me.lstNew.OcxState = CType(resources.GetObject("lstNew.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.lstNew.Size = New System.Drawing.Size(545, 89)
+        Me.lstNew.TabIndex = 4
+        '
+        'tmrCheckSub
+        '
+        Me.tmrCheckSub.Enabled = True
+        Me.tmrCheckSub.Interval = 60000
+        '
+        'tmrStartProcess
+        '
+        Me.tmrStartProcess.Enabled = True
+        Me.tmrStartProcess.Interval = 2000
+        '
+        'staStatus
+        '
+        Me.staStatus.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.staStatus.Location = New System.Drawing.Point(0, 441)
+        Me.staStatus.Name = "staStatus"
+        Me.staStatus.OcxState = CType(resources.GetObject("staStatus.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.staStatus.Size = New System.Drawing.Size(757, 21)
+        Me.staStatus.TabIndex = 3
+        '
+        'prgItemProgress
+        '
+        Me.prgItemProgress.Location = New System.Drawing.Point(408, 140)
+        Me.prgItemProgress.Name = "prgItemProgress"
+        Me.prgItemProgress.OcxState = CType(resources.GetObject("prgItemProgress.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.prgItemProgress.Size = New System.Drawing.Size(129, 21)
+        Me.prgItemProgress.TabIndex = 1
+        Me.prgItemProgress.Visible = False
+        '
+        'webDetails
+        '
+        Me.webDetails.Location = New System.Drawing.Point(0, 40)
+        Me.webDetails.Name = "webDetails"
+        Me.webDetails.Size = New System.Drawing.Size(210, 401)
+        Me.webDetails.TabIndex = 2
+        '
+        'imlToolbar
+        '
+        Me.imlToolbar.Enabled = True
+        Me.imlToolbar.Location = New System.Drawing.Point(292, 140)
+        Me.imlToolbar.Name = "imlToolbar"
+        Me.imlToolbar.OcxState = CType(resources.GetObject("imlToolbar.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.imlToolbar.Size = New System.Drawing.Size(38, 38)
+        Me.imlToolbar.TabIndex = 7
+        '
+        'imlStations
+        '
+        Me.imlStations.Enabled = True
+        Me.imlStations.Location = New System.Drawing.Point(252, 140)
+        Me.imlStations.Name = "imlStations"
+        Me.imlStations.OcxState = CType(resources.GetObject("imlStations.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.imlStations.Size = New System.Drawing.Size(38, 38)
+        Me.imlStations.TabIndex = 8
+        '
+        'imlListIcons
+        '
+        Me.imlListIcons.Enabled = True
+        Me.imlListIcons.Location = New System.Drawing.Point(212, 140)
+        Me.imlListIcons.Name = "imlListIcons"
+        Me.imlListIcons.OcxState = CType(resources.GetObject("imlListIcons.OcxState"), System.Windows.Forms.AxHost.State)
+        Me.imlListIcons.Size = New System.Drawing.Size(38, 38)
+        Me.imlListIcons.TabIndex = 9
+        '
+        'MainMenu1
+        '
+        Me.MainMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.File, Me.mnuTools, Me.mnuHelp, Me.mnuTray})
+        Me.MainMenu1.Location = New System.Drawing.Point(0, 0)
+        Me.MainMenu1.Name = "MainMenu1"
+        Me.MainMenu1.Size = New System.Drawing.Size(757, 24)
+        Me.MainMenu1.TabIndex = 10
+        '
+        'File
+        '
+        Me.File.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuFileExit})
+        Me.File.Name = "File"
+        Me.File.Size = New System.Drawing.Size(37, 20)
+        Me.File.Text = "&File"
+        '
+        'mnuFileExit
+        '
+        Me.mnuFileExit.Name = "mnuFileExit"
+        Me.mnuFileExit.Size = New System.Drawing.Size(152, 22)
+        Me.mnuFileExit.Text = "E&xit"
+        '
+        'mnuTools
+        '
+        Me.mnuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuToolsPrefs})
+        Me.mnuTools.Name = "mnuTools"
+        Me.mnuTools.Size = New System.Drawing.Size(48, 20)
+        Me.mnuTools.Text = "&Tools"
+        '
+        'mnuToolsPrefs
+        '
+        Me.mnuToolsPrefs.Name = "mnuToolsPrefs"
+        Me.mnuToolsPrefs.Size = New System.Drawing.Size(152, 22)
+        Me.mnuToolsPrefs.Text = "&Preferences"
+        '
+        'mnuHelp
+        '
+        Me.mnuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuHelpAbout})
+        Me.mnuHelp.Name = "mnuHelp"
+        Me.mnuHelp.Size = New System.Drawing.Size(44, 20)
+        Me.mnuHelp.Text = "&Help"
+        '
+        'mnuHelpAbout
+        '
+        Me.mnuHelpAbout.Name = "mnuHelpAbout"
+        Me.mnuHelpAbout.Size = New System.Drawing.Size(152, 22)
+        Me.mnuHelpAbout.Text = "&About"
+        '
+        'mnuTray
+        '
+        Me.mnuTray.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuTrayShow, Me.mnuTraySpacer, Me.mnuTrayExit})
+        Me.mnuTray.Name = "mnuTray"
+        Me.mnuTray.Size = New System.Drawing.Size(42, 20)
+        Me.mnuTray.Text = "Tray"
+        Me.mnuTray.Visible = False
+        '
+        'mnuTrayShow
+        '
+        Me.mnuTrayShow.Name = "mnuTrayShow"
+        Me.mnuTrayShow.Size = New System.Drawing.Size(203, 22)
+        Me.mnuTrayShow.Text = "&Show Radio Downloader"
+        '
+        'mnuTraySpacer
+        '
+        Me.mnuTraySpacer.Name = "mnuTraySpacer"
+        Me.mnuTraySpacer.Size = New System.Drawing.Size(200, 6)
+        '
+        'mnuTrayExit
+        '
+        Me.mnuTrayExit.Name = "mnuTrayExit"
+        Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
+        Me.mnuTrayExit.Text = "E&xit"
+        '
+        'frmMain
+        '
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.BackColor = System.Drawing.SystemColors.Control
+        Me.ClientSize = New System.Drawing.Size(757, 462)
+        Me.Controls.Add(Me.tbrToolbar)
+        Me.Controls.Add(Me.lstDownloads)
+        Me.Controls.Add(Me.lstSubscribed)
+        Me.Controls.Add(Me.lstNew)
+        Me.Controls.Add(Me.staStatus)
+        Me.Controls.Add(Me.prgItemProgress)
+        Me.Controls.Add(Me.webDetails)
+        Me.Controls.Add(Me.imlToolbar)
+        Me.Controls.Add(Me.imlStations)
+        Me.Controls.Add(Me.imlListIcons)
+        Me.Controls.Add(Me.MainMenu1)
+        Me.Cursor = System.Windows.Forms.Cursors.Default
+        Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Location = New System.Drawing.Point(11, 37)
+        Me.Name = "frmMain"
+        Me.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
+        Me.Text = "Radio Downloader"
+        CType(Me.tbrToolbar, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tbrToolbar.ResumeLayout(False)
+        Me.picShadow.ResumeLayout(False)
+        CType(Me.imgShadow, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me._picSeperator_0, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me._picSeperator_1, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.lstNew, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.staStatus, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.prgItemProgress, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.imlStations, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).EndInit()
+        CType(Me.picSeperator, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.MainMenu1.ResumeLayout(False)
+        Me.MainMenu1.PerformLayout()
+        Me.ResumeLayout(False)
+        Me.PerformLayout()
+
+    End Sub
 #End Region 
 End Class

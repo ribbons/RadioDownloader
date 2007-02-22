@@ -117,10 +117,20 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="ToolTip1.Location" type="System.Drawing.Point, System.Drawing">
+  <metadata name="ToolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
+  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="imgShadow.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAACIAAAADCAIAAAB51UoGAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAC1JREFUKFNjfP7o
+        DANe8J8RQ/o/fh0gWXRN924fpgK6dfgeGkI1luHsqd10QAAOj6ft1UcfTwAAAABJRU5ErkJggg==
+</value>
   </data>
+  <metadata name="picSeperator.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>489, 17</value>
+  </metadata>
   <data name="tbrToolbar.OcxState" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj0yLjAuMC4w
@@ -139,16 +149,9 @@
         vQEABQAsAAAACw==
 </value>
   </data>
-  <data name="imgShadow.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAACIAAAADCAIAAAB51UoGAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAC1JREFUKFNjfP7o
-        DANe8J8RQ/o/fh0gWXRN924fpgK6dfgeGkI1luHsqd10QAAOj6ft1UcfTwAAAABJRU5ErkJggg==
-</value>
-  </data>
-  <data name="tmrResizeHack.Location" type="System.Drawing.Point, System.Drawing">
+  <metadata name="tmrResizeHack.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>105, 17</value>
-  </data>
+  </metadata>
   <data name="lstDownloads.OcxState" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj0yLjAuMC4w
@@ -179,12 +182,12 @@
         AAAAH97svQEABQA47P4FAAAL
 </value>
   </data>
-  <data name="tmrCheckSub.Location" type="System.Drawing.Point, System.Drawing">
+  <metadata name="tmrCheckSub.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>233, 17</value>
-  </data>
-  <data name="tmrStartProcess.Location" type="System.Drawing.Point, System.Drawing">
+  </metadata>
+  <metadata name="tmrStartProcess.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>345, 17</value>
-  </data>
+  </metadata>
   <data name="staStatus.OcxState" mimetype="application/x-microsoft.net.object.binary.base64">
     <value>
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj0yLjAuMC4w
@@ -595,10 +598,7 @@
         ////////////////////////////////Cw==
 </value>
   </data>
-  <data name="picSeperator.Location" type="System.Drawing.Point, System.Drawing">
-    <value>489, 17</value>
-  </data>
-  <data name="MainMenu1.Location" type="System.Drawing.Point, System.Drawing">
+  <metadata name="MainMenu1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>609, 17</value>
-  </data>
+  </metadata>
 </root>

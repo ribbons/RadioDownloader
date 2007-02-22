@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?><?xml-stylesheet type='text/xsl' href='_UpgradeReport_Files/UpgradeReport.xslt'?><UpgradeLog>
+<Properties><Property Name="Solution" Value="Radio Dld Background.vbproj.vs7">
+</Property><Property Name="Solution File" Value="E:\Visual Basic\Radio Downloader\Background.NET\Radio Dld Background.vbproj.vs7.sln">
+</Property><Property Name="Date" Value="22 February 2007">
+</Property><Property Name="Time" Value="07:25:07">
+</Property></Properties><Event ErrorLevel="0" Project="Radio Dld Background.vbproj.vs7" Source="Radio Dld Background.vbproj.vs7.vbproj" Description="Project converted successfully">
+</Event><Event ErrorLevel="3" Project="Radio Dld Background.vbproj.vs7" Source="Radio Dld Background.vbproj.vs7.vbproj" Description="Converted">
+</Event><Event ErrorLevel="3" Project="Radio Dld Background.vbproj.vs7" Source="clsBkgMain.vb" Description="file converted">
+</Event></UpgradeLog>
