@@ -33,17 +33,6 @@ Module modMain
 		Dim iImage As Integer
 	End Structure
 	
-	Private Structure NOTIFYICONDATA
-		Dim cbSize As Integer
-		Dim hWnd As Integer
-		Dim uID As Integer
-		Dim uFlags As Integer
-		Dim uCallbackMessage As Integer
-		Dim hIcon As Integer
-		'UPGRADE_WARNING: Fixed-length string size must fit in the buffer. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="3C1E4426-0B80-443E-B943-0627CD55D48B"'
-		<VBFixedString(64),System.Runtime.InteropServices.MarshalAs(System.Runtime.InteropServices.UnmanagedType.ByValArray,SizeConst:=64)> Public szTip() As Char
-	End Structure
-	
 	Public Const LVIR_LABEL As Integer = 2
 	Public Const LVM_FIRST As Integer = &H1000s
 	Public Const LVM_GETSUBITEMRECT As Integer = (LVM_FIRST + 56)
@@ -85,8 +74,6 @@ Module modMain
 	Public Declare Function SHGetPathFromIDList Lib "shell32" (ByVal pidList As Integer, ByVal lpBuffer As String) As Integer
 	Public Declare Function PathFileExists Lib "shlwapi.dll"  Alias "PathFileExistsA"(ByVal pszPath As String) As Integer
 	Public Declare Function PathIsDirectory Lib "shlwapi.dll"  Alias "PathIsDirectoryA"(ByVal pszPath As String) As Integer
-	'UPGRADE_WARNING: Structure NOTIFYICONDATA may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
-    'Public Declare Function Shell_NotifyIcon Lib "shell32"  Alias "Shell_NotifyIconA"(ByVal dwMessage As Integer, ByRef pnid As NOTIFYICONDATA) As Boolean
 	'UPGRADE_WARNING: Structure RECT may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
 	'UPGRADE_WARNING: Structure RECT may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
 	Public Declare Function DrawAnimatedRects Lib "user32" (ByVal hWnd As Integer, ByVal idAni As Integer, ByRef lprcFrom As RECT, ByRef lprcTo As RECT) As Integer
@@ -100,32 +87,15 @@ Module modMain
 	Public Declare Function MoveFile Lib "kernel32"  Alias "MoveFileA"(ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
 	
 	Private strBaseFolder As String
-	Private nid As NOTIFYICONDATA
 	
-	Public Sub AddToSystray(ByRef frmForm As System.Windows.Forms.Form)
-		nid.cbSize = Len(nid)
-		nid.hWnd = frmForm.Handle.ToInt32
-		nid.uID = 0
-		nid.uFlags = NIF_ICON Or NIF_TIP Or NIF_MESSAGE
-		nid.uCallbackMessage = TRAY_CALLBACK
-		nid.hIcon = SystrayIcon("appicon")
-		
-		nid.szTip = "Radio Downloader" & vbNullChar
-        'Shell_NotifyIcon(NIM_ADD, nid)
-	End Sub
-	
-	Public Sub RemoveFromSystray()
-        'Shell_NotifyIcon(NIM_DELETE, nid)
-	End Sub
-	
-	Public Function GetSubItemRect(ByVal hWndLV As Integer, ByVal iItem As Integer, ByVal iSubItem As Integer, ByVal code As Integer, ByRef lpRect As RECT) As Boolean
-		'Get the Coordinates of the ListItem specified with iITEM and iSubItem
-		lpRect.Top = iSubItem
-		lpRect.Left_Renamed = code
-		
-		'UPGRADE_WARNING: Couldn't resolve default property of object lpRect. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+    Public Function GetSubItemRect(ByVal hWndLV As Integer, ByVal iItem As Integer, ByVal iSubItem As Integer, ByVal code As Integer, ByRef lpRect As RECT) As Boolean
+        'Get the Coordinates of the ListItem specified with iITEM and iSubItem
+        lpRect.Top = iSubItem
+        lpRect.Left_Renamed = code
+
+        'UPGRADE_WARNING: Couldn't resolve default property of object lpRect. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         'GetSubItemRect = SendMessage(hWndLV, LVM_GETSUBITEMRECT, iItem, lpRect)
-	End Function
+    End Function
 	
 	Public Function AddSlash(ByVal strString As String) As String
 		If Len(strString) Then

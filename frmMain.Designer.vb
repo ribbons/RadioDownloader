@@ -29,18 +29,13 @@
     Public WithEvents imlToolbar As AxComctlLib.AxImageList
     Public WithEvents imlStations As AxComctlLib.AxImageList
     Public WithEvents imlListIcons As AxComctlLib.AxImageList
-    Public WithEvents picSeperator As Microsoft.VisualBasic.Compatibility.VB6.PictureBoxArray
     Public WithEvents mnuFileExit As System.Windows.Forms.ToolStripMenuItem
     Public WithEvents File As System.Windows.Forms.ToolStripMenuItem
     Public WithEvents mnuToolsPrefs As System.Windows.Forms.ToolStripMenuItem
     Public WithEvents mnuTools As System.Windows.Forms.ToolStripMenuItem
     Public WithEvents mnuHelpAbout As System.Windows.Forms.ToolStripMenuItem
     Public WithEvents mnuHelp As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents mnuTrayShow As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents mnuTraySpacer As System.Windows.Forms.ToolStripSeparator
-    Public WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents mnuTray As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents MainMenu1 As System.Windows.Forms.MenuStrip
+    Public WithEvents mnuMainMenu As System.Windows.Forms.MenuStrip
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.
     'Do not modify it using the code editor.
@@ -60,28 +55,28 @@
         Me.imlToolbar = New AxComctlLib.AxImageList
         Me.imlStations = New AxComctlLib.AxImageList
         Me.imlListIcons = New AxComctlLib.AxImageList
-        Me.picSeperator = New Microsoft.VisualBasic.Compatibility.VB6.PictureBoxArray(Me.components)
-        Me.MainMenu1 = New System.Windows.Forms.MenuStrip
+        Me.mnuMainMenu = New System.Windows.Forms.MenuStrip
         Me.File = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuFileExit = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuTools = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuToolsPrefs = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuHelp = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuHelpAbout = New System.Windows.Forms.ToolStripMenuItem
-        Me.mnuTray = New System.Windows.Forms.ToolStripMenuItem
-        Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
-        Me.mnuTraySpacer = New System.Windows.Forms.ToolStripSeparator
-        Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
         Me.tbrToolbar = New System.Windows.Forms.ToolStrip
         Me.tsbFindNew = New System.Windows.Forms.ToolStripButton
         Me.ToolStripButton2 = New System.Windows.Forms.ToolStripButton
         Me.ToolStripButton3 = New System.Windows.Forms.ToolStripButton
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
         Me.ToolStripButton1 = New System.Windows.Forms.ToolStripButton
-        Me.ToolStripButton4 = New System.Windows.Forms.ToolStripButton
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
+        Me.ToolStripButton4 = New System.Windows.Forms.ToolStripButton
         Me.ToolStripButton5 = New System.Windows.Forms.ToolStripButton
         Me.txtSearch = New System.Windows.Forms.TextBox
+        Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
+        Me.mnuTray = New System.Windows.Forms.ContextMenuStrip(Me.components)
+        Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
+        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
+        Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstNew, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -90,9 +85,9 @@
         CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.imlStations, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.picSeperator, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.MainMenu1.SuspendLayout()
+        Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
+        Me.mnuTray.SuspendLayout()
         Me.SuspendLayout()
         '
         'tmrResizeHack
@@ -186,13 +181,13 @@
         Me.imlListIcons.Size = New System.Drawing.Size(38, 38)
         Me.imlListIcons.TabIndex = 9
         '
-        'MainMenu1
+        'mnuMainMenu
         '
-        Me.MainMenu1.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.File, Me.mnuTools, Me.mnuHelp, Me.mnuTray})
-        Me.MainMenu1.Location = New System.Drawing.Point(0, 0)
-        Me.MainMenu1.Name = "MainMenu1"
-        Me.MainMenu1.Size = New System.Drawing.Size(757, 24)
-        Me.MainMenu1.TabIndex = 10
+        Me.mnuMainMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.File, Me.mnuTools, Me.mnuHelp})
+        Me.mnuMainMenu.Location = New System.Drawing.Point(0, 0)
+        Me.mnuMainMenu.Name = "mnuMainMenu"
+        Me.mnuMainMenu.Size = New System.Drawing.Size(757, 24)
+        Me.mnuMainMenu.TabIndex = 10
         '
         'File
         '
@@ -233,31 +228,6 @@
         Me.mnuHelpAbout.Size = New System.Drawing.Size(107, 22)
         Me.mnuHelpAbout.Text = "&About"
         '
-        'mnuTray
-        '
-        Me.mnuTray.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuTrayShow, Me.mnuTraySpacer, Me.mnuTrayExit})
-        Me.mnuTray.Name = "mnuTray"
-        Me.mnuTray.Size = New System.Drawing.Size(42, 20)
-        Me.mnuTray.Text = "Tray"
-        Me.mnuTray.Visible = False
-        '
-        'mnuTrayShow
-        '
-        Me.mnuTrayShow.Name = "mnuTrayShow"
-        Me.mnuTrayShow.Size = New System.Drawing.Size(203, 22)
-        Me.mnuTrayShow.Text = "&Show Radio Downloader"
-        '
-        'mnuTraySpacer
-        '
-        Me.mnuTraySpacer.Name = "mnuTraySpacer"
-        Me.mnuTraySpacer.Size = New System.Drawing.Size(200, 6)
-        '
-        'mnuTrayExit
-        '
-        Me.mnuTrayExit.Name = "mnuTrayExit"
-        Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
-        Me.mnuTrayExit.Text = "E&xit"
-        '
         'tbrToolbar
         '
         Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsbFindNew, Me.ToolStripButton2, Me.ToolStripButton3, Me.ToolStripSeparator1, Me.ToolStripButton1, Me.ToolStripSeparator2, Me.ToolStripButton4, Me.ToolStripButton5})
@@ -265,7 +235,6 @@
         Me.tbrToolbar.Name = "tbrToolbar"
         Me.tbrToolbar.Size = New System.Drawing.Size(757, 25)
         Me.tbrToolbar.TabIndex = 11
-        Me.tbrToolbar.Text = "ToolStrip1"
         '
         'tsbFindNew
         '
@@ -308,6 +277,11 @@
         Me.ToolStripButton1.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripButton1.Text = "ToolStripButton1"
         '
+        'ToolStripSeparator2
+        '
+        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 25)
+        '
         'ToolStripButton4
         '
         Me.ToolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
@@ -316,11 +290,6 @@
         Me.ToolStripButton4.Name = "ToolStripButton4"
         Me.ToolStripButton4.Size = New System.Drawing.Size(23, 22)
         Me.ToolStripButton4.Text = "ToolStripButton4"
-        '
-        'ToolStripSeparator2
-        '
-        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 25)
         '
         'ToolStripButton5
         '
@@ -346,6 +315,34 @@
         Me.txtSearch.TabIndex = 12
         Me.txtSearch.Text = "Search..."
         '
+        'nicTrayIcon
+        '
+        Me.nicTrayIcon.ContextMenuStrip = Me.mnuTray
+        Me.nicTrayIcon.Visible = True
+        '
+        'mnuTray
+        '
+        Me.mnuTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuTrayShow, Me.ToolStripSeparator3, Me.mnuTrayExit})
+        Me.mnuTray.Name = "ContextMenuStrip1"
+        Me.mnuTray.Size = New System.Drawing.Size(204, 54)
+        '
+        'mnuTrayShow
+        '
+        Me.mnuTrayShow.Name = "mnuTrayShow"
+        Me.mnuTrayShow.Size = New System.Drawing.Size(203, 22)
+        Me.mnuTrayShow.Text = "&Show Radio Downloader"
+        '
+        'ToolStripSeparator3
+        '
+        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
+        Me.ToolStripSeparator3.Size = New System.Drawing.Size(200, 6)
+        '
+        'mnuTrayExit
+        '
+        Me.mnuTrayExit.Name = "mnuTrayExit"
+        Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
+        Me.mnuTrayExit.Text = "E&xit"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -363,9 +360,10 @@
         Me.Controls.Add(Me.imlToolbar)
         Me.Controls.Add(Me.imlStations)
         Me.Controls.Add(Me.imlListIcons)
-        Me.Controls.Add(Me.MainMenu1)
+        Me.Controls.Add(Me.mnuMainMenu)
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Location = New System.Drawing.Point(11, 37)
         Me.Name = "frmMain"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
@@ -379,11 +377,11 @@
         CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imlStations, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.picSeperator, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.MainMenu1.ResumeLayout(False)
-        Me.MainMenu1.PerformLayout()
+        Me.mnuMainMenu.ResumeLayout(False)
+        Me.mnuMainMenu.PerformLayout()
         Me.tbrToolbar.ResumeLayout(False)
         Me.tbrToolbar.PerformLayout()
+        Me.mnuTray.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -398,5 +396,10 @@
     Friend WithEvents ToolStripButton4 As System.Windows.Forms.ToolStripButton
     Friend WithEvents ToolStripButton5 As System.Windows.Forms.ToolStripButton
     Public WithEvents txtSearch As System.Windows.Forms.TextBox
+    Friend WithEvents nicTrayIcon As System.Windows.Forms.NotifyIcon
+    Friend WithEvents mnuTray As System.Windows.Forms.ContextMenuStrip
+    Friend WithEvents mnuTrayShow As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
 #End Region 
 End Class

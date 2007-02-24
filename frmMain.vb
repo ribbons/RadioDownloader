@@ -116,7 +116,8 @@ Friend Class frmMain
 		
         'Call AddStations()
         'Call TabAdjustments()
-        'Call AddToSystray(Me)
+        nicTrayIcon.Icon = Me.Icon
+        nicTrayIcon.Visible = True
 		
         'clsExtender = New IEDevKit.clsWbExtender
         'clsExtender.HookWebBrowser(webDetails)
@@ -131,7 +132,6 @@ Friend Class frmMain
         ''Call clsSubclass.AddMsg(WM_KEYDOWN, MSG_AFTER)
         ''Call clsSubclass.AddMsg(WM_NOTIFY, MSG_AFTER)
         ''Call clsSubclass.AddMsg(WM_STYLECHANGING, MSG_BEFORE)
-        'Call clsSubclass.AddMsg(TRAY_CALLBACK, WinSubHook2.eMsgWhen.MSG_BEFORE)
         'Call clsSubclass.AddMsg(WinSubHook2.eMsg.WM_NOTIFY, WinSubHook2.eMsgWhen.MSG_BEFORE)
 
         'clsProgData_Renamed = New clsProgData
@@ -237,8 +237,6 @@ Friend Class frmMain
         'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
         clsBackground = Nothing
 
-        Call RemoveFromSystray()
-
         On Error Resume Next
         Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm")
         Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp\*.*")
@@ -286,14 +284,6 @@ Friend Class frmMain
     '		'                    CopyMemory ByVal lParam, ss, Len(ss)
     '		'                End If
     '		'            End If
-    '		Case TRAY_CALLBACK
-    '			Select Case lParam
-    '				Case WinSubHook2.eMsg.WM_LBUTTONDBLCLK
-    '					Call mnuTrayShow_Click(mnuTrayShow, New System.EventArgs())
-    '				Case WinSubHook2.eMsg.WM_RBUTTONUP
-    '					'UPGRADE_ISSUE: Form method frmMain.PopupMenu was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="CC4C7EC0-C903-48FC-ACCC-81861D12DA4A"'
-    '					Call PopupMenu(mnuTray,  ,  ,  , mnuTrayShow)
-    '			End Select
     '		Case WinSubHook2.eMsg.WM_NOTIFY
     '			' Fill the NMHDR struct from the lParam pointer.
     '			' (for any WM_NOTIFY msg, lParam always points to a struct which is
@@ -464,18 +454,14 @@ Friend Class frmMain
     End Sub
 
     Public Sub mnuFileExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuFileExit.Click
-        Call mnuTrayExit_Click(mnuTrayExit, New System.EventArgs())
+        Call mnuTrayExit_Click(mnuTrayExit, eventArgs)
     End Sub
 
     Public Sub mnuToolsPrefs_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuToolsPrefs.Click
         Call frmPreferences.ShowDialog()
     End Sub
 
-    Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
-        Me.Close()
-    End Sub
-
-    Public Sub mnuTrayShow_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayShow.Click
+    Private Sub mnuTrayShow_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuTrayShow.Click
         If Me.WindowState = System.Windows.Forms.FormWindowState.Minimized Then
             Me.WindowState = lngLastState
         End If
@@ -484,6 +470,15 @@ Friend Class frmMain
             Call TrayAnimate(Me, False)
             Me.Visible = True
         End If
+    End Sub
+
+    Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
+        Me.Close()
+        Me.Dispose()
+    End Sub
+
+    Private Sub nicTrayIcon_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles nicTrayIcon.MouseDoubleClick
+        Call mnuTrayShow_Click(sender, e)
     End Sub
 
     Private Sub tbrToolbar_ButtonClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.IToolbarEvents_ButtonClickEvent)
@@ -500,7 +495,7 @@ Friend Class frmMain
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        Call clsProgData_Renamed.CheckSubscriptions(lstDownloads, tmrStartProcess)
+        'Call clsProgData_Renamed.CheckSubscriptions(lstDownloads, tmrStartProcess)
     End Sub
 
     Private Sub tmrResizeHack_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrResizeHack.Tick
@@ -684,5 +679,5 @@ Friend Class frmMain
 		Call clsProgData_Renamed.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
 		Call clsProgData_Renamed.UpdateDlList(lstDownloads)
 		tmrStartProcess.Enabled = True
-	End Sub
+    End Sub
 End Class
