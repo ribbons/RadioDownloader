@@ -72,7 +72,7 @@ Friend Class frmMain
 		Call clsProgData_Renamed.UpdateDlList(lstDownloads)
 		
 		'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		clsBackground = Nothing
+        clsBackground = Nothing
 		tmrStartProcess.Enabled = True
 	End Sub
 	
@@ -111,8 +111,6 @@ Friend Class frmMain
         'lstSubscribed.SmallIcons = imlListIcons.GetOCX
         ''UPGRADE_WARNING: Couldn't resolve default property of object lstDownloads.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         'lstDownloads.SmallIcons = imlListIcons.GetOCX
-		
-        'Call SetParent(prgItemProgress.hWnd, lstDownloads.hWnd)
 		
         'Call AddStations()
         'Call TabAdjustments()

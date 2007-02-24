@@ -47,7 +47,6 @@ Imports VB = Microsoft.VisualBasic
     Private sngStartTime As Single
 
     Public Event Finished()
-    'UPGRADE_NOTE: Error was upgraded to Error_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
     Public Event DldError(ByVal strError As String, ByVal strCommandOutput As String)
     Public Event Progress(ByVal lngPercent As Integer)
 

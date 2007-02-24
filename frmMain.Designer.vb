@@ -24,7 +24,6 @@
     Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
     Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
     Public WithEvents staStatus As AxComctlLib.AxStatusBar
-    Public WithEvents prgItemProgress As AxComctlLib.AxProgressBar
     Public WithEvents webDetails As System.Windows.Forms.WebBrowser
     Public WithEvents imlToolbar As AxComctlLib.AxImageList
     Public WithEvents imlStations As AxComctlLib.AxImageList
@@ -50,7 +49,6 @@
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.staStatus = New AxComctlLib.AxStatusBar
-        Me.prgItemProgress = New AxComctlLib.AxProgressBar
         Me.webDetails = New System.Windows.Forms.WebBrowser
         Me.imlToolbar = New AxComctlLib.AxImageList
         Me.imlStations = New AxComctlLib.AxImageList
@@ -63,25 +61,25 @@
         Me.mnuHelp = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuHelpAbout = New System.Windows.Forms.ToolStripMenuItem
         Me.tbrToolbar = New System.Windows.Forms.ToolStrip
-        Me.tsbFindNew = New System.Windows.Forms.ToolStripButton
-        Me.ToolStripButton2 = New System.Windows.Forms.ToolStripButton
-        Me.ToolStripButton3 = New System.Windows.Forms.ToolStripButton
+        Me.tbtFindNew = New System.Windows.Forms.ToolStripButton
+        Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton
+        Me.tbtDownloads = New System.Windows.Forms.ToolStripButton
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
-        Me.ToolStripButton1 = New System.Windows.Forms.ToolStripButton
+        Me.tbtUp = New System.Windows.Forms.ToolStripButton
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
-        Me.ToolStripButton4 = New System.Windows.Forms.ToolStripButton
-        Me.ToolStripButton5 = New System.Windows.Forms.ToolStripButton
+        Me.tbtRefresh = New System.Windows.Forms.ToolStripButton
+        Me.tbtCleanUp = New System.Windows.Forms.ToolStripButton
         Me.txtSearch = New System.Windows.Forms.TextBox
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.mnuTray = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
         Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
+        Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstNew, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.staStatus, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.prgItemProgress, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.imlStations, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -137,15 +135,6 @@
         Me.staStatus.OcxState = CType(resources.GetObject("staStatus.OcxState"), System.Windows.Forms.AxHost.State)
         Me.staStatus.Size = New System.Drawing.Size(757, 21)
         Me.staStatus.TabIndex = 3
-        '
-        'prgItemProgress
-        '
-        Me.prgItemProgress.Location = New System.Drawing.Point(408, 140)
-        Me.prgItemProgress.Name = "prgItemProgress"
-        Me.prgItemProgress.OcxState = CType(resources.GetObject("prgItemProgress.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.prgItemProgress.Size = New System.Drawing.Size(129, 21)
-        Me.prgItemProgress.TabIndex = 1
-        Me.prgItemProgress.Visible = False
         '
         'webDetails
         '
@@ -230,75 +219,70 @@
         '
         'tbrToolbar
         '
-        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tsbFindNew, Me.ToolStripButton2, Me.ToolStripButton3, Me.ToolStripSeparator1, Me.ToolStripButton1, Me.ToolStripSeparator2, Me.ToolStripButton4, Me.ToolStripButton5})
+        Me.tbrToolbar.ImageScalingSize = New System.Drawing.Size(24, 24)
+        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtFindNew, Me.tbtSubscriptions, Me.tbtDownloads, Me.ToolStripSeparator1, Me.tbtUp, Me.ToolStripSeparator2, Me.tbtRefresh, Me.tbtCleanUp, Me.ttxSearch})
         Me.tbrToolbar.Location = New System.Drawing.Point(0, 24)
         Me.tbrToolbar.Name = "tbrToolbar"
-        Me.tbrToolbar.Size = New System.Drawing.Size(757, 25)
+        Me.tbrToolbar.Size = New System.Drawing.Size(757, 31)
         Me.tbrToolbar.TabIndex = 11
         '
-        'tsbFindNew
+        'tbtFindNew
         '
-        Me.tsbFindNew.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.tsbFindNew.Image = CType(resources.GetObject("tsbFindNew.Image"), System.Drawing.Image)
-        Me.tsbFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tsbFindNew.Name = "tsbFindNew"
-        Me.tsbFindNew.Size = New System.Drawing.Size(23, 22)
-        Me.tsbFindNew.Text = "ToolStripButton1"
+        Me.tbtFindNew.Image = CType(resources.GetObject("tbtFindNew.Image"), System.Drawing.Image)
+        Me.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtFindNew.Name = "tbtFindNew"
+        Me.tbtFindNew.Size = New System.Drawing.Size(85, 28)
+        Me.tbtFindNew.Text = "Find New"
         '
-        'ToolStripButton2
+        'tbtSubscriptions
         '
-        Me.ToolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton2.Image = CType(resources.GetObject("ToolStripButton2.Image"), System.Drawing.Image)
-        Me.ToolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton2.Name = "ToolStripButton2"
-        Me.ToolStripButton2.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton2.Text = "ToolStripButton2"
+        Me.tbtSubscriptions.Image = CType(resources.GetObject("tbtSubscriptions.Image"), System.Drawing.Image)
+        Me.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtSubscriptions.Name = "tbtSubscriptions"
+        Me.tbtSubscriptions.Size = New System.Drawing.Size(106, 28)
+        Me.tbtSubscriptions.Text = "Subscriptions"
         '
-        'ToolStripButton3
+        'tbtDownloads
         '
-        Me.ToolStripButton3.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton3.Image = CType(resources.GetObject("ToolStripButton3.Image"), System.Drawing.Image)
-        Me.ToolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton3.Name = "ToolStripButton3"
-        Me.ToolStripButton3.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton3.Text = "ToolStripButton3"
+        Me.tbtDownloads.Image = CType(resources.GetObject("tbtDownloads.Image"), System.Drawing.Image)
+        Me.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtDownloads.Name = "tbtDownloads"
+        Me.tbtDownloads.Size = New System.Drawing.Size(94, 28)
+        Me.tbtDownloads.Text = "Downloads"
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 25)
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 31)
         '
-        'ToolStripButton1
+        'tbtUp
         '
-        Me.ToolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton1.Image = CType(resources.GetObject("ToolStripButton1.Image"), System.Drawing.Image)
-        Me.ToolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton1.Name = "ToolStripButton1"
-        Me.ToolStripButton1.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton1.Text = "ToolStripButton1"
+        Me.tbtUp.Image = CType(resources.GetObject("tbtUp.Image"), System.Drawing.Image)
+        Me.tbtUp.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtUp.Name = "tbtUp"
+        Me.tbtUp.Size = New System.Drawing.Size(50, 28)
+        Me.tbtUp.Text = "Up"
         '
         'ToolStripSeparator2
         '
         Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 25)
+        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 31)
         '
-        'ToolStripButton4
+        'tbtRefresh
         '
-        Me.ToolStripButton4.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton4.Image = CType(resources.GetObject("ToolStripButton4.Image"), System.Drawing.Image)
-        Me.ToolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton4.Name = "ToolStripButton4"
-        Me.ToolStripButton4.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton4.Text = "ToolStripButton4"
+        Me.tbtRefresh.Image = CType(resources.GetObject("tbtRefresh.Image"), System.Drawing.Image)
+        Me.tbtRefresh.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtRefresh.Name = "tbtRefresh"
+        Me.tbtRefresh.Size = New System.Drawing.Size(74, 28)
+        Me.tbtRefresh.Text = "Refresh"
         '
-        'ToolStripButton5
+        'tbtCleanUp
         '
-        Me.ToolStripButton5.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton5.Image = CType(resources.GetObject("ToolStripButton5.Image"), System.Drawing.Image)
-        Me.ToolStripButton5.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton5.Name = "ToolStripButton5"
-        Me.ToolStripButton5.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton5.Text = "ToolStripButton5"
+        Me.tbtCleanUp.Image = CType(resources.GetObject("tbtCleanUp.Image"), System.Drawing.Image)
+        Me.tbtCleanUp.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtCleanUp.Name = "tbtCleanUp"
+        Me.tbtCleanUp.Size = New System.Drawing.Size(83, 28)
+        Me.tbtCleanUp.Text = "Clean Up"
         '
         'txtSearch
         '
@@ -343,6 +327,13 @@
         Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
         Me.mnuTrayExit.Text = "E&xit"
         '
+        'ttxSearch
+        '
+        Me.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.ttxSearch.Name = "ttxSearch"
+        Me.ttxSearch.Size = New System.Drawing.Size(100, 31)
+        Me.ttxSearch.Text = "Search..."
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -355,7 +346,6 @@
         Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.lstNew)
         Me.Controls.Add(Me.staStatus)
-        Me.Controls.Add(Me.prgItemProgress)
         Me.Controls.Add(Me.webDetails)
         Me.Controls.Add(Me.imlToolbar)
         Me.Controls.Add(Me.imlStations)
@@ -373,7 +363,6 @@
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.lstNew, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.staStatus, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.prgItemProgress, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imlStations, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).EndInit()
@@ -387,19 +376,20 @@
 
     End Sub
     Friend WithEvents tbrToolbar As System.Windows.Forms.ToolStrip
-    Friend WithEvents tsbFindNew As System.Windows.Forms.ToolStripButton
-    Friend WithEvents ToolStripButton2 As System.Windows.Forms.ToolStripButton
-    Friend WithEvents ToolStripButton3 As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtFindNew As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtSubscriptions As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtDownloads As System.Windows.Forms.ToolStripButton
     Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents ToolStripButton1 As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtUp As System.Windows.Forms.ToolStripButton
     Friend WithEvents ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents ToolStripButton4 As System.Windows.Forms.ToolStripButton
-    Friend WithEvents ToolStripButton5 As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtRefresh As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtCleanUp As System.Windows.Forms.ToolStripButton
     Public WithEvents txtSearch As System.Windows.Forms.TextBox
     Friend WithEvents nicTrayIcon As System.Windows.Forms.NotifyIcon
     Friend WithEvents mnuTray As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents mnuTrayShow As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
-#End Region 
+    Friend WithEvents ttxSearch As System.Windows.Forms.ToolStripTextBox
+#End Region
 End Class
