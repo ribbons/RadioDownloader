@@ -169,7 +169,7 @@ Friend Class frmMain
             Me.Visible = False
             Cancel = True
         End If
-        eventArgs.Cancel = Cancel
+        eventArgs.Cancel = True
     End Sub
 
     'UPGRADE_WARNING: Event frmMain.Resize may fire when form is initialized. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="88B12AE1-6DE0-48A0-86F1-60C0686C026A"'
@@ -349,28 +349,28 @@ Friend Class frmMain
     End Sub
 
     Private Sub TabAdjustments()
-        'If tbrOldToolbar.Buttons("Find New").Value = ComctlLib.ValueConstants.tbrPressed Then
-        '    lstNew.Visible = True
-        '    lstSubscribed.Visible = False
-        '    lstDownloads.Visible = False
-        '    tbrOldToolbar.Buttons("Clean Up").Enabled = False
-        '    tbrOldToolbar.Buttons("Up").Enabled = lstNew.View = ComctlLib.ListViewConstants.lvwReport
-        '    Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", CStr(clsBackground.NextAction.None))
-        'ElseIf tbrOldToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed Then
-        '    lstNew.Visible = False
-        '    lstSubscribed.Visible = True
-        '    lstDownloads.Visible = False
-        '    tbrOldToolbar.Buttons("Clean Up").Enabled = False
-        '    tbrOldToolbar.Buttons("Up").Enabled = False
-        '    Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", CStr(clsBackground.NextAction.None))
-        'ElseIf tbrOldToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed Then
-        '    lstNew.Visible = False
-        '    lstSubscribed.Visible = False
-        '    lstDownloads.Visible = True
-        '    'tbrToolbar.Buttons("Clean Up").Enabled = True
-        '    tbrOldToolbar.Buttons("Up").Enabled = False
-        '    Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", CStr(clsBackground.NextAction.None))
-        'End If
+        If tbtFindNew.Checked Then
+            lstNew.Visible = True
+            lstSubscribed.Visible = False
+            lstDownloads.Visible = False
+            tbtCleanUp.Enabled = False
+            tbtUp.Enabled = lstNew.View = ComctlLib.ListViewConstants.lvwReport
+            Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", CStr(clsBackground.NextAction.None))
+        ElseIf tbtSubscriptions.Checked Then
+            lstNew.Visible = False
+            lstSubscribed.Visible = True
+            lstDownloads.Visible = False
+            tbtCleanUp.Enabled = False
+            tbtUp.Enabled = False
+            Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", CStr(clsBackground.NextAction.None))
+        ElseIf tbtDownloads.Checked Then
+            lstNew.Visible = False
+            lstSubscribed.Visible = False
+            lstDownloads.Visible = True
+            'tbtCleanUp.Enabled = True
+            tbtUp.Enabled = False
+            Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", CStr(clsBackground.NextAction.None))
+        End If
     End Sub
 
     Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
@@ -677,5 +677,26 @@ Friend Class frmMain
 		Call clsProgData_Renamed.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
 		Call clsProgData_Renamed.UpdateDlList(lstDownloads)
 		tmrStartProcess.Enabled = True
+    End Sub
+
+    Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
+        tbtFindNew.Checked = True
+        tbtSubscriptions.Checked = False
+        tbtDownloads.Checked = False
+        Call TabAdjustments()
+    End Sub
+
+    Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
+        tbtSubscriptions.Checked = True
+        tbtFindNew.Checked = False
+        tbtDownloads.Checked = False
+        Call TabAdjustments()
+    End Sub
+
+    Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
+        tbtDownloads.Checked = True
+        tbtSubscriptions.Checked = False
+        tbtFindNew.Checked = False
+        Call TabAdjustments()
     End Sub
 End Class

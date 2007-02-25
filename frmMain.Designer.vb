@@ -69,13 +69,13 @@
         Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
         Me.tbtRefresh = New System.Windows.Forms.ToolStripButton
         Me.tbtCleanUp = New System.Windows.Forms.ToolStripButton
+        Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
         Me.txtSearch = New System.Windows.Forms.TextBox
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.mnuTray = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
         Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
-        Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstNew, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -175,6 +175,7 @@
         Me.mnuMainMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.File, Me.mnuTools, Me.mnuHelp})
         Me.mnuMainMenu.Location = New System.Drawing.Point(0, 0)
         Me.mnuMainMenu.Name = "mnuMainMenu"
+        Me.mnuMainMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
         Me.mnuMainMenu.Size = New System.Drawing.Size(757, 24)
         Me.mnuMainMenu.TabIndex = 10
         '
@@ -223,11 +224,14 @@
         Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtFindNew, Me.tbtSubscriptions, Me.tbtDownloads, Me.ToolStripSeparator1, Me.tbtUp, Me.ToolStripSeparator2, Me.tbtRefresh, Me.tbtCleanUp, Me.ttxSearch})
         Me.tbrToolbar.Location = New System.Drawing.Point(0, 24)
         Me.tbrToolbar.Name = "tbrToolbar"
+        Me.tbrToolbar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
         Me.tbrToolbar.Size = New System.Drawing.Size(757, 31)
         Me.tbrToolbar.TabIndex = 11
         '
         'tbtFindNew
         '
+        Me.tbtFindNew.Checked = True
+        Me.tbtFindNew.CheckState = System.Windows.Forms.CheckState.Checked
         Me.tbtFindNew.Image = CType(resources.GetObject("tbtFindNew.Image"), System.Drawing.Image)
         Me.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtFindNew.Name = "tbtFindNew"
@@ -284,6 +288,13 @@
         Me.tbtCleanUp.Size = New System.Drawing.Size(83, 28)
         Me.tbtCleanUp.Text = "Clean Up"
         '
+        'ttxSearch
+        '
+        Me.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.ttxSearch.Name = "ttxSearch"
+        Me.ttxSearch.Size = New System.Drawing.Size(100, 31)
+        Me.ttxSearch.Text = "Search..."
+        '
         'txtSearch
         '
         Me.txtSearch.AcceptsReturn = True
@@ -326,13 +337,6 @@
         Me.mnuTrayExit.Name = "mnuTrayExit"
         Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
         Me.mnuTrayExit.Text = "E&xit"
-        '
-        'ttxSearch
-        '
-        Me.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        Me.ttxSearch.Name = "ttxSearch"
-        Me.ttxSearch.Size = New System.Drawing.Size(100, 31)
-        Me.ttxSearch.Text = "Search..."
         '
         'frmMain
         '
