@@ -20,7 +20,6 @@
     Public WithEvents tmrResizeHack As System.Windows.Forms.Timer
     Public WithEvents lstDownloads As AxComctlLib.AxListView
     Public WithEvents lstSubscribed As AxComctlLib.AxListView
-    Public WithEvents lstNew As AxComctlLib.AxListView
     Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
     Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
     Public WithEvents staStatus As AxComctlLib.AxStatusBar
@@ -45,7 +44,6 @@
         Me.tmrResizeHack = New System.Windows.Forms.Timer(Me.components)
         Me.lstDownloads = New AxComctlLib.AxListView
         Me.lstSubscribed = New AxComctlLib.AxListView
-        Me.lstNew = New AxComctlLib.AxListView
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.staStatus = New AxComctlLib.AxStatusBar
@@ -70,15 +68,14 @@
         Me.tbtRefresh = New System.Windows.Forms.ToolStripButton
         Me.tbtCleanUp = New System.Windows.Forms.ToolStripButton
         Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
-        Me.txtSearch = New System.Windows.Forms.TextBox
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.mnuTray = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
         Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
+        Me.lstNew = New System.Windows.Forms.ListView
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.lstNew, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.staStatus, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.imlStations, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -95,27 +92,19 @@
         '
         'lstDownloads
         '
-        Me.lstDownloads.Location = New System.Drawing.Point(210, 312)
+        Me.lstDownloads.Location = New System.Drawing.Point(210, 384)
         Me.lstDownloads.Name = "lstDownloads"
         Me.lstDownloads.OcxState = CType(resources.GetObject("lstDownloads.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.lstDownloads.Size = New System.Drawing.Size(545, 129)
+        Me.lstDownloads.Size = New System.Drawing.Size(545, 57)
         Me.lstDownloads.TabIndex = 0
         '
         'lstSubscribed
         '
-        Me.lstSubscribed.Location = New System.Drawing.Point(210, 180)
+        Me.lstSubscribed.Location = New System.Drawing.Point(210, 321)
         Me.lstSubscribed.Name = "lstSubscribed"
         Me.lstSubscribed.OcxState = CType(resources.GetObject("lstSubscribed.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.lstSubscribed.Size = New System.Drawing.Size(545, 125)
+        Me.lstSubscribed.Size = New System.Drawing.Size(545, 52)
         Me.lstSubscribed.TabIndex = 5
-        '
-        'lstNew
-        '
-        Me.lstNew.Location = New System.Drawing.Point(212, 94)
-        Me.lstNew.Name = "lstNew"
-        Me.lstNew.OcxState = CType(resources.GetObject("lstNew.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.lstNew.Size = New System.Drawing.Size(545, 40)
-        Me.lstNew.TabIndex = 4
         '
         'tmrCheckSub
         '
@@ -140,17 +129,17 @@
         '
         Me.webDetails.AllowWebBrowserDrop = False
         Me.webDetails.IsWebBrowserContextMenuEnabled = False
-        Me.webDetails.Location = New System.Drawing.Point(0, 52)
+        Me.webDetails.Location = New System.Drawing.Point(0, 58)
         Me.webDetails.Name = "webDetails"
         Me.webDetails.ScrollBarsEnabled = False
-        Me.webDetails.Size = New System.Drawing.Size(210, 389)
+        Me.webDetails.Size = New System.Drawing.Size(210, 383)
         Me.webDetails.TabIndex = 2
         Me.webDetails.WebBrowserShortcutsEnabled = False
         '
         'imlToolbar
         '
         Me.imlToolbar.Enabled = True
-        Me.imlToolbar.Location = New System.Drawing.Point(292, 140)
+        Me.imlToolbar.Location = New System.Drawing.Point(303, 196)
         Me.imlToolbar.Name = "imlToolbar"
         Me.imlToolbar.OcxState = CType(resources.GetObject("imlToolbar.OcxState"), System.Windows.Forms.AxHost.State)
         Me.imlToolbar.Size = New System.Drawing.Size(38, 38)
@@ -159,7 +148,7 @@
         'imlStations
         '
         Me.imlStations.Enabled = True
-        Me.imlStations.Location = New System.Drawing.Point(252, 140)
+        Me.imlStations.Location = New System.Drawing.Point(259, 196)
         Me.imlStations.Name = "imlStations"
         Me.imlStations.OcxState = CType(resources.GetObject("imlStations.OcxState"), System.Windows.Forms.AxHost.State)
         Me.imlStations.Size = New System.Drawing.Size(38, 38)
@@ -168,7 +157,7 @@
         'imlListIcons
         '
         Me.imlListIcons.Enabled = True
-        Me.imlListIcons.Location = New System.Drawing.Point(212, 140)
+        Me.imlListIcons.Location = New System.Drawing.Point(215, 196)
         Me.imlListIcons.Name = "imlListIcons"
         Me.imlListIcons.OcxState = CType(resources.GetObject("imlListIcons.OcxState"), System.Windows.Forms.AxHost.State)
         Me.imlListIcons.Size = New System.Drawing.Size(38, 38)
@@ -299,21 +288,6 @@
         Me.ttxSearch.Size = New System.Drawing.Size(100, 31)
         Me.ttxSearch.Text = "Search..."
         '
-        'txtSearch
-        '
-        Me.txtSearch.AcceptsReturn = True
-        Me.txtSearch.BackColor = System.Drawing.SystemColors.Window
-        Me.txtSearch.Cursor = System.Windows.Forms.Cursors.IBeam
-        Me.txtSearch.Enabled = False
-        Me.txtSearch.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtSearch.Location = New System.Drawing.Point(304, 221)
-        Me.txtSearch.MaxLength = 0
-        Me.txtSearch.Name = "txtSearch"
-        Me.txtSearch.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.txtSearch.Size = New System.Drawing.Size(149, 21)
-        Me.txtSearch.TabIndex = 12
-        Me.txtSearch.Text = "Search..."
-        '
         'nicTrayIcon
         '
         Me.nicTrayIcon.ContextMenuStrip = Me.mnuTray
@@ -342,23 +316,31 @@
         Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
         Me.mnuTrayExit.Text = "E&xit"
         '
+        'lstNew
+        '
+        Me.lstNew.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstNew.Location = New System.Drawing.Point(210, 58)
+        Me.lstNew.Name = "lstNew"
+        Me.lstNew.Size = New System.Drawing.Size(547, 84)
+        Me.lstNew.TabIndex = 12
+        Me.lstNew.UseCompatibleStateImageBehavior = False
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 462)
-        Me.Controls.Add(Me.txtSearch)
         Me.Controls.Add(Me.tbrToolbar)
+        Me.Controls.Add(Me.lstNew)
         Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.lstSubscribed)
-        Me.Controls.Add(Me.lstNew)
         Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.webDetails)
         Me.Controls.Add(Me.imlToolbar)
         Me.Controls.Add(Me.imlStations)
-        Me.Controls.Add(Me.imlListIcons)
         Me.Controls.Add(Me.mnuMainMenu)
+        Me.Controls.Add(Me.imlListIcons)
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -369,7 +351,6 @@
         Me.Text = "Radio Downloader"
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.lstNew, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.staStatus, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.imlStations, System.ComponentModel.ISupportInitialize).EndInit()
@@ -392,12 +373,12 @@
     Friend WithEvents ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents tbtRefresh As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtCleanUp As System.Windows.Forms.ToolStripButton
-    Public WithEvents txtSearch As System.Windows.Forms.TextBox
     Friend WithEvents nicTrayIcon As System.Windows.Forms.NotifyIcon
     Friend WithEvents mnuTray As System.Windows.Forms.ContextMenuStrip
     Friend WithEvents mnuTrayShow As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ttxSearch As System.Windows.Forms.ToolStripTextBox
+    Friend WithEvents lstNew As System.Windows.Forms.ListView
 #End Region
 End Class

@@ -22,7 +22,7 @@ Friend Class frmMain
 	Const lngDLStatCol As Integer = 2
 	
 	Private Sub SetNewView(ByVal booStations As Boolean)
-		lstNew.ListItems.Clear()
+        lstNew.Clear()
 		
 		If booStations Then
 			lstNew.View = ComctlLib.ListViewConstants.lvwIcon
@@ -44,12 +44,12 @@ Friend Class frmMain
 	End Sub
 	
 	Private Sub AddStation(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String)
-		Dim lstAdd As ComctlLib.ListItem
+        Dim lstAdd As New System.Windows.Forms.ListViewItem
+        lstAdd.Text = strStationName
+        lstAdd.Tag = strStationType & "||" & strStationId
+        lstAdd.ImageIndex = imlStations.ListImages(strStationId).Index
 		
-		lstAdd = lstNew.ListItems.Add
-		lstAdd.Text = strStationName
-		lstAdd.Tag = strStationType & "||" & strStationId
-		lstAdd.Icon = imlStations.ListImages(strStationId).Index
+        lstAdd = lstNew.Items.Add(lstAdd)
 	End Sub
 	
     Private Sub clsBackground_Error(ByVal strError As String, ByVal strOutput As String) Handles clsBackground.DldError
@@ -97,8 +97,7 @@ Friend Class frmMain
         lstSubscribed.Top = lstNew.Top
 		lstDownloads.Top = lstNew.Top
 		
-		Call lstNew.ColumnHeaders.Add(1,  , "Programme Name", 5500)
-		
+        Call lstNew.Columns.Add("Programme Name", 5500)
 		Call lstSubscribed.ColumnHeaders.Add(1,  , "Programme Name", 5500)
 		
 		Call lstDownloads.ColumnHeaders.Add(1,  , "Name", 2250)
@@ -115,7 +114,7 @@ Friend Class frmMain
         ''UPGRADE_WARNING: Couldn't resolve default property of object lstDownloads.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         'lstDownloads.SmallIcons = imlListIcons.GetOCX
 		
-        'Call AddStations()
+        Call AddStations()
         Call TabAdjustments()
         nicTrayIcon.Icon = Me.Icon
         nicTrayIcon.Visible = True
@@ -211,15 +210,6 @@ Friend Class frmMain
         lstDownloads.Width = VB6.TwipsToPixelsX(VB6.PixelsToTwipsX(Me.ClientRectangle.Width) - VB6.PixelsToTwipsX(webDetails.Width))
         lstNew.Width = lstDownloads.Width
         lstSubscribed.Width = lstDownloads.Width
-
-        'Search box in toolbar
-        'If tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width) < tbrToolbar.Buttons("Search Box").Left Then
-        txtSearch.Visible = False
-        'Else
-        '    txtSearch.Visible = True
-        '    txtSearch.Left = tbrToolbar.Width - (txtSearch.Width + tbrToolbar.Buttons("-").Width)
-        '    txtSearch.Top = (tbrToolbar.Buttons("Search Box").Height - txtSearch.Height) / 2
-        'End If
 
         'Toolbar seperators
         'picSeperator(0).Top = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("-").Top + 2 * VB6.TwipsPerPixelX)
@@ -321,9 +311,9 @@ Friend Class frmMain
         End If
     End Sub
 
-    Private Sub lstNew_DblClick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles lstNew.DblClick
+    Private Sub lstNew_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstNew.DoubleClick
         Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItem.Tag, "||")
+        strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
         If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
             If strSplit(0) <> "BBCLA" Then Stop
@@ -331,7 +321,7 @@ Friend Class frmMain
             lstNew.View = ComctlLib.ListViewConstants.lvwReport
             'tbrOldToolbar.Buttons("Up").Enabled = True
 
-            Call CreateHtml(lstNew.SelectedItem.Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItem.Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(clsBackground.NextAction.None))
+            Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(clsBackground.NextAction.None))
             Call ListviewStartAdd()
             Call ListStation(strSplit(1), lstNew)
             Call ListviewEndAdd()
@@ -340,9 +330,9 @@ Friend Class frmMain
         End If
     End Sub
 
-    Private Sub lstNew_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstNew.ItemClick
+    Private Sub lstNew_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent)
         Dim strSplit() As String
-        strSplit = Split(eventArgs.Item.Tag, "||")
+        strSplit = Split(eventArgs.item.Tag, "||")
 
         If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
             ' Do nothing
@@ -590,7 +580,7 @@ Friend Class frmMain
 
     Public Sub FlDownload()
         Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItem.Tag, "||")
+        strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
         If clsProgData_Renamed.IsDownloading(strSplit(0), strSplit(1)) Then
             staStatus.SimpleText = ""
@@ -618,7 +608,7 @@ Friend Class frmMain
 
     Public Sub FlSubscribe()
         Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItem.Tag, "||")
+        strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
         If clsProgData_Renamed.AddSubscription(strSplit(0), strSplit(1)) = False Then
             staStatus.SimpleText = ""
