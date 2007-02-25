@@ -325,7 +325,7 @@ Friend Class frmMain
             If strSplit(0) <> "BBCLA" Then Stop
 
             lstNew.View = View.Details
-            'tbrOldToolbar.Buttons("Up").Enabled = True
+            tbtUp.Enabled = True
 
             Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(clsBackground.NextAction.None))
             Call ListStation(strSplit(1), lstNew)
@@ -365,9 +365,7 @@ Friend Class frmMain
         Dim strCss As String
         Dim strHtmlStart As String
 
-        'UPGRADE_ISSUE: Constant vbUnicode was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
-        'UPGRADE_ISSUE: Global method LoadResData was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
-        strCss = ASCII.GetChars(MyResources.CSS_STYLES) ' "" 'StrConv(CStr(VB6.LoadResData("styles", "css")), vbUnicode)
+        strCss = ASCII.GetChars(MyResources.CSS_STYLES)
         strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
         Const strHtmlEnd As String = "</td></tr></table></body></html>"
 
@@ -463,19 +461,6 @@ Friend Class frmMain
 
     Private Sub nicTrayIcon_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles nicTrayIcon.MouseDoubleClick
         Call mnuTrayShow_Click(sender, e)
-    End Sub
-
-    Private Sub tbrToolbar_ButtonClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.IToolbarEvents_ButtonClickEvent)
-        Select Case eventArgs.button.Key
-            Case "Find New", "Subscriptions", "Downloads"
-                Call TabAdjustments()
-            Case "Up"
-                eventArgs.button.Enabled = False
-                If lstNew.View = ComctlLib.ListViewConstants.lvwReport Then
-                    Call AddStations()
-                End If
-                Call TabAdjustments()
-        End Select
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
@@ -653,6 +638,14 @@ Friend Class frmMain
         tbtDownloads.Checked = True
         tbtSubscriptions.Checked = False
         tbtFindNew.Checked = False
+        Call TabAdjustments()
+    End Sub
+
+    Private Sub tbtUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUp.Click
+        tbtUp.Enabled = False
+        If lstNew.View = View.Details Then
+            Call AddStations()
+        End If
         Call TabAdjustments()
     End Sub
 End Class
