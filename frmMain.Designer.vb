@@ -138,10 +138,14 @@
         '
         'webDetails
         '
+        Me.webDetails.AllowWebBrowserDrop = False
+        Me.webDetails.IsWebBrowserContextMenuEnabled = False
         Me.webDetails.Location = New System.Drawing.Point(0, 52)
         Me.webDetails.Name = "webDetails"
+        Me.webDetails.ScrollBarsEnabled = False
         Me.webDetails.Size = New System.Drawing.Size(210, 389)
         Me.webDetails.TabIndex = 2
+        Me.webDetails.WebBrowserShortcutsEnabled = False
         '
         'imlToolbar
         '

@@ -187,6 +187,7 @@
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </Content>
+    <None Include="sidebar.css" />
   </ItemGroup>
   <ItemGroup>
     <None Include="My Project\Settings.settings">

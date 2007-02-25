@@ -83,4 +83,56 @@ Friend Class MyResources
             Return CType(obj,System.Drawing.Icon)
         End Get
     End Property
+    
+    '''<summary>
+    '''  Looks up a localized string similar to body { 
+    '''	background-color: #3F3F3F;
+    '''	font: 8pt verdana;
+    '''	color: white;
+    '''}
+    '''
+    '''html, body, table {
+    '''	height: 100%;
+    '''	margin: 0px;
+    '''}
+    '''
+    '''h1 {
+    '''	font-size: 10pt;
+    '''	margin-bottom: 12px;
+    '''	padding-left: 5px;
+    '''}
+    '''
+    '''h2 {
+    '''	color: #999999;
+    '''	font-size: 8pt;
+    '''	margin-top: 0px;
+    '''	margin-bottom: 5px;
+    '''}
+    '''
+    '''table {
+    '''	width: 100%;
+    '''	border-collapse: collapse;
+    '''	margin: 0px;
+    '''}
+    '''
+    '''td {
+    '''	vertical-align: top;
+    '''	margin: 0px;	
+    '''}
+    '''
+    '''.maintd {
+    '''	padding: 10px;
+    '''}
+    '''
+    '''.bottomrow {
+    '''	vertical-align: bottom;
+    '''}
+    '''
+    '''.contentbox  [rest of string was truncated]&quot;;.
+    '''</summary>
+    Friend Shared ReadOnly Property sidebar_css() As String
+        Get
+            Return ResourceManager.GetString("sidebar_css", resourceCulture)
+        End Get
+    End Property
 End Class

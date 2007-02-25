@@ -1,5 +1,8 @@
 Option Strict Off
 Option Explicit On
+
+Imports System.Text.ASCIIEncoding
+
 Friend Class frmMain
 	Inherits System.Windows.Forms.Form
     'Implements WinSubHook2.iSubclass
@@ -113,7 +116,7 @@ Friend Class frmMain
         'lstDownloads.SmallIcons = imlListIcons.GetOCX
 		
         'Call AddStations()
-        'Call TabAdjustments()
+        Call TabAdjustments()
         nicTrayIcon.Icon = Me.Icon
         nicTrayIcon.Visible = True
 		
@@ -381,7 +384,7 @@ Friend Class frmMain
 
         'UPGRADE_ISSUE: Constant vbUnicode was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="55B59875-9A95-4B71-9D6A-7C294BF7139D"'
         'UPGRADE_ISSUE: Global method LoadResData was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
-        strCss = "" 'StrConv(CStr(VB6.LoadResData("styles", "css")), vbUnicode)
+        strCss = ASCII.GetChars(MyResources.CSS_STYLES) ' "" 'StrConv(CStr(VB6.LoadResData("styles", "css")), vbUnicode)
         strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
         Const strHtmlEnd As String = "</td></tr></table></body></html>"
 
@@ -389,7 +392,7 @@ Friend Class frmMain
 
         Dim strSplitLinks() As String
         Dim strLoopLinks As Object
-        Dim strBuiltLinks As String
+        Dim strBuiltLinks As String = ""
         strSplitLinks = Split(strBottomLinks, ",")
 
         For Each strLoopLinks In strSplitLinks
