@@ -284,8 +284,10 @@
         '
         'lstNew
         '
+        Me.lstNew.Activation = System.Windows.Forms.ItemActivation.TwoClick
         Me.lstNew.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstNew.Location = New System.Drawing.Point(210, 58)
+        Me.lstNew.MultiSelect = False
         Me.lstNew.Name = "lstNew"
         Me.lstNew.Size = New System.Drawing.Size(547, 84)
         Me.lstNew.TabIndex = 12

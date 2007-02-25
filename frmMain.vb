@@ -9,14 +9,13 @@ Friend Class frmMain
 	Private lngStatus As Integer
 	
     Private WithEvents clsBackground As clsBackground
-    'UPGRADE_NOTE: clsProgData was upgraded to clsProgData_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
-	Private clsProgData_Renamed As clsProgData
-	
-	Private lngLastState As Integer
-	
-	Const lngDLStatCol As Integer = 2
-	
-	Private Sub SetNewView(ByVal booStations As Boolean)
+    Private clsTheProgData As clsProgData
+
+    Private lngLastState As Integer
+
+    Const lngDLStatCol As Integer = 2
+
+    Private Sub SetNewView(ByVal booStations As Boolean)
         lstNew.Items.Clear()
 
         If booStations Then
@@ -24,80 +23,80 @@ Friend Class frmMain
         Else
             lstNew.View = View.Details
         End If
-	End Sub
-	
-	Private Sub AddStations()
-		Call SetNewView(True)
-		
-		Call AddStation("Radio 1", "radio1", "BBCLA")
-		Call AddStation("Radio 2", "radio2", "BBCLA")
-		Call AddStation("Radio 3", "radio3", "BBCLA")
-		Call AddStation("Radio 4", "radio4", "BBCLA")
-		Call AddStation("Five Live", "fivelive", "BBCLA")
-		Call AddStation("Six Music", "6music", "BBCLA")
-		'Call AddStation("BBC 7", "bbc7", "BBCLA")
-	End Sub
-	
-	Private Sub AddStation(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String)
+    End Sub
+
+    Private Sub AddStations()
+        Call SetNewView(True)
+
+        Call AddStation("Radio 1", "radio1", "BBCLA")
+        Call AddStation("Radio 2", "radio2", "BBCLA")
+        Call AddStation("Radio 3", "radio3", "BBCLA")
+        Call AddStation("Radio 4", "radio4", "BBCLA")
+        Call AddStation("Five Live", "fivelive", "BBCLA")
+        Call AddStation("Six Music", "6music", "BBCLA")
+        'Call AddStation("BBC 7", "bbc7", "BBCLA")
+    End Sub
+
+    Private Sub AddStation(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String)
         Dim lstAdd As New System.Windows.Forms.ListViewItem
         lstAdd.Text = strStationName
         lstAdd.Tag = strStationType & "||" & strStationId
         lstAdd.ImageKey = "default" 'imlStations.ListImages(strStationId).Index
-		
+
         lstAdd = lstNew.Items.Add(lstAdd)
-	End Sub
-	
+    End Sub
+
     Private Sub clsBackground_Error(ByVal strError As String, ByVal strOutput As String) Handles clsBackground.DldError
-        Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stError)
-        Call clsProgData_Renamed.UpdateDlList(lstDownloads)
+        Call clsTheProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stError)
+        Call clsTheProgData.UpdateDlList(lstDownloads)
 
         'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
         clsBackground = Nothing
         tmrStartProcess.Enabled = True
     End Sub
-	
-	Private Sub clsBackground_Finished() Handles clsBackground.Finished
-		Call clsProgData_Renamed.AdvanceNextAction(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate)
-		
-        If clsProgData_Renamed.GetNextActionVal(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate) = clsBackground.NextAction.None Then
+
+    Private Sub clsBackground_Finished() Handles clsBackground.Finished
+        Call clsTheProgData.AdvanceNextAction(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate)
+
+        If clsTheProgData.GetNextActionVal(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate) = clsBackground.NextAction.None Then
             ' All done, set status to completed, and save file path
-            Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stCompleted)
-            Call clsProgData_Renamed.SetDownloadPath(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, clsBackground.FinalName)
+            Call clsTheProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stCompleted)
+            Call clsTheProgData.SetDownloadPath(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, clsBackground.FinalName)
         Else
-            Call clsProgData_Renamed.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stWaiting)
+            Call clsTheProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stWaiting)
         End If
-		
-		Call clsProgData_Renamed.UpdateDlList(lstDownloads)
-		
-		'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+
+        Call clsTheProgData.UpdateDlList(lstDownloads)
+
+        'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
         clsBackground = Nothing
-		tmrStartProcess.Enabled = True
-	End Sub
-	
-	Private Sub clsBackground_Progress(ByVal lngPercent As Integer) Handles clsBackground.Progress
+        tmrStartProcess.Enabled = True
+    End Sub
+
+    Private Sub clsBackground_Progress(ByVal lngPercent As Integer) Handles clsBackground.Progress
         'Dim lstChangeItem As ComctlLib.ListItem
         'lstChangeItem = lstDownloads.FindItem(VB6.Format(clsBackground.ProgramDate) & "||" & clsBackground.ProgramID & "||" & clsBackground.ProgramType, ComctlLib.ListFindItemWhereConstants.lvwTag)
-		
+
         'lstChangeItem.SubItems(3) = VB6.Format(lngPercent) & "%"
-	End Sub
-	
+    End Sub
+
     'Private Sub clsExtender_GetExternal(ByRef oIDispatch As Object) Handles clsExtender.GetExternal
     '	'this allows javascript to access the objects we return
     '	'here is it set so javascript will have access to all functions
     '	'and objects on this form.
     '	oIDispatch = Me
     'End Sub
-	
-	Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
+
+    Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         lstSubscribed.Top = lstNew.Top
-		lstDownloads.Top = lstNew.Top
+        lstDownloads.Top = lstNew.Top
 
         Call lstNew.Columns.Add("Programme Name", 500)
         Call lstSubscribed.ColumnHeaders.Add(1, , "Programme Name", 5500)
-		Call lstDownloads.ColumnHeaders.Add(1,  , "Name", 2250)
-		Call lstDownloads.ColumnHeaders.Add(2,  , "Date", 750)
-		Call lstDownloads.ColumnHeaders.Add(3,  , "Status", 1250)
-		Call lstDownloads.ColumnHeaders.Add(4,  , "Progress", 1000)
+        Call lstDownloads.ColumnHeaders.Add(1, , "Name", 2250)
+        Call lstDownloads.ColumnHeaders.Add(2, , "Date", 750)
+        Call lstDownloads.ColumnHeaders.Add(3, , "Status", 1250)
+        Call lstDownloads.ColumnHeaders.Add(4, , "Progress", 1000)
 
         lstNew.SmallImageList = imlListIcons
         lstNew.LargeImageList = imlStations
@@ -107,15 +106,15 @@ Friend Class frmMain
         'lstSubscribed.SmallIcons = imlListIcons.GetOCX
         ''UPGRADE_WARNING: Couldn't resolve default property of object lstDownloads.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         'lstDownloads.SmallIcons = imlListIcons.GetOCX
-		
+
         Call AddStations()
         Call TabAdjustments()
         nicTrayIcon.Icon = Me.Icon
         nicTrayIcon.Visible = True
-		
+
         'clsExtender = New IEDevKit.clsWbExtender
         'clsExtender.HookWebBrowser(webDetails)
-		
+
         '      clsSubclass = New cSubclass
         '      Call clsSubclass.Subclass(Me.Handle.ToInt32, Me)
 
@@ -128,11 +127,11 @@ Friend Class frmMain
         ''Call clsSubclass.AddMsg(WM_STYLECHANGING, MSG_BEFORE)
         'Call clsSubclass.AddMsg(WinSubHook2.eMsg.WM_NOTIFY, WinSubHook2.eMsgWhen.MSG_BEFORE)
 
-        'clsProgData_Renamed = New clsProgData
-        'Call clsProgData_Renamed.CleanupUnfinished()
-        'Call clsProgData_Renamed.UpdateDlList(lstDownloads)
-        'Call clsProgData_Renamed.UpdateSubscrList(lstSubscribed)
-		
+        clsTheProgData = New clsProgData
+        Call clsTheProgData.CleanupUnfinished()
+        Call clsTheProgData.UpdateDlList(lstDownloads)
+        Call clsTheProgData.UpdateSubscrList(lstSubscribed)
+
         'tbrOldToolbar.Buttons("Clean Up").Visible = False
         'tbrOldToolbar.Buttons("Refresh").Visible = False
 
@@ -288,24 +287,37 @@ Friend Class frmMain
 
     Private Sub lstDownloads_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstDownloads.ItemClick
         Dim strSplit() As String
-        strSplit = Split(eventArgs.Item.Tag, "||")
+        strSplit = Split(eventArgs.item.Tag, "||")
 
         Const strTitle As String = "Download Info"
 
-        If clsProgData_Renamed.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stCompleted Then
-            If PathFileExists(clsProgData_Renamed.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
-                Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Play")
+        If clsTheProgData.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stCompleted Then
+            If PathFileExists(clsTheProgData.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
+                Call CreateHtml(strTitle, clsTheProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Play")
             Else
-                Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "")
+                Call CreateHtml(strTitle, clsTheProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "")
             End If
-        ElseIf clsProgData_Renamed.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stError Then
-            Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Retry,Cancel")
+        ElseIf clsTheProgData.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stError Then
+            Call CreateHtml(strTitle, clsTheProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Retry,Cancel")
         Else
-            Call CreateHtml(strTitle, clsProgData_Renamed.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
+            Call CreateHtml(strTitle, clsTheProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
         End If
     End Sub
 
-    Private Sub lstNew_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstNew.DoubleClick
+    Private Sub lstNew_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstNew.SelectedIndexChanged
+        If lstNew.SelectedItems.Count > 0 Then
+            Dim strSplit() As String
+            strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
+
+            If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
+                ' Do nothing
+            Else
+                Call CreateHtml("Programme Info", clsTheProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
+            End If
+        End If
+    End Sub
+
+    Private Sub lstNew_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstNew.ItemActivate
         Dim strSplit() As String
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
@@ -319,17 +331,6 @@ Friend Class frmMain
             Call ListStation(strSplit(1), lstNew)
         Else
             ' Do nothing
-        End If
-    End Sub
-
-    Private Sub lstNew_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent)
-        Dim strSplit() As String
-        strSplit = Split(eventArgs.item.Tag, "||")
-
-        If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
-            ' Do nothing
-        Else
-            Call CreateHtml("Programme Info", clsProgData_Renamed.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
         End If
     End Sub
 
@@ -419,21 +420,21 @@ Friend Class frmMain
 
     Private Sub ShowHtml(ByRef strHtml As String)
         Dim lngFileNo As Integer
-        lngFileNo = FreeFile
+        lngFileNo = FreeFile()
 
         FileOpen(lngFileNo, AddSlash(My.Application.Info.DirectoryPath) & "temp.htm", OpenMode.Output)
         PrintLine(lngFileNo, strHtml)
         FileClose(lngFileNo)
 
         'UPGRADE_WARNING: Navigate2 was upgraded to Navigate and has a new behavior. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-        webDetails.Navigate(New System.URI(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm"))
+        webDetails.Navigate(New System.Uri(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm"))
     End Sub
 
     Private Sub lstSubscribed_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstSubscribed.ItemClick
         Dim strSplit() As String
-        strSplit = Split(eventArgs.Item.Tag, "||")
+        strSplit = Split(eventArgs.item.Tag, "||")
 
-        Call CreateHtml("Subscribed Programme", clsProgData_Renamed.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
+        Call CreateHtml("Subscribed Programme", clsTheProgData.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
     End Sub
 
     Public Sub mnuFileExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuFileExit.Click
@@ -478,7 +479,7 @@ Friend Class frmMain
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        'Call clsProgData_Renamed.CheckSubscriptions(lstDownloads, tmrStartProcess)
+        'Call clsTheProgData.CheckSubscriptions(lstDownloads, tmrStartProcess)
     End Sub
 
     Private Sub tmrResizeHack_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrResizeHack.Tick
@@ -490,13 +491,13 @@ Friend Class frmMain
         Dim dldAction As clsBackground.DownloadAction
         'If IsNothing(clsBackground) Then
         '    'UPGRADE_WARNING: Couldn't resolve default property of object dldAction. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        '    dldAction = clsProgData_Renamed.FindNextAction
+        '    dldAction = clsTheProgData.FindNextAction
 
         '    If dldAction.booFound Then
         '        clsBackground = New clsBackground
-        '        Call clsProgData_Renamed.SetStatus(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate, True)
-        '        Call clsBackground.Start(dldAction.nxtNextAction, dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, clsProgData_Renamed.ProgramDuration(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate), dldAction.dldDownloadID.dteDate, clsProgData_Renamed.ProgramTitle(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate))
-        '        Call clsProgData_Renamed.UpdateDlList(lstDownloads)
+        '        Call clsTheProgData.SetStatus(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate, True)
+        '        Call clsBackground.Start(dldAction.nxtNextAction, dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, clsTheProgData.ProgramDuration(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate), dldAction.dldDownloadID.dteDate, clsTheProgData.ProgramTitle(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate))
+        '        Call clsTheProgData.UpdateDlList(lstDownloads)
         '    End If
         'End If
 
@@ -544,19 +545,19 @@ Friend Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
-        If clsProgData_Renamed.IsDownloading(strSplit(0), strSplit(1)) Then
+        If clsTheProgData.IsDownloading(strSplit(0), strSplit(1)) Then
             staStatus.SimpleText = ""
             Call MsgBox("You cannot download this programme more than once at the same time!", MsgBoxStyle.Exclamation, "Radio Downloader")
             Exit Sub
         End If
 
-        If clsProgData_Renamed.AddDownload(strSplit(0), strSplit(1)) = False Then
+        If clsTheProgData.AddDownload(strSplit(0), strSplit(1)) = False Then
             staStatus.SimpleText = ""
             Call MsgBox("You have already downloaded this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
         Else
             'tbrOldToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed
             Call TabAdjustments()
-            Call clsProgData_Renamed.UpdateDlList(lstDownloads)
+            Call clsTheProgData.UpdateDlList(lstDownloads)
             tmrStartProcess.Enabled = True
         End If
     End Sub
@@ -565,73 +566,73 @@ Friend Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
 
-        Call ShellExecute(Me.Handle.ToInt32, "open", clsProgData_Renamed.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0))), CStr(0), CStr(0), SW_SHOWNORMAL)
+        Call ShellExecute(Me.Handle.ToInt32, "open", clsTheProgData.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0))), CStr(0), CStr(0), SW_SHOWNORMAL)
     End Sub
 
     Public Sub FlSubscribe()
         Dim strSplit() As String
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
-        If clsProgData_Renamed.AddSubscription(strSplit(0), strSplit(1)) = False Then
+        If clsTheProgData.AddSubscription(strSplit(0), strSplit(1)) = False Then
             staStatus.SimpleText = ""
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
         Else
             'tbrOldToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed
             Call TabAdjustments()
-            Call clsProgData_Renamed.UpdateSubscrList(lstSubscribed)
+            Call clsTheProgData.UpdateSubscrList(lstSubscribed)
         End If
     End Sub
-	
-	Public Sub FlUnsubscribe()
-		Dim strSplit() As String
-		strSplit = Split(lstSubscribed.SelectedItem.Tag, "||")
-		
-		staStatus.SimpleText = ""
-		
-		If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-			Call clsProgData_Renamed.RemoveSubscription(strSplit(0), strSplit(1))
-			Call TabAdjustments() ' Revert back to tab info so prog info goes
-			Call clsProgData_Renamed.UpdateSubscrList(lstSubscribed)
-		End If
-	End Sub
-	
-	Public Sub FlStatusText(ByVal strText As String)
-		Static strLastUpdate As String
-		
-		' This odd bit of code stops the HTML link statusbar text staying after a
-		' modal dialog is shown
-		If strLastUpdate = staStatus.SimpleText Then
-			staStatus.SimpleText = strText
-		End If
-		
-		strLastUpdate = strText
-	End Sub
-	
-	Public Sub FlCancel()
-		staStatus.SimpleText = ""
-		
-		Dim strSplit() As String
-		If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-			strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
-			
-			If clsProgData_Renamed.IsDownloading(strSplit(2), strSplit(1)) Then
-				'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-				clsBackground = Nothing
-			End If
-			
-			Call clsProgData_Renamed.CancelDownload(strSplit(2), strSplit(1), CDate(strSplit(0)))
-			Call TabAdjustments() ' Revert back to tab info so prog info goes
-			Call clsProgData_Renamed.UpdateDlList(lstDownloads)
-		End If
-	End Sub
-	
-	Public Sub FlRetry()
-		Dim strSplit() As String
-		strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
-		
-		Call clsProgData_Renamed.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
-		Call clsProgData_Renamed.UpdateDlList(lstDownloads)
-		tmrStartProcess.Enabled = True
+
+    Public Sub FlUnsubscribe()
+        Dim strSplit() As String
+        strSplit = Split(lstSubscribed.SelectedItem.Tag, "||")
+
+        staStatus.SimpleText = ""
+
+        If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+            Call clsTheProgData.RemoveSubscription(strSplit(0), strSplit(1))
+            Call TabAdjustments() ' Revert back to tab info so prog info goes
+            Call clsTheProgData.UpdateSubscrList(lstSubscribed)
+        End If
+    End Sub
+
+    Public Sub FlStatusText(ByVal strText As String)
+        Static strLastUpdate As String
+
+        ' This odd bit of code stops the HTML link statusbar text staying after a
+        ' modal dialog is shown
+        If strLastUpdate = staStatus.SimpleText Then
+            staStatus.SimpleText = strText
+        End If
+
+        strLastUpdate = strText
+    End Sub
+
+    Public Sub FlCancel()
+        staStatus.SimpleText = ""
+
+        Dim strSplit() As String
+        If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+            strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
+
+            If clsTheProgData.IsDownloading(strSplit(2), strSplit(1)) Then
+                'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+                clsBackground = Nothing
+            End If
+
+            Call clsTheProgData.CancelDownload(strSplit(2), strSplit(1), CDate(strSplit(0)))
+            Call TabAdjustments() ' Revert back to tab info so prog info goes
+            Call clsTheProgData.UpdateDlList(lstDownloads)
+        End If
+    End Sub
+
+    Public Sub FlRetry()
+        Dim strSplit() As String
+        strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
+
+        Call clsTheProgData.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
+        Call clsTheProgData.UpdateDlList(lstDownloads)
+        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click

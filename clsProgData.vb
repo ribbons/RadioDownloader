@@ -1,5 +1,6 @@
 Option Strict Off
 Option Explicit On
+
 Friend Class clsProgData
 	
 	Private dbDatabase As DAO.Database
@@ -15,7 +16,8 @@ Friend Class clsProgData
 	
 	'UPGRADE_NOTE: Class_Terminate was upgraded to Class_Terminate_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
 	Private Sub Class_Terminate_Renamed()
-		dbDatabase.Close()
+        'TODO: Look into error with following line
+        'dbDatabase.Close()
 		'UPGRADE_NOTE: Object dbDatabase may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
 		dbDatabase = Nothing
 	End Sub
