@@ -24,9 +24,6 @@
     Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
     Public WithEvents staStatus As AxComctlLib.AxStatusBar
     Public WithEvents webDetails As System.Windows.Forms.WebBrowser
-    Public WithEvents imlToolbar As AxComctlLib.AxImageList
-    Public WithEvents imlStations As AxComctlLib.AxImageList
-    Public WithEvents imlListIcons As AxComctlLib.AxImageList
     Public WithEvents mnuFileExit As System.Windows.Forms.ToolStripMenuItem
     Public WithEvents File As System.Windows.Forms.ToolStripMenuItem
     Public WithEvents mnuToolsPrefs As System.Windows.Forms.ToolStripMenuItem
@@ -48,9 +45,6 @@
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.staStatus = New AxComctlLib.AxStatusBar
         Me.webDetails = New System.Windows.Forms.WebBrowser
-        Me.imlToolbar = New AxComctlLib.AxImageList
-        Me.imlStations = New AxComctlLib.AxImageList
-        Me.imlListIcons = New AxComctlLib.AxImageList
         Me.mnuMainMenu = New System.Windows.Forms.MenuStrip
         Me.File = New System.Windows.Forms.ToolStripMenuItem
         Me.mnuFileExit = New System.Windows.Forms.ToolStripMenuItem
@@ -74,12 +68,11 @@
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
         Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
         Me.lstNew = New System.Windows.Forms.ListView
+        Me.imlListIcons = New System.Windows.Forms.ImageList(Me.components)
+        Me.imlStations = New System.Windows.Forms.ImageList(Me.components)
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.staStatus, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.imlStations, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
         Me.mnuTray.SuspendLayout()
@@ -135,33 +128,6 @@
         Me.webDetails.Size = New System.Drawing.Size(210, 383)
         Me.webDetails.TabIndex = 2
         Me.webDetails.WebBrowserShortcutsEnabled = False
-        '
-        'imlToolbar
-        '
-        Me.imlToolbar.Enabled = True
-        Me.imlToolbar.Location = New System.Drawing.Point(303, 196)
-        Me.imlToolbar.Name = "imlToolbar"
-        Me.imlToolbar.OcxState = CType(resources.GetObject("imlToolbar.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.imlToolbar.Size = New System.Drawing.Size(38, 38)
-        Me.imlToolbar.TabIndex = 7
-        '
-        'imlStations
-        '
-        Me.imlStations.Enabled = True
-        Me.imlStations.Location = New System.Drawing.Point(259, 196)
-        Me.imlStations.Name = "imlStations"
-        Me.imlStations.OcxState = CType(resources.GetObject("imlStations.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.imlStations.Size = New System.Drawing.Size(38, 38)
-        Me.imlStations.TabIndex = 8
-        '
-        'imlListIcons
-        '
-        Me.imlListIcons.Enabled = True
-        Me.imlListIcons.Location = New System.Drawing.Point(215, 196)
-        Me.imlListIcons.Name = "imlListIcons"
-        Me.imlListIcons.OcxState = CType(resources.GetObject("imlListIcons.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.imlListIcons.Size = New System.Drawing.Size(38, 38)
-        Me.imlListIcons.TabIndex = 9
         '
         'mnuMainMenu
         '
@@ -325,6 +291,24 @@
         Me.lstNew.TabIndex = 12
         Me.lstNew.UseCompatibleStateImageBehavior = False
         '
+        'imlListIcons
+        '
+        Me.imlListIcons.ImageStream = CType(resources.GetObject("imlListIcons.ImageStream"), System.Windows.Forms.ImageListStreamer)
+        Me.imlListIcons.TransparentColor = System.Drawing.Color.Transparent
+        Me.imlListIcons.Images.SetKeyName(0, "downloading")
+        Me.imlListIcons.Images.SetKeyName(1, "paused")
+        Me.imlListIcons.Images.SetKeyName(2, "converting")
+        Me.imlListIcons.Images.SetKeyName(3, "downloaded")
+        Me.imlListIcons.Images.SetKeyName(4, "new")
+        Me.imlListIcons.Images.SetKeyName(5, "subscribed")
+        Me.imlListIcons.Images.SetKeyName(6, "error")
+        '
+        'imlStations
+        '
+        Me.imlStations.ImageStream = CType(resources.GetObject("imlStations.ImageStream"), System.Windows.Forms.ImageListStreamer)
+        Me.imlStations.TransparentColor = System.Drawing.Color.Transparent
+        Me.imlStations.Images.SetKeyName(0, "default")
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -337,10 +321,7 @@
         Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.webDetails)
-        Me.Controls.Add(Me.imlToolbar)
-        Me.Controls.Add(Me.imlStations)
         Me.Controls.Add(Me.mnuMainMenu)
-        Me.Controls.Add(Me.imlListIcons)
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -352,9 +333,6 @@
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.staStatus, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.imlToolbar, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.imlStations, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.imlListIcons, System.ComponentModel.ISupportInitialize).EndInit()
         Me.mnuMainMenu.ResumeLayout(False)
         Me.mnuMainMenu.PerformLayout()
         Me.tbrToolbar.ResumeLayout(False)
@@ -380,5 +358,7 @@
     Friend WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ttxSearch As System.Windows.Forms.ToolStripTextBox
     Friend WithEvents lstNew As System.Windows.Forms.ListView
+    Friend WithEvents imlListIcons As System.Windows.Forms.ImageList
+    Friend WithEvents imlStations As System.Windows.Forms.ImageList
 #End Region
 End Class

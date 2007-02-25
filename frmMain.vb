@@ -5,16 +5,11 @@ Imports System.Text.ASCIIEncoding
 
 Friend Class frmMain
 	Inherits System.Windows.Forms.Form
-    'Implements WinSubHook2.iSubclass
 	
 	Private lngStatus As Integer
 	
-	Private booLvAdding As Boolean
-	
-    'Private WithEvents clsExtender As IEDevKit.clsWbExtender
     Private WithEvents clsBackground As clsBackground
-    'Private clsSubclass As cSubclass
-	'UPGRADE_NOTE: clsProgData was upgraded to clsProgData_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
+    'UPGRADE_NOTE: clsProgData was upgraded to clsProgData_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
 	Private clsProgData_Renamed As clsProgData
 	
 	Private lngLastState As Integer
@@ -22,13 +17,13 @@ Friend Class frmMain
 	Const lngDLStatCol As Integer = 2
 	
 	Private Sub SetNewView(ByVal booStations As Boolean)
-        lstNew.Clear()
-		
-		If booStations Then
-			lstNew.View = ComctlLib.ListViewConstants.lvwIcon
-		Else
-			lstNew.View = ComctlLib.ListViewConstants.lvwReport
-		End If
+        lstNew.Items.Clear()
+
+        If booStations Then
+            lstNew.View = View.LargeIcon
+        Else
+            lstNew.View = View.Details
+        End If
 	End Sub
 	
 	Private Sub AddStations()
@@ -47,7 +42,7 @@ Friend Class frmMain
         Dim lstAdd As New System.Windows.Forms.ListViewItem
         lstAdd.Text = strStationName
         lstAdd.Tag = strStationType & "||" & strStationId
-        lstAdd.ImageIndex = imlStations.ListImages(strStationId).Index
+        lstAdd.ImageKey = "default" 'imlStations.ListImages(strStationId).Index
 		
         lstAdd = lstNew.Items.Add(lstAdd)
 	End Sub
@@ -96,17 +91,16 @@ Friend Class frmMain
 	Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         lstSubscribed.Top = lstNew.Top
 		lstDownloads.Top = lstNew.Top
-		
-        Call lstNew.Columns.Add("Programme Name", 5500)
-		Call lstSubscribed.ColumnHeaders.Add(1,  , "Programme Name", 5500)
-		
+
+        Call lstNew.Columns.Add("Programme Name", 500)
+        Call lstSubscribed.ColumnHeaders.Add(1, , "Programme Name", 5500)
 		Call lstDownloads.ColumnHeaders.Add(1,  , "Name", 2250)
 		Call lstDownloads.ColumnHeaders.Add(2,  , "Date", 750)
 		Call lstDownloads.ColumnHeaders.Add(3,  , "Status", 1250)
 		Call lstDownloads.ColumnHeaders.Add(4,  , "Progress", 1000)
-		
-        ''UPGRADE_WARNING: Couldn't resolve default property of object lstNew.Icons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        'lstNew.Icons = imlStations.GetOCX
+
+        lstNew.SmallImageList = imlListIcons
+        lstNew.LargeImageList = imlStations
         ''UPGRADE_WARNING: Couldn't resolve default property of object lstNew.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         'lstNew.SmallIcons = imlListIcons.GetOCX
         ''UPGRADE_WARNING: Couldn't resolve default property of object lstSubscribed.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
@@ -315,16 +309,14 @@ Friend Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
-        If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
+        If lstNew.View = View.LargeIcon Then
             If strSplit(0) <> "BBCLA" Then Stop
 
-            lstNew.View = ComctlLib.ListViewConstants.lvwReport
+            lstNew.View = View.Details
             'tbrOldToolbar.Buttons("Up").Enabled = True
 
             Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(clsBackground.NextAction.None))
-            Call ListviewStartAdd()
             Call ListStation(strSplit(1), lstNew)
-            Call ListviewEndAdd()
         Else
             ' Do nothing
         End If
@@ -541,36 +533,6 @@ Friend Class frmMain
         '
         '                Call ValidateRect(lstDownloads.hWnd, recPos)
         '                Call InvalidateRect(prgBar.hWnd, ByVal 0&, 0)
-        '            End If
-        '        End If
-        '    Next prgBar
-    End Sub
-
-    Private Sub ListviewStartAdd()
-        booLvAdding = True
-    End Sub
-
-    Private Sub ListviewEndAdd()
-        booLvAdding = False
-
-        System.Windows.Forms.Application.DoEvents()
-
-        'Add the contents of the listview to the update region
-        'Call InvalidateRect(lstDownloads.hWnd, 0, 0)
-
-        'Then loop round and remove the areas where progressbars are to
-        'prevent flickering as they are blanked out and then redrawn
-
-        '    Dim prgBar As ProgressBar
-        '
-        '    For Each prgBar In prgItemProgress
-        '        If prgBar.Index > 0 Then
-        '            'Only process visible progressbars to be most efficient
-        '            If prgBar.Visible = True Then
-        '                Dim recPos As RECT
-        '
-        '                Call GetSubItemRect(lstDownloads.hwnd, prgBar.Index - 1, 2, LVIR_LABEL, recPos)
-        '                Call ValidateRect(lstDownloads.hwnd, recPos)
         '            End If
         '        End If
         '    Next prgBar

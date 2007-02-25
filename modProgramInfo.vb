@@ -2,8 +2,8 @@ Option Strict Off
 Option Explicit On
 Module modProgramInfo
 	
-    Public Sub ListStation(ByRef strStationId As String, ByRef lstAddTo As System.Windows.Forms.ListView)
-        lstAddTo.Clear()
+    Public Sub ListStation(ByVal strStationId As String, ByRef lstAddTo As System.Windows.Forms.ListView)
+        lstAddTo.Items.Clear()
 
         Dim strStationPage As String
         Dim lngTrim As Integer
@@ -59,7 +59,7 @@ Module modProgramInfo
 
             lstAddItem = New ListViewItem
             lstAddItem.Text = Replace(strThisName, "&amp;", "&") & strDay
-            lstAddItem.ImageIndex = 5
+            lstAddItem.ImageKey = "new"
             'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
             lstAddItem.Tag = "BBCLA" & "||" + objMatch.SubMatches(0)
             Call lstAddTo.Items.Add(lstAddItem)
