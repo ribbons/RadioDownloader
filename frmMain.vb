@@ -131,6 +131,8 @@ Public Class frmMain
         Call clsTheProgData.UpdateDlList(lstDownloads)
         Call clsTheProgData.UpdateSubscrList(lstSubscribed)
 
+        stlStatusText.Text = ""
+
         'tbrOldToolbar.Buttons("Clean Up").Visible = False
         'tbrOldToolbar.Buttons("Refresh").Visible = False
 
@@ -531,13 +533,13 @@ Public Class frmMain
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
         If clsTheProgData.IsDownloading(strSplit(0), strSplit(1)) Then
-            staStatus.SimpleText = ""
+            stlStatusText.Text = ""
             Call MsgBox("You cannot download this programme more than once at the same time!", MsgBoxStyle.Exclamation, "Radio Downloader")
             Exit Sub
         End If
 
         If clsTheProgData.AddDownload(strSplit(0), strSplit(1)) = False Then
-            staStatus.SimpleText = ""
+            stlStatusText.Text = ""
             Call MsgBox("You have already downloaded this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
         Else
             'tbrOldToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed
@@ -559,7 +561,7 @@ Public Class frmMain
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
         If clsTheProgData.AddSubscription(strSplit(0), strSplit(1)) = False Then
-            staStatus.SimpleText = ""
+            stlStatusText.Text = ""
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
         Else
             'tbrOldToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed
@@ -572,7 +574,7 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstSubscribed.SelectedItem.Tag, "||")
 
-        staStatus.SimpleText = ""
+        stlStatusText.Text = ""
 
         If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
             Call clsTheProgData.RemoveSubscription(strSplit(0), strSplit(1))
@@ -586,15 +588,15 @@ Public Class frmMain
 
         ' This odd bit of code stops the HTML link statusbar text staying after a
         ' modal dialog is shown
-        If strLastUpdate = staStatus.SimpleText Then
-            staStatus.SimpleText = strText
+        If strLastUpdate = stlStatusText.Text Then
+            stlStatusText.Text = strText
         End If
 
         strLastUpdate = strText
     End Sub
 
     Public Sub FlCancel()
-        staStatus.SimpleText = ""
+        stlStatusText.Text = ""
 
         Dim strSplit() As String
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then

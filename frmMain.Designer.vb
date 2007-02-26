@@ -22,7 +22,6 @@
     Public WithEvents lstSubscribed As AxComctlLib.AxListView
     Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
     Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
-    Public WithEvents staStatus As AxComctlLib.AxStatusBar
     Public WithEvents webDetails As System.Windows.Forms.WebBrowser
     Public WithEvents mnuFileExit As System.Windows.Forms.ToolStripMenuItem
     Public WithEvents File As System.Windows.Forms.ToolStripMenuItem
@@ -43,7 +42,6 @@
         Me.lstSubscribed = New AxComctlLib.AxListView
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
-        Me.staStatus = New AxComctlLib.AxStatusBar
         Me.webDetails = New System.Windows.Forms.WebBrowser
         Me.mnuMainMenu = New System.Windows.Forms.MenuStrip
         Me.File = New System.Windows.Forms.ToolStripMenuItem
@@ -70,12 +68,14 @@
         Me.lstNew = New System.Windows.Forms.ListView
         Me.imlListIcons = New System.Windows.Forms.ImageList(Me.components)
         Me.imlStations = New System.Windows.Forms.ImageList(Me.components)
+        Me.staStatus = New System.Windows.Forms.StatusStrip
+        Me.stlStatusText = New System.Windows.Forms.ToolStripStatusLabel
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.staStatus, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
         Me.mnuTray.SuspendLayout()
+        Me.staStatus.SuspendLayout()
         Me.SuspendLayout()
         '
         'tmrResizeHack
@@ -108,15 +108,6 @@
         '
         Me.tmrStartProcess.Enabled = True
         Me.tmrStartProcess.Interval = 2000
-        '
-        'staStatus
-        '
-        Me.staStatus.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.staStatus.Location = New System.Drawing.Point(0, 441)
-        Me.staStatus.Name = "staStatus"
-        Me.staStatus.OcxState = CType(resources.GetObject("staStatus.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.staStatus.Size = New System.Drawing.Size(757, 21)
-        Me.staStatus.TabIndex = 3
         '
         'webDetails
         '
@@ -311,35 +302,51 @@
         Me.imlStations.TransparentColor = System.Drawing.Color.Transparent
         Me.imlStations.Images.SetKeyName(0, "default")
         '
+        'staStatus
+        '
+        Me.staStatus.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.stlStatusText})
+        Me.staStatus.Location = New System.Drawing.Point(0, 440)
+        Me.staStatus.Name = "staStatus"
+        Me.staStatus.Size = New System.Drawing.Size(757, 22)
+        Me.staStatus.TabIndex = 13
+        '
+        'stlStatusText
+        '
+        Me.stlStatusText.Name = "stlStatusText"
+        Me.stlStatusText.Size = New System.Drawing.Size(64, 17)
+        Me.stlStatusText.Text = "Status Text"
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 462)
+        Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.tbrToolbar)
         Me.Controls.Add(Me.lstNew)
         Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.lstSubscribed)
-        Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.webDetails)
         Me.Controls.Add(Me.mnuMainMenu)
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Location = New System.Drawing.Point(11, 37)
+        Me.MinimumSize = New System.Drawing.Size(400, 300)
         Me.Name = "frmMain"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
         CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.staStatus, System.ComponentModel.ISupportInitialize).EndInit()
         Me.mnuMainMenu.ResumeLayout(False)
         Me.mnuMainMenu.PerformLayout()
         Me.tbrToolbar.ResumeLayout(False)
         Me.tbrToolbar.PerformLayout()
         Me.mnuTray.ResumeLayout(False)
+        Me.staStatus.ResumeLayout(False)
+        Me.staStatus.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -362,5 +369,7 @@
     Friend WithEvents lstNew As System.Windows.Forms.ListView
     Friend WithEvents imlListIcons As System.Windows.Forms.ImageList
     Friend WithEvents imlStations As System.Windows.Forms.ImageList
+    Friend WithEvents staStatus As System.Windows.Forms.StatusStrip
+    Friend WithEvents stlStatusText As System.Windows.Forms.ToolStripStatusLabel
 #End Region
 End Class

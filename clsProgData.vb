@@ -7,7 +7,7 @@ Friend Class clsProgData
 	
 	'UPGRADE_NOTE: Class_Initialize was upgraded to Class_Initialize_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
 	Private Sub Class_Initialize_Renamed()
-		dbDatabase = DAODBEngine_definst.OpenDatabase(AddSlash(My.Application.Info.DirectoryPath) & "store.mdb", False, False, ";pwd=JitwanPK2c")
+        dbDatabase = DAODBEngine_definst.OpenDatabase(AddSlash(My.Application.Info.DirectoryPath) & "store.mdb")
 	End Sub
 	Public Sub New()
 		MyBase.New()
