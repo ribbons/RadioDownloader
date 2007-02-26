@@ -17,7 +17,6 @@
 	'Required by the Windows Form Designer
 	Private components As System.ComponentModel.IContainer
 	Public ToolTip1 As System.Windows.Forms.ToolTip
-    Public WithEvents tmrResizeHack As System.Windows.Forms.Timer
     Public WithEvents lstDownloads As AxComctlLib.AxListView
     Public WithEvents lstSubscribed As AxComctlLib.AxListView
     Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
@@ -37,7 +36,6 @@
         Me.components = New System.ComponentModel.Container
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.tmrResizeHack = New System.Windows.Forms.Timer(Me.components)
         Me.lstDownloads = New AxComctlLib.AxListView
         Me.lstSubscribed = New AxComctlLib.AxListView
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
@@ -78,17 +76,12 @@
         Me.staStatus.SuspendLayout()
         Me.SuspendLayout()
         '
-        'tmrResizeHack
-        '
-        Me.tmrResizeHack.Enabled = True
-        Me.tmrResizeHack.Interval = 500
-        '
         'lstDownloads
         '
         Me.lstDownloads.Location = New System.Drawing.Point(210, 384)
         Me.lstDownloads.Name = "lstDownloads"
         Me.lstDownloads.OcxState = CType(resources.GetObject("lstDownloads.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.lstDownloads.Size = New System.Drawing.Size(545, 57)
+        Me.lstDownloads.Size = New System.Drawing.Size(545, 67)
         Me.lstDownloads.TabIndex = 0
         '
         'lstSubscribed
@@ -112,11 +105,13 @@
         'webDetails
         '
         Me.webDetails.AllowWebBrowserDrop = False
+        Me.webDetails.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.webDetails.IsWebBrowserContextMenuEnabled = False
-        Me.webDetails.Location = New System.Drawing.Point(0, 58)
+        Me.webDetails.Location = New System.Drawing.Point(0, 55)
         Me.webDetails.Name = "webDetails"
         Me.webDetails.ScrollBarsEnabled = False
-        Me.webDetails.Size = New System.Drawing.Size(210, 383)
+        Me.webDetails.Size = New System.Drawing.Size(210, 394)
         Me.webDetails.TabIndex = 2
         Me.webDetails.WebBrowserShortcutsEnabled = False
         '
@@ -276,11 +271,14 @@
         'lstNew
         '
         Me.lstNew.Activation = System.Windows.Forms.ItemActivation.TwoClick
+        Me.lstNew.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstNew.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstNew.Location = New System.Drawing.Point(210, 58)
+        Me.lstNew.Location = New System.Drawing.Point(210, 55)
         Me.lstNew.MultiSelect = False
         Me.lstNew.Name = "lstNew"
-        Me.lstNew.Size = New System.Drawing.Size(547, 84)
+        Me.lstNew.Size = New System.Drawing.Size(547, 110)
         Me.lstNew.TabIndex = 12
         Me.lstNew.UseCompatibleStateImageBehavior = False
         '
@@ -305,7 +303,7 @@
         'staStatus
         '
         Me.staStatus.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.stlStatusText})
-        Me.staStatus.Location = New System.Drawing.Point(0, 440)
+        Me.staStatus.Location = New System.Drawing.Point(0, 449)
         Me.staStatus.Name = "staStatus"
         Me.staStatus.Size = New System.Drawing.Size(757, 22)
         Me.staStatus.TabIndex = 13
@@ -321,7 +319,7 @@
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(757, 462)
+        Me.ClientSize = New System.Drawing.Size(757, 471)
         Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.tbrToolbar)
         Me.Controls.Add(Me.lstNew)

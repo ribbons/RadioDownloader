@@ -132,6 +132,7 @@ Public Class frmMain
         Call clsTheProgData.UpdateSubscrList(lstSubscribed)
 
         stlStatusText.Text = ""
+        lstNew.Height = staStatus.Top - lstNew.Top
 
         'tbrOldToolbar.Buttons("Clean Up").Visible = False
         'tbrOldToolbar.Buttons("Refresh").Visible = False
@@ -166,56 +167,6 @@ Public Class frmMain
             Cancel = True
         End If
         eventArgs.Cancel = True
-    End Sub
-
-    'UPGRADE_WARNING: Event frmMain.Resize may fire when form is initialized. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="88B12AE1-6DE0-48A0-86F1-60C0686C026A"'
-    Private Sub frmMain_Resize(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Resize
-        If Me.WindowState <> System.Windows.Forms.FormWindowState.Minimized Then
-            lngLastState = Me.WindowState
-        End If
-
-        If VB6.PixelsToTwipsX(Me.ClientRectangle.Width) = 0 Then
-            ' Looks like we are minimized, stop before we get resizing errors
-            Exit Sub
-        End If
-
-        Static lngLastHeight As Integer
-
-        If VB6.PixelsToTwipsY(staStatus.Top) - (VB6.PixelsToTwipsY(lstNew.Top)) < 10 * VB6.TwipsPerPixelY Then
-            If VB6.PixelsToTwipsY(Me.Height) < lngLastHeight Then
-                Me.Height = VB6.TwipsToPixelsY(lngLastHeight)
-
-                ' Nothing to do with webdetails, just a hack to flip the user out
-                ' of window resizing mode - webdetails being shown does just that
-                webDetails.Visible = False
-                webDetails.Visible = True
-            End If
-        End If
-
-        lngLastHeight = VB6.PixelsToTwipsY(Me.Height)
-
-        'WebBrowser
-        webDetails.Height = VB6.TwipsToPixelsY(VB6.PixelsToTwipsY(staStatus.Top) - VB6.PixelsToTwipsY(webDetails.Top))
-
-        'Listviews
-        lstDownloads.Height = VB6.TwipsToPixelsY(VB6.PixelsToTwipsY(staStatus.Top) - VB6.PixelsToTwipsY(lstDownloads.Top))
-        lstNew.Height = lstDownloads.Height
-        lstSubscribed.Height = lstDownloads.Height
-        lstDownloads.Width = VB6.TwipsToPixelsX(VB6.PixelsToTwipsX(Me.ClientRectangle.Width) - VB6.PixelsToTwipsX(webDetails.Width))
-        lstNew.Width = lstDownloads.Width
-        lstSubscribed.Width = lstDownloads.Width
-
-        'Toolbar seperators
-        'picSeperator(0).Top = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("-").Top + 2 * VB6.TwipsPerPixelX)
-        'picSeperator(0).Left = VB6.TwipsToPixelsX(tbrOldToolbar.Buttons("-").Left + (tbrOldToolbar.Buttons("-").Width / 2))
-        'picSeperator(0).Height = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("-").Height - 1 * VB6.TwipsPerPixelX)
-        'picSeperator(1).Top = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("--").Top + 2 * VB6.TwipsPerPixelX)
-        'picSeperator(1).Left = VB6.TwipsToPixelsX(tbrOldToolbar.Buttons("--").Left + (tbrOldToolbar.Buttons("-").Width / 2))
-        'picSeperator(1).Height = VB6.TwipsToPixelsY(tbrOldToolbar.Buttons("--").Height - 1 * VB6.TwipsPerPixelX)
-
-        'Toolbar shadow
-        'picShadow.Width = tbrToolbar.Width
-        'imgShadow.Width = tbrToolbar.Width
     End Sub
 
     Private Sub frmMain_FormClosed(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
@@ -446,13 +397,13 @@ Public Class frmMain
     End Sub
 
     Private Sub mnuTrayShow_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuTrayShow.Click
-        If Me.WindowState = System.Windows.Forms.FormWindowState.Minimized Then
-            Me.WindowState = lngLastState
-        End If
-
         If Me.Visible = False Then
             Call TrayAnimate(Me, False)
             Me.Visible = True
+        End If
+
+        If Me.WindowState = FormWindowState.Minimized Then
+            Me.WindowState = FormWindowState.Normal
         End If
     End Sub
 
@@ -467,10 +418,6 @@ Public Class frmMain
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
         'Call clsTheProgData.CheckSubscriptions(lstDownloads, tmrStartProcess)
-    End Sub
-
-    Private Sub tmrResizeHack_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrResizeHack.Tick
-        Call frmMain_Resize(Me, New System.EventArgs())
     End Sub
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
