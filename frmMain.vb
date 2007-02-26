@@ -3,15 +3,14 @@ Option Explicit On
 
 Imports System.Text.ASCIIEncoding
 
-Friend Class frmMain
-	Inherits System.Windows.Forms.Form
-	
-	Private lngStatus As Integer
-	
+Public Class frmMain
+    Inherits System.Windows.Forms.Form
+
     Private WithEvents clsBackground As clsBackground
     Private clsTheProgData As clsProgData
 
     Private lngLastState As Integer
+    Private lngStatus As Integer
 
     Const lngDLStatCol As Integer = 2
 
@@ -34,7 +33,7 @@ Friend Class frmMain
         Call AddStation("Radio 4", "radio4", "BBCLA")
         Call AddStation("Five Live", "fivelive", "BBCLA")
         Call AddStation("Six Music", "6music", "BBCLA")
-        'Call AddStation("BBC 7", "bbc7", "BBCLA")
+        Call AddStation("BBC 7", "bbc7", "BBCLA")
     End Sub
 
     Private Sub AddStation(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String)
@@ -80,11 +79,11 @@ Friend Class frmMain
         'lstChangeItem.SubItems(3) = VB6.Format(lngPercent) & "%"
     End Sub
 
-    'Private Sub clsExtender_GetExternal(ByRef oIDispatch As Object) Handles clsExtender.GetExternal
-    '	'this allows javascript to access the objects we return
-    '	'here is it set so javascript will have access to all functions
-    '	'and objects on this form.
-    '	oIDispatch = Me
+    'Public Sub GetExternal(ByRef ppDispatch As Object) Implements IDocHostUIHandler.GetExternal
+    'this allows javascript to access the objects we return
+    'here is it set so javascript will have access to all functions
+    'and objects on this form.
+    '    ppDispatch = Me
     'End Sub
 
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
@@ -112,8 +111,8 @@ Friend Class frmMain
         nicTrayIcon.Icon = Me.Icon
         nicTrayIcon.Visible = True
 
-        'clsExtender = New IEDevKit.clsWbExtender
-        'clsExtender.HookWebBrowser(webDetails)
+        ' Set up the web browser so that public methods of this form can be called from javascript in the html
+        webDetails.ObjectForScripting = Me
 
         '      clsSubclass = New cSubclass
         '      Call clsSubclass.Subclass(Me.Handle.ToInt32, Me)
@@ -366,7 +365,8 @@ Friend Class frmMain
         Dim strHtmlStart As String
 
         strCss = ASCII.GetChars(MyResources.CSS_STYLES)
-        strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
+        'strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
+        strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style></head><body><table><tr><td class=""maintd"">"
         Const strHtmlEnd As String = "</td></tr></table></body></html>"
 
         strHtml = strHtmlStart & "<h1>" & strTitle & "</h1><div class=""contentbox"">" & strMiddleContent & "</div></td></tr><tr><td class=""maintd bottomrow"">"
