@@ -276,117 +276,122 @@ Friend Class clsProgData
 		rstRecordset = Nothing
 	End Function
 	
-	Public Sub UpdateDlList(ByRef lstListview As AxComctlLib.AxListView)
-		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-		Dim rstRecordset As DAO.Recordset
-		Dim lstAdd As ComctlLib.ListItem
-		
-		rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads order by Date desc")
-		
-		With rstRecordset
-			lstListview.ListItems.Clear()
-			
-			If .EOF = False Then
-				.MoveFirst()
-				
-				Do While .EOF = False
-					lstAdd = lstListview.ListItems.Add
-					lstAdd.Text = ProgramTitle(.Fields("Type").Value, .Fields("ID").Value, .Fields("Date").Value)
-					lstAdd.SubItems(1) = FormatDateTime(.Fields("Date").Value, DateFormat.ShortDate)
-					lstAdd.Tag = VB6.Format(.Fields("Date").Value) & "||" + .Fields("ID").Value + "||" + .Fields("Type").Value
-					
-					Select Case .Fields("Status").Value
+    Public Sub UpdateDlList(ByRef lstListview As ListView)
+        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstRecordset As DAO.Recordset
+        Dim lstAdd As ListViewItem
+
+        rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads order by Date desc")
+
+        With rstRecordset
+            lstListview.Items.Clear()
+
+            If .EOF = False Then
+                .MoveFirst()
+
+                Do While .EOF = False
+                    lstAdd.Text = ProgramTitle(.Fields("Type").Value, .Fields("ID").Value, .Fields("Date").Value)
+                    lstAdd.SubItems(1).Text = FormatDateTime(.Fields("Date").Value, DateFormat.ShortDate)
+                    lstAdd.Tag = VB6.Format(.Fields("Date").Value) & "||" + .Fields("ID").Value + "||" + .Fields("Type").Value
+
+                    Select Case .Fields("Status").Value
                         Case clsBackground.Status.stWaiting
-                            lstAdd.SubItems(2) = "Waiting"
-                            lstAdd.SmallIcon = 2
+                            lstAdd.SubItems(2).Text = "Waiting"
+                            lstAdd.ImageKey = "waiting"
                         Case clsBackground.Status.stDownloading
-                            lstAdd.SubItems(2) = "(1/3) Downloading"
-                            lstAdd.SmallIcon = 1
+                            lstAdd.SubItems(2).Text = "(1/3) Downloading"
+                            lstAdd.ImageKey = "downloading"
                         Case clsBackground.Status.stDecoding
-                            lstAdd.SubItems(2) = "(2/3) Decoding"
-                            lstAdd.SmallIcon = 3
+                            lstAdd.SubItems(2).Text = "(2/3) Decoding"
+                            lstAdd.ImageKey = "decoding"
                         Case clsBackground.Status.stEncoding
-                            lstAdd.SubItems(2) = "(3/3) Encoding"
-                            lstAdd.SmallIcon = 3
+                            lstAdd.SubItems(2).Text = "(3/3) Encoding"
+                            lstAdd.ImageKey = "encoding"
                         Case clsBackground.Status.stCompleted
-                            lstAdd.SubItems(2) = "Completed"
-                            lstAdd.SmallIcon = 4
+                            lstAdd.SubItems(2).Text = "Completed"
+                            lstAdd.ImageKey = "completed"
                         Case clsBackground.Status.stError
-                            lstAdd.SubItems(2) = "Error"
-                            lstAdd.SmallIcon = 7
+                            lstAdd.SubItems(2).Text = "Error"
+                            lstAdd.ImageKey = "error"
                     End Select
-					.MoveNext()
-				Loop 
-			End If
-		End With
-		
-		rstRecordset.Close()
-		'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		rstRecordset = Nothing
-	End Sub
+
+                    lstListview.Items.Add(lstAdd)
+
+                    .MoveNext()
+                Loop
+            End If
+        End With
+
+        rstRecordset.Close()
+        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        rstRecordset = Nothing
+    End Sub
 	
-	Public Sub UpdateSubscrList(ByRef lstListview As AxComctlLib.AxListView)
-		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-		Dim rstRecordset As DAO.Recordset
-		Dim lstAdd As ComctlLib.ListItem
-		
-		rstRecordset = dbDatabase.OpenRecordset("select * from tblSubscribed")
-		
-		With rstRecordset
-			lstListview.ListItems.Clear()
-			
-			If .EOF = False Then
-				.MoveFirst()
-				
-				Do While .EOF = False
-					Call GetLatest(.Fields("Type").Value, .Fields("ID").Value)
-					
-					lstAdd = lstListview.ListItems.Add
-					lstAdd.Text = ProgramTitle(.Fields("Type").Value, .Fields("ID").Value, LatestDate(.Fields("Type").Value, .Fields("ID").Value))
-					lstAdd.Tag = .Fields("Type").Value + "||" + .Fields("ID").Value
-					lstAdd.SmallIcon = 6
-					
-					.MoveNext()
-				Loop 
-			End If
-		End With
-		
-		rstRecordset.Close()
-		'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		rstRecordset = Nothing
-	End Sub
+    Public Sub UpdateSubscrList(ByRef lstListview As ListView)
+        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstRecordset As DAO.Recordset
+        Dim lstAdd As ListViewItem
+
+        rstRecordset = dbDatabase.OpenRecordset("select * from tblSubscribed")
+
+        With rstRecordset
+            lstListview.Items.Clear()
+
+            If .EOF = False Then
+                .MoveFirst()
+
+                Do While .EOF = False
+                    Call GetLatest(.Fields("Type").Value, .Fields("ID").Value)
+
+                    lstAdd = New ListViewItem
+
+                    lstAdd.Text = ProgramTitle(.Fields("Type").Value, .Fields("ID").Value, LatestDate(.Fields("Type").Value, .Fields("ID").Value))
+                    lstAdd.Tag = .Fields("Type").Value + "||" + .Fields("ID").Value
+                    lstAdd.ImageKey = "subscribed"
+
+                    lstListview.Items.Add(lstAdd)
+
+                    .MoveNext()
+                Loop
+            End If
+        End With
+
+        rstRecordset.Close()
+        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        rstRecordset = Nothing
+    End Sub
 	
-	Public Sub CheckSubscriptions(ByRef lstList As AxComctlLib.AxListView, ByRef tmrTimer As System.Windows.Forms.Timer)
-		'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-		Dim rstRecordset As DAO.Recordset
-		rstRecordset = dbDatabase.OpenRecordset("select * from tblSubscribed")
-		
-		'UPGRADE_WARNING: Arrays in structure rstCheckDld may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-		Dim rstCheckDld As DAO.Recordset
-		With rstRecordset
-			If .EOF = False Then
-				.MoveFirst()
-				
-				Do While .EOF = False
-					Call GetLatest(.Fields("Type").Value, .Fields("ID").Value)
-					
-					rstCheckDld = dbDatabase.OpenRecordset("select * from tblDownloads where type=""" + .Fields("Type").Value + """ and ID=""" + .Fields("ID").Value + """ and Date=#" + VB6.Format(LatestDate(.Fields("Type").Value, .Fields("ID").Value), "mm/dd/yyyy Hh:Nn") + "#")
-					
-					If rstCheckDld.EOF Then
-						Call AddDownload(.Fields("Type").Value, .Fields("ID").Value)
-						Call UpdateDlList(lstList)
-						tmrTimer.Enabled = True
-					End If
-					
-					.MoveNext()
-				Loop 
-			End If
-		End With
-		
-		rstRecordset.Close()
-		'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-		rstRecordset = Nothing
-	End Sub
+    Public Sub CheckSubscriptions(ByRef lstList As ListView, ByRef tmrTimer As System.Windows.Forms.Timer)
+        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstRecordset As DAO.Recordset
+        rstRecordset = dbDatabase.OpenRecordset("select * from tblSubscribed")
+
+        'UPGRADE_WARNING: Arrays in structure rstCheckDld may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstCheckDld As DAO.Recordset
+        With rstRecordset
+            If .EOF = False Then
+                .MoveFirst()
+
+                Do While .EOF = False
+                    Call GetLatest(.Fields("Type").Value, .Fields("ID").Value)
+
+                    rstCheckDld = dbDatabase.OpenRecordset("select * from tblDownloads where type=""" + .Fields("Type").Value + """ and ID=""" + .Fields("ID").Value + """ and Date=#" + VB6.Format(LatestDate(.Fields("Type").Value, .Fields("ID").Value), "mm/dd/yyyy Hh:Nn") + "#")
+
+                    If rstCheckDld.EOF Then
+                        Call AddDownload(.Fields("Type").Value, .Fields("ID").Value)
+                        Call UpdateDlList(lstList)
+                        tmrTimer.Enabled = True
+                    End If
+
+                    .MoveNext()
+                Loop
+            End If
+        End With
+
+        rstRecordset.Close()
+        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        rstRecordset = Nothing
+    End Sub
 	
 	Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
 		On Error GoTo Error_Renamed

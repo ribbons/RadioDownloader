@@ -91,20 +91,16 @@ Public Class frmMain
         lstDownloads.Top = lstNew.Top
 
         Call lstNew.Columns.Add("Programme Name", 500)
-        Call lstSubscribed.ColumnHeaders.Add(1, , "Programme Name", 5500)
-        Call lstDownloads.ColumnHeaders.Add(1, , "Name", 2250)
-        Call lstDownloads.ColumnHeaders.Add(2, , "Date", 750)
-        Call lstDownloads.ColumnHeaders.Add(3, , "Status", 1250)
-        Call lstDownloads.ColumnHeaders.Add(4, , "Progress", 1000)
+        Call lstSubscribed.Columns.Add("Programme Name", 550)
+        Call lstDownloads.Columns.Add("Name", 225)
+        Call lstDownloads.Columns.Add("Date", 75)
+        Call lstDownloads.Columns.Add("Status", 125)
+        Call lstDownloads.Columns.Add("Progress", 100)
 
         lstNew.SmallImageList = imlListIcons
         lstNew.LargeImageList = imlStations
-        ''UPGRADE_WARNING: Couldn't resolve default property of object lstNew.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        'lstNew.SmallIcons = imlListIcons.GetOCX
-        ''UPGRADE_WARNING: Couldn't resolve default property of object lstSubscribed.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        'lstSubscribed.SmallIcons = imlListIcons.GetOCX
-        ''UPGRADE_WARNING: Couldn't resolve default property of object lstDownloads.SmallIcons. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        'lstDownloads.SmallIcons = imlListIcons.GetOCX
+        lstSubscribed.SmallImageList = imlListIcons
+        lstDownloads.SmallImageList = imlListIcons
 
         Call AddStations()
         Call TabAdjustments()
@@ -133,6 +129,8 @@ Public Class frmMain
 
         stlStatusText.Text = ""
         lstNew.Height = staStatus.Top - lstNew.Top
+        lstSubscribed.Height = lstNew.Height
+        lstDownloads.Height = lstNew.Height
 
         'tbrOldToolbar.Buttons("Clean Up").Visible = False
         'tbrOldToolbar.Buttons("Refresh").Visible = False
@@ -237,7 +235,7 @@ Public Class frmMain
     '	End Select
     'End Sub
 
-    Private Sub lstDownloads_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstDownloads.ItemClick
+    Private Sub lstDownloads_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent)
         Dim strSplit() As String
         strSplit = Split(eventArgs.item.Tag, "||")
 
@@ -381,7 +379,7 @@ Public Class frmMain
         webDetails.Navigate(New System.Uri(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm"))
     End Sub
 
-    Private Sub lstSubscribed_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent) Handles lstSubscribed.ItemClick
+    Private Sub lstSubscribed_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent)
         Dim strSplit() As String
         strSplit = Split(eventArgs.item.Tag, "||")
 
@@ -498,7 +496,7 @@ Public Class frmMain
 
     Public Sub FlPlay()
         Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
+        strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
 
         Call ShellExecute(Me.Handle.ToInt32, "open", clsTheProgData.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0))), CStr(0), CStr(0), SW_SHOWNORMAL)
     End Sub
@@ -519,7 +517,7 @@ Public Class frmMain
 
     Public Sub FlUnsubscribe()
         Dim strSplit() As String
-        strSplit = Split(lstSubscribed.SelectedItem.Tag, "||")
+        strSplit = Split(lstSubscribed.SelectedItems(0).Tag, "||")
 
         stlStatusText.Text = ""
 
@@ -547,7 +545,7 @@ Public Class frmMain
 
         Dim strSplit() As String
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
+            strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
 
             If clsTheProgData.IsDownloading(strSplit(2), strSplit(1)) Then
                 'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
@@ -562,7 +560,7 @@ Public Class frmMain
 
     Public Sub FlRetry()
         Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItem.Tag, "||")
+        strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
 
         Call clsTheProgData.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
         Call clsTheProgData.UpdateDlList(lstDownloads)

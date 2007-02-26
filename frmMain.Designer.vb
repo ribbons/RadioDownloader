@@ -17,8 +17,6 @@
 	'Required by the Windows Form Designer
 	Private components As System.ComponentModel.IContainer
 	Public ToolTip1 As System.Windows.Forms.ToolTip
-    Public WithEvents lstDownloads As AxComctlLib.AxListView
-    Public WithEvents lstSubscribed As AxComctlLib.AxListView
     Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
     Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
     Public WithEvents webDetails As System.Windows.Forms.WebBrowser
@@ -36,8 +34,6 @@
         Me.components = New System.ComponentModel.Container
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
-        Me.lstDownloads = New AxComctlLib.AxListView
-        Me.lstSubscribed = New AxComctlLib.AxListView
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.webDetails = New System.Windows.Forms.WebBrowser
@@ -68,29 +64,13 @@
         Me.imlStations = New System.Windows.Forms.ImageList(Me.components)
         Me.staStatus = New System.Windows.Forms.StatusStrip
         Me.stlStatusText = New System.Windows.Forms.ToolStripStatusLabel
-        CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).BeginInit()
-        CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.lstSubscribed = New System.Windows.Forms.ListView
+        Me.lstDownloads = New System.Windows.Forms.ListView
         Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
         Me.mnuTray.SuspendLayout()
         Me.staStatus.SuspendLayout()
         Me.SuspendLayout()
-        '
-        'lstDownloads
-        '
-        Me.lstDownloads.Location = New System.Drawing.Point(210, 384)
-        Me.lstDownloads.Name = "lstDownloads"
-        Me.lstDownloads.OcxState = CType(resources.GetObject("lstDownloads.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.lstDownloads.Size = New System.Drawing.Size(545, 67)
-        Me.lstDownloads.TabIndex = 0
-        '
-        'lstSubscribed
-        '
-        Me.lstSubscribed.Location = New System.Drawing.Point(210, 321)
-        Me.lstSubscribed.Name = "lstSubscribed"
-        Me.lstSubscribed.OcxState = CType(resources.GetObject("lstSubscribed.OcxState"), System.Windows.Forms.AxHost.State)
-        Me.lstSubscribed.Size = New System.Drawing.Size(545, 52)
-        Me.lstSubscribed.TabIndex = 5
         '
         'tmrCheckSub
         '
@@ -314,17 +294,47 @@
         Me.stlStatusText.Size = New System.Drawing.Size(64, 17)
         Me.stlStatusText.Text = "Status Text"
         '
+        'lstSubscribed
+        '
+        Me.lstSubscribed.Activation = System.Windows.Forms.ItemActivation.TwoClick
+        Me.lstSubscribed.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstSubscribed.Location = New System.Drawing.Point(210, 197)
+        Me.lstSubscribed.MultiSelect = False
+        Me.lstSubscribed.Name = "lstSubscribed"
+        Me.lstSubscribed.Size = New System.Drawing.Size(547, 110)
+        Me.lstSubscribed.TabIndex = 14
+        Me.lstSubscribed.UseCompatibleStateImageBehavior = False
+        Me.lstSubscribed.View = System.Windows.Forms.View.Details
+        '
+        'lstDownloads
+        '
+        Me.lstDownloads.Activation = System.Windows.Forms.ItemActivation.TwoClick
+        Me.lstDownloads.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstDownloads.Location = New System.Drawing.Point(216, 336)
+        Me.lstDownloads.MultiSelect = False
+        Me.lstDownloads.Name = "lstDownloads"
+        Me.lstDownloads.Size = New System.Drawing.Size(547, 110)
+        Me.lstDownloads.TabIndex = 15
+        Me.lstDownloads.UseCompatibleStateImageBehavior = False
+        Me.lstDownloads.View = System.Windows.Forms.View.Details
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 471)
+        Me.Controls.Add(Me.lstDownloads)
+        Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.tbrToolbar)
         Me.Controls.Add(Me.lstNew)
-        Me.Controls.Add(Me.lstDownloads)
-        Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.webDetails)
         Me.Controls.Add(Me.mnuMainMenu)
         Me.Cursor = System.Windows.Forms.Cursors.Default
@@ -336,8 +346,6 @@
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
-        CType(Me.lstDownloads, System.ComponentModel.ISupportInitialize).EndInit()
-        CType(Me.lstSubscribed, System.ComponentModel.ISupportInitialize).EndInit()
         Me.mnuMainMenu.ResumeLayout(False)
         Me.mnuMainMenu.PerformLayout()
         Me.tbrToolbar.ResumeLayout(False)
@@ -369,5 +377,7 @@
     Friend WithEvents imlStations As System.Windows.Forms.ImageList
     Friend WithEvents staStatus As System.Windows.Forms.StatusStrip
     Friend WithEvents stlStatusText As System.Windows.Forms.ToolStripStatusLabel
+    Friend WithEvents lstSubscribed As System.Windows.Forms.ListView
+    Friend WithEvents lstDownloads As System.Windows.Forms.ListView
 #End Region
 End Class
