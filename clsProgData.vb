@@ -1,17 +1,18 @@
 Option Strict Off
 Option Explicit On
 
+Imports System.Data.SQLite
+
 Friend Class clsProgData
 	
 	Private dbDatabase As DAO.Database
-	
-	'UPGRADE_NOTE: Class_Initialize was upgraded to Class_Initialize_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
-	Private Sub Class_Initialize_Renamed()
-        dbDatabase = DAODBEngine_definst.OpenDatabase(AddSlash(My.Application.Info.DirectoryPath) & "store.mdb")
-	End Sub
+    Private conConnection As SQLiteConnection
+
 	Public Sub New()
-		MyBase.New()
-		Class_Initialize_Renamed()
+        MyBase.New()
+        dbDatabase = DAODBEngine_definst.OpenDatabase(AddSlash(My.Application.Info.DirectoryPath) & "store.mdb")
+        conConnection = New SQLiteConnection(
+        conConnection.Open()
 	End Sub
 	
 	'UPGRADE_NOTE: Class_Terminate was upgraded to Class_Terminate_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
@@ -22,7 +23,8 @@ Friend Class clsProgData
 		dbDatabase = Nothing
 	End Sub
 	Protected Overrides Sub Finalize()
-		Class_Terminate_Renamed()
+        Class_Terminate_Renamed()
+        conConnection.Close()
 		MyBase.Finalize()
 	End Sub
 	
@@ -277,54 +279,45 @@ Friend Class clsProgData
 	End Function
 	
     Public Sub UpdateDlList(ByRef lstListview As ListView)
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
         Dim lstAdd As ListViewItem
+        Dim comCommand As SQLiteCommand
+        comCommand = New SQLiteCommand("select * from tblDownloads order by Date desc")
 
-        rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads order by Date desc")
+        Dim dataReader As SQLiteDataReader = comCommand.ExecuteReader()
 
-        With rstRecordset
-            lstListview.Items.Clear()
+        lstListview.Items.Clear()
 
-            If .EOF = False Then
-                .MoveFirst()
+        Do While dataReader.Read()
+            lstAdd = New ListViewItem
+            lstAdd.Text = ProgramTitle(dataReader("Type"), dataReader("ID"), dataReader("Date"))
+            lstAdd.SubItems(1).Text = FormatDateTime(dataReader("Date"), DateFormat.ShortDate)
+            lstAdd.Tag = VB6.Format(dataReader("Date")) & "||" + dataReader("ID") + "||" + dataReader("Type")
 
-                Do While .EOF = False
-                    lstAdd.Text = ProgramTitle(.Fields("Type").Value, .Fields("ID").Value, .Fields("Date").Value)
-                    lstAdd.SubItems(1).Text = FormatDateTime(.Fields("Date").Value, DateFormat.ShortDate)
-                    lstAdd.Tag = VB6.Format(.Fields("Date").Value) & "||" + .Fields("ID").Value + "||" + .Fields("Type").Value
+            Select Case dataReader("Status")
+                Case clsBackground.Status.stWaiting
+                    lstAdd.SubItems(2).Text = "Waiting"
+                    lstAdd.ImageKey = "waiting"
+                Case clsBackground.Status.stDownloading
+                    lstAdd.SubItems(2).Text = "(1/3) Downloading"
+                    lstAdd.ImageKey = "downloading"
+                Case clsBackground.Status.stDecoding
+                    lstAdd.SubItems(2).Text = "(2/3) Decoding"
+                    lstAdd.ImageKey = "decoding"
+                Case clsBackground.Status.stEncoding
+                    lstAdd.SubItems(2).Text = "(3/3) Encoding"
+                    lstAdd.ImageKey = "encoding"
+                Case clsBackground.Status.stCompleted
+                    lstAdd.SubItems(2).Text = "Completed"
+                    lstAdd.ImageKey = "completed"
+                Case clsBackground.Status.stError
+                    lstAdd.SubItems(2).Text = "Error"
+                    lstAdd.ImageKey = "error"
+            End Select
 
-                    Select Case .Fields("Status").Value
-                        Case clsBackground.Status.stWaiting
-                            lstAdd.SubItems(2).Text = "Waiting"
-                            lstAdd.ImageKey = "waiting"
-                        Case clsBackground.Status.stDownloading
-                            lstAdd.SubItems(2).Text = "(1/3) Downloading"
-                            lstAdd.ImageKey = "downloading"
-                        Case clsBackground.Status.stDecoding
-                            lstAdd.SubItems(2).Text = "(2/3) Decoding"
-                            lstAdd.ImageKey = "decoding"
-                        Case clsBackground.Status.stEncoding
-                            lstAdd.SubItems(2).Text = "(3/3) Encoding"
-                            lstAdd.ImageKey = "encoding"
-                        Case clsBackground.Status.stCompleted
-                            lstAdd.SubItems(2).Text = "Completed"
-                            lstAdd.ImageKey = "completed"
-                        Case clsBackground.Status.stError
-                            lstAdd.SubItems(2).Text = "Error"
-                            lstAdd.ImageKey = "error"
-                    End Select
+            lstListview.Items.Add(lstAdd)
+        Loop
 
-                    lstListview.Items.Add(lstAdd)
-
-                    .MoveNext()
-                Loop
-            End If
-        End With
-
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        dataReader.Close()
     End Sub
 	
     Public Sub UpdateSubscrList(ByRef lstListview As ListView)

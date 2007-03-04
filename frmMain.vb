@@ -471,6 +471,36 @@ Public Class frmMain
         '    Next prgBar
     End Sub
 
+
+    Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
+        tbtFindNew.Checked = True
+        tbtSubscriptions.Checked = False
+        tbtDownloads.Checked = False
+        Call TabAdjustments()
+    End Sub
+
+    Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
+        tbtSubscriptions.Checked = True
+        tbtFindNew.Checked = False
+        tbtDownloads.Checked = False
+        Call TabAdjustments()
+    End Sub
+
+    Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
+        tbtDownloads.Checked = True
+        tbtSubscriptions.Checked = False
+        tbtFindNew.Checked = False
+        Call TabAdjustments()
+    End Sub
+
+    Private Sub tbtUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUp.Click
+        tbtUp.Enabled = False
+        If lstNew.View = View.Details Then
+            Call AddStations()
+        End If
+        Call TabAdjustments()
+    End Sub
+
     ' Called from JavaScript in embedded XHTML -------------------------------------
 
     Public Sub FlDownload()
@@ -565,34 +595,5 @@ Public Class frmMain
         Call clsTheProgData.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
         Call clsTheProgData.UpdateDlList(lstDownloads)
         tmrStartProcess.Enabled = True
-    End Sub
-
-    Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
-        tbtFindNew.Checked = True
-        tbtSubscriptions.Checked = False
-        tbtDownloads.Checked = False
-        Call TabAdjustments()
-    End Sub
-
-    Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
-        tbtSubscriptions.Checked = True
-        tbtFindNew.Checked = False
-        tbtDownloads.Checked = False
-        Call TabAdjustments()
-    End Sub
-
-    Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
-        tbtDownloads.Checked = True
-        tbtSubscriptions.Checked = False
-        tbtFindNew.Checked = False
-        Call TabAdjustments()
-    End Sub
-
-    Private Sub tbtUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUp.Click
-        tbtUp.Enabled = False
-        If lstNew.View = View.Details Then
-            Call AddStations()
-        End If
-        Call TabAdjustments()
     End Sub
 End Class
