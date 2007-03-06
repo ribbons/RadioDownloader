@@ -153,6 +153,7 @@
     <Compile Include="modMain.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="modPlugins.vb" />
     <Compile Include="modProgramInfo.vb">
       <SubType>Code</SubType>
     </Compile>

@@ -11,7 +11,7 @@ Friend Class clsProgData
 	Public Sub New()
         MyBase.New()
         dbDatabase = DAODBEngine_definst.OpenDatabase(AddSlash(My.Application.Info.DirectoryPath) & "store.mdb")
-        conConnection = New SQLiteConnection(
+        'conConnection = New SQLiteConnection(
         conConnection.Open()
 	End Sub
 	
