@@ -30,20 +30,15 @@ Public Class frmMain
     Private Sub AddStations()
         Call SetNewView(True)
 
-        Dim eachInstance As IRadioProvider
+        Dim ThisInstance As IRadioProvider
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            eachInstance = CreateInstance(SinglePlugin)
-            Debug.WriteLine(eachInstance.ProviderUniqueID)
-        Next SinglePlugin
+            ThisInstance = CreateInstance(SinglePlugin)
 
-        Call AddStation("Radio 1", "radio1", "BBCLA")
-        Call AddStation("Radio 2", "radio2", "BBCLA")
-        Call AddStation("Radio 3", "radio3", "BBCLA")
-        Call AddStation("Radio 4", "radio4", "BBCLA")
-        Call AddStation("Five Live", "fivelive", "BBCLA")
-        Call AddStation("Six Music", "6music", "BBCLA")
-        Call AddStation("BBC 7", "bbc7", "BBCLA")
+            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations
+                Call AddStation(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID)
+            Next
+        Next SinglePlugin
     End Sub
 
     Private Sub AddStation(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String)
