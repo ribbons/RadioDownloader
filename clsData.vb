@@ -145,75 +145,59 @@ Friend Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
-        GetDownloadPath = sqlReader.GetString(sqlReader.GetString("Path"))
+        GetDownloadPath = sqlReader.GetString("Path")
     End Function
 
     Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.Status
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        rstRecordset.MoveFirst()
-        DownloadStatus = rstRecordset.Fields("Status").Value
-
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        sqlReader.Read()
+        DownloadStatus = sqlReader.GetString("Status")
     End Function
 
     Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        rstRecordset.MoveFirst()
-        ProgramDuration = rstRecordset.Fields("Duration").Value
-
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        sqlReader.Read()
+        ProgramDuration = sqlReader.GetString("Duration")
     End Function
 
     Public Function ProgramTitle(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        rstRecordset.MoveFirst()
-        ProgramTitle = rstRecordset.Fields("Name").Value
-
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        sqlReader.Read()
+        ProgramTitle = sqlReader.GetString("Name")
     End Function
 
     Public Function ProgramHTML(ByVal strProgramType As String, ByVal strProgramID As String, Optional ByVal dteProgramDate As Date = #12:00:00 AM#) As String
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
+        Dim sqlCommand As SQLiteCommand
 
         If dteProgramDate > System.DateTime.FromOADate(0) Then
-            rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
         Else
             Call GetLatest(strProgramType, strProgramID)
-            rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC")
+            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC")
         End If
 
-        rstRecordset.MoveFirst()
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+        sqlReader.Read()
 
         Dim lngHours As Integer
         Dim lngMins As Integer
-        With rstRecordset
-            ProgramHTML = "<h2>" + .Fields("Name").Value + "</h2>"
-            ProgramHTML = ProgramHTML & "<p><img src=""" + .Fields("ImageURL").Value + """ />"
-            ProgramHTML = ProgramHTML + .Fields("Description").Value + "</p>"
+
+        With sqlReader
+            ProgramHTML = "<h2>" + .GetString("Name") + "</h2>"
+            ProgramHTML = ProgramHTML & "<p><img src=""" + .GetString("ImageURL") + """ />"
+            ProgramHTML = ProgramHTML + .GetString("Description") + "</p>"
 
             ProgramHTML = ProgramHTML & "<div style=""clear: both;""></div>"
+            ProgramHTML = ProgramHTML & .GetDateTime("Date").ToString("ddd dd/mmm/yy hh:mm") & " "
 
-            ProgramHTML = ProgramHTML & VB6.Format(.Fields("Date").Value, "ddd dd/mmm/yy hh:mm") & " "
-
-
-            lngMins = .Fields("Duration").Value Mod 60
-            lngHours = .Fields("Duration").Value \ 60
+            lngMins = .GetString("Duration") Mod 60
+            lngHours = .GetString("Duration") \ 60
 
             ProgramHTML = ProgramHTML & "<span style=""white-space: nowrap;"">"
 
@@ -232,40 +216,36 @@ Friend Class clsData
 
             ProgramHTML = ProgramHTML & "</span>"
         End With
-
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
     End Function
 
-    Public Function IsDownloading(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads where type='" & strProgramType & "' and id='" & strProgramID & "' and status<" & VB6.Format(clsBackground.Status.stCompleted))
+    'Public Function IsDownloading(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
+    '    'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+    '    Dim rstRecordset As DAO.Recordset
+    '    rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads where type='" & strProgramType & "' and id='" & strProgramID & "' and status<" & VB6.Format(clsBackground.Status.stCompleted))
 
-        IsDownloading = rstRecordset.EOF = False
+    '    IsDownloading = rstRecordset.EOF = False
 
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
-    End Function
+    '    rstRecordset.Close()
+    '    'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+    '    rstRecordset = Nothing
+    'End Function
 
     Public Sub UpdateDlList(ByRef lstListview As ListView)
         Dim lstAdd As ListViewItem
         Dim comCommand As SQLiteCommand
         comCommand = New SQLiteCommand("select * from tblDownloads order by Date desc")
 
-        Dim dataReader As SQLiteDataReader = comCommand.ExecuteReader()
+        Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
         lstListview.Items.Clear()
 
-        Do While dataReader.Read()
+        Do While sqlReader.Read()
             lstAdd = New ListViewItem
-            lstAdd.Text = ProgramTitle(dataReader("Type"), dataReader("ID"), dataReader("Date"))
-            lstAdd.SubItems(1).Text = FormatDateTime(dataReader("Date"), DateFormat.ShortDate)
-            lstAdd.Tag = VB6.Format(dataReader("Date")) & "||" + dataReader("ID") + "||" + dataReader("Type")
+            lstAdd.Text = ProgramTitle(sqlReader.GetString("Type"), sqlReader.GetString("ID"), sqlReader.GetDateTime("Date").ToString())
+            lstAdd.SubItems(1).Text = sqlReader.GetDateTime("Date").ToShortDateString()
+            lstAdd.Tag = sqlReader.GetDateTime("Date").ToString() & "||" + sqlReader.GetString("ID") + "||" + sqlReader.GetString("Type")
 
-            Select Case dataReader("Status")
+            Select Case sqlReader.GetInt32("Status")
                 Case clsBackground.Status.stWaiting
                     lstAdd.SubItems(2).Text = "Waiting"
                     lstAdd.ImageKey = "waiting"
