@@ -30,6 +30,13 @@ Public Class frmMain
     Private Sub AddStations()
         Call SetNewView(True)
 
+        Dim eachInstance As IRadioProvider
+
+        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
+            eachInstance = CreateInstance(SinglePlugin)
+            Debug.WriteLine(eachInstance.ProviderUniqueID)
+        Next SinglePlugin
+
         Call AddStation("Radio 1", "radio1", "BBCLA")
         Call AddStation("Radio 2", "radio2", "BBCLA")
         Call AddStation("Radio 3", "radio3", "BBCLA")
@@ -90,6 +97,7 @@ Public Class frmMain
     'End Sub
 
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
+        ' Load all of the available plugins into an array for later reference
         AvailablePlugins = FindPlugins(My.Application.Info.DirectoryPath)
 
         lstSubscribed.Top = lstNew.Top

@@ -5,15 +5,25 @@ Imports System.Reflection
 Imports System.IO
 
 Public Interface IRadioProvider
-    ReadOnly Property Type() As String
+    Structure StationInfo
+        Dim StationUniqueID As String
+        Dim StationName As String
+        Dim StationIcon As Icon
+    End Structure
+
+    ReadOnly Property ProviderUniqueID() As String
+    ReadOnly Property ProviderName() As String
+    ReadOnly Property ProviderDescription() As String
+
+    Function ReturnStations() As StationInfo()
 End Interface
 
 Module modPlugins
     Private Const strInterfaceName As String = "IRadioProvider"
 
     Public Structure AvailablePlugin
-        Public AssemblyPath As String
-        Public ClassName As String
+        Dim AssemblyPath As String
+        Dim ClassName As String
     End Structure
 
     ' Next three functions are from http://www.developerfusion.co.uk/show/4371/3/
@@ -51,8 +61,7 @@ Module modPlugins
             'Only look at public types
             If objType.IsPublic = True Then
                 'Ignore abstract classes
-                If Not ((objType.Attributes And TypeAttributes.Abstract) = _
-                TypeAttributes.Abstract) Then
+                If Not ((objType.Attributes And TypeAttributes.Abstract) = TypeAttributes.Abstract) Then
                     'See if this type implements our interface
                     objInterface = objType.GetInterface(strInterfaceName, True)
                     If Not (objInterface Is Nothing) Then
