@@ -331,72 +331,44 @@ Friend Class clsData
     End Sub
 
     Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-        On Error GoTo Error_Renamed
-
         Call GetLatest(strProgramType, strProgramID)
 
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads")
+        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblDownloads (Type, ID, Date, NextAction, Status) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + LatestDate(strProgramType, strProgramID) + """, """ + clsBackground.NextAction.Download + """, """ + clsBackground.Status.stWaiting + """)")
 
-        With rstRecordset
-            .AddNew()
-            .Fields("Type").Value = strProgramType
-            .Fields("ID").Value = strProgramID
-            .Fields("Date").Value = LatestDate(strProgramType, strProgramID)
-            .Fields("NextAction").Value = clsBackground.NextAction.Download
-            .Fields("Status").Value = clsBackground.Status.stWaiting
-            .Update()
-        End With
+        Try
+            Call sqlCommand.ExecuteNonQuery()
+        Catch
+            Stop
+            Select Case Err.Number
+                Case 3022 'Trying to create duplicate in database, ie trying to download twice!
+                    Return False
+                Case Else
+            End Select
+        End Try
 
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
-
-        AddDownload = True
-        Exit Function
-Error_Renamed:
-        Select Case Err.Number
-            Case 3022 'Trying to create duplicate in database, ie trying to download twice!
-                AddDownload = False
-            Case Else
-                On Error GoTo 0
-                Resume
-        End Select
+        Return True
     End Function
 
     Public Function AddSubscription(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-        On Error GoTo Error_Renamed
+        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, ID) VALUES (""" + strProgramType + """, """ + strProgramID + """)")
 
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblSubscribed")
+        Try
+            Call sqlCommand.ExecuteNonQuery()
+        Catch
+            Stop
+            Select Case Err.Number
+                Case 3022 'Trying to create duplicate in database, ie trying to subscribe twice!
+                    Return False
+                Case Else
+            End Select
+        End Try
 
-        With rstRecordset
-            .AddNew()
-            .Fields("Type").Value = strProgramType
-            .Fields("ID").Value = strProgramID
-            .Update()
-        End With
-
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
-
-        AddSubscription = True
-        Exit Function
-Error_Renamed:
-        Select Case Err.Number
-            Case 3022 'Trying to create duplicate in database, ie trying to download twice!
-                AddSubscription = False
-            Case Else
-                On Error GoTo 0
-                Resume
-        End Select
+        Return True
     End Function
 
     Public Sub RemoveSubscription(ByVal strProgramType As String, ByVal strProgramID As String)
-        dbDatabase.Execute(("DELETE FROM tblSubscribed WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """"))
+        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblSubscribed WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """")
+        Call sqlCommand.ExecuteNonQuery()
     End Sub
 
     Private Sub GetLatest(ByVal strProgramType As String, ByVal strProgramID As String)
@@ -406,22 +378,18 @@ Error_Renamed:
     End Sub
 
     Private Function LatestDate(ByVal strProgramType As String, ByVal strProgramID As String) As Date
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        With rstRecordset
-            If .EOF Then
+        With sqlReader
+            If .Read = False Then
                 Exit Function
             End If
 
-            .MoveFirst()
-            LatestDate = .Fields("Date").Value
+            LatestDate = .GetDateTime("Date")
         End With
 
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        sqlReader.Close()
     End Function
 
     Private Function HaveLatest(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
@@ -434,15 +402,14 @@ Error_Renamed:
         dteLatest = LatestDate(strProgramType, strProgramID)
 
         If dteLatest = System.DateTime.FromOADate(0) Then
-            HaveLatest = False
-            Exit Function
+            Return False
         End If
 
         ' If the current info is less than a week old, then
         If DateAdd(Microsoft.VisualBasic.DateInterval.WeekOfYear, 1, dteLatest) < Now Then
-            HaveLatest = False
+            Return False
         Else
-            HaveLatest = True
+            Return True
         End If
     End Function
 
@@ -525,55 +492,44 @@ Error_Renamed:
 
         ' Now store in DB
 
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblInfo WHERE ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        With rstRecordset
-            If .EOF Then ' Make sure that it doesn't already exist
-                .AddNew()
-                .Fields("Type").Value = strProgramType
-                .Fields("ID").Value = strProgramID
-                .Fields("Date").Value = dteProgDate
-                .Fields("Name").Value = strProgTitle
-                .Fields("Description").Value = strProgDescription
-                .Fields("ImageURL").Value = strProgImgUrl
-                .Fields("Duration").Value = lngProgDuration
-                .Update()
-            End If
-        End With
+        If sqlReader.Read = False Then
+            sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + dteProgDate + """, """ + strProgTitle + """, """ + strProgDescription + """, """ + strProgImgUrl + """, """ + lngProgDuration + """)")
+            Call sqlCommand.ExecuteNonQuery()
+        End If
 
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        sqlReader.Close()
     End Sub
 
     Public Function ResetDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean) As Object
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        ''UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        'Dim rstRecordset As DAO.Recordset
+        'rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
 
-        With rstRecordset
-            If .EOF = False Then
-                .MoveFirst()
-                .Edit()
-                .Fields("NextAction").Value = clsBackground.NextAction.Download
-                .Fields("Status").Value = clsBackground.Status.stWaiting
-                If booAuto Then
-                    .Fields("Errors").Value = .Fields("Errors").Value + 1
-                Else
-                    .Fields("Errors").Value = 0
-                End If
-                .Update()
-            End If
-        End With
+        'With rstRecordset
+        '    If .EOF = False Then
+        '        .MoveFirst()
+        '        .Edit()
+        '        .Fields("NextAction").Value = clsBackground.NextAction.Download
+        '        .Fields("Status").Value = clsBackground.Status.stWaiting
+        '        If booAuto Then
+        '            .Fields("Errors").Value = .Fields("Errors").Value + 1
+        '        Else
+        '            .Fields("Errors").Value = 0
+        '        End If
+        '        .Update()
+        '    End If
+        'End With
 
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        'rstRecordset.Close()
+        ''UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        'rstRecordset = Nothing
     End Function
 
     Public Sub CancelDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
-        Call dbDatabase.Execute("DELETE FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Call sqlCommand.ExecuteNonQuery()
     End Sub
 End Class
