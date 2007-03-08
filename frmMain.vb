@@ -298,7 +298,7 @@ Public Class frmMain
             lstSubscribed.Visible = False
             lstDownloads.Visible = False
             tbtCleanUp.Enabled = False
-            tbtUp.Enabled = lstNew.View = ComctlLib.ListViewConstants.lvwReport
+            tbtUp.Enabled = lstNew.View = View.Details
             Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", CStr(clsBackground.NextAction.None))
         ElseIf tbtSubscriptions.Checked Then
             lstNew.Visible = False
