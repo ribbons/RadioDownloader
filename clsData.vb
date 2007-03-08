@@ -146,6 +146,8 @@ Friend Class clsData
 
         sqlReader.Read()
         GetDownloadPath = sqlReader.GetString("Path")
+
+        sqlReader.Close()
     End Function
 
     Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.Status
@@ -154,6 +156,8 @@ Friend Class clsData
 
         sqlReader.Read()
         DownloadStatus = sqlReader.GetString("Status")
+
+        sqlReader.Close()
     End Function
 
     Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
@@ -162,6 +166,8 @@ Friend Class clsData
 
         sqlReader.Read()
         ProgramDuration = sqlReader.GetString("Duration")
+
+        sqlReader.Close()
     End Function
 
     Public Function ProgramTitle(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
@@ -170,6 +176,8 @@ Friend Class clsData
 
         sqlReader.Read()
         ProgramTitle = sqlReader.GetString("Name")
+
+        sqlReader.Close()
     End Function
 
     Public Function ProgramHTML(ByVal strProgramType As String, ByVal strProgramID As String, Optional ByVal dteProgramDate As Date = #12:00:00 AM#) As String
@@ -216,6 +224,8 @@ Friend Class clsData
 
             ProgramHTML = ProgramHTML & "</span>"
         End With
+
+        sqlReader.Close()
     End Function
 
     'Public Function IsDownloading(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
@@ -232,9 +242,8 @@ Friend Class clsData
 
     Public Sub UpdateDlList(ByRef lstListview As ListView)
         Dim lstAdd As ListViewItem
-        Dim comCommand As SQLiteCommand
-        comCommand = New SQLiteCommand("select * from tblDownloads order by Date desc")
 
+        Dim comCommand As New SQLiteCommand("select * from tblDownloads order by Date desc")
         Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
         lstListview.Items.Clear()
@@ -269,73 +278,56 @@ Friend Class clsData
             lstListview.Items.Add(lstAdd)
         Loop
 
-        dataReader.Close()
+        sqlReader.Close()
     End Sub
 
     Public Sub UpdateSubscrList(ByRef lstListview As ListView)
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
         Dim lstAdd As ListViewItem
 
-        rstRecordset = dbDatabase.OpenRecordset("select * from tblSubscribed")
+        Dim sqlCommand As New SQLiteCommand("select * from tblSubscribed")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        With rstRecordset
-            lstListview.Items.Clear()
+        lstListview.Items.Clear()
 
-            If .EOF = False Then
-                .MoveFirst()
+        With sqlReader
+            Do While .Read()
+                Call GetLatest(.GetString("Type"), .GetString("ID"))
 
-                Do While .EOF = False
-                    Call GetLatest(.Fields("Type").Value, .Fields("ID").Value)
+                lstAdd = New ListViewItem
 
-                    lstAdd = New ListViewItem
+                lstAdd.Text = ProgramTitle(.GetString("Type"), .GetString("ID"), .GetDateTime("Type").ToString())
+                lstAdd.Tag = .GetString("Type") + "||" + .GetString("ID")
+                lstAdd.ImageKey = "subscribed"
 
-                    lstAdd.Text = ProgramTitle(.Fields("Type").Value, .Fields("ID").Value, LatestDate(.Fields("Type").Value, .Fields("ID").Value))
-                    lstAdd.Tag = .Fields("Type").Value + "||" + .Fields("ID").Value
-                    lstAdd.ImageKey = "subscribed"
-
-                    lstListview.Items.Add(lstAdd)
-
-                    .MoveNext()
-                Loop
-            End If
+                lstListview.Items.Add(lstAdd)
+            Loop
         End With
 
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        sqlReader.Close()
     End Sub
 
     Public Sub CheckSubscriptions(ByRef lstList As ListView, ByRef tmrTimer As System.Windows.Forms.Timer)
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("select * from tblSubscribed")
+        Dim sqlCommand As New SQLiteCommand("select * from tblSubscribed")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        'UPGRADE_WARNING: Arrays in structure rstCheckDld may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstCheckDld As DAO.Recordset
-        With rstRecordset
-            If .EOF = False Then
-                .MoveFirst()
+        With sqlReader
+            Do While .Read()
+                Call GetLatest(.GetString("Type"), .GetString("ID"))
 
-                Do While .EOF = False
-                    Call GetLatest(.Fields("Type").Value, .Fields("ID").Value)
+                Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString("Type") + """ and ID=""" + .GetString("ID") + """ and Date=#" + LatestDate(.GetString("Type"), .GetString("ID")).ToString("mm/dd/yyyy Hh:Nn") + "#")
+                Dim sqlRdrCheckDld As SQLiteDataReader = sqlCommand.ExecuteReader
 
-                    rstCheckDld = dbDatabase.OpenRecordset("select * from tblDownloads where type=""" + .Fields("Type").Value + """ and ID=""" + .Fields("ID").Value + """ and Date=#" + VB6.Format(LatestDate(.Fields("Type").Value, .Fields("ID").Value), "mm/dd/yyyy Hh:Nn") + "#")
+                If sqlRdrCheckDld.Read() Then
+                    Call AddDownload(.GetString("Type"), .GetString("ID"))
+                    Call UpdateDlList(lstList)
+                    tmrTimer.Enabled = True
+                End If
 
-                    If rstCheckDld.EOF Then
-                        Call AddDownload(.Fields("Type").Value, .Fields("ID").Value)
-                        Call UpdateDlList(lstList)
-                        tmrTimer.Enabled = True
-                    End If
-
-                    .MoveNext()
-                Loop
-            End If
+                sqlRdrCheckDld.Close()
+            Loop
         End With
 
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+        sqlReader.Close()
     End Sub
 
     Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
