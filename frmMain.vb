@@ -10,7 +10,7 @@ Public Class frmMain
     Private WithEvents PluginInstances As IRadioProvider
 
     'Private WithEvents clsBackground As clsBackground
-    'Private clsTheProgData As clsProgData
+    Private clsProgData As clsData
 
     Private lngLastState As Integer
     Private lngStatus As Integer
@@ -130,7 +130,7 @@ Public Class frmMain
         ''Call clsSubclass.AddMsg(WM_STYLECHANGING, MSG_BEFORE)
         'Call clsSubclass.AddMsg(WinSubHook2.eMsg.WM_NOTIFY, WinSubHook2.eMsgWhen.MSG_BEFORE)
 
-        'clsTheProgData = New clsProgData
+        clsProgData = New clsData
         'Call clsTheProgData.CleanupUnfinished()
         'Call clsTheProgData.UpdateDlList(lstDownloads)
         'Call clsTheProgData.UpdateSubscrList(lstSubscribed)
@@ -262,18 +262,18 @@ Public Class frmMain
     '    End If
     'End Sub
 
-    'Private Sub lstNew_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstNew.SelectedIndexChanged
-    '    If lstNew.SelectedItems.Count > 0 Then
-    '        Dim strSplit() As String
-    '        strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
+    Private Sub lstNew_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstNew.SelectedIndexChanged
+        If lstNew.SelectedItems.Count > 0 Then
+            Dim strSplit() As String
+            strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
-    '        If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
-    '            ' Do nothing
-    '        Else
-    '            Call CreateHtml("Programme Info", clsTheProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
-    '        End If
-    '    End If
-    'End Sub
+            If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
+                ' Do nothing
+            Else
+                Call CreateHtml("Programme Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
+            End If
+        End If
+    End Sub
 
     Private Sub lstNew_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstNew.ItemActivate
         Dim strSplit() As String

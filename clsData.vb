@@ -2,13 +2,14 @@ Option Strict Off
 Option Explicit On
 
 Imports System.Data.SQLite
+Imports System.Text.RegularExpressions
 
 Friend Class clsData
     Private sqlConnection As SQLiteConnection
 
     Public Sub New()
         MyBase.New()
-        sqlConnection = New SQLiteConnection("version=3,URI=file:" + My.Application.Info.DirectoryPath + "store.db")
+        sqlConnection = New SQLiteConnection("Data Source=" + My.Application.Info.DirectoryPath + "\store.db;Version=3;New=False")
         sqlConnection.Open()
     End Sub
 
@@ -136,12 +137,12 @@ Friend Class clsData
     'End Sub
 
     Public Sub SetDownloadPath(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal strPath As String)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Path=""+strPath+"" WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Path=""" + strPath + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString() + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
     End Sub
 
     Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString() + """")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -151,7 +152,7 @@ Friend Class clsData
     End Function
 
     Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.Status
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString() + """")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -161,7 +162,7 @@ Friend Class clsData
     End Function
 
     Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString() + """")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -171,7 +172,7 @@ Friend Class clsData
     End Function
 
     Public Function ProgramTitle(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString() + """")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -184,10 +185,10 @@ Friend Class clsData
         Dim sqlCommand As SQLiteCommand
 
         If dteProgramDate > System.DateTime.FromOADate(0) Then
-            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString() + """", sqlConnection)
         Else
             Call GetLatest(strProgramType, strProgramID)
-            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC")
+            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ ORDER BY Date DESC", sqlConnection)
         End If
 
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
@@ -314,7 +315,7 @@ Friend Class clsData
             Do While .Read()
                 Call GetLatest(.GetString("Type"), .GetString("ID"))
 
-                Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString("Type") + """ and ID=""" + .GetString("ID") + """ and Date=#" + LatestDate(.GetString("Type"), .GetString("ID")).ToString("mm/dd/yyyy Hh:Nn") + "#")
+                Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString("Type") + """ and ID=""" + .GetString("ID") + """ and Date=""" + LatestDate(.GetString("Type"), .GetString("ID")).ToString() + """")
                 Dim sqlRdrCheckDld As SQLiteDataReader = sqlCommand.ExecuteReader
 
                 If sqlRdrCheckDld.Read() Then
@@ -378,7 +379,7 @@ Friend Class clsData
     End Sub
 
     Private Function LatestDate(ByVal strProgramType As String, ByVal strProgramID As String) As Date
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         With sqlReader
@@ -422,7 +423,7 @@ Friend Class clsData
         Dim strProgTitle As String
         Dim strProgDescription As String
         Dim lngProgDuration As Integer
-        Dim dteProgDate As Date
+        Dim dteProgDate As DateTime
         Dim strProgImgUrl As String
 
         Dim strInfo As String
@@ -479,20 +480,30 @@ Friend Class clsData
         'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(3). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         lngProgDuration = objMatch.SubMatches(1) * 60 + objMatch.SubMatches(3)
-        ' Because the year isn't included in the program date, guess it is the
-        ' current year (normally right).  If this guess ends up as a date in the
-        ' future, then we have just passed the end of a year, and it is actually
+
+        ' Now split up the date string
+        Dim RegExpression As New Regex("(?<dayname>(\w){3}) (?<day>(\d){2}) (?<monthname>(\w){3}) - (?<hour>(\d){2}):(?<minute>(\d){2})")
+        If RegExpression.IsMatch(strDateString) = False Then
+            Exit Sub
+        End If
+
+        Dim grpMatches As GroupCollection
+        grpMatches = RegExpression.Match(strDateString).Groups
+
+        Dim intMonthNum As Integer = Array.IndexOf("jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec".Split("|".ToCharArray), grpMatches("monthname").ToString.ToLower) + 1
+
+        ' Because the year isn't included in the program date, guess it is the current year (normally right)
+        dteProgDate = New Date(Now.Year, intMonthNum, CInt(grpMatches("day").ToString), CInt(grpMatches("hour").ToString), CInt(grpMatches("minute").ToString), 0)
+
+        ' If this guess ends up as a date in the future, then we have just passed the end of a year, and it is actually
         ' a program from last year.
-        'UPGRADE_WARNING: DateDiff behavior may be different. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B38EC3F-686D-4B2E-B5A5-9E8E7A762E32"'
-        If DateDiff(Microsoft.VisualBasic.DateInterval.Minute, CDate(Mid(Replace(strDateString, "- ", ""), 5)), Now) < 0 Then
-            dteProgDate = CDate(Mid(Replace(strDateString, "- ", VB6.Format(Year(Now) - 1) & " "), 5))
-        Else
-            dteProgDate = CDate(Mid(Replace(strDateString, "- ", ""), 5))
+        If dteProgDate > Now Then
+            dteProgDate = New Date(Now.Year - 1, intMonthNum, CInt(grpMatches("day").ToString), CInt(grpMatches("hour").ToString), CInt(grpMatches("minute").ToString), 0)
         End If
 
         ' Now store in DB
 
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE ID=""" & strProgramID & """ AND Date=""" & dteProgDate.ToString() + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read = False Then
