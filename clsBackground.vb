@@ -1,6 +1,8 @@
 Option Strict Off
 Option Explicit On
 Imports VB = Microsoft.VisualBasic
+Imports System.Text.RegularExpressions
+
 <System.Runtime.InteropServices.ProgId("clsBackground_NET.clsBackground")> Public Class clsBackground
 
     Public Structure DownloadID
@@ -178,9 +180,9 @@ Imports VB = Microsoft.VisualBasic
     Public Sub ConvWavCallback(ByRef strReturned As String)
         Dim lngPos As Integer
         lngPos = InStr(1, strReturned, vbCr)
-        Dim objRegExp As VBScript_RegExp_55.RegExp
-        Dim objMatch As VBScript_RegExp_55.Match
-        Dim colMatches As VBScript_RegExp_55.MatchCollection
+
+
+
         Dim lngPercent As Integer
         If lngPos > 0 Then
             strReturned = Left(strReturned, lngPos - 1)
@@ -190,22 +192,14 @@ Imports VB = Microsoft.VisualBasic
                 Exit Sub
             End If
 
-
-            objRegExp = New VBScript_RegExp_55.RegExp
-            objRegExp.Pattern = "A:(.*?) \(.*?\)  .*?%"
-            objRegExp.IgnoreCase = True
-            objRegExp.Global = True
-
-            If objRegExp.Test(strReturned) = False Then
+            Dim RegExpression As New Regex("A:(.*?) \(.*?\)  .*?%")
+            If RegExpression.IsMatch(strReturned) = False Then
                 Exit Sub
             End If
 
-            colMatches = objRegExp.Execute(strReturned)
-            objMatch = colMatches(0)
+            Dim grpMatches As GroupCollection = RegExpression.Match(strReturned).Groups
 
-
-            'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-            lngPercent = ((objMatch.SubMatches(0) / (lngDuration * 60)) * 100) * 0.99
+            lngPercent = ((grpMatches(0).ToString / (lngDuration * 60)) * 100) * 0.99
             If lngPercent > 99 Then lngPercent = 99
 
             Call ReturnProgress(lngPercent)
@@ -240,28 +234,20 @@ Imports VB = Microsoft.VisualBasic
     Public Sub ConvMp3Callback(ByRef strReturned As String)
         Dim lngPos As Integer
         lngPos = InStrRev(strReturned, vbCr)
-        Dim objRegExp As VBScript_RegExp_55.RegExp
-        Dim objMatch As VBScript_RegExp_55.Match
-        Dim colMatches As VBScript_RegExp_55.MatchCollection
+        
         If lngPos > 0 Then
             strReturned = Mid(strReturned, lngPos + 1)
 
 
-            objRegExp = New VBScript_RegExp_55.RegExp
-            objRegExp.Pattern = "(.*?)/(.*?)\((.*?)%\)\|(.*?)/(.*?)\|(.*?)/(.*?)\|(.*?)x\|(.*) "
-            objRegExp.IgnoreCase = True
-            objRegExp.Global = True
-
-            If objRegExp.Test(strReturned) = False Then
+            Dim RegExpression As New Regex("(.*?)/(.*?)\((.*?)%\)\|(.*?)/(.*?)\|(.*?)/(.*?)\|(.*?)x\|(.*) ")
+            If RegExpression.IsMatch(strReturned) = False Then
                 Exit Sub
             End If
 
-            colMatches = objRegExp.Execute(strReturned)
-            objMatch = colMatches(0)
+            Dim grpMatches As GroupCollection = RegExpression.Match(strReturned).Groups
 
             '"Progress: " + Trim(objMatch.SubMatches(2)) + "% (Speed: " + Left$(Trim(objMatch.SubMatches(7)), 3) + "%)  Remaining: " + Trim(objMatch.SubMatches(8))
-            'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-            Call ReturnProgress(CInt(Trim(objMatch.SubMatches(2))))
+            Call ReturnProgress(CInt(Trim(grpMatches(2).ToString)))
         End If
     End Sub
 

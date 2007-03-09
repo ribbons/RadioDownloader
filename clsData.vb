@@ -425,69 +425,51 @@ Friend Class clsData
         Dim lngProgDuration As Integer
         Dim dteProgDate As DateTime
         Dim strProgImgUrl As String
+        Dim strDuration As String
+        Dim strDateString As String
 
         Dim strInfo As String
         strInfo = GetUrlAsString("http://www.bbc.co.uk/radio/aod/networks/radio1/aod.shtml?" & strProgramID)
 
         strInfo = Replace(strInfo, "src=""", "src=""http://www.bbc.co.uk")
 
-        Dim objRegExp As VBScript_RegExp_55.RegExp
-        Dim objMatch As VBScript_RegExp_55.Match
-        Dim colMatches As VBScript_RegExp_55.MatchCollection
+        Dim RegExpression As Regex
+        Dim grpMatches As GroupCollection
 
-        objRegExp = New VBScript_RegExp_55.RegExp
-        objRegExp.Pattern = "<div id=""show"">" & vbLf & "<div id=""showtitle""><big>(.*?)</big> <span class=""txinfo"">\((.*?)\)<br />" & vbLf & "(.*?) - (.*?)</span><br />" & vbLf & "</div>" & vbLf & "<table cellpadding=""0"" cellspacing=""0"" border=""0"">" & vbLf & "<tr>" & vbLf & "<td valign=""top""><img src=""(.*?)"" width=""70"" height=""70"" alt="""" border=""0"" /></td>" & vbLf & "<td valign=""top"">(.*?)</td>" & vbLf & "</tr>" & vbLf & "</table>"
-        objRegExp.IgnoreCase = True
-        objRegExp.Global = True
-
-        If objRegExp.Test(strInfo) = False Then
+        RegExpression = New Regex("<div id=""show"">" & vbLf & "<div id=""showtitle""><big>(.*?)</big> <span class=""txinfo"">\((.*?)\)<br />" & vbLf & "(.*?) - (.*?)</span><br />" & vbLf & "</div>" & vbLf & "<table cellpadding=""0"" cellspacing=""0"" border=""0"">" & vbLf & "<tr>" & vbLf & "<td valign=""top""><img src=""(.*?)"" width=""70"" height=""70"" alt="""" border=""0"" /></td>" & vbLf & "<td valign=""top"">(.*?)</td>" & vbLf & "</tr>" & vbLf & "</table>")
+        
+        If RegExpression.IsMatch(strInfo) = False Then
             Exit Sub
         End If
 
-        colMatches = objRegExp.Execute(strInfo)
-        objMatch = colMatches(0)
+        grpMatches = RegExpression.Match(strInfo).Groups
 
         ' objMatch.SubMatches(0) is Program Title
-        'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        strProgTitle = objMatch.SubMatches(0)
-
+        strProgTitle = grpMatches(0).ToString()
         ' objMatch.SubMatches(1) is Duration String, eg 1hr 30min
-        Dim strDuration As String
-        'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        strDuration = objMatch.SubMatches(1)
-
+        strDuration = grpMatches(1).ToString()
         ' objMatch.SubMatches(3) is Date Sting eg Wed 26 Jul - 14:00
-        Dim strDateString As String
-        'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        strDateString = objMatch.SubMatches(3)
-
+        strDateString = grpMatches(3).ToString()
         ' objMatch.SubMatches(4) is Image URL
-        'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        strProgImgUrl = objMatch.SubMatches(4)
-
+        strProgImgUrl = grpMatches(4).ToString()
         ' objMatch.SubMatches(5) is Program Description
-        'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        strProgDescription = objMatch.SubMatches(5)
+        strProgDescription = grpMatches(5).ToString()
 
-        objRegExp.Pattern = "(([0-9]*?) hr)? ?(([0-9]*?) min)?"
-        If objRegExp.Test(strDuration) = False Then
+        RegExpression = New Regex("(([0-9]*?) hr)? ?(([0-9]*?) min)?")
+        If RegExpression.IsMatch(strDuration) = False Then
             Exit Sub
         End If
 
-        colMatches = objRegExp.Execute(strDuration)
-        objMatch = colMatches(0)
+        grpMatches = RegExpression.Match(strDuration).Groups
 
-        'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(3). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        'UPGRADE_WARNING: Couldn't resolve default property of object objMatch.SubMatches(). Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        lngProgDuration = objMatch.SubMatches(1) * 60 + objMatch.SubMatches(3)
+        lngProgDuration = grpMatches(1).ToString() * 60 + grpMatches(3).ToString()
 
         ' Now split up the date string
-        Dim RegExpression As New Regex("(?<dayname>(\w){3}) (?<day>(\d){2}) (?<monthname>(\w){3}) - (?<hour>(\d){2}):(?<minute>(\d){2})")
+        RegExpression = New Regex("(?<dayname>(\w){3}) (?<day>(\d){2}) (?<monthname>(\w){3}) - (?<hour>(\d){2}):(?<minute>(\d){2})")
         If RegExpression.IsMatch(strDateString) = False Then
             Exit Sub
         End If
 
-        Dim grpMatches As GroupCollection
         grpMatches = RegExpression.Match(strDateString).Groups
 
         Dim intMonthNum As Integer = Array.IndexOf("jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec".Split("|".ToCharArray), grpMatches("monthname").ToString.ToLower) + 1
