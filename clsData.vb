@@ -5,6 +5,8 @@ Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
 Friend Class clsData
+    Private Const strSqlDateFormat As String = "yyyy-MM-dd hh:mm"
+
     Private sqlConnection As SQLiteConnection
 
     Public Sub New()
@@ -137,12 +139,12 @@ Friend Class clsData
     'End Sub
 
     Public Sub SetDownloadPath(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal strPath As String)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Path=""" + strPath + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString() + """", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Path=""" + strPath + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
     End Sub
 
     Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString() + """")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -152,7 +154,7 @@ Friend Class clsData
     End Function
 
     Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.Status
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString() + """")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -162,7 +164,7 @@ Friend Class clsData
     End Function
 
     Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString() + """")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -172,7 +174,7 @@ Friend Class clsData
     End Function
 
     Public Function ProgramTitle(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString() + """")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -185,7 +187,7 @@ Friend Class clsData
         Dim sqlCommand As SQLiteCommand
 
         If dteProgramDate > System.DateTime.FromOADate(0) Then
-            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString() + """", sqlConnection)
+            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Else
             Call GetLatest(strProgramType, strProgramID)
             sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ ORDER BY Date DESC", sqlConnection)
@@ -198,32 +200,32 @@ Friend Class clsData
         Dim lngMins As Integer
 
         With sqlReader
-            ProgramHTML = "<h2>" + .GetString("Name") + "</h2>"
-            ProgramHTML = ProgramHTML & "<p><img src=""" + .GetString("ImageURL") + """ />"
-            ProgramHTML = ProgramHTML + .GetString("Description") + "</p>"
+            ProgramHTML = "<h2>" + .GetString(.GetOrdinal("Name")) + "</h2>"
+            ProgramHTML = ProgramHTML + "<p><img src=""" + .GetString(.GetOrdinal("ImageURL")) + """ />"
+            ProgramHTML = ProgramHTML + .GetString(.GetOrdinal("Description")) + "</p>"
 
-            ProgramHTML = ProgramHTML & "<div style=""clear: both;""></div>"
-            ProgramHTML = ProgramHTML & .GetDateTime("Date").ToString("ddd dd/mmm/yy hh:mm") & " "
+            ProgramHTML = ProgramHTML + "<div style=""clear: both;""></div>"
+            ProgramHTML = ProgramHTML + .GetDateTime(.GetOrdinal("Date")).ToString("ddd dd/mmm/yy hh:mm") & " "
 
-            lngMins = .GetString("Duration") Mod 60
-            lngHours = .GetString("Duration") \ 60
+            lngMins = .GetInt32(.GetOrdinal("Duration")) Mod 60
+            lngHours = .GetInt32(.GetOrdinal("Duration")) \ 60
 
-            ProgramHTML = ProgramHTML & "<span style=""white-space: nowrap;"">"
+            ProgramHTML = ProgramHTML + "<span style=""white-space: nowrap;"">"
 
             If lngHours > 0 Then
-                ProgramHTML = ProgramHTML & VB6.Format(lngHours) & "hr"
+                ProgramHTML = ProgramHTML + CStr(lngHours) + "hr"
                 If lngHours > 1 Then
-                    ProgramHTML = ProgramHTML & "s"
+                    ProgramHTML = ProgramHTML + "s"
                 End If
             End If
             If lngHours > 0 And lngMins > 0 Then
-                ProgramHTML = ProgramHTML & " "
+                ProgramHTML = ProgramHTML + " "
             End If
             If lngMins > 0 Then
-                ProgramHTML = ProgramHTML & VB6.Format(lngMins) & "min"
+                ProgramHTML = ProgramHTML + CStr(lngMins) + "min"
             End If
 
-            ProgramHTML = ProgramHTML & "</span>"
+            ProgramHTML = ProgramHTML + "</span>"
         End With
 
         sqlReader.Close()
@@ -251,9 +253,9 @@ Friend Class clsData
 
         Do While sqlReader.Read()
             lstAdd = New ListViewItem
-            lstAdd.Text = ProgramTitle(sqlReader.GetString("Type"), sqlReader.GetString("ID"), sqlReader.GetDateTime("Date").ToString())
+            lstAdd.Text = ProgramTitle(sqlReader.GetString("Type"), sqlReader.GetString("ID"), sqlReader.GetDateTime("Date").ToString(strSqlDateFormat))
             lstAdd.SubItems(1).Text = sqlReader.GetDateTime("Date").ToShortDateString()
-            lstAdd.Tag = sqlReader.GetDateTime("Date").ToString() & "||" + sqlReader.GetString("ID") + "||" + sqlReader.GetString("Type")
+            lstAdd.Tag = sqlReader.GetDateTime("Date").ToString(strSqlDateFormat) & "||" + sqlReader.GetString("ID") + "||" + sqlReader.GetString("Type")
 
             Select Case sqlReader.GetInt32("Status")
                 Case clsBackground.Status.stWaiting
@@ -437,7 +439,7 @@ Friend Class clsData
         Dim grpMatches As GroupCollection
 
         RegExpression = New Regex("<div id=""show"">" & vbLf & "<div id=""showtitle""><big>(.*?)</big> <span class=""txinfo"">\((.*?)\)<br />" & vbLf & "(.*?) - (.*?)</span><br />" & vbLf & "</div>" & vbLf & "<table cellpadding=""0"" cellspacing=""0"" border=""0"">" & vbLf & "<tr>" & vbLf & "<td valign=""top""><img src=""(.*?)"" width=""70"" height=""70"" alt="""" border=""0"" /></td>" & vbLf & "<td valign=""top"">(.*?)</td>" & vbLf & "</tr>" & vbLf & "</table>")
-        
+
         If RegExpression.IsMatch(strInfo) = False Then
             Exit Sub
         End If
@@ -491,11 +493,11 @@ Friend Class clsData
 
         ' Now store in DB
 
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE ID=""" & strProgramID & """ AND Date=""" & dteProgDate.ToString() + """", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE ID=""" & strProgramID & """ AND Date=""" & dteProgDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read = False Then
-            sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + dteProgDate + """, """ + strProgTitle + """, """ + strProgDescription + """, """ + strProgImgUrl + """, """ + lngProgDuration + """)")
+            sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + dteProgDate.ToString(strSqlDateFormat) + """, """ + strProgTitle + """, """ + strProgDescription + """, """ + strProgImgUrl + """, """ + CStr(lngProgDuration) + """)", sqlConnection)
             Call sqlCommand.ExecuteNonQuery()
         End If
 
