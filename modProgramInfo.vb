@@ -23,7 +23,6 @@ Module modProgramInfo
         End If
 
         Dim matMatches As Match = RegExpression.Match(strStationPage)
-        Dim grpMatches As MatchCollection
 
         Dim strThisName As String
         Dim strLastName As String = ""
@@ -55,7 +54,7 @@ Module modProgramInfo
             lstAddItem = New ListViewItem
             lstAddItem.Text = Replace(strThisName, "&amp;", "&") & strDay
             lstAddItem.ImageKey = "new"
-            lstAddItem.Tag = "BBCLA" & "||" + matMatches.Groups(0).ToString
+            lstAddItem.Tag = "BBCLA" & "||" + matMatches.Groups(1).ToString
             Call lstAddTo.Items.Add(lstAddItem)
 
             matMatches = matMatches.NextMatch
