@@ -462,7 +462,13 @@ Friend Class clsData
 
         grpMatches = RegExpression.Match(strDuration).Groups
 
-        lngProgDuration = grpMatches(2).ToString() * 60 + grpMatches(4).ToString()
+        If grpMatches(2).ToString() <> "" Then
+            lngProgDuration = grpMatches(2).ToString() * 60
+        End If
+
+        If grpMatches(4).ToString() <> "" Then
+            lngProgDuration += grpMatches(4).ToString()
+        End If
 
         ' Now split up the date string
         RegExpression = New Regex("(?<dayname>(\w){3}) (?<day>(\d){2}) (?<monthname>(\w){3}) - (?<hour>(\d){2}):(?<minute>(\d){2})")
