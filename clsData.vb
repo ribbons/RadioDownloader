@@ -444,16 +444,16 @@ Friend Class clsData
 
         grpMatches = RegExpression.Match(strInfo).Groups
 
-        ' objMatch.SubMatches(0) is Program Title
-        strProgTitle = grpMatches(0).ToString()
-        ' objMatch.SubMatches(1) is Duration String, eg 1hr 30min
-        strDuration = grpMatches(1).ToString()
-        ' objMatch.SubMatches(3) is Date Sting eg Wed 26 Jul - 14:00
-        strDateString = grpMatches(3).ToString()
-        ' objMatch.SubMatches(4) is Image URL
-        strProgImgUrl = grpMatches(4).ToString()
-        ' objMatch.SubMatches(5) is Program Description
-        strProgDescription = grpMatches(5).ToString()
+        ' objMatch.SubMatches(1) is Program Title
+        strProgTitle = grpMatches(1).ToString()
+        ' objMatch.SubMatches(2) is Duration String, eg 1hr 30min
+        strDuration = grpMatches(2).ToString()
+        ' objMatch.SubMatches(4) is Date Sting eg Wed 26 Jul - 14:00
+        strDateString = grpMatches(4).ToString()
+        ' objMatch.SubMatches(5) is Image URL
+        strProgImgUrl = grpMatches(5).ToString()
+        ' objMatch.SubMatches(6) is Program Description
+        strProgDescription = grpMatches(6).ToString()
 
         RegExpression = New Regex("(([0-9]*?) hr)? ?(([0-9]*?) min)?")
         If RegExpression.IsMatch(strDuration) = False Then
@@ -462,7 +462,7 @@ Friend Class clsData
 
         grpMatches = RegExpression.Match(strDuration).Groups
 
-        lngProgDuration = grpMatches(1).ToString() * 60 + grpMatches(3).ToString()
+        lngProgDuration = grpMatches(2).ToString() * 60 + grpMatches(4).ToString()
 
         ' Now split up the date string
         RegExpression = New Regex("(?<dayname>(\w){3}) (?<day>(\d){2}) (?<monthname>(\w){3}) - (?<hour>(\d){2}):(?<minute>(\d){2})")
