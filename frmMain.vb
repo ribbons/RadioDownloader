@@ -428,8 +428,10 @@ Public Class frmMain
 
     Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
         ' Stop a background display thread from running, as it will error when trying to access the form
-        If thrDisplayThread.IsAlive Then
-            thrDisplayThread.Abort()
+        If thrDisplayThread Is Nothing = False Then
+            If thrDisplayThread.IsAlive Then
+                thrDisplayThread.Abort()
+            End If
         End If
 
         Me.Close()

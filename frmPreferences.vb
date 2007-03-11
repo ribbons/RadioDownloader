@@ -22,8 +22,6 @@ Friend Class frmPreferences
 	End Sub
 	
 	Private Sub frmPreferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
-		Call SetIcon(Me.Handle.ToInt32, "appicon", False)
-		
 		txtSaveIn.Text = GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")
 		
 		If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) = False Then
