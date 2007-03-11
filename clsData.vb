@@ -381,7 +381,7 @@ Friend Class clsData
         End If
     End Sub
 
-    Private Function LatestDate(ByVal strProgramType As String, ByVal strProgramID As String) As Date
+    Private Function LatestDate(ByVal strProgramType As String, ByVal strProgramID As String) As DateTime
         Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
@@ -390,7 +390,7 @@ Friend Class clsData
                 Exit Function
             End If
 
-            LatestDate = .GetDateTime("Date")
+            LatestDate = .GetDateTime(.GetOrdinal("Date"))
         End With
 
         sqlReader.Close()
@@ -551,7 +551,16 @@ Friend Class clsData
         Programs = ThisInstance.ListProgramIDs(New clsCommon, strID)
 
         For Each SingleProg As IRadioProvider.ProgramListItem In Programs
-            RaiseEvent AddProgramToList(strType, SingleProg.ProgramID, SingleProg.ProgramName)
+            Call GetLatest(strType, SingleProg.ProgramID)
+
+            Dim strProgTitle As String
+            strProgTitle = SingleProg.ProgramName
+
+            If strProgTitle = Nothing Then
+                strProgTitle = ProgramTitle(strType, SingleProg.ProgramID, LatestDate(strType, SingleProg.ProgramID))
+            End If
+
+            RaiseEvent AddProgramToList(strType, SingleProg.ProgramID, strProgTitle)
         Next
     End Sub
 End Class

@@ -1,6 +1,7 @@
 Option Strict Off
 Option Explicit On
 
+Imports System.Threading
 Imports System.Text.ASCIIEncoding
 
 Public Class frmMain
@@ -10,10 +11,15 @@ Public Class frmMain
     Private WithEvents PluginInstances As IRadioProvider
 
     'Private WithEvents clsBackground As clsBackground
+    Private clsDisplayThread As clsInterfaceThread
+    Private thrDisplayThread As Thread
+
     Private WithEvents clsProgData As clsData
 
     Private lngLastState As Integer
     Private lngStatus As Integer
+
+    Private Delegate Sub clsProgData_AddProgramToList_Delegate(ByVal strType As String, ByVal strID As String, ByVal strName As String)
 
     Const lngDLStatCol As Integer = 2
 
@@ -176,9 +182,6 @@ Public Class frmMain
     End Sub
 
     Private Sub frmMain_FormClosed(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
-        'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        'clsBackground = Nothing
-
         On Error Resume Next
         Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm")
         Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp\*.*")
@@ -287,10 +290,19 @@ Public Class frmMain
 
             lstNew.Items.Clear()
 
-            Call clsProgData.StartListingStation(AvailablePlugins, strSplit(0), strSplit(1))
+            clsDisplayThread = New clsInterfaceThread
+            clsDisplayThread.Type = strSplit(0)
+            clsDisplayThread.ProgID = strSplit(1)
+            clsDisplayThread.AvailablePlugins = AvailablePlugins
+            clsDisplayThread.DataInstance = clsProgData
+
+            thrDisplayThread = New Thread(New ThreadStart(AddressOf clsDisplayThread.lstNew_ListPrograms))
+            thrDisplayThread.Start()
         Else
             ' Do nothing
         End If
+
+
     End Sub
 
     Private Sub TabAdjustments()
@@ -415,6 +427,11 @@ Public Class frmMain
     End Sub
 
     Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
+        ' Stop a background display thread from running, as it will error when trying to access the form
+        If thrDisplayThread.IsAlive Then
+            thrDisplayThread.Abort()
+        End If
+
         Me.Close()
         Me.Dispose()
     End Sub
@@ -505,6 +522,9 @@ Public Class frmMain
     Private Sub tbtUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUp.Click
         tbtUp.Enabled = False
         If lstNew.View = View.Details Then
+            If thrDisplayThread.IsAlive Then
+                thrDisplayThread.Abort()
+            End If
             Call AddStations()
         End If
         Call TabAdjustments()
@@ -607,6 +627,11 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_AddProgramToList(ByVal strType As String, ByVal strID As String, ByVal strName As String) Handles clsProgData.AddProgramToList
+        Dim delInstance As New clsProgData_AddProgramToList_Delegate(AddressOf clsProgData_AddProgramToList_FormThread)
+        Call Me.Invoke(delInstance, New Object() {strType, strID, strName})
+    End Sub
+
+    Private Sub clsProgData_AddProgramToList_FormThread(ByVal strType As String, ByVal strID As String, ByVal strName As String)
         Dim lstAddItem As New ListViewItem
         lstAddItem.Text = strName
         lstAddItem.ImageKey = "new"
