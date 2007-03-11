@@ -10,7 +10,7 @@ Public Class frmMain
     Private WithEvents PluginInstances As IRadioProvider
 
     'Private WithEvents clsBackground As clsBackground
-    Private clsProgData As clsData
+    Private WithEvents clsProgData As clsData
 
     Private lngLastState As Integer
     Private lngStatus As Integer
@@ -35,7 +35,7 @@ Public Class frmMain
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
             ThisInstance = CreateInstance(SinglePlugin)
 
-            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations
+            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations(New clsCommon)
                 Call AddStation(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID)
             Next
         Next SinglePlugin
@@ -286,6 +286,10 @@ Public Class frmMain
             tbtUp.Enabled = True
 
             Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(clsBackground.NextAction.None))
+
+            lstNew.Items.Clear()
+
+
             Call ListStation(strSplit(1), lstNew)
         Else
             ' Do nothing
@@ -603,5 +607,13 @@ Public Class frmMain
         'Call clsTheProgData.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
         'Call clsTheProgData.UpdateDlList(lstDownloads)
         tmrStartProcess.Enabled = True
+    End Sub
+
+    Private Sub clsProgData_AddProgramToList(ByVal strType As String, ByVal strID As String, ByVal strName As String) Handles clsProgData.AddProgramToList
+        Dim lstAddItem As New ListViewItem
+        lstAddItem.Text = strName
+        lstAddItem.ImageKey = "new"
+        lstAddItem.Tag = strType + "||" + strID
+        Call lstNew.Items.Add(lstAddItem)
     End Sub
 End Class

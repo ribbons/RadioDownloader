@@ -114,6 +114,7 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AssemblyInfo.vb" />
     <Compile Include="clsBackground.vb" />
+    <Compile Include="clsCommon.vb" />
     <Compile Include="clsData.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -130,9 +131,6 @@
     </Compile>
     <Compile Include="frmPreferences.vb">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="modDLURL.vb">
-      <SubType>Code</SubType>
     </Compile>
     <Compile Include="modDrawing.vb">
       <SubType>Code</SubType>

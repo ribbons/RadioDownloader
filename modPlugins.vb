@@ -11,11 +11,18 @@ Public Interface IRadioProvider
         Dim StationIcon As Icon
     End Structure
 
+    Structure ProgramList
+        Dim ProgramID As String
+        Dim ProgramName As String
+    End Structure
+
     ReadOnly Property ProviderUniqueID() As String
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
 
-    Function ReturnStations() As StationInfo()
+    Function ReturnStations(ByRef clsCommon As clsCommon) As StationInfo()
+    Function ListProgramIDs(ByRef clsCommon As clsCommon, ByVal strStationID As String) As ProgramList()
+    'Function ReturnProgramInfo
 End Interface
 
 Module modPlugins

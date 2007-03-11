@@ -6,8 +6,9 @@ Imports System.Text.RegularExpressions
 
 Friend Class clsData
     Private Const strSqlDateFormat As String = "yyyy-MM-dd hh:mm"
-
     Private sqlConnection As SQLiteConnection
+
+    Public Event AddProgramToList(ByVal strType As String, ByVal strID As String, ByVal strName As String)
 
     Public Sub New()
         MyBase.New()
@@ -431,7 +432,7 @@ Friend Class clsData
         Dim strDateString As String
 
         Dim strInfo As String
-        strInfo = GetUrlAsString("http://www.bbc.co.uk/radio/aod/networks/radio1/aod.shtml?" & strProgramID)
+        strInfo = New clsCommon.GetUrlAsString("http://www.bbc.co.uk/radio/aod/networks/radio1/aod.shtml?" & strProgramID)
 
         strInfo = Replace(strInfo, "src=""", "src=""http://www.bbc.co.uk")
 
@@ -532,5 +533,9 @@ Friend Class clsData
     Public Sub CancelDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
         Dim sqlCommand As New SQLiteCommand("DELETE FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
         Call sqlCommand.ExecuteNonQuery()
+    End Sub
+
+    Public Sub StartListingStation(ByVal strType As String, ByVal strID As String)
+
     End Sub
 End Class
