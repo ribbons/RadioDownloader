@@ -11,7 +11,7 @@ Public Interface IRadioProvider
         Dim StationIcon As Icon
     End Structure
 
-    Structure ProgramList
+    Structure ProgramListItem
         Dim ProgramID As String
         Dim ProgramName As String
     End Structure
@@ -21,7 +21,7 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderDescription() As String
 
     Function ReturnStations(ByRef clsCommon As clsCommon) As StationInfo()
-    Function ListProgramIDs(ByRef clsCommon As clsCommon, ByVal strStationID As String) As ProgramList()
+    Function ListProgramIDs(ByRef clsCommon As clsCommon, ByVal strStationID As String) As ProgramListItem()
     'Function ReturnProgramInfo
 End Interface
 

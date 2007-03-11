@@ -139,9 +139,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="modPlugins.vb" />
-    <Compile Include="modProgramInfo.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="modShellWait.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

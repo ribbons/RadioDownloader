@@ -280,8 +280,6 @@ Public Class frmMain
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
         If lstNew.View = View.LargeIcon Then
-            If strSplit(0) <> "BBCLA" Then Stop
-
             lstNew.View = View.Details
             tbtUp.Enabled = True
 
@@ -289,8 +287,7 @@ Public Class frmMain
 
             lstNew.Items.Clear()
 
-
-            Call ListStation(strSplit(1), lstNew)
+            Call clsProgData.StartListingStation(AvailablePlugins, strSplit(0), strSplit(1))
         Else
             ' Do nothing
         End If

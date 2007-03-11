@@ -432,7 +432,8 @@ Friend Class clsData
         Dim strDateString As String
 
         Dim strInfo As String
-        strInfo = New clsCommon.GetUrlAsString("http://www.bbc.co.uk/radio/aod/networks/radio1/aod.shtml?" & strProgramID)
+        Dim clsCommon As New clsCommon
+        strInfo = clsCommon.GetUrlAsString("http://www.bbc.co.uk/radio/aod/networks/radio1/aod.shtml?" & strProgramID)
 
         strInfo = Replace(strInfo, "src=""", "src=""http://www.bbc.co.uk")
 
@@ -535,7 +536,22 @@ Friend Class clsData
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Sub StartListingStation(ByVal strType As String, ByVal strID As String)
+    Public Sub StartListingStation(ByVal AvailablePlugins() As AvailablePlugin, ByVal strType As String, ByVal strID As String)
+        Dim ThisInstance As IRadioProvider = Nothing
 
+        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
+            ThisInstance = CreateInstance(SinglePlugin)
+
+            If ThisInstance.ProviderUniqueID = strType Then
+                Exit For
+            End If
+        Next SinglePlugin
+
+        Dim Programs() As IRadioProvider.ProgramListItem
+        Programs = ThisInstance.ListProgramIDs(New clsCommon, strID)
+
+        For Each SingleProg As IRadioProvider.ProgramListItem In Programs
+            RaiseEvent AddProgramToList(strType, SingleProg.ProgramID, SingleProg.ProgramName)
+        Next
     End Sub
 End Class
