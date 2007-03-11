@@ -153,9 +153,6 @@
       <DependentUpon>MyResources.resx</DependentUpon>
     </Compile>
     <Compile Include="Settings.vb" />
-    <Compile Include="UpgradeSupport.vb">
-      <SubType>Code</SubType>
-    </Compile>
     <EmbeddedResource Include="frmMain.resX">
       <DependentUpon>frmMain.vb</DependentUpon>
     </EmbeddedResource>
