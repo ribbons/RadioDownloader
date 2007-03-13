@@ -8,11 +8,12 @@ Public Class frmMain
     Inherits System.Windows.Forms.Form
 
     Private AvailablePlugins As AvailablePlugin()
-    Private WithEvents PluginInstances As IRadioProvider
 
-    'Private WithEvents clsBackground As clsBackground
     Private clsDisplayThread As clsInterfaceThread
     Private thrDisplayThread As Thread
+
+    Private WithEvents clsBackgroundThread As clsBackground
+    Private thrBackgroundThread As Thread
 
     Private WithEvents clsProgData As clsData
 
@@ -286,7 +287,7 @@ Public Class frmMain
             lstNew.View = View.Details
             tbtUp.Enabled = True
 
-            Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", CStr(clsBackground.NextAction.None))
+            Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", "")
 
             lstNew.Items.Clear()
 
@@ -301,8 +302,6 @@ Public Class frmMain
         Else
             ' Do nothing
         End If
-
-
     End Sub
 
     Private Sub TabAdjustments()
@@ -312,21 +311,21 @@ Public Class frmMain
             lstDownloads.Visible = False
             tbtCleanUp.Enabled = False
             tbtUp.Enabled = lstNew.View = View.Details
-            Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", CStr(clsBackground.NextAction.None))
+            Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", "")
         ElseIf tbtSubscriptions.Checked Then
             lstNew.Visible = False
             lstSubscribed.Visible = True
             lstDownloads.Visible = False
             tbtCleanUp.Enabled = False
             tbtUp.Enabled = False
-            Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", CStr(clsBackground.NextAction.None))
+            Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", "")
         ElseIf tbtDownloads.Checked Then
             lstNew.Visible = False
             lstSubscribed.Visible = False
             lstDownloads.Visible = True
             'tbtCleanUp.Enabled = True
             tbtUp.Enabled = False
-            Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", CStr(clsBackground.NextAction.None))
+            Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", "")
         End If
     End Sub
 
@@ -448,7 +447,7 @@ Public Class frmMain
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
         ' Make sure that it isn't currently working
-        Dim dldAction As clsBackground.DownloadAction
+        'Dim dldAction As clsBackground.DownloadAction
         'If IsNothing(clsBackground) Then
         '    'UPGRADE_WARNING: Couldn't resolve default property of object dldAction. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
         '    dldAction = clsTheProgData.FindNextAction
@@ -460,6 +459,17 @@ Public Class frmMain
         '        Call clsTheProgData.UpdateDlList(lstDownloads)
         '    End If
         'End If
+
+        clsBackgroundThread = New clsBackground
+        clsBackgroundThread.ProgramType = "BBCLA"
+        clsBackgroundThread.StationID = "radio4"
+        clsBackgroundThread.ProgramID = "radio4/point_of_view"
+        clsBackgroundThread.ProgramDate = "2007-03-09 08:50"
+        clsBackgroundThread.ProgramDuration = 10
+        clsBackgroundThread.PluginsList = AvailablePlugins
+
+        thrBackgroundThread = New Thread(New ThreadStart(AddressOf clsBackgroundThread.DownloadProgram))
+        thrBackgroundThread.Start()
 
         tmrStartProcess.Enabled = False
     End Sub

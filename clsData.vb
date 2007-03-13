@@ -154,15 +154,15 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.Status
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    'Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.Status
+    '    Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
+    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-        DownloadStatus = sqlReader.GetString("Status")
+    '    sqlReader.Read()
+    '    DownloadStatus = sqlReader.GetString("Status")
 
-        sqlReader.Close()
-    End Function
+    '    sqlReader.Close()
+    'End Function
 
     Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
         Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
@@ -244,46 +244,46 @@ Friend Class clsData
     '    rstRecordset = Nothing
     'End Function
 
-    Public Sub UpdateDlList(ByRef lstListview As ListView)
-        Dim lstAdd As ListViewItem
+    'Public Sub UpdateDlList(ByRef lstListview As ListView)
+    '    Dim lstAdd As ListViewItem
 
-        Dim comCommand As New SQLiteCommand("select * from tblDownloads order by Date desc")
-        Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
+    '    Dim comCommand As New SQLiteCommand("select * from tblDownloads order by Date desc")
+    '    Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
-        lstListview.Items.Clear()
+    '    lstListview.Items.Clear()
 
-        Do While sqlReader.Read()
-            lstAdd = New ListViewItem
-            lstAdd.Text = ProgramTitle(sqlReader.GetString("Type"), sqlReader.GetString("ID"), sqlReader.GetDateTime("Date").ToString(strSqlDateFormat))
-            lstAdd.SubItems(1).Text = sqlReader.GetDateTime("Date").ToShortDateString()
-            lstAdd.Tag = sqlReader.GetDateTime("Date").ToString(strSqlDateFormat) & "||" + sqlReader.GetString("ID") + "||" + sqlReader.GetString("Type")
+    '    Do While sqlReader.Read()
+    '        lstAdd = New ListViewItem
+    '        lstAdd.Text = ProgramTitle(sqlReader.GetString("Type"), sqlReader.GetString("ID"), sqlReader.GetDateTime("Date").ToString(strSqlDateFormat))
+    '        lstAdd.SubItems(1).Text = sqlReader.GetDateTime("Date").ToShortDateString()
+    '        lstAdd.Tag = sqlReader.GetDateTime("Date").ToString(strSqlDateFormat) & "||" + sqlReader.GetString("ID") + "||" + sqlReader.GetString("Type")
 
-            Select Case sqlReader.GetInt32("Status")
-                Case clsBackground.Status.stWaiting
-                    lstAdd.SubItems(2).Text = "Waiting"
-                    lstAdd.ImageKey = "waiting"
-                Case clsBackground.Status.stDownloading
-                    lstAdd.SubItems(2).Text = "(1/3) Downloading"
-                    lstAdd.ImageKey = "downloading"
-                Case clsBackground.Status.stDecoding
-                    lstAdd.SubItems(2).Text = "(2/3) Decoding"
-                    lstAdd.ImageKey = "decoding"
-                Case clsBackground.Status.stEncoding
-                    lstAdd.SubItems(2).Text = "(3/3) Encoding"
-                    lstAdd.ImageKey = "encoding"
-                Case clsBackground.Status.stCompleted
-                    lstAdd.SubItems(2).Text = "Completed"
-                    lstAdd.ImageKey = "completed"
-                Case clsBackground.Status.stError
-                    lstAdd.SubItems(2).Text = "Error"
-                    lstAdd.ImageKey = "error"
-            End Select
+    '        Select Case sqlReader.GetInt32("Status")
+    '            Case clsBackground.Status.stWaiting
+    '                lstAdd.SubItems(2).Text = "Waiting"
+    '                lstAdd.ImageKey = "waiting"
+    '            Case clsBackground.Status.stDownloading
+    '                lstAdd.SubItems(2).Text = "(1/3) Downloading"
+    '                lstAdd.ImageKey = "downloading"
+    '            Case clsBackground.Status.stDecoding
+    '                lstAdd.SubItems(2).Text = "(2/3) Decoding"
+    '                lstAdd.ImageKey = "decoding"
+    '            Case clsBackground.Status.stEncoding
+    '                lstAdd.SubItems(2).Text = "(3/3) Encoding"
+    '                lstAdd.ImageKey = "encoding"
+    '            Case clsBackground.Status.stCompleted
+    '                lstAdd.SubItems(2).Text = "Completed"
+    '                lstAdd.ImageKey = "completed"
+    '            Case clsBackground.Status.stError
+    '                lstAdd.SubItems(2).Text = "Error"
+    '                lstAdd.ImageKey = "error"
+    '        End Select
 
-            lstListview.Items.Add(lstAdd)
-        Loop
+    '        lstListview.Items.Add(lstAdd)
+    '    Loop
 
-        sqlReader.Close()
-    End Sub
+    '    sqlReader.Close()
+    'End Sub
 
     Public Sub UpdateSubscrList(ByRef lstListview As ListView)
         Dim lstAdd As ListViewItem
@@ -310,48 +310,48 @@ Friend Class clsData
         sqlReader.Close()
     End Sub
 
-    Public Sub CheckSubscriptions(ByRef lstList As ListView, ByRef tmrTimer As System.Windows.Forms.Timer)
-        Dim sqlCommand As New SQLiteCommand("select * from tblSubscribed")
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    'Public Sub CheckSubscriptions(ByRef lstList As ListView, ByRef tmrTimer As System.Windows.Forms.Timer)
+    '    Dim sqlCommand As New SQLiteCommand("select * from tblSubscribed")
+    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        With sqlReader
-            Do While .Read()
-                Call GetLatest(.GetString("Type"), .GetString("ID"))
+    '    With sqlReader
+    '        Do While .Read()
+    '            Call GetLatest(.GetString("Type"), .GetString("ID"))
 
-                Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString("Type") + """ and ID=""" + .GetString("ID") + """ and Date=""" + LatestDate(.GetString("Type"), .GetString("ID")).ToString() + """")
-                Dim sqlRdrCheckDld As SQLiteDataReader = sqlCommand.ExecuteReader
+    '            Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString("Type") + """ and ID=""" + .GetString("ID") + """ and Date=""" + LatestDate(.GetString("Type"), .GetString("ID")).ToString() + """")
+    '            Dim sqlRdrCheckDld As SQLiteDataReader = sqlCommand.ExecuteReader
 
-                If sqlRdrCheckDld.Read() Then
-                    Call AddDownload(.GetString("Type"), .GetString("ID"))
-                    Call UpdateDlList(lstList)
-                    tmrTimer.Enabled = True
-                End If
+    '            If sqlRdrCheckDld.Read() Then
+    '                Call AddDownload(.GetString("Type"), .GetString("ID"))
+    '                Call UpdateDlList(lstList)
+    '                tmrTimer.Enabled = True
+    '            End If
 
-                sqlRdrCheckDld.Close()
-            Loop
-        End With
+    '            sqlRdrCheckDld.Close()
+    '        Loop
+    '    End With
 
-        sqlReader.Close()
-    End Sub
+    '    sqlReader.Close()
+    'End Sub
 
-    Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-        Call GetLatest(strProgramType, strProgramID)
+    'Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
+    '    Call GetLatest(strProgramType, strProgramID)
 
-        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblDownloads (Type, ID, Date, NextAction, Status) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + LatestDate(strProgramType, strProgramID) + """, """ + clsBackground.NextAction.Download + """, """ + clsBackground.Status.stWaiting + """)")
+    '    Dim sqlCommand As New SQLiteCommand("INSERT INTO tblDownloads (Type, ID, Date, NextAction, Status) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + LatestDate(strProgramType, strProgramID) + """, """ + clsBackground.NextAction.Download + """, """ + clsBackground.Status.stWaiting + """)")
 
-        Try
-            Call sqlCommand.ExecuteNonQuery()
-        Catch
-            Stop
-            Select Case Err.Number
-                Case 3022 'Trying to create duplicate in database, ie trying to download twice!
-                    Return False
-                Case Else
-            End Select
-        End Try
+    '    Try
+    '        Call sqlCommand.ExecuteNonQuery()
+    '    Catch
+    '        Stop
+    '        Select Case Err.Number
+    '            Case 3022 'Trying to create duplicate in database, ie trying to download twice!
+    '                Return False
+    '            Case Else
+    '        End Select
+    '    End Try
 
-        Return True
-    End Function
+    '    Return True
+    'End Function
 
     Public Function AddSubscription(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
         Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, ID) VALUES (""" + strProgramType + """, """ + strProgramID + """)")

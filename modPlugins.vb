@@ -23,6 +23,12 @@ Public Interface IRadioProvider
     Function ReturnStations(ByRef clsCommon As clsCommon) As StationInfo()
     Function ListProgramIDs(ByRef clsCommon As clsCommon, ByVal strStationID As String) As ProgramListItem()
     'Function ReturnProgramInfo
+
+    Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String)
+    Event DldError(ByVal strError As String, ByVal strCommandOutput As String)
+    Event Finished()
+
+    Sub DownloadProgram(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal intProgLength As Integer)
 End Interface
 
 Module modPlugins
