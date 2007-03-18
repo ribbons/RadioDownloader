@@ -267,7 +267,7 @@
         Me.imlListIcons.ImageStream = CType(resources.GetObject("imlListIcons.ImageStream"), System.Windows.Forms.ImageListStreamer)
         Me.imlListIcons.TransparentColor = System.Drawing.Color.Transparent
         Me.imlListIcons.Images.SetKeyName(0, "downloading")
-        Me.imlListIcons.Images.SetKeyName(1, "paused")
+        Me.imlListIcons.Images.SetKeyName(1, "waiting")
         Me.imlListIcons.Images.SetKeyName(2, "converting")
         Me.imlListIcons.Images.SetKeyName(3, "downloaded")
         Me.imlListIcons.Images.SetKeyName(4, "new")

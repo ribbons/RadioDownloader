@@ -139,7 +139,7 @@ Public Class frmMain
 
         clsProgData = New clsData
         'Call clsTheProgData.CleanupUnfinished()
-        'Call clsTheProgData.UpdateDlList(lstDownloads)
+        Call clsProgData.UpdateDlList(lstDownloads)
         'Call clsTheProgData.UpdateSubscrList(lstSubscribed)
 
         stlStatusText.Text = ""
@@ -447,9 +447,25 @@ Public Class frmMain
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
         ' Make sure that it isn't currently working
-        'Dim dldAction As clsBackground.DownloadAction
-        'If IsNothing(clsBackground) Then
-        '    'UPGRADE_WARNING: Couldn't resolve default property of object dldAction. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
+        If clsBackgroundThread Is Nothing Then
+
+
+
+
+
+            clsBackgroundThread = New clsBackground
+            clsBackgroundThread.ProgramType = "BBCLA"
+            clsBackgroundThread.StationID = "radio4"
+            clsBackgroundThread.ProgramID = "radio4/point_of_view"
+            clsBackgroundThread.ProgramDate = "2007-03-09 08:50"
+            clsBackgroundThread.ProgramDuration = 10
+            clsBackgroundThread.PluginsList = AvailablePlugins
+
+            thrBackgroundThread = New Thread(New ThreadStart(AddressOf clsBackgroundThread.DownloadProgram))
+            thrBackgroundThread.Start()
+        End If
+
+
         '    dldAction = clsTheProgData.FindNextAction
 
         '    If dldAction.booFound Then
@@ -460,16 +476,9 @@ Public Class frmMain
         '    End If
         'End If
 
-        clsBackgroundThread = New clsBackground
-        clsBackgroundThread.ProgramType = "BBCLA"
-        clsBackgroundThread.StationID = "radio4"
-        clsBackgroundThread.ProgramID = "radio4/point_of_view"
-        clsBackgroundThread.ProgramDate = "2007-03-09 08:50"
-        clsBackgroundThread.ProgramDuration = 10
-        clsBackgroundThread.PluginsList = AvailablePlugins
+        Exit Sub
 
-        thrBackgroundThread = New Thread(New ThreadStart(AddressOf clsBackgroundThread.DownloadProgram))
-        thrBackgroundThread.Start()
+        
 
         tmrStartProcess.Enabled = False
     End Sub
@@ -548,21 +557,14 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
-        'If clsTheProgData.IsDownloading(strSplit(0), strSplit(1)) Then
-        '    stlStatusText.Text = ""
-        '    Call MsgBox("You cannot download this programme more than once at the same time!", MsgBoxStyle.Exclamation, "Radio Downloader")
-        '    Exit Sub
-        'End If
-
-        'If clsTheProgData.AddDownload(strSplit(0), strSplit(1)) = False Then
-        '    stlStatusText.Text = ""
-        '    Call MsgBox("You have already downloaded this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
-        'Else
-        '    'tbrOldToolbar.Buttons("Downloads").Value = ComctlLib.ValueConstants.tbrPressed
-        '    Call TabAdjustments()
-        '    Call clsTheProgData.UpdateDlList(lstDownloads)
-        '    tmrStartProcess.Enabled = True
-        'End If
+        If clsProgData.AddDownload(strSplit(0), strSplit(1)) Then
+            Call tbtDownloads_Click(New Object, New EventArgs)
+            Call clsProgData.UpdateDlList(lstDownloads)
+            '    tmrStartProcess.Enabled = True
+        Else
+            stlStatusText.Text = ""
+            Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
+        End If
     End Sub
 
     Public Sub FlPlay()

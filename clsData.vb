@@ -5,6 +5,12 @@ Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
 Friend Class clsData
+    Public Enum Statuses
+        Waiting
+        Downloaded
+        Errored
+    End Enum
+
     Private Const strSqlDateFormat As String = "yyyy-MM-dd hh:mm"
     Private sqlConnection As SQLiteConnection
 
@@ -87,32 +93,32 @@ Friend Class clsData
     '    rstRecordset = Nothing
     'End Sub
 
-    'Public Function FindNextAction() As clsBackground.DownloadAction
-    '    Const lngMaxErrors As Integer = 2
+    Public Function FindNewDownload() As clsBackground
+        Const lngMaxErrors As Integer = 2
 
-    '    'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-    '    Dim rstRecordset As DAO.Recordset
-    '    rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE status=" & VB6.Format(clsBackground.Status.stWaiting) & " or (status=" & VB6.Format(clsBackground.Status.stError) & " and errors<" & VB6.Format(lngMaxErrors) & ") order by status")
+        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
+        Dim rstRecordset As DAO.Recordset
+        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE status=" & VB6.Format(clsBackground.Status.stWaiting) & " or (status=" & VB6.Format(clsBackground.Status.stError) & " and errors<" & VB6.Format(lngMaxErrors) & ") order by status")
 
-    '    With rstRecordset
-    '        If .EOF = False Then
-    '            If .Fields("Status").Value = clsBackground.Status.stError Then
-    '                Call ResetDownload(.Fields("Type").Value, .Fields("ID").Value, .Fields("Date").Value, True)
-    '            End If
+        With rstRecordset
+            If .EOF = False Then
+                If .Fields("Status").Value = clsBackground.Status.stError Then
+                    Call ResetDownload(.Fields("Type").Value, .Fields("ID").Value, .Fields("Date").Value, True)
+                End If
 
-    '            .MoveFirst()
-    '            FindNextAction.dldDownloadID.strProgramType = .Fields("Type").Value
-    '            FindNextAction.dldDownloadID.strProgramID = .Fields("ID").Value
-    '            FindNextAction.dldDownloadID.dteDate = .Fields("Date").Value
-    '            FindNextAction.nxtNextAction = .Fields("NextAction").Value
-    '            FindNextAction.booFound = True
-    '        End If
-    '    End With
+                .MoveFirst()
+                FindNextAction.dldDownloadID.strProgramType = .Fields("Type").Value
+                FindNextAction.dldDownloadID.strProgramID = .Fields("ID").Value
+                FindNextAction.dldDownloadID.dteDate = .Fields("Date").Value
+                FindNextAction.nxtNextAction = .Fields("NextAction").Value
+                FindNextAction.booFound = True
+            End If
+        End With
 
-    '    rstRecordset.Close()
-    '    'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-    '    rstRecordset = Nothing
-    'End Function
+        rstRecordset.Close()
+        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
+        rstRecordset = Nothing
+    End Function
 
     'Public Sub CleanupUnfinished()
     '    'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
@@ -154,15 +160,15 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    'Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.Status
-    '    Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Statuses
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-    '    sqlReader.Read()
-    '    DownloadStatus = sqlReader.GetString("Status")
+        sqlReader.Read()
+        DownloadStatus = sqlReader.GetString("Status")
 
-    '    sqlReader.Close()
-    'End Function
+        sqlReader.Close()
+    End Function
 
     Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
         Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
@@ -175,11 +181,11 @@ Friend Class clsData
     End Function
 
     Public Function ProgramTitle(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
-        ProgramTitle = sqlReader.GetString("Name")
+        ProgramTitle = sqlReader.GetString(sqlReader.GetOrdinal("Name"))
 
         sqlReader.Close()
     End Function
@@ -244,46 +250,37 @@ Friend Class clsData
     '    rstRecordset = Nothing
     'End Function
 
-    'Public Sub UpdateDlList(ByRef lstListview As ListView)
-    '    Dim lstAdd As ListViewItem
+    Public Sub UpdateDlList(ByRef lstListview As ListView)
+        Dim lstAdd As ListViewItem
 
-    '    Dim comCommand As New SQLiteCommand("select * from tblDownloads order by Date desc")
-    '    Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
+        Dim comCommand As New SQLiteCommand("select * from tblDownloads order by Date desc", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
-    '    lstListview.Items.Clear()
+        lstListview.Items.Clear()
 
-    '    Do While sqlReader.Read()
-    '        lstAdd = New ListViewItem
-    '        lstAdd.Text = ProgramTitle(sqlReader.GetString("Type"), sqlReader.GetString("ID"), sqlReader.GetDateTime("Date").ToString(strSqlDateFormat))
-    '        lstAdd.SubItems(1).Text = sqlReader.GetDateTime("Date").ToShortDateString()
-    '        lstAdd.Tag = sqlReader.GetDateTime("Date").ToString(strSqlDateFormat) & "||" + sqlReader.GetString("ID") + "||" + sqlReader.GetString("Type")
+        Do While sqlReader.Read()
+            lstAdd = New ListViewItem
+            lstAdd.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString(strSqlDateFormat))
+            lstAdd.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToShortDateString())
+            lstAdd.Tag = sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString(strSqlDateFormat) & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
 
-    '        Select Case sqlReader.GetInt32("Status")
-    '            Case clsBackground.Status.stWaiting
-    '                lstAdd.SubItems(2).Text = "Waiting"
-    '                lstAdd.ImageKey = "waiting"
-    '            Case clsBackground.Status.stDownloading
-    '                lstAdd.SubItems(2).Text = "(1/3) Downloading"
-    '                lstAdd.ImageKey = "downloading"
-    '            Case clsBackground.Status.stDecoding
-    '                lstAdd.SubItems(2).Text = "(2/3) Decoding"
-    '                lstAdd.ImageKey = "decoding"
-    '            Case clsBackground.Status.stEncoding
-    '                lstAdd.SubItems(2).Text = "(3/3) Encoding"
-    '                lstAdd.ImageKey = "encoding"
-    '            Case clsBackground.Status.stCompleted
-    '                lstAdd.SubItems(2).Text = "Completed"
-    '                lstAdd.ImageKey = "completed"
-    '            Case clsBackground.Status.stError
-    '                lstAdd.SubItems(2).Text = "Error"
-    '                lstAdd.ImageKey = "error"
-    '        End Select
+            Select Case sqlReader.GetInt32(sqlReader.GetOrdinal("Status"))
+                Case Statuses.Waiting
+                    lstAdd.SubItems.Add("Waiting")
+                    lstAdd.ImageKey = "waiting"
+                Case Statuses.Downloaded
+                    lstAdd.SubItems.Add("Downloaded")
+                    lstAdd.ImageKey = "downloaded"
+                Case Statuses.Errored
+                    lstAdd.SubItems.Add("Error")
+                    lstAdd.ImageKey = "error"
+            End Select
 
-    '        lstListview.Items.Add(lstAdd)
-    '    Loop
+            lstListview.Items.Add(lstAdd)
+        Loop
 
-    '    sqlReader.Close()
-    'End Sub
+        sqlReader.Close()
+    End Sub
 
     Public Sub UpdateSubscrList(ByRef lstListview As ListView)
         Dim lstAdd As ListViewItem
@@ -334,24 +331,23 @@ Friend Class clsData
     '    sqlReader.Close()
     'End Sub
 
-    'Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-    '    Call GetLatest(strProgramType, strProgramID)
+    Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
+        Call GetLatest(strProgramType, strProgramID)
 
-    '    Dim sqlCommand As New SQLiteCommand("INSERT INTO tblDownloads (Type, ID, Date, NextAction, Status) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + LatestDate(strProgramType, strProgramID) + """, """ + clsBackground.NextAction.Download + """, """ + clsBackground.Status.stWaiting + """)")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + LatestDate(strProgramType, strProgramID).ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-    '    Try
-    '        Call sqlCommand.ExecuteNonQuery()
-    '    Catch
-    '        Stop
-    '        Select Case Err.Number
-    '            Case 3022 'Trying to create duplicate in database, ie trying to download twice!
-    '                Return False
-    '            Case Else
-    '        End Select
-    '    End Try
+        If sqlReader.Read() Then
+            Return False
+        End If
 
-    '    Return True
-    'End Function
+        sqlReader.Close()
+
+        sqlCommand = New SQLiteCommand("INSERT INTO tblDownloads (Type, ID, Date, Status) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + LatestDate(strProgramType, strProgramID).ToString(strSqlDateFormat) + """, " + CStr(Statuses.Waiting) + ")", sqlConnection)
+        Call sqlCommand.ExecuteNonQuery()
+
+        Return True
+    End Function
 
     Public Function AddSubscription(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
         Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, ID) VALUES (""" + strProgramType + """, """ + strProgramID + """)")
