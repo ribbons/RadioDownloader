@@ -97,7 +97,7 @@ Friend Class clsData
         Const lngMaxErrors As Integer = 2
         Dim clsBkgInst As clsBackground = Nothing
 
-        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + Statuses.Waiting.ToString + " or (status=" + Statuses.Waiting.ToString + " and errors<" + lngMaxErrors.ToString + ") order by status")
+        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Waiting) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by status", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read() Then
@@ -110,6 +110,7 @@ Friend Class clsData
                 clsBkgInst.ProgramType = .GetString(.GetOrdinal("Type"))
                 clsBkgInst.ProgramID = .GetString(.GetOrdinal("ID"))
                 clsBkgInst.ProgramDate = .GetDateTime(.GetOrdinal("Date"))
+                clsBkgInst.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
             End With
 
             sqlReader.Close()
@@ -169,7 +170,7 @@ Friend Class clsData
     End Function
 
     Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()

@@ -450,37 +450,16 @@ Public Class frmMain
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
         ' Make sure that it isn't currently working
         If clsBackgroundThread Is Nothing Then
+            clsBackgroundThread = clsProgData.FindNewDownload
 
+            ' Look for a program to download
+            If clsBackgroundThread Is Nothing = False Then
+                clsBackgroundThread.PluginsList = AvailablePlugins
 
-
-
-
-            clsBackgroundThread = New clsBackground
-            clsBackgroundThread.ProgramType = "BBCLA"
-            clsBackgroundThread.StationID = "radio4"
-            clsBackgroundThread.ProgramID = "radio4/point_of_view"
-            clsBackgroundThread.ProgramDate = "2007-03-09 08:50"
-            clsBackgroundThread.ProgramDuration = 10
-            clsBackgroundThread.PluginsList = AvailablePlugins
-
-            thrBackgroundThread = New Thread(New ThreadStart(AddressOf clsBackgroundThread.DownloadProgram))
-            thrBackgroundThread.Start()
+                thrBackgroundThread = New Thread(New ThreadStart(AddressOf clsBackgroundThread.DownloadProgram))
+                thrBackgroundThread.Start()
+            End If
         End If
-
-
-        '    dldAction = clsTheProgData.FindNextAction
-
-        '    If dldAction.booFound Then
-        '        clsBackground = New clsBackground
-        '        Call clsTheProgData.SetStatus(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate, True)
-        '        Call clsBackground.Start(dldAction.nxtNextAction, dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, clsTheProgData.ProgramDuration(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate), dldAction.dldDownloadID.dteDate, clsTheProgData.ProgramTitle(dldAction.dldDownloadID.strProgramType, dldAction.dldDownloadID.strProgramID, dldAction.dldDownloadID.dteDate))
-        '        Call clsTheProgData.UpdateDlList(lstDownloads)
-        '    End If
-        'End If
-
-        Exit Sub
-
-        
 
         tmrStartProcess.Enabled = False
     End Sub
