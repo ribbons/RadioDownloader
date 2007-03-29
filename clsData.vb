@@ -103,7 +103,7 @@ Friend Class clsData
         If sqlReader.Read() Then
             With sqlReader
                 If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
-                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetString(.GetOrdinal("Date")), True)
+                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")), True)
                 End If
 
                 clsBkgInst = New clsBackground

@@ -382,9 +382,11 @@ Public Class frmMain
     Private Function AddLink(ByVal strCurrentLinks As String, ByVal strNewlink As String) As String
         If Len(strCurrentLinks) > 0 Then
             AddLink = strCurrentLinks & " | "
+        Else
+            AddLink = ""
         End If
 
-        AddLink = AddLink & strNewlink
+        AddLink = AddLink + strNewlink
     End Function
 
     Private Sub ShowHtml(ByRef strHtml As String)
