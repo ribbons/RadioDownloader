@@ -1,4 +1,4 @@
-Option Strict Off
+Option Strict On
 Option Explicit On
 
 Imports System.Data.SQLite
@@ -97,7 +97,7 @@ Friend Class clsData
         Const lngMaxErrors As Integer = 2
         Dim clsBkgInst As clsBackground = Nothing
 
-        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + Statuses.Waiting + " or (status=" + Statuses.Waiting + " and errors<" + lngMaxErrors + ") order by status")
+        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + Statuses.Waiting.ToString + " or (status=" + Statuses.Waiting.ToString + " and errors<" + lngMaxErrors.ToString + ") order by status")
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read() Then
@@ -153,7 +153,7 @@ Friend Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
-        GetDownloadPath = sqlReader.GetString("Path")
+        GetDownloadPath = sqlReader.GetString(sqlReader.GetOrdinal("Path"))
 
         sqlReader.Close()
     End Function
@@ -163,7 +163,7 @@ Friend Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
-        DownloadStatus = sqlReader.GetString("Status")
+        DownloadStatus = CType(sqlReader.GetInt32(sqlReader.GetOrdinal("Status")), Statuses)
 
         sqlReader.Close()
     End Function
@@ -173,7 +173,7 @@ Friend Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
-        ProgramDuration = sqlReader.GetString("Duration")
+        ProgramDuration = sqlReader.GetInt32(sqlReader.GetOrdinal("Duration"))
 
         sqlReader.Close()
     End Function
@@ -258,7 +258,7 @@ Friend Class clsData
 
         Do While sqlReader.Read()
             lstAdd = New ListViewItem
-            lstAdd.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString(strSqlDateFormat))
+            lstAdd.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")))
             lstAdd.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToShortDateString())
             lstAdd.Tag = sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString(strSqlDateFormat) & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
 
@@ -290,12 +290,12 @@ Friend Class clsData
 
         With sqlReader
             Do While .Read()
-                Call GetLatest(.GetString("Type"), .GetString("ID"))
+                Call GetLatest(.GetString(sqlReader.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("ID")))
 
                 lstAdd = New ListViewItem
 
-                lstAdd.Text = ProgramTitle(.GetString("Type"), .GetString("ID"), .GetDateTime("Type").ToString())
-                lstAdd.Tag = .GetString("Type") + "||" + .GetString("ID")
+                lstAdd.Text = ProgramTitle(.GetString(sqlReader.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("ID")), .GetDateTime(sqlReader.GetOrdinal("Type")))
+                lstAdd.Tag = .GetString(sqlReader.GetOrdinal("Type")) + "||" + .GetString(sqlReader.GetOrdinal("ID"))
                 lstAdd.ImageKey = "subscribed"
 
                 lstListview.Items.Add(lstAdd)
@@ -461,11 +461,11 @@ Friend Class clsData
         grpMatches = RegExpression.Match(strDuration).Groups
 
         If grpMatches(2).ToString() <> "" Then
-            lngProgDuration = grpMatches(2).ToString() * 60
+            lngProgDuration = CInt(CDbl(grpMatches(2).Value) * 60)
         End If
 
         If grpMatches(4).ToString() <> "" Then
-            lngProgDuration += grpMatches(4).ToString()
+            lngProgDuration += CInt(grpMatches(4).Value)
         End If
 
         ' Now split up the date string
@@ -501,7 +501,7 @@ Friend Class clsData
     End Sub
 
     Public Sub ResetDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean)
-        Dim sqlCommand As New SQLiteCommand("update tblDownloads set status=" + Statuses.Waiting + " where type=""" & strProgramType & """ and id=""" & strProgramID & """ and date=" & dteProgramDate.ToString(strSqlDateFormat))
+        Dim sqlCommand As New SQLiteCommand("update tblDownloads set status=" + Statuses.Waiting.ToString + " where type=""" & strProgramType & """ and id=""" & strProgramID & """ and date=" & dteProgramDate.ToString(strSqlDateFormat))
         sqlCommand.ExecuteNonQuery()
 
         If booAuto Then
@@ -522,7 +522,7 @@ Friend Class clsData
         Dim ThisInstance As IRadioProvider = Nothing
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = CreateInstance(SinglePlugin)
+            ThisInstance = CType(CreateInstance(SinglePlugin), IRadioProvider)
 
             If ThisInstance.ProviderUniqueID = strType Then
                 Exit For
