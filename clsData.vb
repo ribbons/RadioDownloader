@@ -95,29 +95,27 @@ Friend Class clsData
 
     Public Function FindNewDownload() As clsBackground
         Const lngMaxErrors As Integer = 2
+        Dim clsBkgInst As clsBackground = Nothing
 
-        'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        Dim rstRecordset As DAO.Recordset
-        rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE status=" & VB6.Format(clsBackground.Status.stWaiting) & " or (status=" & VB6.Format(clsBackground.Status.stError) & " and errors<" & VB6.Format(lngMaxErrors) & ") order by status")
+        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + Statuses.Waiting + " or (status=" + Statuses.Waiting + " and errors<" + lngMaxErrors + ") order by status")
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        With rstRecordset
-            If .EOF = False Then
-                If .Fields("Status").Value = clsBackground.Status.stError Then
-                    Call ResetDownload(.Fields("Type").Value, .Fields("ID").Value, .Fields("Date").Value, True)
+        If sqlReader.Read() Then
+            With sqlReader
+                If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
+                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetString(.GetOrdinal("Date")), True)
                 End If
 
-                .MoveFirst()
-                FindNextAction.dldDownloadID.strProgramType = .Fields("Type").Value
-                FindNextAction.dldDownloadID.strProgramID = .Fields("ID").Value
-                FindNextAction.dldDownloadID.dteDate = .Fields("Date").Value
-                FindNextAction.nxtNextAction = .Fields("NextAction").Value
-                FindNextAction.booFound = True
-            End If
-        End With
+                clsBkgInst = New clsBackground
+                clsBkgInst.ProgramType = .GetString(.GetOrdinal("Type"))
+                clsBkgInst.ProgramID = .GetString(.GetOrdinal("ID"))
+                clsBkgInst.ProgramDate = .GetDateTime(.GetOrdinal("Date"))
+            End With
 
-        rstRecordset.Close()
-        'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        rstRecordset = Nothing
+            sqlReader.Close()
+        End If
+
+        Return clsBkgInst
     End Function
 
     'Public Sub CleanupUnfinished()
@@ -502,30 +500,18 @@ Friend Class clsData
         sqlReader.Close()
     End Sub
 
-    Public Function ResetDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean) As Object
-        ''UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-        'Dim rstRecordset As DAO.Recordset
-        'rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+    Public Sub ResetDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean)
+        Dim sqlCommand As New SQLiteCommand("update tblDownloads set status=" + Statuses.Waiting + " where type=""" & strProgramType & """ and id=""" & strProgramID & """ and date=" & dteProgramDate.ToString(strSqlDateFormat))
+        sqlCommand.ExecuteNonQuery()
 
-        'With rstRecordset
-        '    If .EOF = False Then
-        '        .MoveFirst()
-        '        .Edit()
-        '        .Fields("NextAction").Value = clsBackground.NextAction.Download
-        '        .Fields("Status").Value = clsBackground.Status.stWaiting
-        '        If booAuto Then
-        '            .Fields("Errors").Value = .Fields("Errors").Value + 1
-        '        Else
-        '            .Fields("Errors").Value = 0
-        '        End If
-        '        .Update()
-        '    End If
-        'End With
-
-        'rstRecordset.Close()
-        ''UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-        'rstRecordset = Nothing
-    End Function
+        If booAuto Then
+            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=ErrorCount+1 where type=""" & strProgramType & """ and id=""" & strProgramID & """ and date=" & dteProgramDate.ToString(strSqlDateFormat))
+            sqlCommand.ExecuteNonQuery()
+        Else
+            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=0 where type=""" & strProgramType & """ and id=""" & strProgramID & """ and date=" & dteProgramDate.ToString(strSqlDateFormat))
+            sqlCommand.ExecuteNonQuery()
+        End If
+    End Sub
 
     Public Sub CancelDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
         Dim sqlCommand As New SQLiteCommand("DELETE FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
