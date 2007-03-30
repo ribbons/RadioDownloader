@@ -16,6 +16,11 @@ Public Interface IRadioProvider
         Dim ProgramName As String
     End Structure
 
+    Enum ProgressIcon
+        Downloading
+        Converting
+    End Enum
+
     ReadOnly Property ProviderUniqueID() As String
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
@@ -24,7 +29,7 @@ Public Interface IRadioProvider
     Function ListProgramIDs(ByRef clsCommon As clsCommon, ByVal strStationID As String) As ProgramListItem()
     'Function ReturnProgramInfo
 
-    Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String)
+    Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal strError As String, ByVal strCommandOutput As String)
     Event Finished()
 

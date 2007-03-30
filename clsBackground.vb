@@ -7,6 +7,12 @@ Imports System.Text.RegularExpressions
 Friend Class clsBackground
     Private Declare Function MoveFile Lib "kernel32" Alias "MoveFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
 
+    Private WithEvents ThisInstance As IRadioProvider
+
+    Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    Event DldError(ByVal strError As String, ByVal strCommandOutput As String)
+    Event Finished()
+
     ' Private variables to store information about the current task
     Private strProgType As String
     Private strProgID As String
@@ -78,8 +84,6 @@ Friend Class clsBackground
     End Property
 
     Public Sub DownloadProgram()
-        Dim ThisInstance As IRadioProvider = Nothing
-
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
             ThisInstance = CreateInstance(SinglePlugin)
 
@@ -112,4 +116,16 @@ Friend Class clsBackground
 
         CreateFinalName = AddSlash(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) & Trim(strCleanedTitle) & " " & VB6.Format(dteProgDate, "dd-mm-yy") & ".mp3"
     End Function
+
+    Private Sub ThisInstance_DldError(ByVal strError As String, ByVal strCommandOutput As String) Handles ThisInstance.DldError
+        RaiseEvent DldError(strError, strCommandOutput)
+    End Sub
+
+    Private Sub ThisInstance_Finished() Handles ThisInstance.Finished
+        RaiseEvent Finished()
+    End Sub
+
+    Private Sub ThisInstance_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles ThisInstance.Progress
+        RaiseEvent Progress(intPercent, strStatusText, Icon)
+    End Sub
 End Class

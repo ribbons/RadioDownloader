@@ -258,10 +258,11 @@ Friend Class clsData
         lstListview.Items.Clear()
 
         Do While sqlReader.Read()
-            lstAdd = New ListViewItem
+            lstAdd = lstListview.Items.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type")), "", 0)
             lstAdd.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")))
+
             lstAdd.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToShortDateString())
-            lstAdd.Tag = sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString(strSqlDateFormat) & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
+            lstAdd.SubItems.Add("")
 
             Select Case sqlReader.GetInt32(sqlReader.GetOrdinal("Status"))
                 Case Statuses.Waiting
@@ -274,8 +275,6 @@ Friend Class clsData
                     lstAdd.SubItems.Add("Error")
                     lstAdd.ImageKey = "error"
             End Select
-
-            lstListview.Items.Add(lstAdd)
         Loop
 
         sqlReader.Close()
