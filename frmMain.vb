@@ -590,7 +590,7 @@ Public Class frmMain
         If clsProgData.AddDownload(strSplit(0), strSplit(1)) Then
             Call tbtDownloads_Click(New Object, New EventArgs)
             Call clsProgData.UpdateDlList(lstDownloads)
-            '    tmrStartProcess.Enabled = True
+            tmrStartProcess.Enabled = True
         Else
             stlStatusText.Text = ""
             Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
