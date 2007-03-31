@@ -22,7 +22,7 @@ Public Class frmMain
 
     Private Delegate Sub clsProgData_AddProgramToList_Delegate(ByVal strType As String, ByVal strID As String, ByVal strName As String)
     Private Delegate Sub clsBackgroundThread_Progress_Delegate(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal strError As String, ByVal strCommandOutput As String)
+    Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal strError As String)
     Private Delegate Sub clsBackgroundThread_Finished_Delegate()
 
     Const lngDLStatCol As Integer = 2
@@ -637,12 +637,12 @@ Public Class frmMain
         Call lstNew.Items.Add(lstAddItem)
     End Sub
 
-    Private Sub clsBackgroundThread_DldError(ByVal strError As String, ByVal strCommandOutput As String) Handles clsBackgroundThread.DldError
+    Private Sub clsBackgroundThread_DldError(ByVal strError As String) Handles clsBackgroundThread.DldError
         Dim DelegateInst As New clsBackgroundThread_DldError_Delegate(AddressOf clsBackgroundThread_DldError_FormThread)
-        Call Me.Invoke(DelegateInst, New Object() {strError, strCommandOutput})
+        Call Me.Invoke(DelegateInst, New Object() {strError})
     End Sub
 
-    Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String, ByVal strCommandOutput As String) Handles clsBackgroundThread.DldError
+    Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String) Handles clsBackgroundThread.DldError
 
     End Sub
 

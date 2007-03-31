@@ -10,7 +10,7 @@ Friend Class clsBackground
     Private WithEvents ThisInstance As IRadioProvider
 
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Event DldError(ByVal strError As String, ByVal strCommandOutput As String)
+    Event DldError(ByVal strError As String)
     Event Finished()
 
     ' Private variables to store information about the current task
@@ -117,8 +117,8 @@ Friend Class clsBackground
         CreateFinalName = AddSlash(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) & Trim(strCleanedTitle) & " " & VB6.Format(dteProgDate, "dd-mm-yy") & ".mp3"
     End Function
 
-    Private Sub ThisInstance_DldError(ByVal strError As String, ByVal strCommandOutput As String) Handles ThisInstance.DldError
-        RaiseEvent DldError(strError, strCommandOutput)
+    Private Sub ThisInstance_DldError(ByVal strError As String) Handles ThisInstance.DldError
+        RaiseEvent DldError(strError)
     End Sub
 
     Private Sub ThisInstance_Finished() Handles ThisInstance.Finished

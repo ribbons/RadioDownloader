@@ -155,13 +155,16 @@
     <Compile Include="Settings.vb" />
     <EmbeddedResource Include="frmMain.resX">
       <DependentUpon>frmMain.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreferences.resX">
       <DependentUpon>frmPreferences.vb</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="MyResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MyResources.Designer.vb</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

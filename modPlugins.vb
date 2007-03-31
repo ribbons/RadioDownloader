@@ -30,7 +30,7 @@ Public Interface IRadioProvider
     'Function ReturnProgramInfo
 
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
-    Event DldError(ByVal strError As String, ByVal strCommandOutput As String)
+    Event DldError(ByVal strError As String)
     Event Finished()
 
     Sub DownloadProgram(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal intProgLength As Integer)
