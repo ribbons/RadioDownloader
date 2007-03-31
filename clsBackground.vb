@@ -68,6 +68,15 @@ Friend Class clsBackground
         End Set
     End Property
 
+    Public Property ProgramTitle() As String
+        Get
+            Return strProgTitle
+        End Get
+        Set(ByVal strProgramTitle As String)
+            strProgTitle = strProgramTitle
+        End Set
+    End Property
+
     Public ReadOnly Property FinalName() As String
         Get
             FinalName = strFinalName
@@ -124,7 +133,7 @@ Friend Class clsBackground
             strFolderPath = My.Application.Info.DirectoryPath + "\Downloads"
         End If
 
-        CreateFinalName = "\" + Trim(strCleanedTitle) + " " + dteProgDate.ToString("dd-mm-yy") + ".mp3"
+        CreateFinalName = strFolderPath + "\" + Trim(strCleanedTitle) + " " + dteProgDate.ToString("dd-mm-yy") + ".mp3"
     End Function
 
     Private Sub ThisInstance_DldError(ByVal strError As String) Handles ThisInstance.DldError

@@ -111,6 +111,7 @@ Friend Class clsData
                 clsBkgInst.ProgramID = .GetString(.GetOrdinal("ID"))
                 clsBkgInst.ProgramDate = .GetDateTime(.GetOrdinal("Date"))
                 clsBkgInst.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                clsBkgInst.ProgramTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
             End With
 
             sqlReader.Close()

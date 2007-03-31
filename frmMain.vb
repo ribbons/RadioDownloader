@@ -535,8 +535,11 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_AddProgramToList(ByVal strType As String, ByVal strID As String, ByVal strName As String) Handles clsProgData.AddProgramToList
-        Dim DelegateInst As New clsProgData_AddProgramToList_Delegate(AddressOf clsProgData_AddProgramToList_FormThread)
-        Call Me.Invoke(DelegateInst, New Object() {strType, strID, strName})
+        ' Check if the form exists still before calling delegate
+        If Me.IsHandleCreated Then
+            Dim DelegateInst As New clsProgData_AddProgramToList_Delegate(AddressOf clsProgData_AddProgramToList_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {strType, strID, strName})
+        End If
     End Sub
 
     Private Sub clsProgData_AddProgramToList_FormThread(ByVal strType As String, ByVal strID As String, ByVal strName As String)
@@ -548,8 +551,11 @@ Public Class frmMain
     End Sub
 
     Private Sub clsBackgroundThread_DldError(ByVal strError As String) Handles clsBackgroundThread.DldError
-        Dim DelegateInst As New clsBackgroundThread_DldError_Delegate(AddressOf clsBackgroundThread_DldError_FormThread)
-        Call Me.Invoke(DelegateInst, New Object() {strError})
+        ' Check if the form exists still before calling delegate
+        If Me.IsHandleCreated Then
+            Dim DelegateInst As New clsBackgroundThread_DldError_Delegate(AddressOf clsBackgroundThread_DldError_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {strError})
+        End If
     End Sub
 
     Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String) Handles clsBackgroundThread.DldError
@@ -557,8 +563,11 @@ Public Class frmMain
     End Sub
 
     Private Sub clsBackgroundThread_Finished() Handles clsBackgroundThread.Finished
-        Dim DelegateInst As New clsBackgroundThread_Finished_Delegate(AddressOf clsBackgroundThread_Finished_FormThread)
-        Call Me.Invoke(DelegateInst)
+        ' Check if the form exists still before calling delegate
+        If Me.IsHandleCreated Then
+            Dim DelegateInst As New clsBackgroundThread_Finished_Delegate(AddressOf clsBackgroundThread_Finished_FormThread)
+            Call Me.Invoke(DelegateInst)
+        End If
     End Sub
 
     Private Sub clsBackgroundThread_Finished_FormThread() Handles clsBackgroundThread.Finished
@@ -566,16 +575,21 @@ Public Class frmMain
     End Sub
 
     Private Sub clsBackgroundThread_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsBackgroundThread.Progress
-        Dim DelegateInst As New clsBackgroundThread_Progress_Delegate(AddressOf clsBackgroundThread_Progress_FormThread)
-        Call Me.Invoke(DelegateInst, New Object() {intPercent, strStatusText, Icon})
+        ' Check if the form exists still before calling delegate
+        If Me.IsHandleCreated Then
+            Dim DelegateInst As New clsBackgroundThread_Progress_Delegate(AddressOf clsBackgroundThread_Progress_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {intPercent, strStatusText, Icon})
+        End If
     End Sub
 
     Private Sub clsBackgroundThread_Progress_FormThread(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-        Static intLastNum As Integer = -1
+        Static intLastNum As Integer
 
-        If intLastNum = intPercent Then
-            Exit Sub
-        End If
+        If intLastNum = Nothing Then intLastNum = -1
+        If intLastNum = intPercent Then Exit Sub
+        If intPercent > 100 Then Exit Sub
+
+        intLastNum = intPercent
 
         With clsBackgroundThread
             Dim lstItem As ListViewItem
