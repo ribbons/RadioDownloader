@@ -60,40 +60,6 @@ Public Class frmMain
         lstAdd = lstNew.Items.Add(lstAdd)
     End Sub
 
-    'Private Sub clsBackground_Error(ByVal strError As String, ByVal strOutput As String) Handles clsBackground.DldError
-    '    Call clsTheProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stError)
-    '    Call clsTheProgData.UpdateDlList(lstDownloads)
-
-    '    'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-    '    clsBackground = Nothing
-    '    tmrStartProcess.Enabled = True
-    'End Sub
-
-    'Private Sub clsBackground_Finished() Handles clsBackground.Finished
-    '    Call clsTheProgData.AdvanceNextAction(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate)
-
-    '    If clsTheProgData.GetNextActionVal(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate) = clsBackground.NextAction.None Then
-    '        ' All done, set status to completed, and save file path
-    '        Call clsTheProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stCompleted)
-    '        Call clsTheProgData.SetDownloadPath(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, clsBackground.FinalName)
-    '    Else
-    '        Call clsTheProgData.SetStatus(clsBackground.ProgramType, clsBackground.ProgramID, clsBackground.ProgramDate, False, clsBackground.Status.stWaiting)
-    '    End If
-
-    '    Call clsTheProgData.UpdateDlList(lstDownloads)
-
-    '    'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-    '    clsBackground = Nothing
-    '    tmrStartProcess.Enabled = True
-    'End Sub
-
-    'Private Sub clsBackground_Progress(ByVal lngPercent As Integer) Handles clsBackground.Progress
-    '    'Dim lstChangeItem As ComctlLib.ListItem
-    '    'lstChangeItem = lstDownloads.FindItem(VB6.Format(clsBackground.ProgramDate) & "||" & clsBackground.ProgramID & "||" & clsBackground.ProgramType, ComctlLib.ListFindItemWhereConstants.lvwTag)
-
-    '    'lstChangeItem.SubItems(3) = VB6.Format(lngPercent) & "%"
-    'End Sub
-
     'Public Sub GetExternal(ByRef ppDispatch As Object) Implements IDocHostUIHandler.GetExternal
     'this allows javascript to access the objects we return
     'here is it set so javascript will have access to all functions
@@ -559,7 +525,11 @@ Public Class frmMain
     End Sub
 
     Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String) Handles clsBackgroundThread.DldError
+        Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
+        Call clsProgData.UpdateDlList(lstDownloads)
 
+        clsBackgroundThread = Nothing
+        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub clsBackgroundThread_Finished() Handles clsBackgroundThread.Finished
@@ -571,7 +541,11 @@ Public Class frmMain
     End Sub
 
     Private Sub clsBackgroundThread_Finished_FormThread() Handles clsBackgroundThread.Finished
+        Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
+        Call clsProgData.UpdateDlList(lstDownloads)
 
+        clsBackgroundThread = Nothing
+        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub clsBackgroundThread_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsBackgroundThread.Progress

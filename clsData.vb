@@ -44,35 +44,15 @@ Friend Class clsData
     '    rstRecordset = Nothing
     'End Function
 
-    'Public Sub SetStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByRef booAuto As Boolean, Optional ByRef staValue As clsBackground.Status = 0)
-    '    'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
-    '    Dim rstRecordset As DAO.Recordset
-    '    rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+    Public Sub SetErrored(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
+        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=""" + CStr(Statuses.Errored) + """, ErrorTime=""" + Now.ToString(strSqlDateFormat) + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        sqlCommand.ExecuteNonQuery()
+    End Sub
 
-    '    With rstRecordset
-    '        If .EOF = False Then
-    '            .MoveFirst()
-    '            .Edit()
-    '            If booAuto Then
-    '                Select Case .Fields("NextAction").Value
-    '                    Case clsBackground.NextAction.Download
-    '                        .Fields("Status").Value = clsBackground.Status.stDownloading
-    '                    Case clsBackground.NextAction.Decode
-    '                        .Fields("Status").Value = clsBackground.Status.stDecoding
-    '                    Case clsBackground.NextAction.EncodeMp3
-    '                        .Fields("Status").Value = clsBackground.Status.stEncoding
-    '                End Select
-    '            Else
-    '                .Fields("Status").Value = staValue
-    '            End If
-    '            .Update()
-    '        End If
-    '    End With
-
-    '    rstRecordset.Close()
-    '    'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-    '    rstRecordset = Nothing
-    'End Sub
+    Public Sub SetDownloaded(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal strDownloadPath As String)
+        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=""" + CStr(Statuses.Downloaded) + """, Path=""" + strDownloadPath + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        sqlCommand.ExecuteNonQuery()
+    End Sub
 
     'Public Sub AdvanceNextAction(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
     '    'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
@@ -144,11 +124,6 @@ Friend Class clsData
     '    'UPGRADE_NOTE: Object rstRecordset may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
     '    rstRecordset = Nothing
     'End Sub
-
-    Public Sub SetDownloadPath(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal strPath As String)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Path=""" + strPath + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
-        sqlCommand.ExecuteNonQuery()
-    End Sub
 
     Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
         Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """")
