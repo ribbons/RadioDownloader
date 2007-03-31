@@ -316,7 +316,7 @@
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstDownloads.Location = New System.Drawing.Point(216, 336)
+        Me.lstDownloads.Location = New System.Drawing.Point(210, 336)
         Me.lstDownloads.MultiSelect = False
         Me.lstDownloads.Name = "lstDownloads"
         Me.lstDownloads.Size = New System.Drawing.Size(547, 110)
@@ -330,8 +330,8 @@
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 471)
-        Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.lstSubscribed)
+        Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.tbrToolbar)
         Me.Controls.Add(Me.lstNew)
