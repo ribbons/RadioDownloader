@@ -648,7 +648,7 @@ Public Class frmMain
 
     Private Sub clsBackgroundThread_Finished() Handles clsBackgroundThread.Finished
         Dim DelegateInst As New clsBackgroundThread_Finished_Delegate(AddressOf clsBackgroundThread_Finished_FormThread)
-        Call Me.Invoke(DelegateInst, New Object())
+        Call Me.Invoke(DelegateInst)
     End Sub
 
     Private Sub clsBackgroundThread_Finished_FormThread() Handles clsBackgroundThread.Finished

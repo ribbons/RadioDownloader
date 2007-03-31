@@ -92,7 +92,9 @@ Friend Class clsBackground
             End If
         Next SinglePlugin
 
-        ThisInstance.DownloadProgram(New clsCommon, strStationID, strProgID, intDuration)
+        strFinalName = CreateFinalName()
+
+        ThisInstance.DownloadProgram(New clsCommon, strStationID, strProgID, intDuration, strFinalName)
     End Sub
 
     Private Function CreateFinalName() As String
@@ -114,7 +116,15 @@ Friend Class clsBackground
             strCleanedTitle = Replace(strCleanedTitle, "  ", " ")
         Loop
 
-        CreateFinalName = AddSlash(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) & Trim(strCleanedTitle) & " " & VB6.Format(dteProgDate, "dd-mm-yy") & ".mp3"
+        Dim strFolderPath As String
+
+        If My.Settings.SaveFolder <> "" Then
+            strFolderPath = My.Settings.SaveFolder
+        Else
+            strFolderPath = My.Application.Info.DirectoryPath + "\Downloads"
+        End If
+
+        CreateFinalName = "\" + Trim(strCleanedTitle) + " " + dteProgDate.ToString("dd-mm-yy") + ".mp3"
     End Function
 
     Private Sub ThisInstance_DldError(ByVal strError As String) Handles ThisInstance.DldError

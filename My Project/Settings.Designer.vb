@@ -53,6 +53,18 @@ Namespace My
                 Return defaultInstance
             End Get
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property SaveFolder() As String
+            Get
+                Return CType(Me("SaveFolder"),String)
+            End Get
+            Set
+                Me("SaveFolder") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
