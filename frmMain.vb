@@ -524,7 +524,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String) Handles clsBackgroundThread.DldError
+    Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String)
         Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
         Call clsProgData.UpdateDlList(lstDownloads)
 
@@ -540,7 +540,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub clsBackgroundThread_Finished_FormThread() Handles clsBackgroundThread.Finished
+    Private Sub clsBackgroundThread_Finished_FormThread()
         Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
         Call clsProgData.UpdateDlList(lstDownloads)
 
