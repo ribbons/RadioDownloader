@@ -87,18 +87,6 @@ Public Class frmMain
         ' Set up the web browser so that public methods of this form can be called from javascript in the html
         webDetails.ObjectForScripting = Me
 
-        '      clsSubclass = New cSubclass
-        '      Call clsSubclass.Subclass(Me.Handle.ToInt32, Me)
-
-        '' When the listview is scrolled (mouse or keyboard) or the columns are
-        '' resized, the scrollbars need to be moved too
-        ''Call clsSubclass.AddMsg(WM_HSCROLL, MSG_AFTER)
-        ''Call clsSubclass.AddMsg(WM_VSCROLL, MSG_AFTER)
-        ''Call clsSubclass.AddMsg(WM_KEYDOWN, MSG_AFTER)
-        ''Call clsSubclass.AddMsg(WM_NOTIFY, MSG_AFTER)
-        ''Call clsSubclass.AddMsg(WM_STYLECHANGING, MSG_BEFORE)
-        'Call clsSubclass.AddMsg(WinSubHook2.eMsg.WM_NOTIFY, WinSubHook2.eMsgWhen.MSG_BEFORE)
-
         clsProgData = New clsData
         'Call clsTheProgData.CleanupUnfinished()
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
@@ -137,65 +125,6 @@ Public Class frmMain
         Call Kill(My.Application.Info.DirectoryPath + "\temp.htm")
         Call Kill(My.Application.Info.DirectoryPath + "\temp\*.*")
     End Sub
-
-    'Private Sub iSubclass_Proc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Integer, ByRef hWnd As Integer, ByRef uMsg As WinSubHook2.eMsg, ByRef wParam As Integer, ByRef lParam As Integer) Implements WinSubHook2.iSubclass.Proc
-    '	Dim nmh As NMHDR
-    '	Select Case uMsg
-    '		'        '---------------------------------------------------------------
-    '		'        ' For scrollbar adjustment
-    '		'        '---------------------------------------------------------------
-    '		'        Case WM_VSCROLL, WM_HSCROLL
-    '		'            Call MoveBars
-    '		'        Case WM_KEYDOWN
-    '		'            Debug.Print wParam
-    '		'            'If key is up, down, left, right, pgup or pgdown then move the bars
-    '		'            If wParam >= 33 And wParam <= 40 Then
-    '		'                Call MoveBars
-    '		'            End If
-    '		'        Case WM_NOTIFY
-    '		'            ' Find out what the message was
-    '		'            Dim uWMNOTIFY_Message As NMHDR
-    '		'            Call CopyMemory(uWMNOTIFY_Message, ByVal lParam, Len(uWMNOTIFY_Message))
-    '		'
-    '		'            If uWMNOTIFY_Message.code = HDN_ENDTRACK Then
-    '		'                ' User adjusted column width
-    '		'                Call MoveBars
-    '		'            End If
-    '		'        '---------------------------------------------------------------
-    '		'        ' To deal with flickering when adding / changing info in listview
-    '		'        '---------------------------------------------------------------
-    '		'        Case WM_STYLECHANGING
-    '		'            ' Only stop redraw when requested
-    '		'            If booLvAdding Then
-    '		'                ' If the flag is set and the ListView's LVS_NOLABELWRAP style
-    '		'                ' bit is changing (the ListView's LabelWrap property), prevent
-    '		'                ' the style change and the resultant unnecessary redrawing,
-    '		'                ' flickering, and a serious degradation in loading speed.
-    '		'
-    '		'                Dim ss As STYLESTRUCT
-    '		'                CopyMemory ss, ByVal lParam, Len(ss)
-    '		'
-    '		'                If ((ss.styleOld Xor ss.styleNew) And LVS_NOLABELWRAP) Then
-    '		'                    ss.styleNew = ss.styleOld
-    '		'                    CopyMemory ByVal lParam, ss, Len(ss)
-    '		'                End If
-    '		'            End If
-    '		Case WinSubHook2.eMsg.WM_NOTIFY
-    '			' Fill the NMHDR struct from the lParam pointer.
-    '			' (for any WM_NOTIFY msg, lParam always points to a struct which is
-    '			' either the NMHDR struct, or whose 1st member is the NMHDR struct)
-    '			'UPGRADE_ISSUE: COM expression not supported: Module methods of COM objects. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="5D48BAC6-2CD4-45AD-B1CC-8E4A241CDB58"'
-    '			Call WinSubHook2.Kernel32.CopyMemory(nmh, lParam, Len(nmh))
-
-    '			Select Case nmh.code
-    '				Case LVN_BEGINDRAG
-    '					'Notifies a list view control's parent window that a
-    '					'drag-and-drop operation involving the left mouse button
-    '					'is being initiated.
-    '					bHandled = True
-    '			End Select
-    '	End Select
-    'End Sub
 
     'Private Sub lstDownloads_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent)
     '    Dim strSplit() As String
@@ -412,33 +341,6 @@ Public Class frmMain
         End If
 
         tmrStartProcess.Enabled = False
-    End Sub
-
-    Private Sub MoveBars()
-        '    Dim prgBar As ProgressBar
-        '
-        '    Call InvalidateRect(lstDownloads.hWnd, ByVal 0&, 0)
-        '
-        '    Dim recPos As RECT
-        '    Call GetSubItemRect(lstDownloads.hWnd, prgBar.Index - 1, 3, LVIR_LABEL, recPos)
-        '
-        '    With prgBar
-        '        .Left = (recPos.Left) * Screen.TwipsPerPixelX
-        '        .Width = (recPos.Right - recPos.Left) * Screen.TwipsPerPixelX
-        '        .Height = ((recPos.Bottom - recPos.Top) * Screen.TwipsPerPixelY)
-        '        .Top = recPos.Top * Screen.TwipsPerPixelY
-        '    End With
-        '
-        '            If recPos.Top <= 10 Then
-        '                prgBar.Visible = False
-        '            Else
-        '                prgBar.Visible = True
-        '
-        '                Call ValidateRect(lstDownloads.hWnd, recPos)
-        '                Call InvalidateRect(prgBar.hWnd, ByVal 0&, 0)
-        '            End If
-        '        End If
-        '    Next prgBar
     End Sub
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click

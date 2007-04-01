@@ -2,7 +2,6 @@ Option Strict Off
 Option Explicit On
 
 Module modMain
-
     Public Structure RECT
         'UPGRADE_NOTE: Left was upgraded to Left_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
         Dim Left_Renamed As Integer
@@ -60,7 +59,6 @@ Module modMain
     Public Const LVN_FIRST As Short = -100
     Public Const LVN_BEGINDRAG As Short = (LVN_FIRST - 9)
 
-    Public Declare Function SetParent Lib "user32" (ByVal hWndChild As Integer, ByVal hWndNewParent As Integer) As Integer
     'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
     'Public Declare Function SendMessage Lib "user32"  Alias "SendMessageA"(ByVal hWnd As Integer, ByVal wMsg As Integer, ByVal wParam As Integer, ByRef lParam As Any) As Integer
     'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
@@ -88,15 +86,6 @@ Module modMain
     Public Declare Function MoveFile Lib "kernel32" Alias "MoveFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
 
     Private strBaseFolder As String
-
-    Public Function GetSubItemRect(ByVal hWndLV As Integer, ByVal iItem As Integer, ByVal iSubItem As Integer, ByVal code As Integer, ByRef lpRect As RECT) As Boolean
-        'Get the Coordinates of the ListItem specified with iITEM and iSubItem
-        lpRect.Top = iSubItem
-        lpRect.Left_Renamed = code
-
-        'UPGRADE_WARNING: Couldn't resolve default property of object lpRect. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6A50421D-15FE-4896-8A1B-2EC21E9037B2"'
-        'GetSubItemRect = SendMessage(hWndLV, LVM_GETSUBITEMRECT, iItem, lpRect)
-    End Function
 
     Public Function BrowseForFolder(ByVal lngHwnd As Integer, ByVal strPrompt As String, ByVal strStartIn As String) As String
         On Error GoTo ehBrowseForFolder 'Trap for errors
