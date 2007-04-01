@@ -60,13 +60,6 @@ Public Class frmMain
         lstAdd = lstNew.Items.Add(lstAdd)
     End Sub
 
-    'Public Sub GetExternal(ByRef ppDispatch As Object) Implements IDocHostUIHandler.GetExternal
-    'this allows javascript to access the objects we return
-    'here is it set so javascript will have access to all functions
-    'and objects on this form.
-    '    ppDispatch = Me
-    'End Sub
-
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' Load all of the available plugins into an array for later reference
         AvailablePlugins = FindPlugins(My.Application.Info.DirectoryPath)
@@ -118,18 +111,6 @@ Public Class frmMain
 
         'tbrOldToolbar.Buttons("Clean Up").Visible = False
         'tbrOldToolbar.Buttons("Refresh").Visible = False
-
-        'picBack.BackColor = Me.BackColor
-        'picForward.BackColor = Me.BackColor
-        'picCrumbArrow.BackColor = vbWhite
-
-        'Call DrawTransp("NAV_BACK", picForward, 29, 0, 0, 0)
-        'Call DrawTransp("NAV_DISABLED", picForward, 27, 0, 0, 0)
-        'Call DrawTransp("NAV_BACK", picBack, 0, 0, 0, 0)
-        'Call DrawTransp("NAV_DISABLED", picBack, 0, 0, 1, 0)
-        'Call DrawTransp("CRUMB_ARROW", picCrumbArrow, 0, 0, 0, 0)
-
-        'Call SetIcon(Me.Handle.ToInt32, "appicon", True)
 
         System.Windows.Forms.Application.DoEvents()
 
@@ -432,14 +413,6 @@ Public Class frmMain
 
         tmrStartProcess.Enabled = False
     End Sub
-
-    'UPGRADE_ISSUE: ShDocW.WebBrowser.NavigateComplete2 pDisp was not upgraded. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6B85A2A7-FE9F-4FBE-AA0C-CF11AC86A305"'
-    'Private Sub webDetails_Navigated(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.WebBrowserNavigatedEventArgs) Handles webDetails.Navigated
-    '	Dim url As String = eventArgs.URL.ToString()
-    '	' Take away scrollbars, border, and interaction
-    '	clsExtender.WbAttributes = IEDevKit.HostAttributes.haNoScrollBars Or IEDevKit.HostAttributes.haNo3DBorder Or IEDevKit.HostAttributes.haDisableSelections
-    '	webDetails.Refresh()
-    'End Sub
 
     Private Sub MoveBars()
         '    Dim prgBar As ProgressBar
