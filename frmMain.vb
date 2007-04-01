@@ -101,7 +101,7 @@ Public Class frmMain
 
         clsProgData = New clsData
         'Call clsTheProgData.CleanupUnfinished()
-        Call clsProgData.UpdateDlList(lstDownloads)
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         'Call clsTheProgData.UpdateSubscrList(lstSubscribed)
 
         stlStatusText.Text = ""
@@ -115,8 +115,6 @@ Public Class frmMain
         System.Windows.Forms.Application.DoEvents()
 
         Me.Show()
-
-        lstDownloads.AddEmbeddedControl(prgDldProg, lstDownloads.Items(0), 1)
 
         'If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) = False Then
         'Call frmPreferences.ShowDialog()
@@ -501,7 +499,7 @@ Public Class frmMain
 
     Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String)
         Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
-        Call clsProgData.UpdateDlList(lstDownloads)
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
         clsBackgroundThread = Nothing
         tmrStartProcess.Enabled = True
@@ -517,7 +515,7 @@ Public Class frmMain
 
     Private Sub clsBackgroundThread_Finished_FormThread()
         Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
-        Call clsProgData.UpdateDlList(lstDownloads)
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
         clsBackgroundThread = Nothing
         tmrStartProcess.Enabled = True
@@ -545,7 +543,12 @@ Public Class frmMain
             lstItem = lstDownloads.Items(.ProgramDate.ToString + "||" + .ProgramID + "||" + .ProgramType)
 
             lstItem.SubItems(2).Text = strStatusText
-            lstItem.SubItems(3).Text = intPercent.ToString + "%"
+            prgDldProg.Value = intPercent
+
+            If prgDldProg.Visible = False Then
+                lstDownloads.AddEmbeddedControl(prgDldProg, lstItem, 3)
+                prgDldProg.Visible = True
+            End If
 
             Select Case Icon
                 Case IRadioProvider.ProgressIcon.Downloading
@@ -564,7 +567,7 @@ Public Class frmMain
 
         If clsProgData.AddDownload(strSplit(0), strSplit(1)) Then
             Call tbtDownloads_Click(New Object, New EventArgs)
-            Call clsProgData.UpdateDlList(lstDownloads)
+            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
             tmrStartProcess.Enabled = True
         Else
             stlStatusText.Text = ""

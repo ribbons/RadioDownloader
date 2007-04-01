@@ -119,7 +119,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="clsInterfaceThread.vb" />
-    <Compile Include="ExtListview.vb">
+    <Compile Include="ExtListView.vb">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="frmMain.Designer.vb">

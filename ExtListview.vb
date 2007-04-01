@@ -3,13 +3,16 @@ Option Explicit On
 
 ' Code in this class is based on c# code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
 
-Public Class ExtListview : Inherits ListView
+Public Class ExtListView : Inherits ListView
     ' ListView messages
     Private Const LVM_FIRST As Integer = &H1000
     Private Const LVM_GETCOLUMNORDERARRAY As Integer = (LVM_FIRST + 59)
 
     ' Window Messages
     Private Const WM_PAINT As Integer = &HF
+
+    ' ArrayList to store the EmbedControl structures in
+    Private embeddedControls As New ArrayList()
 
     ' Data structure to store information about the controls
     Private Structure EmbeddedControl
@@ -18,8 +21,6 @@ Public Class ExtListview : Inherits ListView
         Dim dstDock As DockStyle
         Dim lstItem As ListViewItem
     End Structure
-
-    Private embeddedControls As New ArrayList()
 
     Protected Function GetColumnOrder() As Integer()
         Dim intOrder(Me.Columns.Count) As Integer
@@ -132,6 +133,17 @@ Public Class ExtListview : Inherits ListView
         Return Nothing
     End Function
 
+    Public Sub RemoveAllControls()
+        For intLoop As Integer = 0 To embeddedControls.Count - 1
+            Dim emcControl As EmbeddedControl = CType(embeddedControls(intLoop), EmbeddedControl)
+
+            RemoveHandler emcControl.ctrControl.Click, AddressOf embeddedControl_Click
+            Me.Controls.Remove(emcControl.ctrControl)
+        Next
+
+        embeddedControls.Clear()
+    End Sub
+
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case WM_PAINT
@@ -174,7 +186,6 @@ Public Class ExtListview : Inherits ListView
 
         Call MyBase.WndProc(m)
     End Sub
-
 
     Private Sub embeddedControl_Click(ByVal sender As Object, ByVal e As EventArgs)
         ' When a control is clicked the ListViewItem holding it is selected

@@ -63,8 +63,8 @@
         Me.staStatus = New System.Windows.Forms.StatusStrip
         Me.stlStatusText = New System.Windows.Forms.ToolStripStatusLabel
         Me.lstSubscribed = New System.Windows.Forms.ListView
-        Me.lstDownloads = New RadioDld.ExtListview
         Me.prgDldProg = New System.Windows.Forms.ProgressBar
+        Me.lstDownloads = New RadioDld.ExtListview
         Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
         Me.mnuTray.SuspendLayout()
@@ -308,6 +308,14 @@
         Me.lstSubscribed.UseCompatibleStateImageBehavior = False
         Me.lstSubscribed.View = System.Windows.Forms.View.Details
         '
+        'prgDldProg
+        '
+        Me.prgDldProg.Location = New System.Drawing.Point(424, 384)
+        Me.prgDldProg.Name = "prgDldProg"
+        Me.prgDldProg.Size = New System.Drawing.Size(100, 23)
+        Me.prgDldProg.TabIndex = 16
+        Me.prgDldProg.Visible = False
+        '
         'lstDownloads
         '
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
@@ -318,14 +326,6 @@
         Me.lstDownloads.UseCompatibleStateImageBehavior = False
         Me.lstDownloads.View = System.Windows.Forms.View.Details
         '
-        'prgDldProg
-        '
-        Me.prgDldProg.Location = New System.Drawing.Point(424, 384)
-        Me.prgDldProg.Name = "prgDldProg"
-        Me.prgDldProg.Size = New System.Drawing.Size(100, 23)
-        Me.prgDldProg.TabIndex = 16
-        Me.prgDldProg.Value = 50
-        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -333,13 +333,13 @@
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 471)
         Me.Controls.Add(Me.prgDldProg)
-        Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.tbrToolbar)
         Me.Controls.Add(Me.lstNew)
         Me.Controls.Add(Me.webDetails)
         Me.Controls.Add(Me.mnuMainMenu)
+        Me.Controls.Add(Me.lstDownloads)
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)

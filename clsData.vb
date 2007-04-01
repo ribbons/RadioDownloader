@@ -225,13 +225,17 @@ Friend Class clsData
     '    rstRecordset = Nothing
     'End Function
 
-    Public Sub UpdateDlList(ByRef lstListview As ListView)
-        Dim lstAdd As ListViewItem
-
+    Public Sub UpdateDlList(ByRef lstListview As ExtListView, ByRef prgProgressBar As ProgressBar)
         Dim comCommand As New SQLiteCommand("select * from tblDownloads order by Date desc", sqlConnection)
         Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
+        Dim lstAdd As ListViewItem
         lstListview.Items.Clear()
+
+        If prgProgressBar.Visible Then
+            prgProgressBar.Visible = False
+            lstListview.RemoveAllControls()
+        End If
 
         Do While sqlReader.Read()
             lstAdd = lstListview.Items.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type")), "", 0)
