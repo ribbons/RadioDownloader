@@ -65,7 +65,6 @@ Module modMain
     'Public Declare Function InvalidateRect Lib "user32" (ByVal hWnd As Integer, ByRef lpRect As Any, ByVal bErase As Integer) As Integer
     'UPGRADE_ISSUE: Declaring a parameter 'As Any' is not supported. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="FAE78A8D-8978-4FD4-8208-5B7324A8F795"'
     'Public Declare Function ValidateRect Lib "user32" (ByVal hWnd As Integer, ByRef lpRect As Any) As Integer
-    Public Declare Function ShellExecute Lib "shell32.dll" Alias "ShellExecuteA" (ByVal hWnd As Integer, ByVal lpOperation As String, ByVal lpFile As String, ByVal lpParameters As String, ByVal lpDirectory As String, ByVal nShowCmd As Integer) As Integer
     Public Declare Sub CoTaskMemFree Lib "ole32.dll" (ByVal hMem As Integer)
     Public Declare Function lstrcat Lib "kernel32" Alias "lstrcatA" (ByVal lpString1 As String, ByVal lpString2 As String) As Integer
     'UPGRADE_WARNING: Structure BrowseInfo may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'

@@ -513,7 +513,7 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
 
-        'Call ShellExecute(Me.Handle.ToInt32, "open", clsTheProgData.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0))), CStr(0), CStr(0), SW_SHOWNORMAL)
+        Process.Start(clsProgData.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0))))
     End Sub
 
     Public Sub FlSubscribe()
