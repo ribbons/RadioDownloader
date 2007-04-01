@@ -238,7 +238,6 @@ Friend Class clsData
             lstAdd.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")))
 
             lstAdd.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToShortDateString())
-            lstAdd.SubItems.Add("")
 
             Select Case sqlReader.GetInt32(sqlReader.GetOrdinal("Status"))
                 Case Statuses.Waiting
@@ -251,6 +250,8 @@ Friend Class clsData
                     lstAdd.SubItems.Add("Error")
                     lstAdd.ImageKey = "error"
             End Select
+
+            lstAdd.SubItems.Add("")
         Loop
 
         sqlReader.Close()
