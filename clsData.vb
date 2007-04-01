@@ -45,7 +45,7 @@ Friend Class clsData
     'End Function
 
     Public Sub SetErrored(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=""" + CStr(Statuses.Errored) + """, ErrorTime=""" + Now.ToString(strSqlDateFormat) + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=" + CStr(Statuses.Errored) + ", ErrorTime=""" + Now.ToString(strSqlDateFormat) + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
     End Sub
 
@@ -77,7 +77,7 @@ Friend Class clsData
         Const lngMaxErrors As Integer = 2
         Dim clsBkgInst As clsBackground = Nothing
 
-        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Waiting) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by status", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by status", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read() Then
@@ -485,20 +485,20 @@ Friend Class clsData
     End Sub
 
     Public Sub ResetDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean)
-        Dim sqlCommand As New SQLiteCommand("update tblDownloads set status=" + Statuses.Waiting.ToString + " where type=""" & strProgramType & """ and id=""" & strProgramID & """ and date=" & dteProgramDate.ToString(strSqlDateFormat))
+        Dim sqlCommand As New SQLiteCommand("update tblDownloads set status=" + CStr(Statuses.Waiting) + " where type=""" + strProgramType + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
 
         If booAuto Then
-            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=ErrorCount+1 where type=""" & strProgramType & """ and id=""" & strProgramID & """ and date=" & dteProgramDate.ToString(strSqlDateFormat))
+            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=ErrorCount+1 where type=""" + strProgramType + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
             sqlCommand.ExecuteNonQuery()
         Else
-            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=0 where type=""" & strProgramType & """ and id=""" & strProgramID & """ and date=" & dteProgramDate.ToString(strSqlDateFormat))
+            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=0 where type=""" + strProgramType + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
             sqlCommand.ExecuteNonQuery()
         End If
     End Sub
 
     Public Sub CancelDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
-        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND Date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND Date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 

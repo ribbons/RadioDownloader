@@ -190,7 +190,7 @@ Public Class frmMain
                     strActionString = "Cancel"
                 End If
 
-                Call CreateHtml(strTitle, .ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
+                Call CreateHtml(strTitle, .ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), strActionString)
             End With
         End If
     End Sub
@@ -326,6 +326,11 @@ Public Class frmMain
             End If
         End If
 
+        ' Stop a background download thread from running, as it will error when trying to access the form
+        If thrBackgroundThread Is Nothing = False Then
+            thrBackgroundThread.Abort()
+        End If
+
         Me.Close()
         Me.Dispose()
     End Sub
@@ -413,8 +418,15 @@ Public Class frmMain
 
     Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String)
         Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
+
+        ' In case the item that has just errored is selected & the html links are out of date, so go back to tab overview.
+        If tbtDownloads.Checked = True Then
+            Call TabAdjustments()
+        End If
+
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
+        clsBackgroundThread = Nothing
         clsBackgroundThread = Nothing
         tmrStartProcess.Enabled = True
     End Sub
@@ -429,9 +441,16 @@ Public Class frmMain
 
     Private Sub clsBackgroundThread_Finished_FormThread()
         Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
+
+        ' In case the item that has just finished is selected & the html links are out of date, so go back to tab overview.
+        If tbtDownloads.Selected = True Then
+            Call TabAdjustments()
+        End If
+
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
         clsBackgroundThread = Nothing
+        thrBackgroundThread = Nothing
         tmrStartProcess.Enabled = True
     End Sub
 
@@ -484,8 +503,9 @@ Public Class frmMain
             Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
             tmrStartProcess.Enabled = True
         Else
-            stlStatusText.Text = ""
+            Call FlStatusText("")
             Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
+            Call FlStatusText("", True)
         End If
     End Sub
 
@@ -500,65 +520,77 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
+        Call FlStatusText("")
+
         'If clsTheProgData.AddSubscription(strSplit(0), strSplit(1)) = False Then
-        '    stlStatusText.Text = ""
         '    Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
         'Else
         '    'tbrOldToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed
         '    Call TabAdjustments()
         '    Call clsTheProgData.UpdateSubscrList(lstSubscribed)
         'End If
+
+        Call FlStatusText("", True)
     End Sub
 
     Public Sub FlUnsubscribe()
         Dim strSplit() As String
         strSplit = Split(lstSubscribed.SelectedItems(0).Tag, "||")
 
-        stlStatusText.Text = ""
+        Call FlStatusText("")
 
         If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
             'Call clsTheProgData.RemoveSubscription(strSplit(0), strSplit(1))
             Call TabAdjustments() ' Revert back to tab info so prog info goes
             'Call clsTheProgData.UpdateSubscrList(lstSubscribed)
         End If
+
+        Call FlStatusText("", True)
     End Sub
 
-    Public Sub FlStatusText(ByVal strText As String)
-        Static strLastUpdate As String
+    Public Sub FlStatusText(ByVal strText As String, Optional ByVal booInIgnoreNext As Boolean = False)
+        ' The rather strange ignore next option is for stopping the mouseover text from the html links
+        ' popping back into the status bar after a modal dialog is shown from html.
 
-        ' This odd bit of code stops the HTML link statusbar text staying after a
-        ' modal dialog is shown
-        If strLastUpdate = stlStatusText.Text Then
-            stlStatusText.Text = strText
+        Static booIgnoreNext As Boolean
+
+        If booIgnoreNext Then
+            booIgnoreNext = False
+            Exit Sub
         End If
 
-        strLastUpdate = strText
+        stlStatusText.Text = strText
+        booIgnoreNext = booInIgnoreNext
     End Sub
 
     Public Sub FlCancel()
-        stlStatusText.Text = ""
+        Call FlStatusText("")
 
         Dim strSplit() As String
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
             strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
 
-            'If clsTheProgData.IsDownloading(strSplit(2), strSplit(1)) Then
-            '    'UPGRADE_NOTE: Object clsBackground may not be destroyed until it is garbage collected. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="6E35BFF6-CD74-4B09-9689-3E1A43DF8969"'
-            '    clsBackground = Nothing
-            'End If
+            If clsBackgroundThread Is Nothing = False Then
+                thrBackgroundThread.Abort()
+                clsBackgroundThread = Nothing
+                clsBackgroundThread = Nothing
+                tmrStartProcess.Enabled = True
+            End If
 
-            'Call clsTheProgData.CancelDownload(strSplit(2), strSplit(1), CDate(strSplit(0)))
-            'Call TabAdjustments() ' Revert back to tab info so prog info goes
-            'Call clsTheProgData.UpdateDlList(lstDownloads)
+            Call clsProgData.CancelDownload(strSplit(2), strSplit(1), CDate(strSplit(0)))
+            Call TabAdjustments() ' Revert back to tab info so prog info goes
+            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         End If
+
+        Call FlStatusText("", True)
     End Sub
 
     Public Sub FlRetry()
         Dim strSplit() As String
         strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
 
-        'Call clsTheProgData.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
-        'Call clsTheProgData.UpdateDlList(lstDownloads)
+        Call clsProgData.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         tmrStartProcess.Enabled = True
     End Sub
 End Class
