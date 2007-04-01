@@ -98,18 +98,6 @@ Module modMain
         'GetSubItemRect = SendMessage(hWndLV, LVM_GETSUBITEMRECT, iItem, lpRect)
     End Function
 
-    Public Function AddSlash(ByVal strString As String) As String
-        If Len(strString) Then
-            If Right(strString, 1) <> "\" Then
-                If Right(strString, 1) <> "/" Then
-                    strString = strString & "\"
-                End If
-            End If
-        End If
-
-        AddSlash = strString
-    End Function
-
     Public Function BrowseForFolder(ByVal lngHwnd As Integer, ByVal strPrompt As String, ByVal strStartIn As String) As String
         On Error GoTo ehBrowseForFolder 'Trap for errors
 
@@ -119,7 +107,7 @@ Module modMain
         Dim udtBI As BrowseInfo
         Dim lpSelPath As Integer
 
-        strBaseFolder = AddSlash(strStartIn)
+        strBaseFolder = strStartIn
 
         'Set API properties (housed in a UDT)
         With udtBI

@@ -22,11 +22,11 @@ Friend Class frmPreferences
 	End Sub
 	
 	Private Sub frmPreferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
-		txtSaveIn.Text = GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")
+        txtSaveIn.Text = GetSetting("Radio Downloader", "Interface", "SaveFolder", My.Application.Info.DirectoryPath + "\Downloads")
 		
-		If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) = False Then
-			lblSaveIn.ForeColor = System.Drawing.Color.Red
-			lblSaveIn.Text = "Path not found - choose a location to store your downloaded programs:"
-		End If
+        If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", My.Application.Info.DirectoryPath + "\Downloads")) = False Then
+            lblSaveIn.ForeColor = System.Drawing.Color.Red
+            lblSaveIn.Text = "Path not found - choose a location to store your downloaded programs:"
+        End If
 	End Sub
 End Class

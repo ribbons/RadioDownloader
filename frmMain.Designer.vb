@@ -16,7 +16,6 @@
 	End Sub
 	'Required by the Windows Form Designer
 	Private components As System.ComponentModel.IContainer
-	Public ToolTip1 As System.Windows.Forms.ToolTip
     Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
     Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
     Public WithEvents webDetails As System.Windows.Forms.WebBrowser
@@ -33,7 +32,6 @@
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
-        Me.ToolTip1 = New System.Windows.Forms.ToolTip(Me.components)
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.webDetails = New System.Windows.Forms.WebBrowser
@@ -114,7 +112,7 @@
         'mnuFileExit
         '
         Me.mnuFileExit.Name = "mnuFileExit"
-        Me.mnuFileExit.Size = New System.Drawing.Size(92, 22)
+        Me.mnuFileExit.Size = New System.Drawing.Size(152, 22)
         Me.mnuFileExit.Text = "E&xit"
         '
         'mnuTools
@@ -127,7 +125,7 @@
         'mnuToolsPrefs
         '
         Me.mnuToolsPrefs.Name = "mnuToolsPrefs"
-        Me.mnuToolsPrefs.Size = New System.Drawing.Size(135, 22)
+        Me.mnuToolsPrefs.Size = New System.Drawing.Size(152, 22)
         Me.mnuToolsPrefs.Text = "&Preferences"
         '
         'mnuHelp
@@ -140,7 +138,7 @@
         'mnuHelpAbout
         '
         Me.mnuHelpAbout.Name = "mnuHelpAbout"
-        Me.mnuHelpAbout.Size = New System.Drawing.Size(107, 22)
+        Me.mnuHelpAbout.Size = New System.Drawing.Size(152, 22)
         Me.mnuHelpAbout.Text = "&About"
         '
         'tbrToolbar

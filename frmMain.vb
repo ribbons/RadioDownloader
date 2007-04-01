@@ -153,8 +153,8 @@ Public Class frmMain
 
     Private Sub frmMain_FormClosed(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
         On Error Resume Next
-        Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm")
-        Call Kill(AddSlash(My.Application.Info.DirectoryPath) & "temp\*.*")
+        Call Kill(My.Application.Info.DirectoryPath + "\temp.htm")
+        Call Kill(My.Application.Info.DirectoryPath + "\temp\*.*")
     End Sub
 
     'Private Sub iSubclass_Proc(ByVal bBefore As Boolean, ByRef bHandled As Boolean, ByRef lReturn As Integer, ByRef hWnd As Integer, ByRef uMsg As WinSubHook2.eMsg, ByRef wParam As Integer, ByRef lParam As Integer) Implements WinSubHook2.iSubclass.Proc
@@ -362,12 +362,12 @@ Public Class frmMain
         Dim lngFileNo As Integer
         lngFileNo = FreeFile()
 
-        FileOpen(lngFileNo, AddSlash(My.Application.Info.DirectoryPath) & "temp.htm", OpenMode.Output)
+        FileOpen(lngFileNo, My.Application.Info.DirectoryPath + "\temp.htm", OpenMode.Output)
         PrintLine(lngFileNo, strHtml)
         FileClose(lngFileNo)
 
         'UPGRADE_WARNING: Navigate2 was upgraded to Navigate and has a new behavior. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
-        webDetails.Navigate(New System.Uri(AddSlash(My.Application.Info.DirectoryPath) & "temp.htm"))
+        webDetails.Navigate(New System.Uri(My.Application.Info.DirectoryPath & "\temp.htm"))
     End Sub
 
     'Private Sub lstSubscribed_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent)
