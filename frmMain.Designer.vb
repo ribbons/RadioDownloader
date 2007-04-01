@@ -64,6 +64,7 @@
         Me.stlStatusText = New System.Windows.Forms.ToolStripStatusLabel
         Me.lstSubscribed = New System.Windows.Forms.ListView
         Me.lstDownloads = New RadioDld.ExtListview
+        Me.prgDldProg = New System.Windows.Forms.ProgressBar
         Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
         Me.mnuTray.SuspendLayout()
@@ -317,12 +318,21 @@
         Me.lstDownloads.UseCompatibleStateImageBehavior = False
         Me.lstDownloads.View = System.Windows.Forms.View.Details
         '
+        'prgDldProg
+        '
+        Me.prgDldProg.Location = New System.Drawing.Point(424, 384)
+        Me.prgDldProg.Name = "prgDldProg"
+        Me.prgDldProg.Size = New System.Drawing.Size(100, 23)
+        Me.prgDldProg.TabIndex = 16
+        Me.prgDldProg.Value = 50
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 471)
+        Me.Controls.Add(Me.prgDldProg)
         Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.staStatus)
@@ -372,5 +382,6 @@
     Friend WithEvents stlStatusText As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents lstSubscribed As System.Windows.Forms.ListView
     Friend WithEvents lstDownloads As RadioDld.ExtListview
+    Friend WithEvents prgDldProg As System.Windows.Forms.ProgressBar
 #End Region
 End Class
