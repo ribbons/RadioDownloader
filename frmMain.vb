@@ -1,6 +1,7 @@
 Option Strict Off
 Option Explicit On
 
+Imports System.IO.File
 Imports System.Threading
 Imports System.Text.ASCIIEncoding
 
@@ -126,25 +127,6 @@ Public Class frmMain
         Call Kill(My.Application.Info.DirectoryPath + "\temp\*.*")
     End Sub
 
-    'Private Sub lstDownloads_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent)
-    '    Dim strSplit() As String
-    '    strSplit = Split(eventArgs.item.Tag, "||")
-
-    '    Const strTitle As String = "Download Info"
-
-    '    If clsTheProgData.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stCompleted Then
-    '        If PathFileExists(clsTheProgData.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
-    '            Call CreateHtml(strTitle, clsTheProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Play")
-    '        Else
-    '            Call CreateHtml(strTitle, clsTheProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "")
-    '        End If
-    '    ElseIf clsTheProgData.DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0))) = clsBackground.Status.stError Then
-    '        Call CreateHtml(strTitle, clsTheProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Retry,Cancel")
-    '    Else
-    '        Call CreateHtml(strTitle, clsTheProgData.ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
-    '    End If
-    'End Sub
-
     Private Sub lstNew_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstNew.SelectedIndexChanged
         If lstNew.SelectedItems.Count > 0 Then
             Dim strSplit() As String
@@ -180,6 +162,36 @@ Public Class frmMain
             thrDisplayThread.Start()
         Else
             ' Do nothing
+        End If
+    End Sub
+
+    Private Sub lstDownloads_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstDownloads.SelectedIndexChanged
+        If lstDownloads.SelectedItems.Count > 0 Then
+            Dim strSplit() As String
+            strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
+
+            Const strTitle As String = "Download Info"
+
+            With clsProgData
+                Dim staDownloadStatus As clsData.Statuses
+                Dim strActionString As String
+
+                staDownloadStatus = .DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0)))
+
+                If staDownloadStatus = clsData.Statuses.Downloaded Then
+                    If Exists(.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
+                        strActionString = "Play"
+                    Else
+                        strActionString = ""
+                    End If
+                ElseIf staDownloadStatus = clsData.Statuses.Errored Then
+                    strActionString = "Retry,Cancel"
+                Else
+                    strActionString = "Cancel"
+                End If
+
+                Call CreateHtml(strTitle, .ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), "Cancel")
+            End With
         End If
     End Sub
 

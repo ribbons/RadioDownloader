@@ -64,7 +64,7 @@
         Me.stlStatusText = New System.Windows.Forms.ToolStripStatusLabel
         Me.lstSubscribed = New System.Windows.Forms.ListView
         Me.prgDldProg = New System.Windows.Forms.ProgressBar
-        Me.lstDownloads = New RadioDld.ExtListview
+        Me.lstDownloads = New RadioDld.ExtListView
         Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
         Me.mnuTray.SuspendLayout()
@@ -113,7 +113,7 @@
         'mnuFileExit
         '
         Me.mnuFileExit.Name = "mnuFileExit"
-        Me.mnuFileExit.Size = New System.Drawing.Size(92, 22)
+        Me.mnuFileExit.Size = New System.Drawing.Size(152, 22)
         Me.mnuFileExit.Text = "E&xit"
         '
         'mnuTools
@@ -126,7 +126,7 @@
         'mnuToolsPrefs
         '
         Me.mnuToolsPrefs.Name = "mnuToolsPrefs"
-        Me.mnuToolsPrefs.Size = New System.Drawing.Size(135, 22)
+        Me.mnuToolsPrefs.Size = New System.Drawing.Size(152, 22)
         Me.mnuToolsPrefs.Text = "&Preferences"
         '
         'mnuHelp
@@ -139,7 +139,7 @@
         'mnuHelpAbout
         '
         Me.mnuHelpAbout.Name = "mnuHelpAbout"
-        Me.mnuHelpAbout.Size = New System.Drawing.Size(107, 22)
+        Me.mnuHelpAbout.Size = New System.Drawing.Size(152, 22)
         Me.mnuHelpAbout.Text = "&About"
         '
         'tbrToolbar
@@ -381,7 +381,7 @@
     Friend WithEvents staStatus As System.Windows.Forms.StatusStrip
     Friend WithEvents stlStatusText As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents lstSubscribed As System.Windows.Forms.ListView
-    Friend WithEvents lstDownloads As RadioDld.ExtListview
     Friend WithEvents prgDldProg As System.Windows.Forms.ProgressBar
+    Friend WithEvents lstDownloads As RadioDld.ExtListView
 #End Region
 End Class
