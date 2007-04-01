@@ -116,7 +116,7 @@ Public Class frmMain
 
         Me.Show()
 
-        lstDownloads.AddEmbeddedControl(prgDldProg, 1, 1)
+        lstDownloads.AddEmbeddedControl(prgDldProg, lstDownloads.Items(0), 1)
 
         'If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) = False Then
         'Call frmPreferences.ShowDialog()

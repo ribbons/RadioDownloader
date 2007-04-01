@@ -1,20 +1,20 @@
 Option Strict On
 Option Explicit On
 
-' Code in this class is based on code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
+' Code in this class is based on c# code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
 
 Public Class ExtListview : Inherits ListView
     ' ListView messages
     Private Const LVM_FIRST As Integer = &H1000
     Private Const LVM_GETCOLUMNORDERARRAY As Integer = (LVM_FIRST + 59)
 
-    ' Windows Messages
+    ' Window Messages
     Private Const WM_PAINT As Integer = &HF
 
+    ' Data structure to store information about the controls
     Private Structure EmbeddedControl
         Dim ctrControl As Control
         Dim intColumn As Integer
-        Dim intRow As Integer
         Dim dstDock As DockStyle
         Dim lstItem As ListViewItem
     End Structure
@@ -75,18 +75,16 @@ Public Class ExtListview : Inherits ListView
         Return subItemRect
     End Function
 
-    ' Add a control to the ListView
-    Public Sub AddEmbeddedControl(ByVal ctlControl As Control, ByVal intCol As Integer, ByVal intRow As Integer)
-        Call AddEmbeddedControl(ctlControl, intCol, intRow, DockStyle.Fill)
+    Public Sub AddEmbeddedControl(ByVal ctlControl As Control, ByVal lstParentItem As ListViewItem, ByVal intCol As Integer)
+        Call AddEmbeddedControl(ctlControl, lstParentItem, intCol, DockStyle.Fill)
     End Sub
 
-    ' Add a control to the ListView
-    Public Sub AddEmbeddedControl(ByVal ctlControl As Control, ByVal intCol As Integer, ByVal intRow As Integer, ByVal dstDock As DockStyle)
+    Public Sub AddEmbeddedControl(ByVal ctlControl As Control, ByVal lstParentItem As ListViewItem, ByVal intCol As Integer, ByVal dstDock As DockStyle)
         If ctlControl Is Nothing Then
             Throw New ArgumentNullException()
         End If
 
-        If intCol >= Columns.Count Or intRow >= Items.Count Then
+        If intCol >= Columns.Count Then
             Throw New ArgumentOutOfRangeException()
         End If
 
@@ -94,21 +92,17 @@ Public Class ExtListview : Inherits ListView
 
         emcControl.ctrControl = ctlControl
         emcControl.intColumn = intCol
-        emcControl.intRow = intRow
         emcControl.dstDock = dstDock
-        emcControl.lstItem = Items(intRow)
+        emcControl.lstItem = lstParentItem
 
         embeddedControls.Add(emcControl)
 
         ' Add a Click event handler to select the ListView row when an embedded control is clicked
-        'AddHandler ctlControl.Click, embeddedControl_Click()
-
-        'ctlControl.Click += New EventHandler()
+        AddHandler ctlControl.Click, AddressOf embeddedControl_Click
 
         Me.Controls.Add(ctlControl)
     End Sub
 
-    ' Remove a control from the ListView
     Public Sub RemoveEmbeddedControl(ByVal ctlControl As Control)
         If ctlControl Is Nothing Then
             Throw New ArgumentNullException()
@@ -118,7 +112,7 @@ Public Class ExtListview : Inherits ListView
             Dim emcControl As EmbeddedControl = CType(embeddedControls(intLoop), EmbeddedControl)
 
             If emcControl.ctrControl.Equals(ctlControl) Then
-                'ctlControl.Click -= New EventHandler(embeddedControl_Click)
+                RemoveHandler ctlControl.Click, AddressOf embeddedControl_Click
                 Me.Controls.Remove(ctlControl)
                 embeddedControls.RemoveAt(intLoop)
                 Exit Sub
@@ -128,10 +122,9 @@ Public Class ExtListview : Inherits ListView
         Throw New Exception("Control not found!")
     End Sub
 
-    ' Retrieve the control embedded at a given location
-    Public Function GetEmbeddedControl(ByVal intCol As Integer, ByVal intRow As Integer) As Control
+    Public Function GetEmbeddedControl(ByVal lstParentItem As ListViewItem, ByVal intCol As Integer) As Control
         For Each emcControl As EmbeddedControl In embeddedControls
-            If emcControl.intRow = intRow And emcControl.intColumn = intCol Then
+            If emcControl.lstItem.Equals(lstParentItem) And emcControl.intColumn = intCol Then
                 Return emcControl.ctrControl
             End If
         Next
