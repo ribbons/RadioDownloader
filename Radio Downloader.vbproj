@@ -119,6 +119,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="clsInterfaceThread.vb" />
+    <Compile Include="ExtListview.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="frmMain.Designer.vb">
       <SubType>Code</SubType>
       <DependentUpon>frmMain.vb</DependentUpon>

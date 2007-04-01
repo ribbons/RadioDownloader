@@ -63,7 +63,7 @@
         Me.staStatus = New System.Windows.Forms.StatusStrip
         Me.stlStatusText = New System.Windows.Forms.ToolStripStatusLabel
         Me.lstSubscribed = New System.Windows.Forms.ListView
-        Me.lstDownloads = New System.Windows.Forms.ListView
+        Me.lstDownloads = New RadioDld.ExtListview
         Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
         Me.mnuTray.SuspendLayout()
@@ -112,7 +112,7 @@
         'mnuFileExit
         '
         Me.mnuFileExit.Name = "mnuFileExit"
-        Me.mnuFileExit.Size = New System.Drawing.Size(152, 22)
+        Me.mnuFileExit.Size = New System.Drawing.Size(92, 22)
         Me.mnuFileExit.Text = "E&xit"
         '
         'mnuTools
@@ -125,7 +125,7 @@
         'mnuToolsPrefs
         '
         Me.mnuToolsPrefs.Name = "mnuToolsPrefs"
-        Me.mnuToolsPrefs.Size = New System.Drawing.Size(152, 22)
+        Me.mnuToolsPrefs.Size = New System.Drawing.Size(135, 22)
         Me.mnuToolsPrefs.Text = "&Preferences"
         '
         'mnuHelp
@@ -138,7 +138,7 @@
         'mnuHelpAbout
         '
         Me.mnuHelpAbout.Name = "mnuHelpAbout"
-        Me.mnuHelpAbout.Size = New System.Drawing.Size(152, 22)
+        Me.mnuHelpAbout.Size = New System.Drawing.Size(107, 22)
         Me.mnuHelpAbout.Text = "&About"
         '
         'tbrToolbar
@@ -309,15 +309,10 @@
         '
         'lstDownloads
         '
-        Me.lstDownloads.Activation = System.Windows.Forms.ItemActivation.TwoClick
-        Me.lstDownloads.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstDownloads.Location = New System.Drawing.Point(210, 336)
-        Me.lstDownloads.MultiSelect = False
+        Me.lstDownloads.Location = New System.Drawing.Point(210, 340)
         Me.lstDownloads.Name = "lstDownloads"
-        Me.lstDownloads.Size = New System.Drawing.Size(547, 110)
+        Me.lstDownloads.Size = New System.Drawing.Size(547, 109)
         Me.lstDownloads.TabIndex = 15
         Me.lstDownloads.UseCompatibleStateImageBehavior = False
         Me.lstDownloads.View = System.Windows.Forms.View.Details
@@ -328,8 +323,8 @@
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 471)
-        Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.lstDownloads)
+        Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.staStatus)
         Me.Controls.Add(Me.tbrToolbar)
         Me.Controls.Add(Me.lstNew)
@@ -376,6 +371,6 @@
     Friend WithEvents staStatus As System.Windows.Forms.StatusStrip
     Friend WithEvents stlStatusText As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents lstSubscribed As System.Windows.Forms.ListView
-    Friend WithEvents lstDownloads As System.Windows.Forms.ListView
+    Friend WithEvents lstDownloads As RadioDld.ExtListview
 #End Region
 End Class
