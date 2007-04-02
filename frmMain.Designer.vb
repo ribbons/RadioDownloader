@@ -318,6 +318,10 @@
         '
         'lstDownloads
         '
+        Me.lstDownloads.Activation = System.Windows.Forms.ItemActivation.TwoClick
+        Me.lstDownloads.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstDownloads.Location = New System.Drawing.Point(210, 340)
         Me.lstDownloads.Name = "lstDownloads"
