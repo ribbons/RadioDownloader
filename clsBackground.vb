@@ -103,7 +103,7 @@ Friend Class clsBackground
 
         strFinalName = CreateFinalName()
 
-        ThisInstance.DownloadProgram(New clsCommon, strStationID, strProgID, intDuration, strFinalName)
+        ThisInstance.DownloadProgram(New clsCommon, strStationID, strProgID, dteProgDate, intDuration, strFinalName)
     End Sub
 
     Private Function CreateFinalName() As String

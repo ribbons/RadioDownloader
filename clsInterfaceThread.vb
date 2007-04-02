@@ -3,7 +3,7 @@ Option Strict On
 
 Friend Class clsInterfaceThread
     Private strType As String
-    Private strProgID As String
+    Private strStationID As String
     Private plgAvailablePlugins() As AvailablePlugin
     Private clsProgData As clsData
 
@@ -16,12 +16,12 @@ Friend Class clsInterfaceThread
         End Set
     End Property
 
-    Public Property ProgID() As String
+    Public Property StationID() As String
         Get
-            Return strProgID
+            Return strStationID
         End Get
-        Set(ByVal strNewID As String)
-            strProgID = strNewID
+        Set(ByVal strStationID As String)
+            Me.strStationID = strStationID
         End Set
     End Property
 
@@ -44,6 +44,6 @@ Friend Class clsInterfaceThread
     End Property
 
     Public Sub lstNew_ListPrograms()
-        Call clsProgData.StartListingStation(AvailablePlugins, strType, strProgID)
+        Call clsProgData.StartListingStation(strType, strStationID)
     End Sub
 End Class

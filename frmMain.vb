@@ -21,7 +21,7 @@ Public Class frmMain
     Private lngLastState As Integer
     Private lngStatus As Integer
 
-    Private Delegate Sub clsProgData_AddProgramToList_Delegate(ByVal strType As String, ByVal strID As String, ByVal strName As String)
+    Private Delegate Sub clsProgData_AddProgramToList_Delegate(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String)
     Private Delegate Sub clsBackgroundThread_Progress_Delegate(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal strError As String)
     Private Delegate Sub clsBackgroundThread_Finished_Delegate()
@@ -88,7 +88,7 @@ Public Class frmMain
         ' Set up the web browser so that public methods of this form can be called from javascript in the html
         webDetails.ObjectForScripting = Me
 
-        clsProgData = New clsData
+        clsProgData = New clsData(AvailablePlugins)
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
@@ -134,7 +134,7 @@ Public Class frmMain
             If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
                 ' Do nothing
             Else
-                Call CreateHtml("Programme Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
+                Call CreateHtml("Programme Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2)), "Download,Subscribe")
             End If
         Else
             If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
@@ -159,7 +159,7 @@ Public Class frmMain
 
             clsDisplayThread = New clsInterfaceThread
             clsDisplayThread.Type = strSplit(0)
-            clsDisplayThread.ProgID = strSplit(1)
+            clsDisplayThread.StationID = strSplit(1)
             clsDisplayThread.AvailablePlugins = AvailablePlugins
             clsDisplayThread.DataInstance = clsProgData
 
@@ -175,7 +175,7 @@ Public Class frmMain
             Dim strSplit() As String
             strSplit = Split(lstSubscribed.SelectedItems(0).Tag, "||")
 
-            Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
+            Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2)), "Unsubscribe")
         Else
             Call TabAdjustments() ' Revert back to subscribed items view default page
         End If
@@ -192,10 +192,10 @@ Public Class frmMain
                 Dim staDownloadStatus As clsData.Statuses
                 Dim strActionString As String
 
-                staDownloadStatus = .DownloadStatus(strSplit(2), strSplit(1), CDate(strSplit(0)))
+                staDownloadStatus = .DownloadStatus(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
 
                 If staDownloadStatus = clsData.Statuses.Downloaded Then
-                    If Exists(.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
+                    If Exists(.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
                         strActionString = "Play"
                     Else
                         strActionString = ""
@@ -206,7 +206,7 @@ Public Class frmMain
                     strActionString = "Cancel"
                 End If
 
-                Call CreateHtml(strTitle, .ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), strActionString)
+                Call CreateHtml(strTitle, .ProgramHTML(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), strActionString)
             End With
         Else
             Call TabAdjustments() ' Revert back to downloads view default page
@@ -403,19 +403,19 @@ Public Class frmMain
         Call TabAdjustments()
     End Sub
 
-    Private Sub clsProgData_AddProgramToList(ByVal strType As String, ByVal strID As String, ByVal strName As String) Handles clsProgData.AddProgramToList
+    Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
         ' Check if the form exists still before calling delegate
         If Me.IsHandleCreated Then
             Dim DelegateInst As New clsProgData_AddProgramToList_Delegate(AddressOf clsProgData_AddProgramToList_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {strType, strID, strName})
+            Call Me.Invoke(DelegateInst, New Object() {strProgramType, strStationID, strProgramID, strProgramName})
         End If
     End Sub
 
-    Private Sub clsProgData_AddProgramToList_FormThread(ByVal strType As String, ByVal strID As String, ByVal strName As String)
+    Private Sub clsProgData_AddProgramToList_FormThread(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String)
         Dim lstAddItem As New ListViewItem
-        lstAddItem.Text = strName
+        lstAddItem.Text = strProgramName
         lstAddItem.ImageKey = "new"
-        lstAddItem.Tag = strType + "||" + strID
+        lstAddItem.Tag = strProgramType + "||" + strStationID + "||" + strProgramID
         Call lstNew.Items.Add(lstAddItem)
     End Sub
 
@@ -428,10 +428,10 @@ Public Class frmMain
     End Sub
 
     Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String)
-        Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
+        Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
 
         ' If the item that has just errored is selected & the html links are out of date, go back to tab overview.
-        If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.ProgramType).Selected Then
+        If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.StationID + "||" + clsBackgroundThread.ProgramType).Selected Then
             Call TabAdjustments()
         End If
 
@@ -451,10 +451,10 @@ Public Class frmMain
     End Sub
 
     Private Sub clsBackgroundThread_Finished_FormThread()
-        Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
+        Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
 
         ' If the item that has just finished is selected & the html links are out of date, go back to tab overview.
-        If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.ProgramType).Selected Then
+        If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.StationID + "||" + clsBackgroundThread.ProgramType).Selected Then
             Call TabAdjustments()
         End If
 
@@ -484,7 +484,7 @@ Public Class frmMain
 
         With clsBackgroundThread
             Dim lstItem As ListViewItem
-            lstItem = lstDownloads.Items(.ProgramDate.ToString + "||" + .ProgramID + "||" + .ProgramType)
+            lstItem = lstDownloads.Items(.ProgramDate.ToString + "||" + .ProgramID + "||" + .StationID + "||" + .ProgramType)
 
             lstItem.SubItems(2).Text = strStatusText
             prgDldProg.Value = intPercent
@@ -509,7 +509,7 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
 
-        If clsProgData.AddDownload(strSplit(0), strSplit(1)) Then
+        If clsProgData.AddDownload(strSplit(0), strSplit(1), strSplit(2)) Then
             Call tbtDownloads_Click(New Object, New EventArgs)
             Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
             tmrStartProcess.Enabled = True
@@ -524,7 +524,7 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
 
-        Process.Start(clsProgData.GetDownloadPath(strSplit(2), strSplit(1), CDate(strSplit(0))))
+        Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
     End Sub
 
     Public Sub FlSubscribe()
@@ -533,7 +533,7 @@ Public Class frmMain
 
         Call FlStatusText("")
 
-        If clsProgData.AddSubscription(strSplit(0), strSplit(1)) = False Then
+        If clsProgData.AddSubscription(strSplit(0), strSplit(1), strSplit(2)) = False Then
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
         Else
             Call tbtSubscriptions_Click(New Object, New EventArgs)
@@ -550,7 +550,7 @@ Public Class frmMain
         Call FlStatusText("")
 
         If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1))
+            Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1), strSplit(2))
             Call TabAdjustments() ' Revert back to tab info so prog info goes
             Call clsProgData.UpdateSubscrList(lstSubscribed)
         End If
@@ -587,7 +587,7 @@ Public Class frmMain
                 tmrStartProcess.Enabled = True
             End If
 
-            Call clsProgData.CancelDownload(strSplit(2), strSplit(1), CDate(strSplit(0)))
+            Call clsProgData.CancelDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
             Call TabAdjustments() ' Revert back to tab info so prog info goes
             Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         End If
@@ -599,7 +599,7 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
 
-        Call clsProgData.ResetDownload(strSplit(2), strSplit(1), CDate(strSplit(0)), False)
+        Call clsProgData.ResetDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)), False)
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         tmrStartProcess.Enabled = True
     End Sub

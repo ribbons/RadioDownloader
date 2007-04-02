@@ -13,6 +13,7 @@ Public Interface IRadioProvider
 
     Structure ProgramListItem
         Dim ProgramID As String
+        Dim StationID As String
         Dim ProgramName As String
     End Structure
 
@@ -28,12 +29,14 @@ Public Interface IRadioProvider
     Function ReturnStations(ByRef clsCommon As clsCommon) As StationInfo()
     Function ListProgramIDs(ByRef clsCommon As clsCommon, ByVal strStationID As String) As ProgramListItem()
     'Function ReturnProgramInfo
+    Function IsLatestProgram(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
+    Function IsStillAvailable(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
 
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal strError As String)
     Event Finished()
 
-    Sub DownloadProgram(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal intProgLength As Integer, ByVal strFinalName As String)
+    Sub DownloadProgram(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strFinalName As String)
 End Interface
 
 Module modPlugins

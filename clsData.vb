@@ -12,14 +12,19 @@ Friend Class clsData
     End Enum
 
     Private Const strSqlDateFormat As String = "yyyy-MM-dd HH:mm"
+
     Private sqlConnection As SQLiteConnection
+    Private AvailablePlugins() As AvailablePlugin
 
-    Public Event AddProgramToList(ByVal strType As String, ByVal strID As String, ByVal strName As String)
+    Public Event AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String)
 
-    Public Sub New()
+    Public Sub New(ByVal AvailablePlugins() As AvailablePlugin)
         MyBase.New()
+
         sqlConnection = New SQLiteConnection("Data Source=" + My.Application.Info.DirectoryPath + "\store.db;Version=3;New=False")
         sqlConnection.Open()
+
+        Me.AvailablePlugins = AvailablePlugins
     End Sub
 
     Protected Overrides Sub Finalize()
@@ -30,7 +35,7 @@ Friend Class clsData
     'Public Function GetNextActionVal(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As clsBackground.NextAction
     '    'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
     '    Dim rstRecordset As DAO.Recordset
-    '    rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+    '    rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
 
     '    With rstRecordset
     '        If .EOF = False Then
@@ -44,20 +49,20 @@ Friend Class clsData
     '    rstRecordset = Nothing
     'End Function
 
-    Public Sub SetErrored(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=" + CStr(Statuses.Errored) + ", ErrorTime=""" + Now.ToString(strSqlDateFormat) + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub SetErrored(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
+        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=" + CStr(Statuses.Errored) + ", ErrorTime=""" + Now.ToString(strSqlDateFormat) + """ WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Sub SetDownloaded(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal strDownloadPath As String)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=""" + CStr(Statuses.Downloaded) + """, Path=""" + strDownloadPath + """ WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub SetDownloaded(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal strDownloadPath As String)
+        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=""" + CStr(Statuses.Downloaded) + """, Path=""" + strDownloadPath + """ WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
     End Sub
 
     'Public Sub AdvanceNextAction(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
     '    'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
     '    Dim rstRecordset As DAO.Recordset
-    '    rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
+    '    rstRecordset = dbDatabase.OpenRecordset("SELECT * FROM tblDownloads WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=#" & VB6.Format(dteProgramDate, "mm/dd/yyyy Hh:Nn") & "#")
 
     '    With rstRecordset
     '        If .EOF = False Then
@@ -83,15 +88,16 @@ Friend Class clsData
         If sqlReader.Read() Then
             With sqlReader
                 If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
-                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")), True)
+                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")), True)
                 End If
 
                 clsBkgInst = New clsBackground
                 clsBkgInst.ProgramType = .GetString(.GetOrdinal("Type"))
+                clsBkgInst.StationID = .GetString(.GetOrdinal("Station"))
                 clsBkgInst.ProgramID = .GetString(.GetOrdinal("ID"))
                 clsBkgInst.ProgramDate = .GetDateTime(.GetOrdinal("Date"))
-                clsBkgInst.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
-                clsBkgInst.ProgramTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                clsBkgInst.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                clsBkgInst.ProgramTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
             End With
 
             sqlReader.Close()
@@ -125,8 +131,8 @@ Friend Class clsData
     '    rstRecordset = Nothing
     'End Sub
 
-    Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -135,8 +141,8 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function DownloadStatus(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Statuses
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function DownloadStatus(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Statuses
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -145,8 +151,8 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function ProgramDuration(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function ProgramDuration(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -155,8 +161,8 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function ProgramTitle(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function ProgramTitle(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
@@ -165,14 +171,14 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function ProgramHTML(ByVal strProgramType As String, ByVal strProgramID As String, Optional ByVal dteProgramDate As Date = #12:00:00 AM#) As String
+    Public Function ProgramHTML(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, Optional ByVal dteProgramDate As Date = #12:00:00 AM#) As String
         Dim sqlCommand As SQLiteCommand
 
         If dteProgramDate > System.DateTime.FromOADate(0) Then
-            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Else
-            Call GetLatest(strProgramType, strProgramID)
-            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ ORDER BY Date DESC", sqlConnection)
+            Call GetLatest(strProgramType, strStationID, strProgramID)
+            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ ORDER BY Date DESC", sqlConnection)
         End If
 
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
@@ -216,7 +222,7 @@ Friend Class clsData
     'Public Function IsDownloading(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
     '    'UPGRADE_WARNING: Arrays in structure rstRecordset may need to be initialized before they can be used. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="814DF224-76BD-4BB4-BFFB-EA359CB9FC48"'
     '    Dim rstRecordset As DAO.Recordset
-    '    rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads where type='" & strProgramType & "' and id='" & strProgramID & "' and status<" & VB6.Format(clsBackground.Status.stCompleted))
+    '    rstRecordset = dbDatabase.OpenRecordset("select * from tblDownloads where type='" & strProgramType & "' and Station=""" + strStationID + """ and id='" & strProgramID & "' and status<" & VB6.Format(clsBackground.Status.stCompleted))
 
     '    IsDownloading = rstRecordset.EOF = False
 
@@ -238,11 +244,11 @@ Friend Class clsData
         End If
 
         Do While sqlReader.Read()
-            Dim strUniqueId As String = sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
+            Dim strUniqueId As String = sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Station")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
 
             lstAdd = lstListview.Items.Add(strUniqueId, "", 0)
             lstAdd.Tag = strUniqueId
-            lstAdd.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")))
+            lstAdd.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")))
 
             lstAdd.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToShortDateString())
 
@@ -274,12 +280,12 @@ Friend Class clsData
 
         With sqlReader
             Do While .Read()
-                Call GetLatest(.GetString(sqlReader.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("ID")))
+                Call GetLatest(.GetString(sqlReader.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("Station")), .GetString(sqlReader.GetOrdinal("ID")))
 
                 lstAdd = New ListViewItem
 
-                lstAdd.Text = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID"))))
-                lstAdd.Tag = .GetString(sqlReader.GetOrdinal("Type")) + "||" + .GetString(sqlReader.GetOrdinal("ID"))
+                lstAdd.Text = ProgramTitle(.GetString(.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))))
+                lstAdd.Tag = .GetString(sqlReader.GetOrdinal("Type")) + "||" + .GetString(sqlReader.GetOrdinal("Station")) + "||" + .GetString(sqlReader.GetOrdinal("ID"))
                 lstAdd.ImageKey = "subscribed"
 
                 lstListview.Items.Add(lstAdd)
@@ -295,13 +301,13 @@ Friend Class clsData
 
         With sqlReader
             Do While .Read()
-                Call GetLatest(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")))
+                Call GetLatest(.GetString(.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
 
-                Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString(.GetOrdinal("Type")) + """ and ID=""" + .GetString(.GetOrdinal("ID")) + """ and Date=""" + LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID"))).ToString(strSqlDateFormat) + """", sqlConnection)
+                Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString(.GetOrdinal("Type")) + """ and Station=""" + .GetString(.GetOrdinal("Station")) + """ and ID=""" + .GetString(.GetOrdinal("ID")) + """ and Date=""" + LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))).ToString(strSqlDateFormat) + """", sqlConnection)
                 Dim sqlRdrCheckDld As SQLiteDataReader = sqlComCheckDld.ExecuteReader
 
                 If sqlRdrCheckDld.Read() = False Then
-                    Call AddDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")))
+                    Call AddDownload(.GetString(.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
                     Call UpdateDlList(lstList, prgDldProg)
                     tmrTimer.Enabled = True
                 End If
@@ -313,10 +319,10 @@ Friend Class clsData
         sqlReader.Close()
     End Sub
 
-    Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-        Call GetLatest(strProgramType, strProgramID)
+    Public Function AddDownload(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As Boolean
+        Call GetLatest(strProgramType, strStationID, strProgramID)
 
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" & strProgramID + """ AND date=""" + LatestDate(strProgramType, strProgramID).ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ AND date=""" + LatestDate(strProgramType, strStationID, strProgramID).ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read() Then
@@ -325,42 +331,38 @@ Friend Class clsData
 
         sqlReader.Close()
 
-        sqlCommand = New SQLiteCommand("INSERT INTO tblDownloads (Type, ID, Date, Status) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + LatestDate(strProgramType, strProgramID).ToString(strSqlDateFormat) + """, " + CStr(Statuses.Waiting) + ")", sqlConnection)
+        sqlCommand = New SQLiteCommand("INSERT INTO tblDownloads (Type, Station, ID, Date, Status) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + LatestDate(strProgramType, strStationID, strProgramID).ToString(strSqlDateFormat) + """, " + CStr(Statuses.Waiting) + ")", sqlConnection)
         Call sqlCommand.ExecuteNonQuery()
 
         Return True
     End Function
 
-    Public Function AddSubscription(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, ID) VALUES (""" + strProgramType + """, """ + strProgramID + """)", sqlConnection)
+    Public Function AddSubscription(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As Boolean
+        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, Station, ID) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """)", sqlConnection)
 
         Try
             Call sqlCommand.ExecuteNonQuery()
-        Catch
-            Stop
-            Select Case Err.Number
-                Case 3022 'Trying to create duplicate in database, ie trying to subscribe twice!
-                    Return False
-                Case Else
-            End Select
+        Catch e As SQLiteException
+            ' Probably trying to create duplicate in database, ie trying to subscribe twice!
+            Return False
         End Try
 
         Return True
     End Function
 
-    Public Sub RemoveSubscription(ByVal strProgramType As String, ByVal strProgramID As String)
-        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblSubscribed WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """", sqlConnection)
+    Public Sub RemoveSubscription(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String)
+        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblSubscribed WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """", sqlConnection)
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Private Sub GetLatest(ByVal strProgramType As String, ByVal strProgramID As String)
-        If HaveLatest(strProgramType, strProgramID) = False Then
-            Call StoreLatestInfo(strProgramType, strProgramID)
+    Private Sub GetLatest(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String)
+        If HaveLatest(strProgramType, strStationID, strProgramID) = False Then
+            Call StoreLatestInfo(strProgramType, strStationID, strProgramID)
         End If
     End Sub
 
-    Private Function LatestDate(ByVal strProgramType As String, ByVal strProgramID As String) As DateTime
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """ ORDER BY Date DESC", sqlConnection)
+    Private Function LatestDate(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As DateTime
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """  and Station=""" + strStationID + """ and ID=""" & strProgramID & """ ORDER BY Date DESC", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         With sqlReader
@@ -374,28 +376,28 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    Private Function HaveLatest(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-        If strProgramType <> "BBCLA" Then
-            ' In that case we'll need some more code!
-            Stop
-        End If
-
+    Private Function HaveLatest(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As Boolean
         Dim dteLatest As Date
-        dteLatest = LatestDate(strProgramType, strProgramID)
+        dteLatest = LatestDate(strProgramType, strStationID, strProgramID)
 
-        If dteLatest = System.DateTime.FromOADate(0) Then
+        If dteLatest = DateTime.FromOADate(0) Then
             Return False
         End If
 
-        ' If the current info is less than a week old, then
-        If DateAdd(Microsoft.VisualBasic.DateInterval.WeekOfYear, 1, dteLatest) < Now Then
-            Return False
-        Else
-            Return True
-        End If
+        Dim ThisInstance As IRadioProvider = Nothing
+
+        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
+            ThisInstance = CType(CreateInstance(SinglePlugin), IRadioProvider)
+
+            If ThisInstance.ProviderUniqueID = strProgramType Then
+                Exit For
+            End If
+        Next SinglePlugin
+
+        Return ThisInstance.IsLatestProgram(New clsCommon, strStationID, strProgramID, dteLatest)
     End Function
 
-    Private Sub StoreLatestInfo(ByVal strProgramType As String, ByRef strProgramID As String)
+    Private Sub StoreLatestInfo(ByVal strProgramType As String, ByVal strStationID As String, ByRef strProgramID As String)
         If strProgramType <> "BBCLA" Then
             ' In that case we'll need some more code!
             Stop
@@ -477,56 +479,56 @@ Friend Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read = False Then
-            sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strProgramID + """, """ + dteProgDate.ToString(strSqlDateFormat) + """, """ + strProgTitle + """, """ + strProgDescription + """, """ + strProgImgUrl + """, """ + CStr(lngProgDuration) + """)", sqlConnection)
+            sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + dteProgDate.ToString(strSqlDateFormat) + """, """ + strProgTitle + """, """ + strProgDescription + """, """ + strProgImgUrl + """, """ + CStr(lngProgDuration) + """)", sqlConnection)
             Call sqlCommand.ExecuteNonQuery()
         End If
 
         sqlReader.Close()
     End Sub
 
-    Public Sub ResetDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean)
-        Dim sqlCommand As New SQLiteCommand("update tblDownloads set status=" + CStr(Statuses.Waiting) + " where type=""" + strProgramType + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub ResetDownload(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean)
+        Dim sqlCommand As New SQLiteCommand("update tblDownloads set status=" + CStr(Statuses.Waiting) + " where type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
 
         If booAuto Then
-            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=ErrorCount+1 where type=""" + strProgramType + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=ErrorCount+1 where type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
             sqlCommand.ExecuteNonQuery()
         Else
-            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=0 where type=""" + strProgramType + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+            sqlCommand = New SQLiteCommand("update tblDownloads set ErrorCount=0 where type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
             sqlCommand.ExecuteNonQuery()
         End If
     End Sub
 
-    Public Sub CancelDownload(ByVal strProgramType As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
-        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblDownloads WHERE type=""" + strProgramType + """ AND ID=""" + strProgramID + """ AND Date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub CancelDownload(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
+        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" + strProgramID + """ AND Date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Sub StartListingStation(ByVal AvailablePlugins() As AvailablePlugin, ByVal strType As String, ByVal strID As String)
+    Public Sub StartListingStation(ByVal strProgramType As String, ByVal strStationID As String)
         Dim ThisInstance As IRadioProvider = Nothing
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
             ThisInstance = CType(CreateInstance(SinglePlugin), IRadioProvider)
 
-            If ThisInstance.ProviderUniqueID = strType Then
+            If ThisInstance.ProviderUniqueID = strProgramType Then
                 Exit For
             End If
         Next SinglePlugin
 
         Dim Programs() As IRadioProvider.ProgramListItem
-        Programs = ThisInstance.ListProgramIDs(New clsCommon, strID)
+        Programs = ThisInstance.ListProgramIDs(New clsCommon, strStationID)
 
         For Each SingleProg As IRadioProvider.ProgramListItem In Programs
-            Call GetLatest(strType, SingleProg.ProgramID)
+            Call GetLatest(strProgramType, strStationID, SingleProg.ProgramID)
 
             Dim strProgTitle As String
             strProgTitle = SingleProg.ProgramName
 
             If strProgTitle = Nothing Then
-                strProgTitle = ProgramTitle(strType, SingleProg.ProgramID, LatestDate(strType, SingleProg.ProgramID))
+                strProgTitle = ProgramTitle(strProgramType, SingleProg.StationID, SingleProg.ProgramID, LatestDate(strProgramType, SingleProg.StationID, SingleProg.ProgramID))
             End If
 
-            RaiseEvent AddProgramToList(strType, SingleProg.ProgramID, strProgTitle)
+            RaiseEvent AddProgramToList(strProgramType, SingleProg.StationID, SingleProg.ProgramID, strProgTitle)
         Next
     End Sub
 End Class
