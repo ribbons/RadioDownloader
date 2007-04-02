@@ -136,6 +136,12 @@ Public Class frmMain
             Else
                 Call CreateHtml("Programme Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Download,Subscribe")
             End If
+        Else
+            If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
+                ' Do nothing
+            Else
+                Call TabAdjustments() ' Revert back to new items view default page
+            End If
         End If
     End Sub
 
@@ -170,6 +176,8 @@ Public Class frmMain
             strSplit = Split(lstSubscribed.SelectedItems(0).Tag, "||")
 
             Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
+        Else
+            Call TabAdjustments() ' Revert back to subscribed items view default page
         End If
     End Sub
 
@@ -200,6 +208,8 @@ Public Class frmMain
 
                 Call CreateHtml(strTitle, .ProgramHTML(strSplit(2), strSplit(1), CDate(strSplit(0))), strActionString)
             End With
+        Else
+            Call TabAdjustments() ' Revert back to downloads view default page
         End If
     End Sub
 
@@ -420,8 +430,8 @@ Public Class frmMain
     Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String)
         Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
 
-        ' In case the item that has just errored is selected & the html links are out of date, so go back to tab overview.
-        If tbtDownloads.Checked = True Then
+        ' If the item that has just errored is selected & the html links are out of date, go back to tab overview.
+        If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.ProgramType).Selected Then
             Call TabAdjustments()
         End If
 
@@ -443,8 +453,8 @@ Public Class frmMain
     Private Sub clsBackgroundThread_Finished_FormThread()
         Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
 
-        ' In case the item that has just finished is selected & the html links are out of date, so go back to tab overview.
-        If tbtDownloads.Selected = True Then
+        ' If the item that has just finished is selected & the html links are out of date, go back to tab overview.
+        If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.ProgramType).Selected Then
             Call TabAdjustments()
         End If
 

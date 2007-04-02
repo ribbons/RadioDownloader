@@ -324,6 +324,7 @@
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstDownloads.Location = New System.Drawing.Point(210, 340)
+        Me.lstDownloads.MultiSelect = False
         Me.lstDownloads.Name = "lstDownloads"
         Me.lstDownloads.Size = New System.Drawing.Size(547, 109)
         Me.lstDownloads.TabIndex = 15
