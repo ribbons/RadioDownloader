@@ -11,6 +11,14 @@ Public Interface IRadioProvider
         Dim StationIcon As Icon
     End Structure
 
+    Structure ProgramInfo
+        Dim ProgramName As String
+        Dim ProgramDescription As String
+        Dim ProgramDuration As Long
+        Dim ProgramDate As Date
+        Dim ImageUrl As String
+    End Structure
+
     Structure ProgramListItem
         Dim ProgramID As String
         Dim StationID As String
@@ -28,7 +36,7 @@ Public Interface IRadioProvider
 
     Function ReturnStations(ByRef clsCommon As clsCommon) As StationInfo()
     Function ListProgramIDs(ByRef clsCommon As clsCommon, ByVal strStationID As String) As ProgramListItem()
-    'Function ReturnProgramInfo
+    Function GetLatestProgramInfo(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String) As ProgramInfo
     Function IsLatestProgram(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
     Function IsStillAvailable(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
 

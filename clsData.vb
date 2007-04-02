@@ -398,88 +398,28 @@ Friend Class clsData
     End Function
 
     Private Sub StoreLatestInfo(ByVal strProgramType As String, ByVal strStationID As String, ByRef strProgramID As String)
-        If strProgramType <> "BBCLA" Then
-            ' In that case we'll need some more code!
-            Stop
-        End If
+        Dim ThisInstance As IRadioProvider = Nothing
 
-        Dim strProgTitle As String
-        Dim strProgDescription As String
-        Dim lngProgDuration As Integer
-        Dim dteProgDate As DateTime
-        Dim strProgImgUrl As String
-        Dim strDuration As String
-        Dim strDateString As String
+        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
+            ThisInstance = CType(CreateInstance(SinglePlugin), IRadioProvider)
 
-        Dim strInfo As String
-        Dim clsCommon As New clsCommon
-        strInfo = clsCommon.GetUrlAsString("http://www.bbc.co.uk/radio/aod/networks/radio1/aod.shtml?" & strProgramID)
+            If ThisInstance.ProviderUniqueID = strProgramType Then
+                Exit For
+            End If
+        Next SinglePlugin
 
-        strInfo = Replace(strInfo, "src=""", "src=""http://www.bbc.co.uk")
+        Dim ProgInfo As IRadioProvider.ProgramInfo
+        ProgInfo = ThisInstance.GetLatestProgramInfo(New clsCommon, strStationID, strProgramID)
 
-        Dim RegExpression As Regex
-        Dim grpMatches As GroupCollection
-
-        RegExpression = New Regex("<div id=""show"">" & vbLf & "<div id=""showtitle""><big>(.*?)</big> <span class=""txinfo"">\((.*?)\)<br />" & vbLf & "(.*?) - (.*?)</span><br />" & vbLf & "</div>" & vbLf & "<table cellpadding=""0"" cellspacing=""0"" border=""0"">" & vbLf & "<tr>" & vbLf & "<td valign=""top""><img src=""(.*?)"" width=""70"" height=""70"" alt="""" border=""0"" /></td>" & vbLf & "<td valign=""top"">(.*?)</td>" & vbLf & "</tr>" & vbLf & "</table>")
-
-        If RegExpression.IsMatch(strInfo) = False Then
-            Exit Sub
-        End If
-
-        grpMatches = RegExpression.Match(strInfo).Groups
-
-        ' objMatch.SubMatches(1) is Program Title
-        strProgTitle = grpMatches(1).ToString()
-        ' objMatch.SubMatches(2) is Duration String, eg 1hr 30min
-        strDuration = grpMatches(2).ToString()
-        ' objMatch.SubMatches(4) is Date Sting eg Wed 26 Jul - 14:00
-        strDateString = grpMatches(4).ToString()
-        ' objMatch.SubMatches(5) is Image URL
-        strProgImgUrl = grpMatches(5).ToString()
-        ' objMatch.SubMatches(6) is Program Description
-        strProgDescription = grpMatches(6).ToString()
-
-        RegExpression = New Regex("(([0-9]*?) hr)? ?(([0-9]*?) min)?")
-        If RegExpression.IsMatch(strDuration) = False Then
-            Exit Sub
-        End If
-
-        grpMatches = RegExpression.Match(strDuration).Groups
-
-        If grpMatches(2).ToString() <> "" Then
-            lngProgDuration = CInt(CDbl(grpMatches(2).Value) * 60)
-        End If
-
-        If grpMatches(4).ToString() <> "" Then
-            lngProgDuration += CInt(grpMatches(4).Value)
-        End If
-
-        ' Now split up the date string
-        RegExpression = New Regex("(?<dayname>(\w){3}) (?<day>(\d){2}) (?<monthname>(\w){3}) - (?<hour>(\d){2}):(?<minute>(\d){2})")
-        If RegExpression.IsMatch(strDateString) = False Then
-            Exit Sub
-        End If
-
-        grpMatches = RegExpression.Match(strDateString).Groups
-
-        Dim intMonthNum As Integer = Array.IndexOf("jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec".Split("|".ToCharArray), grpMatches("monthname").ToString.ToLower) + 1
-
-        ' Because the year isn't included in the program date, guess it is the current year (normally right)
-        dteProgDate = New Date(Now.Year, intMonthNum, CInt(grpMatches("day").ToString), CInt(grpMatches("hour").ToString), CInt(grpMatches("minute").ToString), 0)
-
-        ' If this guess ends up as a date in the future, then we have just passed the end of a year, and it is actually
-        ' a program from last year.
-        If dteProgDate > Now Then
-            dteProgDate = New Date(Now.Year - 1, intMonthNum, CInt(grpMatches("day").ToString), CInt(grpMatches("hour").ToString), CInt(grpMatches("minute").ToString), 0)
-        End If
+        If IsNothing(ProgInfo) Then Exit Sub
 
         ' Now store in DB
 
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE ID=""" & strProgramID & """ AND Date=""" & dteProgDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """ AND Date=""" + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read = False Then
-            sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + dteProgDate.ToString(strSqlDateFormat) + """, """ + strProgTitle + """, """ + strProgDescription + """, """ + strProgImgUrl + """, """ + CStr(lngProgDuration) + """)", sqlConnection)
+            sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName + """, """ + ProgInfo.ProgramDescription + """, """ + ProgInfo.ImageUrl + """, """ + CStr(ProgInfo.ProgramDuration) + """)", sqlConnection)
             Call sqlCommand.ExecuteNonQuery()
         End If
 
