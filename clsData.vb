@@ -11,7 +11,7 @@ Friend Class clsData
         Errored
     End Enum
 
-    Private Const strSqlDateFormat As String = "yyyy-MM-dd hh:mm"
+    Private Const strSqlDateFormat As String = "yyyy-MM-dd HH:mm"
     Private sqlConnection As SQLiteConnection
 
     Public Event AddProgramToList(ByVal strType As String, ByVal strID As String, ByVal strName As String)
@@ -267,7 +267,7 @@ Friend Class clsData
     Public Sub UpdateSubscrList(ByRef lstListview As ListView)
         Dim lstAdd As ListViewItem
 
-        Dim sqlCommand As New SQLiteCommand("select * from tblSubscribed")
+        Dim sqlCommand As New SQLiteCommand("select * from tblSubscribed", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         lstListview.Items.Clear()
@@ -278,7 +278,7 @@ Friend Class clsData
 
                 lstAdd = New ListViewItem
 
-                lstAdd.Text = ProgramTitle(.GetString(sqlReader.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("ID")), .GetDateTime(sqlReader.GetOrdinal("Type")))
+                lstAdd.Text = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")), LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID"))))
                 lstAdd.Tag = .GetString(sqlReader.GetOrdinal("Type")) + "||" + .GetString(sqlReader.GetOrdinal("ID"))
                 lstAdd.ImageKey = "subscribed"
 
@@ -289,29 +289,29 @@ Friend Class clsData
         sqlReader.Close()
     End Sub
 
-    'Public Sub CheckSubscriptions(ByRef lstList As ListView, ByRef tmrTimer As System.Windows.Forms.Timer)
-    '    Dim sqlCommand As New SQLiteCommand("select * from tblSubscribed")
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    Public Sub CheckSubscriptions(ByRef lstList As ExtListView, ByRef tmrTimer As System.Windows.Forms.Timer, ByRef prgDldProg As ProgressBar)
+        Dim sqlCommand As New SQLiteCommand("select * from tblSubscribed", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-    '    With sqlReader
-    '        Do While .Read()
-    '            Call GetLatest(.GetString("Type"), .GetString("ID"))
+        With sqlReader
+            Do While .Read()
+                Call GetLatest(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")))
 
-    '            Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString("Type") + """ and ID=""" + .GetString("ID") + """ and Date=""" + LatestDate(.GetString("Type"), .GetString("ID")).ToString() + """")
-    '            Dim sqlRdrCheckDld As SQLiteDataReader = sqlCommand.ExecuteReader
+                Dim sqlComCheckDld As New SQLiteCommand("select * from tblDownloads where type=""" + .GetString(.GetOrdinal("Type")) + """ and ID=""" + .GetString(.GetOrdinal("ID")) + """ and Date=""" + LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID"))).ToString(strSqlDateFormat) + """", sqlConnection)
+                Dim sqlRdrCheckDld As SQLiteDataReader = sqlComCheckDld.ExecuteReader
 
-    '            If sqlRdrCheckDld.Read() Then
-    '                Call AddDownload(.GetString("Type"), .GetString("ID"))
-    '                Call UpdateDlList(lstList)
-    '                tmrTimer.Enabled = True
-    '            End If
+                If sqlRdrCheckDld.Read() = False Then
+                    Call AddDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("ID")))
+                    Call UpdateDlList(lstList, prgDldProg)
+                    tmrTimer.Enabled = True
+                End If
 
-    '            sqlRdrCheckDld.Close()
-    '        Loop
-    '    End With
+                sqlRdrCheckDld.Close()
+            Loop
+        End With
 
-    '    sqlReader.Close()
-    'End Sub
+        sqlReader.Close()
+    End Sub
 
     Public Function AddDownload(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
         Call GetLatest(strProgramType, strProgramID)
@@ -332,7 +332,7 @@ Friend Class clsData
     End Function
 
     Public Function AddSubscription(ByVal strProgramType As String, ByVal strProgramID As String) As Boolean
-        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, ID) VALUES (""" + strProgramType + """, """ + strProgramID + """)")
+        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, ID) VALUES (""" + strProgramType + """, """ + strProgramID + """)", sqlConnection)
 
         Try
             Call sqlCommand.ExecuteNonQuery()
@@ -349,7 +349,7 @@ Friend Class clsData
     End Function
 
     Public Sub RemoveSubscription(ByVal strProgramType As String, ByVal strProgramID As String)
-        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblSubscribed WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """")
+        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblSubscribed WHERE type=""" & strProgramType & """ AND ID=""" & strProgramID & """", sqlConnection)
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 

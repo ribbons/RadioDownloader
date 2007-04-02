@@ -89,9 +89,8 @@ Public Class frmMain
         webDetails.ObjectForScripting = Me
 
         clsProgData = New clsData
-        'Call clsTheProgData.CleanupUnfinished()
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        'Call clsTheProgData.UpdateSubscrList(lstSubscribed)
+        Call clsProgData.UpdateSubscrList(lstSubscribed)
 
         stlStatusText.Text = ""
         lstNew.Height = staStatus.Top - lstNew.Top
@@ -162,6 +161,15 @@ Public Class frmMain
             thrDisplayThread.Start()
         Else
             ' Do nothing
+        End If
+    End Sub
+
+    Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
+        If lstSubscribed.SelectedItems.Count > 0 Then
+            Dim strSplit() As String
+            strSplit = Split(lstSubscribed.SelectedItems(0).Tag, "||")
+
+            Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
         End If
     End Sub
 
@@ -292,13 +300,6 @@ Public Class frmMain
         webDetails.Navigate(New System.Uri(My.Application.Info.DirectoryPath & "\temp.htm"))
     End Sub
 
-    'Private Sub lstSubscribed_ItemClick(ByVal eventSender As System.Object, ByVal eventArgs As AxComctlLib.ListViewEvents_ItemClickEvent)
-    '    Dim strSplit() As String
-    '    strSplit = Split(eventArgs.item.Tag, "||")
-
-    '    Call CreateHtml("Subscribed Programme", clsTheProgData.ProgramHTML(strSplit(0), strSplit(1)), "Unsubscribe")
-    'End Sub
-
     Public Sub mnuFileExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuFileExit.Click
         Call mnuTrayExit_Click(mnuTrayExit, eventArgs)
     End Sub
@@ -340,7 +341,7 @@ Public Class frmMain
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        'Call clsTheProgData.CheckSubscriptions(lstDownloads, tmrStartProcess)
+        Call clsProgData.CheckSubscriptions(lstDownloads, tmrStartProcess, prgDldProg)
     End Sub
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
@@ -522,13 +523,12 @@ Public Class frmMain
 
         Call FlStatusText("")
 
-        'If clsTheProgData.AddSubscription(strSplit(0), strSplit(1)) = False Then
-        '    Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
-        'Else
-        '    'tbrOldToolbar.Buttons("Subscriptions").Value = ComctlLib.ValueConstants.tbrPressed
-        '    Call TabAdjustments()
-        '    Call clsTheProgData.UpdateSubscrList(lstSubscribed)
-        'End If
+        If clsProgData.AddSubscription(strSplit(0), strSplit(1)) = False Then
+            Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
+        Else
+            Call tbtSubscriptions_Click(New Object, New EventArgs)
+            Call clsProgData.UpdateSubscrList(lstSubscribed)
+        End If
 
         Call FlStatusText("", True)
     End Sub
@@ -540,9 +540,9 @@ Public Class frmMain
         Call FlStatusText("")
 
         If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            'Call clsTheProgData.RemoveSubscription(strSplit(0), strSplit(1))
+            Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1))
             Call TabAdjustments() ' Revert back to tab info so prog info goes
-            'Call clsTheProgData.UpdateSubscrList(lstSubscribed)
+            Call clsProgData.UpdateSubscrList(lstSubscribed)
         End If
 
         Call FlStatusText("", True)
