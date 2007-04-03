@@ -299,7 +299,6 @@ Public Class frmMain
         PrintLine(lngFileNo, strHtml)
         FileClose(lngFileNo)
 
-        'UPGRADE_WARNING: Navigate2 was upgraded to Navigate and has a new behavior. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="9B7D5ADD-D8FE-4819-A36C-6DEDAF088CC7"'
         webDetails.Navigate(New System.Uri(My.Application.Info.DirectoryPath & "\temp.htm"))
     End Sub
 

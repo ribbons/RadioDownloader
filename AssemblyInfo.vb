@@ -6,28 +6,14 @@ Imports System.Runtime.InteropServices
 ' set of attributes. Change these attribute values to modify the information
 ' associated with an assembly.
 
-
-' TODO: Review the values of the assembly attributes
-
-
-<Assembly: AssemblyTitle("")>
-<Assembly: AssemblyDescription("")>
-<Assembly: AssemblyCompany("")>
-<Assembly: AssemblyProduct("")>
-<Assembly: AssemblyCopyright("")>
+<Assembly: AssemblyTitle("Radio Downloader")> 
+<Assembly: AssemblyDescription("Program to automatically download radio programmes made available online, using a plugin framework for specific provider implementation.")> 
+<Assembly: AssemblyCompany("NerdoftheHerd.com")> 
+<Assembly: AssemblyProduct("Radio Downloader")> 
+<Assembly: AssemblyCopyright("Copyright 2007")> 
 <Assembly: AssemblyTrademark("")>
 <Assembly: AssemblyCulture("")>
 
-' Version information for an assembly consists of the following four values:
-
-'	Major version
-'	Minor Version
-'	Build Number
-'	Revision
-
-' You can specify all the values or you can default the Build and Revision Numbers
-' by using the '*' as shown below:
-
-<Assembly:  AssemblyVersion("0.0.*")>
+<Assembly: AssemblyVersion("1.0.*")> 
 
 
