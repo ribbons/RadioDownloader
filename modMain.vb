@@ -1,6 +1,8 @@
 Option Strict Off
 Option Explicit On
 
+Imports System.IO
+
 Module modMain
     Public Structure RECT
         'UPGRADE_NOTE: Left was upgraded to Left_Renamed. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="A9E4979A-37FA-4718-9994-97DD76ED70A7"'
@@ -70,7 +72,6 @@ Module modMain
     'UPGRADE_WARNING: Structure BrowseInfo may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
     Public Declare Function SHBrowseForFolder Lib "shell32" (ByRef lpbi As BrowseInfo) As Integer
     Public Declare Function SHGetPathFromIDList Lib "shell32" (ByVal pidList As Integer, ByVal lpBuffer As String) As Integer
-    Public Declare Function PathIsDirectory Lib "shlwapi.dll" Alias "PathIsDirectoryA" (ByVal pszPath As String) As Integer
     'UPGRADE_WARNING: Structure RECT may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
     'UPGRADE_WARNING: Structure RECT may require marshalling attributes to be passed as an argument in this Declare statement. Click for more: 'ms-help://MS.VSExpressCC.v80/dv_commoner/local/redirect.htm?keyword="C429C3A5-5D47-4CD9-8F51-74A1616405DC"'
     Public Declare Function DrawAnimatedRects Lib "user32" (ByVal hWnd As Integer, ByVal idAni As Integer, ByRef lprcFrom As RECT, ByRef lprcTo As RECT) As Integer
@@ -84,6 +85,22 @@ Module modMain
     Public Declare Function MoveFile Lib "kernel32" Alias "MoveFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
 
     Private strBaseFolder As String
+
+    Public Function GetSaveFolder() As String
+        If My.Settings.SaveFolder <> "" Then
+            If New DirectoryInfo(My.Settings.SaveFolder).exists = False Then
+                My.Settings.SaveFolder = ""
+            Else
+                Return My.Settings.SaveFolder
+            End If
+        End If
+
+        GetSaveFolder = My.Application.Info.DirectoryPath + "\Downloads"
+
+        If New DirectoryInfo(GetSaveFolder).Exists = False Then
+            Call New DirectoryInfo(GetSaveFolder).Create()
+        End If
+    End Function
 
     Public Function BrowseForFolder(ByVal lngHwnd As Integer, ByVal strPrompt As String, ByVal strStartIn As String) As String
         On Error GoTo ehBrowseForFolder 'Trap for errors

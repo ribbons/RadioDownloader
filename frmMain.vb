@@ -1,6 +1,7 @@
 Option Strict Off
 Option Explicit On
 
+Imports System.IO
 Imports System.IO.File
 Imports System.Threading
 Imports System.Text.ASCIIEncoding
@@ -99,14 +100,6 @@ Public Class frmMain
 
         'tbrOldToolbar.Buttons("Clean Up").Visible = False
         'tbrOldToolbar.Buttons("Refresh").Visible = False
-
-        System.Windows.Forms.Application.DoEvents()
-
-        Me.Show()
-
-        'If PathIsDirectory(GetSetting("Radio Downloader", "Interface", "SaveFolder", AddSlash(My.Application.Info.DirectoryPath) & "Downloads")) = False Then
-        'Call frmPreferences.ShowDialog()
-        'End If
     End Sub
 
     Private Sub frmMain_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
