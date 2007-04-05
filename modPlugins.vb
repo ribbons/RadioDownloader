@@ -12,6 +12,7 @@ Public Interface IRadioProvider
     End Structure
 
     Structure ProgramInfo
+        Dim Success As Boolean
         Dim ProgramName As String
         Dim ProgramDescription As String
         Dim ProgramDuration As Long

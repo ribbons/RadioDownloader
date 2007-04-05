@@ -338,19 +338,17 @@ Friend Class clsData
         Dim ProgInfo As IRadioProvider.ProgramInfo
         ProgInfo = ThisInstance.GetLatestProgramInfo(New clsCommon, strStationID, strProgramID)
 
-        If IsNothing(ProgInfo) Then Exit Sub
+        If ProgInfo.Success Then
+            Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """ AND Date=""" + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+            Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        ' Now store in DB
+            If sqlReader.Read = False Then
+                sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName + """, """ + ProgInfo.ProgramDescription + """, """ + ProgInfo.ImageUrl + """, """ + CStr(ProgInfo.ProgramDuration) + """)", sqlConnection)
+                Call sqlCommand.ExecuteNonQuery()
+            End If
 
-        Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """ AND Date=""" + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        If sqlReader.Read = False Then
-            sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName + """, """ + ProgInfo.ProgramDescription + """, """ + ProgInfo.ImageUrl + """, """ + CStr(ProgInfo.ProgramDuration) + """)", sqlConnection)
-            Call sqlCommand.ExecuteNonQuery()
+            sqlReader.Close()
         End If
-
-        sqlReader.Close()
     End Sub
 
     Public Sub ResetDownload(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean)
