@@ -1,4 +1,4 @@
-Option Strict Off
+Option Strict On
 Option Explicit On
 
 Imports System.IO
@@ -76,7 +76,7 @@ Module modMain
         Dim lngPos As Integer
         lngPos = InStr(strString, Chr(0))
 
-        If lngPos Then strString = Left(strString, lngPos - 1)
+        If lngPos > 0 Then strString = Left(strString, lngPos - 1)
         TrimNull = strString
     End Function
 End Module
