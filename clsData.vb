@@ -121,7 +121,10 @@ Friend Class clsData
         End If
 
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-        sqlReader.Read()
+
+        If sqlReader.Read() = False Then
+            Return ""
+        End If
 
         Dim lngHours As Integer
         Dim lngMins As Integer
@@ -132,7 +135,7 @@ Friend Class clsData
             ProgramHTML = ProgramHTML + .GetString(.GetOrdinal("Description")) + "</p>"
 
             ProgramHTML = ProgramHTML + "<div style=""clear: both;""></div>"
-            ProgramHTML = ProgramHTML + .GetDateTime(.GetOrdinal("Date")).ToString("ddd dd/mmm/yy hh:mm") & " "
+            ProgramHTML = ProgramHTML + .GetDateTime(.GetOrdinal("Date")).ToString("ddd dd/MMM/yy hh:mm") & " "
 
             lngMins = .GetInt32(.GetOrdinal("Duration")) Mod 60
             lngHours = .GetInt32(.GetOrdinal("Duration")) \ 60
