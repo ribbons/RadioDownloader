@@ -11,9 +11,6 @@ Public Class frmMain
 
     Private AvailablePlugins As AvailablePlugin()
 
-    Private clsDisplayThread As clsInterfaceThread
-    Private thrDisplayThread As Thread
-
     Private WithEvents clsBackgroundThread As clsBackground
     Private thrBackgroundThread As Thread
 
@@ -22,7 +19,6 @@ Public Class frmMain
     Private lngLastState As Integer
     Private lngStatus As Integer
 
-    Private Delegate Sub clsProgData_AddProgramToList_Delegate(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String)
     Private Delegate Sub clsBackgroundThread_Progress_Delegate(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal strError As String)
     Private Delegate Sub clsBackgroundThread_Finished_Delegate()
@@ -150,14 +146,7 @@ Public Class frmMain
 
             lstNew.Items.Clear()
 
-            clsDisplayThread = New clsInterfaceThread
-            clsDisplayThread.Type = strSplit(0)
-            clsDisplayThread.StationID = strSplit(1)
-            clsDisplayThread.AvailablePlugins = AvailablePlugins
-            clsDisplayThread.DataInstance = clsProgData
-
-            thrDisplayThread = New Thread(New ThreadStart(AddressOf clsDisplayThread.lstNew_ListPrograms))
-            thrDisplayThread.Start()
+            Call clsProgData.StartListingStation(strSplit(0), strSplit(1))
         Else
             ' Do nothing
         End If
@@ -322,13 +311,6 @@ Public Class frmMain
     End Sub
 
     Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
-        ' Stop a background display thread from running, as it will error when trying to access the form
-        If thrDisplayThread Is Nothing = False Then
-            If thrDisplayThread.IsAlive Then
-                thrDisplayThread.Abort()
-            End If
-        End If
-
         ' Stop a background download thread from running, as it will error when trying to access the form
         If thrBackgroundThread Is Nothing = False Then
             thrBackgroundThread.Abort()
@@ -387,23 +369,12 @@ Public Class frmMain
     Private Sub tbtUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUp.Click
         tbtUp.Enabled = False
         If lstNew.View = View.Details Then
-            If thrDisplayThread.IsAlive Then
-                thrDisplayThread.Abort()
-            End If
             Call AddStations()
         End If
         Call TabAdjustments()
     End Sub
 
     Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
-        ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated Then
-            Dim DelegateInst As New clsProgData_AddProgramToList_Delegate(AddressOf clsProgData_AddProgramToList_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {strProgramType, strStationID, strProgramID, strProgramName})
-        End If
-    End Sub
-
-    Private Sub clsProgData_AddProgramToList_FormThread(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String)
         Dim lstAddItem As New ListViewItem
         lstAddItem.Text = strProgramName
         lstAddItem.ImageKey = "new"

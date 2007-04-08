@@ -387,15 +387,8 @@ Friend Class clsData
         Programs = ThisInstance.ListProgramIDs(strStationID)
 
         For Each SingleProg As IRadioProvider.ProgramListItem In Programs
-            Call GetLatest(strProgramType, strStationID, SingleProg.ProgramID)
-
             Dim strProgTitle As String
             strProgTitle = SingleProg.ProgramName
-
-            If strProgTitle = Nothing Then
-                strProgTitle = ProgramTitle(strProgramType, SingleProg.StationID, SingleProg.ProgramID, LatestDate(strProgramType, SingleProg.StationID, SingleProg.ProgramID))
-            End If
-
             RaiseEvent AddProgramToList(strProgramType, SingleProg.StationID, SingleProg.ProgramID, strProgTitle)
         Next
     End Sub
