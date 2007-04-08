@@ -324,7 +324,7 @@ Friend Class clsData
             End If
         Next SinglePlugin
 
-        Return ThisInstance.IsLatestProgram(New clsCommon, strStationID, strProgramID, dteLatest)
+        Return ThisInstance.IsLatestProgram(strStationID, strProgramID, dteLatest)
     End Function
 
     Private Sub StoreLatestInfo(ByVal strProgramType As String, ByVal strStationID As String, ByRef strProgramID As String)
@@ -339,7 +339,7 @@ Friend Class clsData
         Next SinglePlugin
 
         Dim ProgInfo As IRadioProvider.ProgramInfo
-        ProgInfo = ThisInstance.GetLatestProgramInfo(New clsCommon, strStationID, strProgramID)
+        ProgInfo = ThisInstance.GetLatestProgramInfo(strStationID, strProgramID)
 
         If ProgInfo.Success Then
             Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """ AND Date=""" + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
@@ -384,7 +384,7 @@ Friend Class clsData
         Next SinglePlugin
 
         Dim Programs() As IRadioProvider.ProgramListItem
-        Programs = ThisInstance.ListProgramIDs(New clsCommon, strStationID)
+        Programs = ThisInstance.ListProgramIDs(strStationID)
 
         For Each SingleProg As IRadioProvider.ProgramListItem In Programs
             Call GetLatest(strProgramType, strStationID, SingleProg.ProgramID)

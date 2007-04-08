@@ -47,7 +47,7 @@ Public Class frmMain
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
             ThisInstance = CreateInstance(SinglePlugin)
 
-            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations(New clsCommon)
+            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations()
                 Call AddStation(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID)
             Next
         Next SinglePlugin

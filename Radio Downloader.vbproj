@@ -114,7 +114,6 @@
     <Compile Include="ApplicationEvents.vb" />
     <Compile Include="AssemblyInfo.vb" />
     <Compile Include="clsBackground.vb" />
-    <Compile Include="clsCommon.vb" />
     <Compile Include="clsData.vb">
       <SubType>Code</SubType>
     </Compile>

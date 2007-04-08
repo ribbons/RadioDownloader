@@ -35,17 +35,17 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
 
-    Function ReturnStations(ByRef clsCommon As clsCommon) As StationInfo()
-    Function ListProgramIDs(ByRef clsCommon As clsCommon, ByVal strStationID As String) As ProgramListItem()
-    Function GetLatestProgramInfo(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String) As ProgramInfo
-    Function IsLatestProgram(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
-    Function IsStillAvailable(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
+    Function ReturnStations() As StationInfo()
+    Function ListProgramIDs(ByVal strStationID As String) As ProgramListItem()
+    Function GetLatestProgramInfo(ByVal strStationID As String, ByVal strProgramID As String) As ProgramInfo
+    Function IsLatestProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
+    Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
 
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal strError As String)
     Event Finished()
 
-    Sub DownloadProgram(ByRef clsCommon As clsCommon, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strFinalName As String)
+    Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strFinalName As String)
 End Interface
 
 Module modPlugins
