@@ -85,7 +85,7 @@ Friend Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
-        DownloadStatus = CType(sqlReader.GetInt32(sqlReader.GetOrdinal("Status")), Statuses)
+        DownloadStatus = DirectCast(sqlReader.GetInt32(sqlReader.GetOrdinal("Status")), Statuses)
 
         sqlReader.Close()
     End Function
@@ -317,7 +317,7 @@ Friend Class clsData
         Dim ThisInstance As IRadioProvider = Nothing
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = CType(CreateInstance(SinglePlugin), IRadioProvider)
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
 
             If ThisInstance.ProviderUniqueID = strProgramType Then
                 Exit For
@@ -331,7 +331,7 @@ Friend Class clsData
         Dim ThisInstance As IRadioProvider = Nothing
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = CType(CreateInstance(SinglePlugin), IRadioProvider)
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
 
             If ThisInstance.ProviderUniqueID = strProgramType Then
                 Exit For
@@ -376,7 +376,7 @@ Friend Class clsData
         Dim ThisInstance As IRadioProvider = Nothing
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = CType(CreateInstance(SinglePlugin), IRadioProvider)
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
 
             If ThisInstance.ProviderUniqueID = strProgramType Then
                 Exit For

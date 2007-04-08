@@ -110,7 +110,7 @@ Public Class ExtListView : Inherits ListView
         End If
 
         For intLoop As Integer = 0 To embeddedControls.Count - 1
-            Dim emcControl As EmbeddedControl = CType(embeddedControls(intLoop), EmbeddedControl)
+            Dim emcControl As EmbeddedControl = DirectCast(embeddedControls(intLoop), EmbeddedControl)
 
             If emcControl.ctrControl.Equals(ctlControl) Then
                 RemoveHandler ctlControl.Click, AddressOf embeddedControl_Click
@@ -135,7 +135,7 @@ Public Class ExtListView : Inherits ListView
 
     Public Sub RemoveAllControls()
         For intLoop As Integer = 0 To embeddedControls.Count - 1
-            Dim emcControl As EmbeddedControl = CType(embeddedControls(intLoop), EmbeddedControl)
+            Dim emcControl As EmbeddedControl = DirectCast(embeddedControls(intLoop), EmbeddedControl)
 
             RemoveHandler emcControl.ctrControl.Click, AddressOf embeddedControl_Click
             Me.Controls.Remove(emcControl.ctrControl)
@@ -190,7 +190,7 @@ Public Class ExtListView : Inherits ListView
     Private Sub embeddedControl_Click(ByVal sender As Object, ByVal e As EventArgs)
         ' When a control is clicked the ListViewItem holding it is selected
         For Each emcControl As EmbeddedControl In embeddedControls
-            If emcControl.ctrControl.Equals(CType(sender, Control)) Then
+            If emcControl.ctrControl.Equals(DirectCast(sender, Control)) Then
                 Me.SelectedItems.Clear()
                 emcControl.lstItem.Selected = True
             End If
