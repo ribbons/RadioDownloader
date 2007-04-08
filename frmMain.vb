@@ -1,4 +1,4 @@
-Option Strict Off
+Option Strict On
 Option Explicit On
 
 Imports System.IO
@@ -41,7 +41,7 @@ Public Class frmMain
         Dim ThisInstance As IRadioProvider
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = CreateInstance(SinglePlugin)
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
 
             For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations()
                 Call AddStation(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID)
@@ -118,7 +118,7 @@ Public Class frmMain
     Private Sub lstNew_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstNew.SelectedIndexChanged
         If lstNew.SelectedItems.Count > 0 Then
             Dim strSplit() As String
-            strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
+            strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
 
             If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
                 ' Do nothing
@@ -136,7 +136,7 @@ Public Class frmMain
 
     Private Sub lstNew_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstNew.ItemActivate
         Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
+        strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
 
         If lstNew.View = View.LargeIcon Then
             lstNew.View = View.Details
@@ -155,7 +155,7 @@ Public Class frmMain
     Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
         If lstSubscribed.SelectedItems.Count > 0 Then
             Dim strSplit() As String
-            strSplit = Split(lstSubscribed.SelectedItems(0).Tag, "||")
+            strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
 
             Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2)), "Unsubscribe")
         Else
@@ -166,7 +166,7 @@ Public Class frmMain
     Private Sub lstDownloads_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstDownloads.SelectedIndexChanged
         If lstDownloads.SelectedItems.Count > 0 Then
             Dim strSplit() As String
-            strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
+            strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
 
             Const strTitle As String = "Download Info"
 
@@ -234,11 +234,10 @@ Public Class frmMain
         strHtml = strHtmlStart & "<h1>" & strTitle & "</h1><div class=""contentbox"">" & strMiddleContent & "</div></td></tr><tr><td class=""maintd bottomrow"">"
 
         Dim strSplitLinks() As String
-        Dim strLoopLinks As Object
         Dim strBuiltLinks As String = ""
         strSplitLinks = Split(strBottomLinks, ",")
 
-        For Each strLoopLinks In strSplitLinks
+        For Each strLoopLinks As String In strSplitLinks
             Select Case strLoopLinks
                 Case "Download"
                     strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Download Now", "FlDownload", "Download this programme now"))
@@ -470,7 +469,7 @@ Public Class frmMain
 
     Public Sub FlDownload()
         Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
+        strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
 
         If clsProgData.AddDownload(strSplit(0), strSplit(1), strSplit(2)) Then
             Call tbtDownloads_Click(New Object, New EventArgs)
@@ -485,14 +484,14 @@ Public Class frmMain
 
     Public Sub FlPlay()
         Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
+        strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
 
         Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
     End Sub
 
     Public Sub FlSubscribe()
         Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItems(0).Tag, "||")
+        strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
 
         Call FlStatusText("")
 
@@ -508,11 +507,11 @@ Public Class frmMain
 
     Public Sub FlUnsubscribe()
         Dim strSplit() As String
-        strSplit = Split(lstSubscribed.SelectedItems(0).Tag, "||")
+        strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
 
         Call FlStatusText("")
 
-        If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+        If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
             Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1), strSplit(2))
             Call TabAdjustments() ' Revert back to tab info so prog info goes
             Call clsProgData.UpdateSubscrList(lstSubscribed)
@@ -540,8 +539,8 @@ Public Class frmMain
         Call FlStatusText("")
 
         Dim strSplit() As String
-        If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question + MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
+        If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+            strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
 
             If clsBackgroundThread Is Nothing = False Then
                 thrBackgroundThread.Abort()
@@ -560,7 +559,7 @@ Public Class frmMain
 
     Public Sub FlRetry()
         Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Tag, "||")
+        strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
 
         Call clsProgData.ResetDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)), False)
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
