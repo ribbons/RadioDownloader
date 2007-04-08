@@ -16,14 +16,12 @@ Public Class frmMain
 
     Private WithEvents clsProgData As clsData
 
-    Private lngLastState As Integer
-    Private lngStatus As Integer
+    Private strCurrentType As String
+    Private strCurrentStation As String
 
     Private Delegate Sub clsBackgroundThread_Progress_Delegate(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal strError As String)
     Private Delegate Sub clsBackgroundThread_Finished_Delegate()
-
-    Const lngDLStatCol As Integer = 2
 
     Private Sub SetNewView(ByVal booStations As Boolean)
         lstNew.Items.Clear()
@@ -141,6 +139,8 @@ Public Class frmMain
         If lstNew.View = View.LargeIcon Then
             lstNew.View = View.Details
             tbtUp.Enabled = True
+            strCurrentType = strSplit(0)
+            strCurrentStation = strSplit(1)
 
             Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", "")
 
@@ -201,6 +201,7 @@ Public Class frmMain
             lstSubscribed.Visible = False
             lstDownloads.Visible = False
             tbtCleanUp.Enabled = False
+            tbtRefresh.Enabled = True
             tbtUp.Enabled = lstNew.View = View.Details
             Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", "")
         ElseIf tbtSubscriptions.Checked Then
@@ -208,6 +209,7 @@ Public Class frmMain
             lstSubscribed.Visible = True
             lstDownloads.Visible = False
             tbtCleanUp.Enabled = False
+            tbtRefresh.Enabled = False
             tbtUp.Enabled = False
             Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", "")
         ElseIf tbtDownloads.Checked Then
@@ -215,6 +217,7 @@ Public Class frmMain
             lstSubscribed.Visible = False
             lstDownloads.Visible = True
             'tbtCleanUp.Enabled = True
+            tbtRefresh.Enabled = False
             tbtUp.Enabled = False
             Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", "")
         End If
@@ -367,10 +370,24 @@ Public Class frmMain
 
     Private Sub tbtUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUp.Click
         tbtUp.Enabled = False
+        strCurrentType = ""
+        strCurrentStation = ""
+
         If lstNew.View = View.Details Then
             Call AddStations()
         End If
+
         Call TabAdjustments()
+    End Sub
+
+    Private Sub tbtRefresh_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtRefresh.Click
+        If strCurrentType = "" Then
+            Call AddStations()
+        Else
+            Call TabAdjustments()
+            lstNew.Items.Clear()
+            Call clsProgData.StartListingStation(strCurrentType, strCurrentStation)
+        End If
     End Sub
 
     Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
