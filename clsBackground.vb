@@ -1,4 +1,4 @@
-Option Strict Off
+Option Strict On
 Option Explicit On
 
 Imports Microsoft.VisualBasic
@@ -94,7 +94,7 @@ Friend Class clsBackground
 
     Public Sub DownloadProgram()
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = CreateInstance(SinglePlugin)
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
 
             If ThisInstance.ProviderUniqueID = strProgType Then
                 Exit For
