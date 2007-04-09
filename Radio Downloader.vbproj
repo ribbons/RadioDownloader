@@ -111,8 +111,8 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationEvents.vb" />
-    <Compile Include="AssemblyInfo.vb" />
+    <Compile Include="My Project\ApplicationEvents.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="clsBackground.vb" />
     <Compile Include="clsData.vb">
       <SubType>Code</SubType>
