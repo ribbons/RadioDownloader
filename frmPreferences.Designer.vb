@@ -40,7 +40,7 @@
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdCancel.Location = New System.Drawing.Point(313, 136)
+        Me.cmdCancel.Location = New System.Drawing.Point(317, 137)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdCancel.Size = New System.Drawing.Size(77, 25)
@@ -55,7 +55,7 @@
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdOK.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdOK.Location = New System.Drawing.Point(229, 136)
+        Me.cmdOK.Location = New System.Drawing.Point(234, 137)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdOK.Size = New System.Drawing.Size(77, 25)
@@ -70,7 +70,7 @@
         Me.cmdChangeFolder.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdChangeFolder.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdChangeFolder.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdChangeFolder.Location = New System.Drawing.Point(317, 56)
+        Me.cmdChangeFolder.Location = New System.Drawing.Point(321, 53)
         Me.cmdChangeFolder.Name = "cmdChangeFolder"
         Me.cmdChangeFolder.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdChangeFolder.Size = New System.Drawing.Size(73, 25)
@@ -91,18 +91,19 @@
         Me.txtSaveIn.Name = "txtSaveIn"
         Me.txtSaveIn.ReadOnly = True
         Me.txtSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.txtSaveIn.Size = New System.Drawing.Size(298, 21)
+        Me.txtSaveIn.Size = New System.Drawing.Size(303, 21)
         Me.txtSaveIn.TabIndex = 3
         '
         'lblSaveIn
         '
+        Me.lblSaveIn.AutoSize = True
         Me.lblSaveIn.BackColor = System.Drawing.SystemColors.Control
         Me.lblSaveIn.Cursor = System.Windows.Forms.Cursors.Default
         Me.lblSaveIn.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.lblSaveIn.Location = New System.Drawing.Point(14, 40)
+        Me.lblSaveIn.Location = New System.Drawing.Point(12, 40)
         Me.lblSaveIn.Name = "lblSaveIn"
         Me.lblSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.lblSaveIn.Size = New System.Drawing.Size(385, 21)
+        Me.lblSaveIn.Size = New System.Drawing.Size(155, 13)
         Me.lblSaveIn.TabIndex = 0
         Me.lblSaveIn.Text = "Save downloaded programs in:"
         '
@@ -119,13 +120,14 @@
         Me.Controls.Add(Me.lblSaveIn)
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
+        Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Location = New System.Drawing.Point(3, 29)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmPreferences"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Options"
         Me.ResumeLayout(False)
