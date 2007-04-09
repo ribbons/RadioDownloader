@@ -46,7 +46,7 @@ Friend Class clsData
         Const lngMaxErrors As Integer = 2
         Dim clsBkgInst As clsBackground = Nothing
 
-        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by status", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select * from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by date", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read() Then
