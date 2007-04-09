@@ -7,10 +7,10 @@ Imports System.Runtime.InteropServices
 ' associated with an assembly.
 
 <Assembly: AssemblyTitle("Radio Downloader")> 
-<Assembly: AssemblyDescription("Program to automatically download radio programmes made available online, using a plugin framework for specific provider implementation.")> 
+<Assembly: AssemblyDescription("Utility to automatically download radio programmes made available online, using a plugin framework for provider specific implementation.")> 
 <Assembly: AssemblyCompany("NerdoftheHerd.com")> 
 <Assembly: AssemblyProduct("Radio Downloader")> 
-<Assembly: AssemblyCopyright("Copyright 2007")> 
+<Assembly: AssemblyCopyright("Copyright © 2007")> 
 <Assembly: AssemblyTrademark("")>
 <Assembly: AssemblyCulture("")>
 

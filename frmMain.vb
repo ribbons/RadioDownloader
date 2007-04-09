@@ -301,6 +301,10 @@ Public Class frmMain
         Call frmPreferences.ShowDialog()
     End Sub
 
+    Private Sub mnuHelpAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpAbout.Click
+        Call frmAbout.ShowDialog()
+    End Sub
+
     Private Sub mnuTrayShow_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuTrayShow.Click
         If Me.Visible = False Then
             Call TrayAnimate(Me, False)
