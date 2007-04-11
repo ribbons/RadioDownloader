@@ -475,6 +475,7 @@ Public Class frmMain
 
         If intLastNum = Nothing Then intLastNum = -1
         If intLastNum = intPercent Then Exit Sub
+        If intPercent < 0 Then Exit Sub
         If intPercent > 100 Then Exit Sub
 
         intLastNum = intPercent
