@@ -135,7 +135,14 @@ Public Class frmMain
             If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
                 ' Do nothing
             Else
-                Call CreateHtml("Programme Info", clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2)), "Download,Subscribe")
+                Dim strGotHtml As String
+                strGotHtml = clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2))
+
+                If strGotHtml = "" Then
+                    Call CreateHtml("Programme Info", "<p>Unfortunately, there was a problem getting information about this programme.</p><p>The available data could be invalid.</p>You may like to try again later.", "")
+                Else
+                    Call CreateHtml("Programme Info", strGotHtml, "Download,Subscribe")
+                End If
             End If
         Else
             If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
