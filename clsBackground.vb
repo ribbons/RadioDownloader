@@ -139,7 +139,7 @@ Friend Class clsBackground
             strCleanedTitle = Replace(strCleanedTitle, "  ", " ")
         Loop
 
-        CreateFinalName = GetSaveFolder() + "\" + Trim(strCleanedTitle) + " " + dteProgDate.ToString("dd-mm-yy") + ".mp3"
+        CreateFinalName = GetSaveFolder() + "\" + Trim(strCleanedTitle) + " " + dteProgDate.ToString("dd-MM-yy") + ".mp3"
     End Function
 
     Private Sub ThisInstance_DldError(ByVal strError As String) Handles ThisInstance.DldError
