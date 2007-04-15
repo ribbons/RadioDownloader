@@ -31,6 +31,10 @@
         Me.cmdChangeFolder = New System.Windows.Forms.Button
         Me.txtSaveIn = New System.Windows.Forms.TextBox
         Me.lblSaveIn = New System.Windows.Forms.Label
+        Me.lblFileNameFormat = New System.Windows.Forms.Label
+        Me.txtFileNameFormat = New System.Windows.Forms.TextBox
+        Me.lblFilenameFormatResult = New System.Windows.Forms.Label
+        Me.cmdReset = New System.Windows.Forms.Button
         Me.SuspendLayout()
         '
         'cmdCancel
@@ -40,7 +44,7 @@
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdCancel.Location = New System.Drawing.Point(317, 137)
+        Me.cmdCancel.Location = New System.Drawing.Point(234, 157)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdCancel.Size = New System.Drawing.Size(77, 25)
@@ -55,7 +59,7 @@
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdOK.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdOK.Location = New System.Drawing.Point(234, 137)
+        Me.cmdOK.Location = New System.Drawing.Point(151, 157)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdOK.Size = New System.Drawing.Size(77, 25)
@@ -70,7 +74,7 @@
         Me.cmdChangeFolder.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdChangeFolder.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdChangeFolder.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdChangeFolder.Location = New System.Drawing.Point(321, 53)
+        Me.cmdChangeFolder.Location = New System.Drawing.Point(321, 28)
         Me.cmdChangeFolder.Name = "cmdChangeFolder"
         Me.cmdChangeFolder.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdChangeFolder.Size = New System.Drawing.Size(73, 25)
@@ -86,7 +90,7 @@
         Me.txtSaveIn.BackColor = System.Drawing.SystemColors.Window
         Me.txtSaveIn.Cursor = System.Windows.Forms.Cursors.IBeam
         Me.txtSaveIn.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtSaveIn.Location = New System.Drawing.Point(12, 56)
+        Me.txtSaveIn.Location = New System.Drawing.Point(12, 31)
         Me.txtSaveIn.MaxLength = 0
         Me.txtSaveIn.Name = "txtSaveIn"
         Me.txtSaveIn.ReadOnly = True
@@ -100,19 +104,63 @@
         Me.lblSaveIn.BackColor = System.Drawing.SystemColors.Control
         Me.lblSaveIn.Cursor = System.Windows.Forms.Cursors.Default
         Me.lblSaveIn.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.lblSaveIn.Location = New System.Drawing.Point(12, 40)
+        Me.lblSaveIn.Location = New System.Drawing.Point(12, 15)
         Me.lblSaveIn.Name = "lblSaveIn"
         Me.lblSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.lblSaveIn.Size = New System.Drawing.Size(155, 13)
+        Me.lblSaveIn.Size = New System.Drawing.Size(169, 13)
         Me.lblSaveIn.TabIndex = 0
-        Me.lblSaveIn.Text = "Save downloaded programs in:"
+        Me.lblSaveIn.Text = "Save downloaded programmes in:"
+        '
+        'lblFileNameFormat
+        '
+        Me.lblFileNameFormat.AutoSize = True
+        Me.lblFileNameFormat.Location = New System.Drawing.Point(12, 75)
+        Me.lblFileNameFormat.Name = "lblFileNameFormat"
+        Me.lblFileNameFormat.Size = New System.Drawing.Size(208, 13)
+        Me.lblFileNameFormat.TabIndex = 5
+        Me.lblFileNameFormat.Text = "Downloaded programme file name format:"
+        '
+        'txtFileNameFormat
+        '
+        Me.txtFileNameFormat.Location = New System.Drawing.Point(12, 91)
+        Me.txtFileNameFormat.Name = "txtFileNameFormat"
+        Me.txtFileNameFormat.Size = New System.Drawing.Size(382, 21)
+        Me.txtFileNameFormat.TabIndex = 6
+        '
+        'lblFilenameFormatResult
+        '
+        Me.lblFilenameFormatResult.AutoSize = True
+        Me.lblFilenameFormatResult.Location = New System.Drawing.Point(12, 115)
+        Me.lblFilenameFormatResult.Name = "lblFilenameFormatResult"
+        Me.lblFilenameFormatResult.Size = New System.Drawing.Size(41, 13)
+        Me.lblFilenameFormatResult.TabIndex = 7
+        Me.lblFilenameFormatResult.Text = "Result:"
+        '
+        'cmdReset
+        '
+        Me.cmdReset.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cmdReset.BackColor = System.Drawing.SystemColors.Control
+        Me.cmdReset.Cursor = System.Windows.Forms.Cursors.Default
+        Me.cmdReset.FlatStyle = System.Windows.Forms.FlatStyle.System
+        Me.cmdReset.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.cmdReset.Location = New System.Drawing.Point(317, 157)
+        Me.cmdReset.Name = "cmdReset"
+        Me.cmdReset.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.cmdReset.Size = New System.Drawing.Size(77, 25)
+        Me.cmdReset.TabIndex = 9
+        Me.cmdReset.Text = "Reset"
+        Me.cmdReset.UseVisualStyleBackColor = False
         '
         'frmPreferences
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(406, 174)
+        Me.ClientSize = New System.Drawing.Size(406, 194)
+        Me.Controls.Add(Me.cmdReset)
+        Me.Controls.Add(Me.lblFilenameFormatResult)
+        Me.Controls.Add(Me.txtFileNameFormat)
+        Me.Controls.Add(Me.lblFileNameFormat)
         Me.Controls.Add(Me.cmdCancel)
         Me.Controls.Add(Me.cmdOK)
         Me.Controls.Add(Me.cmdChangeFolder)
@@ -134,5 +182,9 @@
         Me.PerformLayout()
 
     End Sub
-#End Region 
+    Friend WithEvents lblFileNameFormat As System.Windows.Forms.Label
+    Friend WithEvents txtFileNameFormat As System.Windows.Forms.TextBox
+    Friend WithEvents lblFilenameFormatResult As System.Windows.Forms.Label
+    Public WithEvents cmdReset As System.Windows.Forms.Button
+#End Region
 End Class

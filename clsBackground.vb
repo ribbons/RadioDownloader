@@ -115,32 +115,10 @@ Friend Class clsBackground
             End If
         Next SinglePlugin
 
-        strFinalName = CreateFinalName()
+        strFinalName = GetSaveFolder() + "\" + CreateSaveFileName(My.Settings.FileNameFormat, strProgTitle, "mp3")
 
         ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strFinalName)
     End Sub
-
-    Private Function CreateFinalName() As String
-        Dim strCleanedTitle As String
-        Dim strTrimmedTitle As String = ""
-
-        strCleanedTitle = Replace(strProgTitle, "\", " ")
-        strCleanedTitle = Replace(strCleanedTitle, "/", " ")
-        strCleanedTitle = Replace(strCleanedTitle, ":", " ")
-        strCleanedTitle = Replace(strCleanedTitle, "*", " ")
-        strCleanedTitle = Replace(strCleanedTitle, "?", " ")
-        strCleanedTitle = Replace(strCleanedTitle, """", " ")
-        strCleanedTitle = Replace(strCleanedTitle, ">", " ")
-        strCleanedTitle = Replace(strCleanedTitle, "<", " ")
-        strCleanedTitle = Replace(strCleanedTitle, "|", " ")
-
-        Do While strTrimmedTitle <> strCleanedTitle
-            strTrimmedTitle = strCleanedTitle
-            strCleanedTitle = Replace(strCleanedTitle, "  ", " ")
-        Loop
-
-        CreateFinalName = GetSaveFolder() + "\" + Trim(strCleanedTitle) + " " + dteProgDate.ToString("dd-MM-yy") + ".mp3"
-    End Function
 
     Private Sub ThisInstance_DldError(ByVal strError As String) Handles ThisInstance.DldError
         RaiseEvent DldError(strError)

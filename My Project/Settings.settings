@@ -5,5 +5,8 @@
     <Setting Name="SaveFolder" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="FileNameFormat" Type="System.String" Scope="User">
+      <Value Profile="(Default)">%title% %day%-%month%-%year%.%ext%</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

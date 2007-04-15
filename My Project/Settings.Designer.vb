@@ -65,6 +65,18 @@ Namespace My
                 Me("SaveFolder") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("%title% %day%-%month%-%year%.%ext%")>  _
+        Public Property FileNameFormat() As String
+            Get
+                Return CType(Me("FileNameFormat"),String)
+            End Get
+            Set
+                Me("FileNameFormat") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

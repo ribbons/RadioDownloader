@@ -36,10 +36,23 @@ Friend Class frmPreferences
 	
 	Private Sub cmdOK_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdOK.Click
         My.Settings.SaveFolder = txtSaveIn.Text
+        My.Settings.FileNameFormat = txtFileNameFormat.Text
 		Me.Close()
 	End Sub
 	
 	Private Sub frmPreferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         txtSaveIn.Text = GetSaveFolder()
+        txtFileNameFormat.Text = My.Settings.FileNameFormat
+    End Sub
+
+    Private Sub txtFileNameFormat_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFileNameFormat.TextChanged
+        lblFilenameFormatResult.Text = "Result: " + CreateSaveFileName(txtFileNameFormat.Text, "Example Program", "mp3")
+    End Sub
+
+    Private Sub cmdReset_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdReset.Click
+        If MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question) = MsgBoxResult.Yes Then
+            My.Settings.Reset()
+            Me.Close()
+        End If
     End Sub
 End Class

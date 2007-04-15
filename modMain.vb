@@ -53,6 +53,39 @@ Module modMain
         End If
     End Function
 
+    Public Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal strFileExtension As String) As String
+        Dim strName As String = strFormatString
+
+        strName = strName.Replace("%title%", strProgTitle)
+        strName = strName.Replace("%day%", Now.ToString("dd"))
+        strName = strName.Replace("%month%", Now.ToString("MM"))
+        strName = strName.Replace("%shortmonthname%", Now.ToString("MMM"))
+        strName = strName.Replace("%monthname%", Now.ToString("MMMM"))
+        strName = strName.Replace("%year%", Now.ToString("yy"))
+        strName = strName.Replace("%longyear%", Now.ToString("yyyy"))
+        strName = strName.Replace("%ext%", strFileExtension)
+
+        Dim strCleanedName As String
+        Dim strTrimmedName As String = ""
+
+        strCleanedName = Replace(strName, "\", " ")
+        strCleanedName = Replace(strCleanedName, "/", " ")
+        strCleanedName = Replace(strCleanedName, ":", " ")
+        strCleanedName = Replace(strCleanedName, "*", " ")
+        strCleanedName = Replace(strCleanedName, "?", " ")
+        strCleanedName = Replace(strCleanedName, """", " ")
+        strCleanedName = Replace(strCleanedName, ">", " ")
+        strCleanedName = Replace(strCleanedName, "<", " ")
+        strCleanedName = Replace(strCleanedName, "|", " ")
+
+        Do While strTrimmedName <> strCleanedName
+            strTrimmedName = strCleanedName
+            strCleanedName = Replace(strCleanedName, "  ", " ")
+        Loop
+
+        Return Trim(strCleanedName)
+    End Function
+
     Public Sub TrayAnimate(ByRef frmForm As System.Windows.Forms.Form, ByRef booDown As Boolean)
         Dim rctWindow As RECT
         Dim rctSystemTray As RECT
