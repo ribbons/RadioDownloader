@@ -77,6 +77,18 @@ Namespace My
                 Me("FileNameFormat") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+        Public Property RunAfterCommand() As String
+            Get
+                Return CType(Me("RunAfterCommand"),String)
+            End Get
+            Set
+                Me("RunAfterCommand") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

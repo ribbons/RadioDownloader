@@ -37,12 +37,14 @@ Friend Class frmPreferences
 	Private Sub cmdOK_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdOK.Click
         My.Settings.SaveFolder = txtSaveIn.Text
         My.Settings.FileNameFormat = txtFileNameFormat.Text
+        My.Settings.RunAfterCommand = txtRunAfter.Text
 		Me.Close()
 	End Sub
 	
 	Private Sub frmPreferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         txtSaveIn.Text = GetSaveFolder()
         txtFileNameFormat.Text = My.Settings.FileNameFormat
+        txtRunAfter.Text = My.Settings.RunAfterCommand
     End Sub
 
     Private Sub txtFileNameFormat_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFileNameFormat.TextChanged

@@ -464,6 +464,15 @@ Public Class frmMain
 
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
+        If My.Settings.RunAfterCommand <> "" Then
+            Try
+                ' Environ("comspec") will give the path to cmd.exe or command.com
+                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsBackgroundThread.FinalName), AppWinStyle.NormalNoFocus)
+            Catch ex As Exception
+                ' Just ignore the error, as it just means that something has gone wrong with the run after command.
+            End Try
+        End If
+
         clsBackgroundThread = Nothing
         thrBackgroundThread = Nothing
         tmrStartProcess.Enabled = True

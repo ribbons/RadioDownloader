@@ -8,5 +8,8 @@
     <Setting Name="FileNameFormat" Type="System.String" Scope="User">
       <Value Profile="(Default)">%title% %day%-%month%-%year%.%ext%</Value>
     </Setting>
+    <Setting Name="RunAfterCommand" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
