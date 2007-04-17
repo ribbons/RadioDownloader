@@ -103,7 +103,7 @@ Module modMain
     Private Function GetSysTrayPos() As RECT
         Dim lngTaskbarHwnd As Integer
         Dim lngTrayHwnd As Integer
-        Dim strClassName As New VB6.FixedLengthString(250)
+        Dim strClassName As String = Space(250)
 
         'Get taskbar handle
         lngTaskbarHwnd = FindWindow("Shell_traywnd", vbNullString)
@@ -111,8 +111,8 @@ Module modMain
         'Get system tray handle
         lngTrayHwnd = GetWindow(lngTaskbarHwnd, GW_CHILD)
         Do
-            GetClassName(lngTrayHwnd, strClassName.Value, 250)
-            If TrimNull(strClassName.Value) = "TrayNotifyWnd" Then Exit Do
+            GetClassName(lngTrayHwnd, strClassName, 250)
+            If TrimNull(strClassName) = "TrayNotifyWnd" Then Exit Do
             lngTrayHwnd = GetWindow(lngTrayHwnd, GW_HWNDNEXT)
         Loop
 

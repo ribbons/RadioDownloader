@@ -132,7 +132,7 @@ Public Class frmMain
             Dim strSplit() As String
             strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
 
-            If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
+            If lstNew.View = View.LargeIcon Then
                 ' Do nothing
             Else
                 Dim strGotHtml As String
@@ -145,7 +145,7 @@ Public Class frmMain
                 End If
             End If
         Else
-            If lstNew.View = ComctlLib.ListViewConstants.lvwIcon Then
+            If lstNew.View = View.LargeIcon Then
                 ' Do nothing
             Else
                 Call TabAdjustments() ' Revert back to new items view default page
