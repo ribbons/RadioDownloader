@@ -20,6 +20,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OptionStrict>On</OptionStrict>
+    <ApplicationIcon>icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>.\bin\</OutputPath>
@@ -145,6 +146,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="icon.ico" />
     <Content Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
