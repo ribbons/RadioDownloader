@@ -16,12 +16,12 @@
   SetCompressor /SOLID lzma
   ;SetCompress off
   InstallDir "$PROGRAMFILES\Radio Downloader"
-  
-  !define MUI_ICON "..\Graphics\Icon.ico"
-  !define MUI_UNICON "..\Graphics\GreyIcon.ico"
+
+  !define MUI_ICON "..\Graphics\icon\Icon.ico"
+  !define MUI_UNICON "..\Graphics\icon\Icon.ico"
   
   ;Get installation folder from registry if available
-  InstallDirRegKey HKCU "Software\VB and VBA Program Settings\Radio Downloader" "InstallLoc"
+  InstallDirRegKey HKCU "Software\Radio Downloader" ""
 
 ;--------------------------------
 ;Interface Settings
@@ -50,19 +50,11 @@
 Section "Radio Downloader" RadioDownloader
 
   SetOutPath "$INSTDIR"
-  File "d:\SandSprite\IEDevKit\IEDevKit.dll"
-  File "..\Radio Background.exe"
-  File "..\Radio Downloader.exe"
-  
-  SetOutPath "$INSTDIR\Components"
-  File "..\Components\mplayer.exe"
-  File "..\Components\lame.exe"
-  
-  ; Register Background App by running it
-  ExecWait '"$INSTDIR\Radio Background.exe"'
+  File "..\bin\Radio Downloader.exe"
+  File "..\bin\System.Data.SQLite.DLL"
   
   ;Store installation folder
-  WriteRegStr HKCU "Software\Modern UI Test" "" $INSTDIR
+  WriteRegStr HKCU "Software\Radio Downloader" "" $INSTDIR
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -74,18 +66,12 @@ SectionEnd
 
 Section "Uninstall"
 
-  Delete /REBOOTOK "$INSTDIR\Components\mplayer.exe"
-  Delete /REBOOTOK "$INSTDIR\Components\lame.exe"
-  RMDir /REBOOTOK "$INSTDIR\Components"
-
   Delete /REBOOTOK "$INSTDIR\Radio Downloader.exe"
-  ExecWait 'regsvr32 /s /u "$INSTDIR\Radio Background.exe"'
-  Delete /REBOOTOK "$INSTDIR\Radio Background.exe"
-  Delete /REBOOTOK "$INSTDIR\IEDevKit.dll"
+  Delete /REBOOTOK "$INSTDIR\System.Data.SQLite.DLL"
 
   Delete /REBOOTOK "$INSTDIR\Uninstall.exe"
   RMDir /REBOOTOK "$INSTDIR"
 
-  DeleteRegKey HKCU "Software\VB and VBA Program Settings\Radio Downloader"
+  DeleteRegKey HKCU "Software\Radio Downloader"
 
 SectionEnd
