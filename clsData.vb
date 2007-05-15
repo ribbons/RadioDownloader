@@ -352,12 +352,23 @@ Friend Class clsData
             End If
         Next SinglePlugin
 
+        Dim sqlCommand As SQLiteCommand
+        Dim sqlReader As SQLiteDataReader
+        Dim dteLastAttempt As Date = Nothing
+
+        sqlCommand = New SQLiteCommand("SELECT LastTry FROM tblLastFetch WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """", sqlConnection)
+        sqlReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            dteLastAttempt = sqlReader.GetDateTime(sqlReader.GetOrdinal("LastTry"))
+        End If
+
         Dim ProgInfo As IRadioProvider.ProgramInfo
-        ProgInfo = ThisInstance.GetLatestProgramInfo(strStationID, strProgramID)
+        ProgInfo = ThisInstance.GetLatestProgramInfo(strStationID, strProgramID, LatestDate(strProgramType, strStationID, strProgramID), dteLastAttempt)
 
         If ProgInfo.Success Then
-            Dim sqlCommand As New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """ AND Date=""" + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
-            Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+            sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """ AND Date=""" + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+            sqlReader = sqlCommand.ExecuteReader
 
             If sqlReader.Read = False Then
                 sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName + """, """ + ProgInfo.ProgramDescription + """, """ + ProgInfo.ImageUrl + """, """ + CStr(ProgInfo.ProgramDuration) + """)", sqlConnection)
@@ -366,6 +377,14 @@ Friend Class clsData
 
             sqlReader.Close()
         End If
+
+        ' Remove the previous record of when we tried to download info about this program (if it exists)
+        sqlCommand = New SQLiteCommand("DELETE FROM tblLastFetch WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """", sqlConnection)
+        Call sqlCommand.ExecuteNonQuery()
+
+        ' Record when we tried to get information about this program
+        sqlCommand = New SQLiteCommand("INSERT INTO tblLastFetch (Type, Station, ID, LastTry) VALUES (""" + strProgramType + """, """ + strStationID + """, """ & strProgramID & """, """ + Now.ToString(strSqlDateFormat) + """)", sqlConnection)
+        Call sqlCommand.ExecuteNonQuery()
     End Sub
 
     Public Sub ResetDownload(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean)

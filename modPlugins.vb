@@ -51,7 +51,7 @@ Public Interface IRadioProvider
 
     Function ReturnStations() As StationInfo()
     Function ListProgramIDs(ByVal strStationID As String) As ProgramListItem()
-    Function GetLatestProgramInfo(ByVal strStationID As String, ByVal strProgramID As String) As ProgramInfo
+    Function GetLatestProgramInfo(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteLastInfoFor As Date, ByVal dteLastAttempt As Date) As ProgramInfo
     Function IsLatestProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
     Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
 
