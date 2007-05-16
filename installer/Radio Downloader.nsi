@@ -3,9 +3,11 @@
 ;Written by Joost Verburg
 
 ;--------------------------------
-;Include Modern UI
+;Includes
 
   !include "MUI.nsh"
+  !include "LogicLib.nsh" ; For DotNET.nsh
+  !include "DotNET.nsh"
 
 ;--------------------------------
 ;General
@@ -13,13 +15,15 @@
   ;Name and file
   Name "Radio Downloader"
   OutFile "Radio Downloader.exe"
-  SetCompressor /SOLID lzma
-  ;SetCompress off
+  ;SetCompressor /SOLID lzma
+  SetCompress off
   InstallDir "$PROGRAMFILES\Radio Downloader"
 
   !define MUI_ICON "..\Graphics\icon\Icon.ico"
   !define MUI_UNICON "..\Graphics\icon\Icon.ico"
-  
+
+  !define DOTNET_VERSION "2"
+
   ;Get installation folder from registry if available
   InstallDirRegKey HKCU "Software\Radio Downloader" ""
 
@@ -49,9 +53,14 @@
 
 Section "Radio Downloader" RadioDownloader
 
+  !insertmacro CheckDotNET ${DOTNET_VERSION}
+
   SetOutPath "$INSTDIR"
   File "..\bin\Radio Downloader.exe"
   File "..\bin\System.Data.SQLite.DLL"
+  File /oname=store.db "..\empty store.db"
+  
+  SetOutPath "$INSTDIR\Temp"
   
   ;Store installation folder
   WriteRegStr HKCU "Software\Radio Downloader" "" $INSTDIR
@@ -66,8 +75,11 @@ SectionEnd
 
 Section "Uninstall"
 
+  RMDir /REBOOTOK "$INSTDIR\Temp"
+
   Delete /REBOOTOK "$INSTDIR\Radio Downloader.exe"
   Delete /REBOOTOK "$INSTDIR\System.Data.SQLite.DLL"
+  Delete /REBOOTOK "$INSTDIR\temp.htm"
 
   Delete /REBOOTOK "$INSTDIR\Uninstall.exe"
   RMDir /REBOOTOK "$INSTDIR"
