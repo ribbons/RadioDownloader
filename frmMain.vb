@@ -106,8 +106,8 @@ Public Class frmMain
         lstSubscribed.Height = lstNew.Height
         lstDownloads.Height = lstNew.Height
 
-        'tbrOldToolbar.Buttons("Clean Up").Visible = False
-        'tbrOldToolbar.Buttons("Refresh").Visible = False
+        tbtCleanUp.Visible = False
+        ttxSearch.Visible = False
     End Sub
 
     Private Sub frmMain_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
