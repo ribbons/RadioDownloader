@@ -123,7 +123,6 @@ Public Class frmMain
 
     Private Sub frmMain_FormClosed(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
         On Error Resume Next
-        Call Kill(My.Application.Info.DirectoryPath + "\temp.htm")
         Call Kill(My.Application.Info.DirectoryPath + "\temp\*.*")
     End Sub
 
@@ -286,7 +285,7 @@ Public Class frmMain
 
         strHtml = strHtml & strHtmlEnd
 
-        Call ShowHtml(strHtml)
+        webDetails.DocumentText = strHtml
     End Sub
 
     Private Function BuildLink(ByRef strTitle As String, ByRef strCall As String, ByRef strStatusText As String) As String
@@ -302,17 +301,6 @@ Public Class frmMain
 
         AddLink = AddLink + strNewlink
     End Function
-
-    Private Sub ShowHtml(ByRef strHtml As String)
-        Dim lngFileNo As Integer
-        lngFileNo = FreeFile()
-
-        FileOpen(lngFileNo, My.Application.Info.DirectoryPath + "\temp.htm", OpenMode.Output)
-        PrintLine(lngFileNo, strHtml)
-        FileClose(lngFileNo)
-
-        webDetails.Navigate(New System.Uri(My.Application.Info.DirectoryPath & "\temp.htm"))
-    End Sub
 
     Public Sub mnuFileExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuFileExit.Click
         Call mnuTrayExit_Click(mnuTrayExit, eventArgs)
