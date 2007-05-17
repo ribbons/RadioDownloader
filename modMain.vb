@@ -39,14 +39,14 @@ Module modMain
 
     Public Function GetSaveFolder() As String
         If My.Settings.SaveFolder <> "" Then
-            If New DirectoryInfo(My.Settings.SaveFolder).exists = False Then
-                My.Settings.SaveFolder = ""
-            Else
+            If New DirectoryInfo(My.Settings.SaveFolder).Exists Then
                 Return My.Settings.SaveFolder
             End If
+
+            My.Settings.SaveFolder = ""
         End If
 
-        GetSaveFolder = My.Application.Info.DirectoryPath + "\Downloads"
+        GetSaveFolder = My.Computer.FileSystem.SpecialDirectories.MyDocuments + "\Downloaded Radio"
 
         If New DirectoryInfo(GetSaveFolder).Exists = False Then
             Call New DirectoryInfo(GetSaveFolder).Create()
