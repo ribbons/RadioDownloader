@@ -74,6 +74,8 @@ Public Class frmMain
         ' Load all of the available plugins into an array for later reference
         AvailablePlugins = FindPlugins(My.Application.Info.DirectoryPath)
 
+        Directory.CreateDirectory(System.IO.Path.GetTempPath + "\RadioDownloader")
+
         lstSubscribed.Top = lstNew.Top
         lstDownloads.Top = lstNew.Top
 
@@ -119,11 +121,6 @@ Public Class frmMain
             Cancel = True
         End If
         eventArgs.Cancel = True
-    End Sub
-
-    Private Sub frmMain_FormClosed(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosedEventArgs) Handles Me.FormClosed
-        On Error Resume Next
-        Call Kill(My.Application.Info.DirectoryPath + "\temp\*.*")
     End Sub
 
     Private Sub lstNew_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstNew.SelectedIndexChanged
@@ -333,6 +330,12 @@ Public Class frmMain
 
         Me.Close()
         Me.Dispose()
+
+        Try
+            Directory.Delete(System.IO.Path.GetTempPath + "\RadioDownloader", True)
+        Catch exp As IOException
+            ' Ignore an IOException - this just means that a file in the temp folder is still in use.
+        End Try
     End Sub
 
     Private Sub nicTrayIcon_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles nicTrayIcon.MouseDoubleClick

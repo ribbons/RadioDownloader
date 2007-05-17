@@ -60,8 +60,6 @@ Section "Radio Downloader" RadioDownloader
   File "..\bin\System.Data.SQLite.DLL"
   File /oname=store.db "..\empty store.db"
   
-  SetOutPath "$INSTDIR\Temp"
-  
   ;Store installation folder
   WriteRegStr HKCU "Software\Radio Downloader" "" $INSTDIR
   
@@ -75,7 +73,6 @@ SectionEnd
 
 Section "Uninstall"
 
-  RMDir /REBOOTOK "$INSTDIR\Temp"
 
   Delete /REBOOTOK "$INSTDIR\Radio Downloader.exe"
   Delete /REBOOTOK "$INSTDIR\System.Data.SQLite.DLL"
