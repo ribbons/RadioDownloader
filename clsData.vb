@@ -35,7 +35,7 @@ Friend Class clsData
     Public Sub New(ByVal AvailablePlugins() As AvailablePlugin)
         MyBase.New()
 
-        sqlConnection = New SQLiteConnection("Data Source=" + My.Application.Info.DirectoryPath + "\store.db;Version=3;New=False")
+        sqlConnection = New SQLiteConnection("Data Source=" + GetAppDataFolder() + "\store.db;Version=3;New=False")
         sqlConnection.Open()
 
         Me.AvailablePlugins = AvailablePlugins

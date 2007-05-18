@@ -53,6 +53,13 @@ Module modMain
         End If
     End Function
 
+    Public Function GetAppDataFolder() As String
+        Dim lngLastSlash As Integer
+        lngLastSlash = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData.LastIndexOf("\")
+
+        Return My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData.Substring(0, lngLastSlash)
+    End Function
+
     Public Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal strFileExtension As String) As String
         Dim strName As String = strFormatString
 

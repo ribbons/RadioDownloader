@@ -74,7 +74,15 @@ Public Class frmMain
         ' Load all of the available plugins into an array for later reference
         AvailablePlugins = FindPlugins(My.Application.Info.DirectoryPath)
 
+        ' Make sure that the temp and application data folders exist
         Directory.CreateDirectory(System.IO.Path.GetTempPath + "\RadioDownloader")
+        Directory.CreateDirectory(GetAppDataFolder)
+
+        ' Make sure that the database exists.  If not, then copy across the empty database from the program's folder.
+        Dim fileExits As New IO.FileInfo(GetAppDataFolder() + "\store.db")
+        If fileExits.Exists = False Then
+            IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\store.db")
+        End If
 
         lstSubscribed.Top = lstNew.Top
         lstDownloads.Top = lstNew.Top
