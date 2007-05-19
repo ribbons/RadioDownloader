@@ -74,6 +74,12 @@ Public Class frmMain
         ' Load all of the available plugins into an array for later reference
         AvailablePlugins = FindPlugins(My.Application.Info.DirectoryPath)
 
+        ' If this is the first run of a new version of the application, then upgrade the settings from the old version.
+        If My.Settings.UpgradeSettings Then
+            My.Settings.Upgrade()
+            My.Settings.UpgradeSettings = False
+        End If
+
         ' Make sure that the temp and application data folders exist
         Directory.CreateDirectory(System.IO.Path.GetTempPath + "\RadioDownloader")
         Directory.CreateDirectory(GetAppDataFolder)
