@@ -46,7 +46,13 @@ Module modMain
             My.Settings.SaveFolder = ""
         End If
 
-        GetSaveFolder = My.Computer.FileSystem.SpecialDirectories.MyDocuments + "\Downloaded Radio"
+        Dim strMyDocs As String = My.Computer.FileSystem.SpecialDirectories.MyDocuments
+
+        If strMyDocs.Substring(strMyDocs.Length - 1) = "\" Then
+            strMyDocs = strMyDocs.Substring(0, strMyDocs.Length - 1)
+        End If
+
+        GetSaveFolder = strMyDocs + "\Downloaded Radio"
 
         If New DirectoryInfo(GetSaveFolder).Exists = False Then
             Call New DirectoryInfo(GetSaveFolder).Create()
