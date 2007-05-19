@@ -63,6 +63,7 @@ Section "Radio Downloader" RadioDownloader
   File "..\bin\System.Data.SQLite.DLL"
   File "..\bin\store.db"
   File "..\Graphics\icon\Icon - Grey.ico"
+  File "..\GPL.txt"
   ;Store installation folder
   WriteRegStr HKCU "Software\Radio Downloader" "" $INSTDIR
 
@@ -102,6 +103,7 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\System.Data.SQLite.DLL"
   Delete /REBOOTOK "$INSTDIR\store.db"
   Delete /REBOOTOK "$INSTDIR\Icon - Grey.ico"
+  Delete /REBOOTOK "$INSTDIR\GPL.txt"
 
   ;Delete the installer and the program files folder
   Delete /REBOOTOK "$INSTDIR\Uninstall.exe"
