@@ -15,8 +15,7 @@
   ;Name and file
   Name "Radio Downloader"
   OutFile "Radio Downloader.exe"
-  ;SetCompressor /SOLID lzma
-  SetCompress off
+  SetCompressor lzma
   InstallDir "$PROGRAMFILES\Radio Downloader"
 
   !define MUI_ICON "..\Graphics\icon\Icon.ico"
