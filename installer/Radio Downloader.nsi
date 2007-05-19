@@ -52,35 +52,66 @@
 ;Installer Sections
 
 Section "Radio Downloader" RadioDownloader
-
   !insertmacro CheckDotNET ${DOTNET_VERSION}
 
+  ;Output the files for the components folder
+  SetOutPath "$INSTDIR\Components"
+  File "..\bin\Components\mplayer.exe"
+  File "..\bin\Components\lame.exe"
+
+  ;Output the files in the program files folder
   SetOutPath "$INSTDIR"
   File "..\bin\Radio Downloader.exe"
   File "..\bin\System.Data.SQLite.DLL"
-  File /oname=store.db "..\empty store.db"
-  
+  File "..\bin\store.db"
+  File "..\Graphics\icon\Icon - Grey.ico"
   ;Store installation folder
   WriteRegStr HKCU "Software\Radio Downloader" "" $INSTDIR
+
+  ;Create Start Menu Shortcuts
+  SetShellVarContext all ; Store shortcuts in all users folder.
+  CreateDirectory "$SMPROGRAMS\Radio Downloader"
+  CreateShortCut "$SMPROGRAMS\Radio Downloader\Radio Downloader.lnk" "$INSTDIR\Radio Downloader.exe"
+  CreateShortCut "$SMPROGRAMS\Radio Downloader\Uninstall.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Icon - Grey.ico"
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
-
+  
+  ;Add an entry to the uninstall list
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader" "DisplayName" "Radio Downloader"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader" "UninstallString" "$INSTDIR\Uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader" "DisplayIcon" "$INSTDIR\Radio Downloader.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader" "URLInfoAbout" "http://www.nerdoftheherd.com/tools/radiodld/"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader" "Publisher" "www.nerdoftheherd.com"
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader" "NoModify" 1
+  WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader" "NoRepair" 1
 SectionEnd
 
 ;--------------------------------
 ;Uninstaller Section
 
 Section "Uninstall"
+  ;Delete the Start Menu shortcuts and folder
+  SetShellVarContext all
+  Delete /REBOOTOK  "$SMPROGRAMS\Radio Downloader\Radio Downloader.lnk"
+  Delete /REBOOTOK  "$SMPROGRAMS\Radio Downloader\Uninstall.lnk"
+  RMDir /REBOOTOK "$SMPROGRAMS\Radio Downloader"
 
+  ;Delete the components folder
 
+  ;Delete the files in the program files folder
   Delete /REBOOTOK "$INSTDIR\Radio Downloader.exe"
   Delete /REBOOTOK "$INSTDIR\System.Data.SQLite.DLL"
-  Delete /REBOOTOK "$INSTDIR\temp.htm"
+  Delete /REBOOTOK "$INSTDIR\store.db"
+  Delete /REBOOTOK "$INSTDIR\Icon - Grey.ico"
 
+  ;Delete the installer and the program files folder
   Delete /REBOOTOK "$INSTDIR\Uninstall.exe"
   RMDir /REBOOTOK "$INSTDIR"
 
+  ;Remove the record of the install location from the registry
   DeleteRegKey HKCU "Software\Radio Downloader"
-
+  
+  ;Remove the entry on the uninstall list
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader"
 SectionEnd
