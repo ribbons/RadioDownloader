@@ -1,6 +1,5 @@
-;NSIS Modern User Interface
-;Basic Example Script
-;Written by Joost Verburg
+;Radio Downloader Installer
+;Copyright 2007 www.nerdoftheherd.com
 
 ;--------------------------------
 ;Includes
@@ -15,7 +14,7 @@
   ;Name and file
   Name "Radio Downloader"
   OutFile "Radio Downloader.exe"
-  SetCompressor lzma
+  SetCompressor /SOLID lzma
   InstallDir "$PROGRAMFILES\Radio Downloader"
 
   !define MUI_ICON "..\Graphics\icon\Icon.ico"
@@ -34,7 +33,7 @@
 ;--------------------------------
 ;Pages
 
-  !insertmacro MUI_PAGE_LICENSE "${NSISDIR}\Docs\Modern UI\License.txt"
+  !insertmacro MUI_PAGE_LICENSE "..\License.txt"
   
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES

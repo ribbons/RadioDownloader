@@ -36,6 +36,6 @@ Public NotInheritable Class frmAbout
     End Sub
 
     Private Sub HomepageLink_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles HomepageLink.Click
-        Start("www.nerdoftheherd.com/utils/radiodld")
+        Start("http://www.nerdoftheherd.com/tools/radiodld/")
     End Sub
 End Class

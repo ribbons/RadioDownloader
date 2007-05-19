@@ -58,7 +58,7 @@ Partial Class frmAbout
         Me.TextboxLicense.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TextboxLicense.Font = New System.Drawing.Font("Courier New", 7.8!)
+        Me.TextboxLicense.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.TextboxLicense.Location = New System.Drawing.Point(12, 107)
         Me.TextboxLicense.Multiline = True
         Me.TextboxLicense.Name = "TextboxLicense"
@@ -82,10 +82,10 @@ Partial Class frmAbout
         Me.HomepageLink.AutoSize = True
         Me.HomepageLink.Location = New System.Drawing.Point(82, 56)
         Me.HomepageLink.Name = "HomepageLink"
-        Me.HomepageLink.Size = New System.Drawing.Size(188, 13)
+        Me.HomepageLink.Size = New System.Drawing.Size(228, 13)
         Me.HomepageLink.TabIndex = 3
         Me.HomepageLink.TabStop = True
-        Me.HomepageLink.Text = "www.nerdoftheherd.com/utils/radiodld"
+        Me.HomepageLink.Text = "http://www.nerdoftheherd.com/tools/radiodld/"
         '
         'LabelLicense
         '
