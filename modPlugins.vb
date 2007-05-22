@@ -27,6 +27,7 @@ Public Interface IRadioProvider
 
     Structure ProgramInfo
         Dim Success As Boolean
+        Dim Skipped As Boolean
         Dim ProgramName As String
         Dim ProgramDescription As String
         Dim ProgramDuration As Long

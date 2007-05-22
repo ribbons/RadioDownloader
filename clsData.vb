@@ -378,13 +378,15 @@ Friend Class clsData
             sqlReader.Close()
         End If
 
-        ' Remove the previous record of when we tried to download info about this program (if it exists)
-        sqlCommand = New SQLiteCommand("DELETE FROM tblLastFetch WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """", sqlConnection)
-        Call sqlCommand.ExecuteNonQuery()
+        If ProgInfo.Skipped = False Then
+            ' Remove the previous record of when we tried to download info about this program (if it exists)
+            sqlCommand = New SQLiteCommand("DELETE FROM tblLastFetch WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """", sqlConnection)
+            Call sqlCommand.ExecuteNonQuery()
 
-        ' Record when we tried to get information about this program
-        sqlCommand = New SQLiteCommand("INSERT INTO tblLastFetch (Type, Station, ID, LastTry) VALUES (""" + strProgramType + """, """ + strStationID + """, """ & strProgramID & """, """ + Now.ToString(strSqlDateFormat) + """)", sqlConnection)
-        Call sqlCommand.ExecuteNonQuery()
+            ' Record when we tried to get information about this program
+            sqlCommand = New SQLiteCommand("INSERT INTO tblLastFetch (Type, Station, ID, LastTry) VALUES (""" + strProgramType + """, """ + strStationID + """, """ & strProgramID & """, """ + Now.ToString(strSqlDateFormat) + """)", sqlConnection)
+            Call sqlCommand.ExecuteNonQuery()
+        End If
     End Sub
 
     Public Sub ResetDownload(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booAuto As Boolean)
