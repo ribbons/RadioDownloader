@@ -115,7 +115,7 @@ Friend Class clsBackground
             End If
         Next SinglePlugin
 
-        strFinalName = GetSaveFolder() + "\" + CreateSaveFileName(My.Settings.FileNameFormat, strProgTitle, "mp3")
+        strFinalName = GetSaveFolder() + "\" + CreateSaveFileName(My.Settings.FileNameFormat, strProgTitle, "mp3", dteProgDate)
 
         ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strFinalName)
     End Sub

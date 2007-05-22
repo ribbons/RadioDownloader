@@ -66,16 +66,16 @@ Module modMain
         Return My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData.Substring(0, lngLastSlash)
     End Function
 
-    Public Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal strFileExtension As String) As String
+    Public Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal strFileExtension As String, ByVal dteSaveDate As Date) As String
         Dim strName As String = strFormatString
 
         strName = strName.Replace("%title%", strProgTitle)
-        strName = strName.Replace("%day%", Now.ToString("dd"))
-        strName = strName.Replace("%month%", Now.ToString("MM"))
-        strName = strName.Replace("%shortmonthname%", Now.ToString("MMM"))
-        strName = strName.Replace("%monthname%", Now.ToString("MMMM"))
-        strName = strName.Replace("%year%", Now.ToString("yy"))
-        strName = strName.Replace("%longyear%", Now.ToString("yyyy"))
+        strName = strName.Replace("%day%", dteSaveDate.ToString("dd"))
+        strName = strName.Replace("%month%", dteSaveDate.ToString("MM"))
+        strName = strName.Replace("%shortmonthname%", dteSaveDate.ToString("MMM"))
+        strName = strName.Replace("%monthname%", dteSaveDate.ToString("MMMM"))
+        strName = strName.Replace("%year%", dteSaveDate.ToString("yy"))
+        strName = strName.Replace("%longyear%", dteSaveDate.ToString("yyyy"))
         strName = strName.Replace("%ext%", strFileExtension)
 
         Dim strCleanedName As String
