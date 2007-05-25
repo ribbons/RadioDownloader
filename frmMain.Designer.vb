@@ -113,7 +113,7 @@
         'mnuFileExit
         '
         Me.mnuFileExit.Name = "mnuFileExit"
-        Me.mnuFileExit.Size = New System.Drawing.Size(152, 22)
+        Me.mnuFileExit.Size = New System.Drawing.Size(92, 22)
         Me.mnuFileExit.Text = "E&xit"
         '
         'mnuTools
@@ -126,7 +126,7 @@
         'mnuToolsPrefs
         '
         Me.mnuToolsPrefs.Name = "mnuToolsPrefs"
-        Me.mnuToolsPrefs.Size = New System.Drawing.Size(152, 22)
+        Me.mnuToolsPrefs.Size = New System.Drawing.Size(135, 22)
         Me.mnuToolsPrefs.Text = "&Preferences"
         '
         'mnuHelp
@@ -139,7 +139,7 @@
         'mnuHelpAbout
         '
         Me.mnuHelpAbout.Name = "mnuHelpAbout"
-        Me.mnuHelpAbout.Size = New System.Drawing.Size(152, 22)
+        Me.mnuHelpAbout.Size = New System.Drawing.Size(107, 22)
         Me.mnuHelpAbout.Text = "&About"
         '
         'tbrToolbar
@@ -228,6 +228,7 @@
         '
         Me.mnuTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuTrayShow, Me.ToolStripSeparator3, Me.mnuTrayExit})
         Me.mnuTray.Name = "ContextMenuStrip1"
+        Me.mnuTray.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
         Me.mnuTray.Size = New System.Drawing.Size(204, 54)
         '
         'mnuTrayShow
