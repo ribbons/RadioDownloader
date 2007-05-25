@@ -124,8 +124,8 @@
   <data name="LogoPictureBox.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
-        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDgAA
-        Cw4BQL7hQQAAHNFJREFUeF7dmwlYjmnbx1UY5p3tnaExM2bDWNo3LYzXPoMIlZSUZKlESCVKCKVIRIsi
+        YQUAAAAgY0hSTQAAeiYAAICEAAD6AAAAgOgAAHUwAADqYAAAOpgAABdwnLpRPAAAAAlwSFlzAAALDQAA
+        Cw0B7QfALAAAHNFJREFUeF7dmwlYjmnbx1UY5p3tnaExM2bDWNo3LYzXPoMIlZSUZKlESCVKCKVIRIsi
         IiRJQiLRrn0v7bv2fV/w/87rrgyvjzJj3m95juN/PHfPcz/3dZ6/6zzPa7nveIb8B18AWGs8r4h9wImH
         h338/+jFnCXxkHh3WKaPmLUiQvy3VVHrlq+PtVXVj7+sohd3V35NdMj05eGPJBaGBEguDLk0bVn4MTpH
         X3FD7GxT68wv2W/ZNf5PYelzfMhslYgxpM2/r34cSE41zV8VBXIce0+mwsXnCc75Z8LdNxf2Z/JhcigD
@@ -280,6 +280,12 @@ Floor, Boston, MA 02110-1301 USA.</value>
     <value>True</value>
   </metadata>
   <metadata name="ButtonOK.Locked" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="lblIconCredit.Locked" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <metadata name="IconsLink.Locked" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <metadata name="$this.Locked" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">

@@ -38,4 +38,8 @@ Public NotInheritable Class frmAbout
     Private Sub HomepageLink_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles HomepageLink.Click
         Start("http://www.nerdoftheherd.com/tools/radiodld/")
     End Sub
+
+    Private Sub IconsLink_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles IconsLink.LinkClicked
+        Start("http://www.everaldo.com/")
+    End Sub
 End Class
