@@ -60,6 +60,7 @@ Section "Radio Downloader" RadioDownloader
   ;Output the files in the program files folder
   SetOutPath "$INSTDIR"
   File "..\bin\Radio Downloader.exe"
+  File "..\bin\Radio Downloader.pdb"
   File "..\bin\System.Data.SQLite.DLL"
   File "..\bin\store.db"
   File "..\Graphics\icon\Icon - Grey.ico"
@@ -100,6 +101,7 @@ Section "Uninstall"
 
   ;Delete the files in the program files folder
   Delete /REBOOTOK "$INSTDIR\Radio Downloader.exe"
+  Delete /REBOOTOK "$INSTDIR\Radio Downloader.pdb"
   Delete /REBOOTOK "$INSTDIR\System.Data.SQLite.DLL"
   Delete /REBOOTOK "$INSTDIR\store.db"
   Delete /REBOOTOK "$INSTDIR\Icon - Grey.ico"
