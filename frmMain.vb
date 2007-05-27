@@ -71,6 +71,11 @@ Public Class frmMain
     End Sub
 
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
+        ' Add a handler to catch otherwise unhandled exceptions
+        AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
+        ' Add a handler for thread exceptions
+        AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
+
         ' Load all of the available plugins into an array for later reference
         AvailablePlugins = FindPlugins(My.Application.Info.DirectoryPath)
 

@@ -139,4 +139,17 @@ Module modMain
         If lngPos > 0 Then strString = Left(strString, lngPos - 1)
         TrimNull = strString
     End Function
+
+    Public Sub ExceptionHandler(ByVal sender As Object, ByVal e As UnhandledExceptionEventArgs)
+        Dim expException As Exception
+        expException = DirectCast(e.ExceptionObject, Exception)
+
+        frmError.strErrorInfo = expException.ToString()
+        frmError.ShowDialog()
+    End Sub
+
+    Public Sub ThreadExceptionHandler(ByVal sender As Object, ByVal e As Threading.ThreadExceptionEventArgs)
+        frmError.strErrorInfo = e.Exception.ToString()
+        frmError.ShowDialog()
+    End Sub
 End Module
