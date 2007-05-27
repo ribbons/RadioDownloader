@@ -63,16 +63,13 @@ Section "Radio Downloader" RadioDownloader
   File "..\bin\Radio Downloader.pdb"
   File "..\bin\System.Data.SQLite.DLL"
   File "..\bin\store.db"
-  File "..\Graphics\icon\Icon - Grey.ico"
   File "..\GPL.txt"
   ;Store installation folder
   WriteRegStr HKCU "Software\Radio Downloader" "" $INSTDIR
 
   ;Create Start Menu Shortcuts
   SetShellVarContext all ; Store shortcuts in all users folder.
-  CreateDirectory "$SMPROGRAMS\Radio Downloader"
-  CreateShortCut "$SMPROGRAMS\Radio Downloader\Radio Downloader.lnk" "$INSTDIR\Radio Downloader.exe"
-  CreateShortCut "$SMPROGRAMS\Radio Downloader\Uninstall.lnk" "$INSTDIR\Uninstall.exe" "" "$INSTDIR\Icon - Grey.ico"
+  CreateShortCut "$SMPROGRAMS\Radio Downloader.lnk" "$INSTDIR\Radio Downloader.exe"
   
   ;Create uninstaller
   WriteUninstaller "$INSTDIR\Uninstall.exe"
@@ -93,9 +90,7 @@ SectionEnd
 Section "Uninstall"
   ;Delete the Start Menu shortcuts and folder
   SetShellVarContext all
-  Delete /REBOOTOK  "$SMPROGRAMS\Radio Downloader\Radio Downloader.lnk"
-  Delete /REBOOTOK  "$SMPROGRAMS\Radio Downloader\Uninstall.lnk"
-  RMDir /REBOOTOK "$SMPROGRAMS\Radio Downloader"
+  Delete /REBOOTOK  "$SMPROGRAMS\Radio Downloader.lnk"
 
   ;Delete the components folder
 
@@ -104,7 +99,6 @@ Section "Uninstall"
   Delete /REBOOTOK "$INSTDIR\Radio Downloader.pdb"
   Delete /REBOOTOK "$INSTDIR\System.Data.SQLite.DLL"
   Delete /REBOOTOK "$INSTDIR\store.db"
-  Delete /REBOOTOK "$INSTDIR\Icon - Grey.ico"
   Delete /REBOOTOK "$INSTDIR\GPL.txt"
 
   ;Delete the installer and the program files folder
