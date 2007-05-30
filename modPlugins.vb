@@ -26,8 +26,7 @@ Public Interface IRadioProvider
     End Structure
 
     Structure ProgramInfo
-        Dim Success As Boolean
-        Dim Skipped As Boolean
+        Dim Result As ProgInfoResult
         Dim ProgramName As String
         Dim ProgramDescription As String
         Dim ProgramDuration As Long
@@ -40,6 +39,13 @@ Public Interface IRadioProvider
         Dim StationID As String
         Dim ProgramName As String
     End Structure
+
+    Enum ProgInfoResult
+        OtherError
+        TempError
+        Skipped
+        Success
+    End Enum
 
     Enum ProgressIcon
         Downloading

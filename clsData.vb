@@ -366,7 +366,7 @@ Friend Class clsData
         Dim ProgInfo As IRadioProvider.ProgramInfo
         ProgInfo = ThisInstance.GetLatestProgramInfo(strStationID, strProgramID, LatestDate(strProgramType, strStationID, strProgramID), dteLastAttempt)
 
-        If ProgInfo.Success Then
+        If ProgInfo.Result = IRadioProvider.ProgInfoResult.Success Then
             sqlCommand = New SQLiteCommand("SELECT * FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """ AND Date=""" + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
             sqlReader = sqlCommand.ExecuteReader
 
@@ -378,7 +378,7 @@ Friend Class clsData
             sqlReader.Close()
         End If
 
-        If ProgInfo.Skipped = False Then
+        If ProgInfo.Result <> IRadioProvider.ProgInfoResult.Skipped And ProgInfo.Result <> IRadioProvider.ProgInfoResult.TempError Then
             ' Remove the previous record of when we tried to download info about this program (if it exists)
             sqlCommand = New SQLiteCommand("DELETE FROM tblLastFetch WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """", sqlConnection)
             Call sqlCommand.ExecuteNonQuery()
