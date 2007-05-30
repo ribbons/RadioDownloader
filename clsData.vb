@@ -149,7 +149,7 @@ Friend Class clsData
             ProgramHTML = ProgramHTML + .GetString(.GetOrdinal("Description")) + "</p>"
 
             ProgramHTML = ProgramHTML + "<div style=""clear: both;""></div>"
-            ProgramHTML = ProgramHTML + .GetDateTime(.GetOrdinal("Date")).ToString("ddd dd/MMM/yy hh:mm") & " "
+            ProgramHTML = ProgramHTML + .GetDateTime(.GetOrdinal("Date")).ToString("ddd dd/MMM/yy HH:mm") & " "
 
             lngMins = .GetInt32(.GetOrdinal("Duration")) Mod 60
             lngHours = .GetInt32(.GetOrdinal("Duration")) \ 60
