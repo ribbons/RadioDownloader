@@ -34,9 +34,9 @@
 ;Pages
 
   !insertmacro MUI_PAGE_LICENSE "..\License.txt"
-  
   !insertmacro MUI_PAGE_DIRECTORY
   !insertmacro MUI_PAGE_INSTFILES
+  Page custom SetPostInstall ValidatePostInstall
   
   !insertmacro MUI_UNPAGE_CONFIRM
   !insertmacro MUI_UNPAGE_INSTFILES
@@ -84,6 +84,25 @@ Section "Radio Downloader" RadioDownloader
   WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\RadioDownloader" "NoRepair" 1
 SectionEnd
 
+Function .onInit
+  InitPluginsDir
+  File /oname=$PLUGINSDIR\postinstall.ini "postinstall.ini"
+FunctionEnd
+
+Function SetPostInstall
+  Push $R0
+  InstallOptions::dialog "$PLUGINSDIR\postinstall.ini"
+  Pop $R0
+FunctionEnd
+
+Function ValidatePostInstall
+  ; If the 'Run at startup (recommended)' box is checked, then create a startup shortcut.
+  ReadINIStr $R0 "$PLUGINSDIR\postinstall.ini" "Field 1" "State"
+  StrCmp $R0 0 afterstartup
+  CreateShortCut "$SMPROGRAMS\Startup\Radio Downloader.lnk" "$INSTDIR\Radio Downloader.exe" "-starttray"
+  afterstartup:
+FunctionEnd
+
 ;--------------------------------
 ;Uninstaller Section
 
@@ -91,6 +110,7 @@ Section "Uninstall"
   ;Delete the Start Menu shortcuts and folder
   SetShellVarContext all
   Delete /REBOOTOK  "$SMPROGRAMS\Radio Downloader.lnk"
+  Delete /REBOOTOK  "$SMPROGRAMS\Startup\Radio Downloader.lnk"
 
   ;Delete the components folder
 

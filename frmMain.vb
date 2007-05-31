@@ -627,4 +627,13 @@ Public Class frmMain
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         tmrStartProcess.Enabled = True
     End Sub
+
+    Private Sub frmMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+        For Each strCommand As String In Environment.GetCommandLineArgs()
+            If strCommand = "-starttray" Then
+                Call TrayAnimate(Me, True)
+                Me.Visible = False
+            End If
+        Next
+    End Sub
 End Class
