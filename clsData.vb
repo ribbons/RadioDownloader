@@ -427,4 +427,18 @@ Friend Class clsData
             RaiseEvent AddProgramToList(strProgramType, SingleProg.StationID, SingleProg.ProgramID, strProgTitle)
         Next
     End Sub
+
+    Public Function IsProgramStillAvailable(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
+        Dim ThisInstance As IRadioProvider = Nothing
+
+        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
+
+            If ThisInstance.ProviderUniqueID = strProgramType Then
+                Exit For
+            End If
+        Next SinglePlugin
+
+        Return ThisInstance.IsStillAvailable(strStationID, strProgramID, dteProgramDate)
+    End Function
 End Class

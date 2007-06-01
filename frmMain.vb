@@ -368,10 +368,21 @@ Public Class frmMain
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
         ' Make sure that it isn't currently working
         If clsBackgroundThread Is Nothing Then
+            ' Look for a program to download
             clsBackgroundThread = clsProgData.FindNewDownload
 
-            ' Look for a program to download
             If clsBackgroundThread Is Nothing = False Then
+                If clsProgData.IsProgramStillAvailable(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate) = False Then
+                    Call clsProgData.CancelDownload(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
+
+                    If tbtDownloads.Selected = True Then
+                        Call TabAdjustments() ' Revert back to tab info so prog info goes
+                    End If
+
+                    Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+                    Exit Sub
+                End If
+
                 clsBackgroundThread.PluginsList = AvailablePlugins
 
                 thrBackgroundThread = New Thread(New ThreadStart(AddressOf clsBackgroundThread.DownloadProgram))
