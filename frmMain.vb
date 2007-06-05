@@ -139,7 +139,7 @@ Public Class frmMain
 
         Call AddStations()
         Call TabAdjustments()
-        nicTrayIcon.Icon = Me.Icon
+        nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
         nicTrayIcon.Visible = True
 
         ' Set up the web browser so that public methods of this form can be called from javascript in the html
