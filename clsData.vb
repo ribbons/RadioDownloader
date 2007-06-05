@@ -187,6 +187,8 @@ Friend Class clsData
             lstListview.RemoveAllControls()
         End If
 
+        Dim booErrorStatus As Boolean = False
+
         Do While sqlReader.Read()
             Dim strUniqueId As String = sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Station")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
 
@@ -206,10 +208,17 @@ Friend Class clsData
                 Case Statuses.Errored
                     lstAdd.SubItems.Add("Error")
                     lstAdd.ImageKey = "error"
+                    booErrorStatus = True
             End Select
 
             lstAdd.SubItems.Add("")
         Loop
+
+        If booErrorStatus Then
+            frmMain.SetTrayStatus(False, frmMain.ErrorStatus.Error)
+        Else
+            frmMain.SetTrayStatus(False, frmMain.ErrorStatus.Normal)
+        End If
 
         sqlReader.Close()
     End Sub

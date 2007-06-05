@@ -170,11 +170,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon.ico" />
+    <EmbeddedResource Include="Icon.ico" />
+    <EmbeddedResource Include="Error.ico" />
     <Content Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </Content>
+    <EmbeddedResource Include="Working.ico" />
     <None Include="sidebar.css" />
   </ItemGroup>
   <ItemGroup>

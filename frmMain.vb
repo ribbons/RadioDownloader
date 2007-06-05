@@ -18,10 +18,17 @@ Option Explicit On
 Imports System.IO
 Imports System.IO.File
 Imports System.Threading
+Imports System.Reflection
 Imports System.Text.ASCIIEncoding
 
 Public Class frmMain
     Inherits System.Windows.Forms.Form
+
+    Public Enum ErrorStatus
+        NoChange
+        Normal
+        [Error]
+    End Enum
 
     Private AvailablePlugins As AvailablePlugin()
 
@@ -36,6 +43,26 @@ Public Class frmMain
     Private Delegate Sub clsBackgroundThread_Progress_Delegate(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal strError As String)
     Private Delegate Sub clsBackgroundThread_Finished_Delegate()
+
+    Public Sub SetTrayStatus(ByVal booActive As Boolean, Optional ByVal ErrorStatus As ErrorStatus = ErrorStatus.NoChange)
+        Dim booErrorStatus As Boolean
+
+        If ErrorStatus = frmMain.ErrorStatus.Error Then
+            booErrorStatus = True
+        ElseIf ErrorStatus = frmMain.ErrorStatus.Normal Then
+            booErrorStatus = False
+        End If
+
+        If booErrorStatus = True Then
+            nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Error.ico"))
+        Else
+            If booActive = True Then
+                nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Working.ico"))
+            Else
+                nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
+            End If
+        End If
+    End Sub
 
     Private Sub SetNewView(ByVal booStations As Boolean)
         lstNew.Items.Clear()
@@ -536,6 +563,8 @@ Public Class frmMain
                     lstItem.ImageKey = "converting"
             End Select
         End With
+
+        Call SetTrayStatus(True)
     End Sub
 
     ' Called from JavaScript in embedded XHTML -------------------------------------
