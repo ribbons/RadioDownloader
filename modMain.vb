@@ -66,7 +66,28 @@ Module modMain
         Return My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData.Substring(0, lngLastSlash)
     End Function
 
-    Public Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal strFileExtension As String, ByVal dteSaveDate As Date) As String
+    Public Function FindFreeSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal strFileExtension As String, ByVal dteSaveDate As Date, ByVal strSavePath As String) As String
+        If strSavePath <> "" Then
+            strSavePath += "\"
+        End If
+
+        Dim strSaveName As String = CreateSaveFileName(strFormatString, strProgTitle, strFileExtension, dteSaveDate)
+        Dim intDiffNum As Integer = 1
+
+        If strSavePath = "" Then
+            ' This is only for the example on the prefs form, so don't check if the file already exists.
+            Return strSaveName
+        End If
+
+        While File.Exists(strSavePath + strSaveName)
+            strSaveName = CreateSaveFileName(strFormatString + " (" + CStr(intDiffNum) + ")", strProgTitle, strFileExtension, dteSaveDate)
+            intDiffNum += 1
+        End While
+
+        Return strSavePath + strSaveName
+    End Function
+
+    Private Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal strFileExtension As String, ByVal dteSaveDate As Date) As String
         Dim strName As String = strFormatString
 
         strName = strName.Replace("%title%", strProgTitle)
@@ -76,7 +97,6 @@ Module modMain
         strName = strName.Replace("%monthname%", dteSaveDate.ToString("MMMM"))
         strName = strName.Replace("%year%", dteSaveDate.ToString("yy"))
         strName = strName.Replace("%longyear%", dteSaveDate.ToString("yyyy"))
-        strName = strName.Replace("%ext%", strFileExtension)
 
         Dim strCleanedName As String
         Dim strTrimmedName As String = ""
@@ -96,7 +116,7 @@ Module modMain
             strCleanedName = Replace(strCleanedName, "  ", " ")
         Loop
 
-        Return Trim(strCleanedName)
+        Return Trim(strCleanedName) + "." + strFileExtension
     End Function
 
     Public Sub TrayAnimate(ByRef frmForm As System.Windows.Forms.Form, ByRef booDown As Boolean)

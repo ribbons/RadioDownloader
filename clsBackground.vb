@@ -15,9 +15,6 @@
 Option Strict On
 Option Explicit On
 
-Imports Microsoft.VisualBasic
-Imports System.Text.RegularExpressions
-
 Friend Class clsBackground
     Private Declare Function MoveFile Lib "kernel32" Alias "MoveFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
 
@@ -115,7 +112,7 @@ Friend Class clsBackground
             End If
         Next SinglePlugin
 
-        strFinalName = GetSaveFolder() + "\" + CreateSaveFileName(My.Settings.FileNameFormat, strProgTitle, "mp3", dteProgDate)
+        strFinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, strProgTitle, "mp3", dteProgDate, GetSaveFolder())
 
         ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strFinalName)
     End Sub

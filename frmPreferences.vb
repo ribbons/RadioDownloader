@@ -48,7 +48,7 @@ Friend Class frmPreferences
     End Sub
 
     Private Sub txtFileNameFormat_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFileNameFormat.TextChanged
-        lblFilenameFormatResult.Text = "Result: " + CreateSaveFileName(txtFileNameFormat.Text, "Example Program", "mp3", Now)
+        lblFilenameFormatResult.Text = "Result: " + FindFreeSaveFileName(txtFileNameFormat.Text, "Example Program", "mp3", Now, "")
     End Sub
 
     Private Sub cmdReset_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdReset.Click
