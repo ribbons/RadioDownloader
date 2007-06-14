@@ -19,6 +19,26 @@ Imports System.Reflection
 Imports System.IO
 
 Public Interface IRadioProvider
+    Class StationTable
+        Inherits Hashtable
+
+        Public Shadows Sub Add(ByVal strStationUniqueID As String, ByVal strStationName As String, Optional ByVal icoStationIcon As Icon = Nothing)
+            Dim Station As StationInfo
+
+            Station.StationUniqueID = strStationUniqueID
+            Station.StationName = strStationName
+            Station.StationIcon = icoStationIcon
+
+            Call MyBase.Add(strStationUniqueID, Station)
+        End Sub
+
+        Default Public Shadows ReadOnly Property Item(ByVal strKey As String) As StationInfo
+            Get
+                Return DirectCast(MyBase.Item(strKey), StationInfo)
+            End Get
+        End Property
+    End Class
+
     Structure StationInfo
         Dim StationUniqueID As String
         Dim StationName As String
@@ -56,7 +76,7 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
 
-    Function ReturnStations() As StationInfo()
+    Function ReturnStations() As StationTable
     Function ListProgramIDs(ByVal strStationID As String) As ProgramListItem()
     Function GetLatestProgramInfo(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteLastInfoFor As Date, ByVal dteLastAttempt As Date) As ProgramInfo
     Function IsLatestProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
