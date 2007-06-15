@@ -22,6 +22,8 @@ Public Interface IRadioProvider
     Class StationTable
         Inherits Hashtable
 
+        Private SortedList(-1) As StationInfo
+
         Public Shadows Sub Add(ByVal strStationUniqueID As String, ByVal strStationName As String, Optional ByVal icoStationIcon As Icon = Nothing)
             Dim Station As StationInfo
 
@@ -29,12 +31,21 @@ Public Interface IRadioProvider
             Station.StationName = strStationName
             Station.StationIcon = icoStationIcon
 
+            ReDim Preserve SortedList(SortedList.GetUpperBound(0) + 1)
+            SortedList(SortedList.GetUpperBound(0)) = Station
+
             Call MyBase.Add(strStationUniqueID, Station)
         End Sub
 
         Default Public Shadows ReadOnly Property Item(ByVal strKey As String) As StationInfo
             Get
                 Return DirectCast(MyBase.Item(strKey), StationInfo)
+            End Get
+        End Property
+
+        Public ReadOnly Property SortedValues() As StationInfo()
+            Get
+                Return SortedList
             End Get
         End Property
     End Class

@@ -82,7 +82,7 @@ Public Class frmMain
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
             ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
 
-            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations.Values
+            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations.SortedValues
                 Call AddStation(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID)
             Next
         Next SinglePlugin
