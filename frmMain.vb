@@ -126,7 +126,9 @@ Public Class frmMain
         lstDownloads.Top = lstNew.Top
 
         Call lstNew.Columns.Add("Programme Name", 500)
-        Call lstSubscribed.Columns.Add("Programme Name", 550)
+        Call lstSubscribed.Columns.Add("Programme Name", 275)
+        Call lstSubscribed.Columns.Add("Station", 125)
+        Call lstSubscribed.Columns.Add("Provider", 125)
         Call lstDownloads.Columns.Add("Name", 225)
         Call lstDownloads.Columns.Add("Date", 75)
         Call lstDownloads.Columns.Add("Status", 125)

@@ -238,6 +238,8 @@ Friend Class clsData
                 lstAdd = New ListViewItem
 
                 lstAdd.Text = ProgramTitle(.GetString(.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))))
+                lstAdd.SubItems.Add(StationName(.GetString(.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station"))))
+                lstAdd.SubItems.Add(ProviderName(.GetString(.GetOrdinal("Type"))))
                 lstAdd.Tag = .GetString(sqlReader.GetOrdinal("Type")) + "||" + .GetString(sqlReader.GetOrdinal("Station")) + "||" + .GetString(sqlReader.GetOrdinal("ID"))
                 lstAdd.ImageKey = "subscribed"
 
@@ -449,5 +451,33 @@ Friend Class clsData
         Next SinglePlugin
 
         Return ThisInstance.IsStillAvailable(strStationID, strProgramID, dteProgramDate)
+    End Function
+
+    Public Function StationName(ByVal strProgramType As String, ByVal strStationID As String) As String
+        Dim ThisInstance As IRadioProvider = Nothing
+
+        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
+
+            If ThisInstance.ProviderUniqueID = strProgramType Then
+                Exit For
+            End If
+        Next SinglePlugin
+
+        Return ThisInstance.ReturnStations.Item(strStationID).StationName
+    End Function
+
+    Public Function ProviderName(ByVal strProgramType As String) As String
+        Dim ThisInstance As IRadioProvider = Nothing
+
+        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
+
+            If ThisInstance.ProviderUniqueID = strProgramType Then
+                Exit For
+            End If
+        Next SinglePlugin
+
+        Return ThisInstance.ProviderName
     End Function
 End Class
