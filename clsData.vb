@@ -182,10 +182,7 @@ Friend Class clsData
         Dim lstAdd As ListViewItem
         lstListview.Items.Clear()
 
-        If prgProgressBar.Visible Then
-            prgProgressBar.Visible = False
-            lstListview.RemoveAllControls()
-        End If
+        lstListview.RemoveAllControls()
 
         Dim booErrorStatus As Boolean = False
 

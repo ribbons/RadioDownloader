@@ -553,9 +553,8 @@ Public Class frmMain
             lstItem.SubItems(2).Text = strStatusText
             prgDldProg.Value = intPercent
 
-            If prgDldProg.Visible = False Then
-                lstDownloads.AddEmbeddedControl(prgDldProg, lstItem, 3)
-                prgDldProg.Visible = True
+            If lstDownloads.Controls.Count = 0 Then
+                lstDownloads.AddProgressBar(prgDldProg, lstItem, 3)
             End If
 
             Select Case Icon

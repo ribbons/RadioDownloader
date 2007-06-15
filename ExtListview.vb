@@ -29,8 +29,8 @@ Public Class ExtListView : Inherits ListView
     Private embeddedControls As New ArrayList()
 
     ' Data structure to store information about the controls
-    Private Structure EmbeddedControl
-        Dim ctrControl As Control
+    Private Structure EmbeddedProgress
+        Dim prgProgress As ProgressBar
         Dim intColumn As Integer
         Dim dstDock As DockStyle
         Dim lstItem As ListViewItem
@@ -90,12 +90,12 @@ Public Class ExtListView : Inherits ListView
         Return subItemRect
     End Function
 
-    Public Sub AddEmbeddedControl(ByVal ctlControl As Control, ByVal lstParentItem As ListViewItem, ByVal intCol As Integer)
-        Call AddEmbeddedControl(ctlControl, lstParentItem, intCol, DockStyle.Fill)
+    Public Sub AddProgressBar(ByRef prgProgress As ProgressBar, ByVal lstParentItem As ListViewItem, ByVal intCol As Integer)
+        Call AddProgressBar(prgProgress, lstParentItem, intCol, DockStyle.Fill)
     End Sub
 
-    Public Sub AddEmbeddedControl(ByVal ctlControl As Control, ByVal lstParentItem As ListViewItem, ByVal intCol As Integer, ByVal dstDock As DockStyle)
-        If ctlControl Is Nothing Then
+    Public Sub AddProgressBar(ByRef prgProgress As ProgressBar, ByVal lstParentItem As ListViewItem, ByVal intCol As Integer, ByVal dstDock As DockStyle)
+        If prgProgress Is Nothing Then
             Throw New ArgumentNullException()
         End If
 
@@ -103,9 +103,9 @@ Public Class ExtListView : Inherits ListView
             Throw New ArgumentOutOfRangeException()
         End If
 
-        Dim emcControl As EmbeddedControl
+        Dim emcControl As EmbeddedProgress
 
-        emcControl.ctrControl = ctlControl
+        emcControl.prgProgress = prgProgress
         emcControl.intColumn = intCol
         emcControl.dstDock = dstDock
         emcControl.lstItem = lstParentItem
@@ -113,22 +113,22 @@ Public Class ExtListView : Inherits ListView
         embeddedControls.Add(emcControl)
 
         ' Add a Click event handler to select the ListView row when an embedded control is clicked
-        AddHandler ctlControl.Click, AddressOf embeddedControl_Click
+        AddHandler prgProgress.Click, AddressOf embeddedControl_Click
 
-        Me.Controls.Add(ctlControl)
+        Me.Controls.Add(prgProgress)
     End Sub
 
-    Public Sub RemoveEmbeddedControl(ByVal ctlControl As Control)
-        If ctlControl Is Nothing Then
+    Public Sub RemoveProgressBar(ByRef prgProgress As ProgressBar)
+        If prgProgress Is Nothing Then
             Throw New ArgumentNullException()
         End If
 
         For intLoop As Integer = 0 To embeddedControls.Count - 1
-            Dim emcControl As EmbeddedControl = DirectCast(embeddedControls(intLoop), EmbeddedControl)
+            Dim emcControl As EmbeddedProgress = DirectCast(embeddedControls(intLoop), EmbeddedProgress)
 
-            If emcControl.ctrControl.Equals(ctlControl) Then
-                RemoveHandler ctlControl.Click, AddressOf embeddedControl_Click
-                Me.Controls.Remove(ctlControl)
+            If emcControl.prgProgress.Equals(prgProgress) Then
+                RemoveHandler prgProgress.Click, AddressOf embeddedControl_Click
+                Me.Controls.Remove(prgProgress)
                 embeddedControls.RemoveAt(intLoop)
                 Exit Sub
             End If
@@ -138,9 +138,9 @@ Public Class ExtListView : Inherits ListView
     End Sub
 
     Public Function GetEmbeddedControl(ByVal lstParentItem As ListViewItem, ByVal intCol As Integer) As Control
-        For Each emcControl As EmbeddedControl In embeddedControls
+        For Each emcControl As EmbeddedProgress In embeddedControls
             If emcControl.lstItem.Equals(lstParentItem) And emcControl.intColumn = intCol Then
-                Return emcControl.ctrControl
+                Return emcControl.prgProgress
             End If
         Next
 
@@ -149,10 +149,11 @@ Public Class ExtListView : Inherits ListView
 
     Public Sub RemoveAllControls()
         For intLoop As Integer = 0 To embeddedControls.Count - 1
-            Dim emcControl As EmbeddedControl = DirectCast(embeddedControls(intLoop), EmbeddedControl)
+            Dim emcControl As EmbeddedProgress = DirectCast(embeddedControls(intLoop), EmbeddedProgress)
 
-            RemoveHandler emcControl.ctrControl.Click, AddressOf embeddedControl_Click
-            Me.Controls.Remove(emcControl.ctrControl)
+            emcControl.prgProgress.Visible = False
+            RemoveHandler emcControl.prgProgress.Click, AddressOf embeddedControl_Click
+            Me.Controls.Remove(emcControl.prgProgress)
         Next
 
         embeddedControls.Clear()
@@ -166,35 +167,35 @@ Public Class ExtListView : Inherits ListView
                 End If
 
                 ' Calculate the position of all embedded controls
-                For Each emcControl As EmbeddedControl In embeddedControls
+                For Each emcControl As EmbeddedProgress In embeddedControls
                     Dim rect As Rectangle = Me.GetSubItemBounds(emcControl.lstItem, emcControl.intColumn)
 
-                    If ((Me.HeaderStyle <> ColumnHeaderStyle.None) And (rect.Top < Me.Font.Height)) Then
-                        ' Control overlaps ColumnHeader
-                        emcControl.ctrControl.Visible = False
+                    If ((Me.HeaderStyle <> ColumnHeaderStyle.None) And (rect.Top < Me.Font.Height)) Or (rect.Top + rect.Height) <= 0 Or (rect.Top > Me.ClientRectangle.Height) Then
+                        ' Control overlaps ColumnHeader, is off the top, or is off the bottom of the listview
+                        emcControl.prgProgress.Visible = False
                         Continue For
                     Else
-                        emcControl.ctrControl.Visible = True
+                        emcControl.prgProgress.Visible = True
                     End If
 
                     Select Case emcControl.dstDock
                         Case DockStyle.Fill
                         Case DockStyle.Top
-                            rect.Height = emcControl.ctrControl.Height
+                            rect.Height = emcControl.prgProgress.Height
                         Case DockStyle.Left
-                            rect.Width = emcControl.ctrControl.Width
+                            rect.Width = emcControl.prgProgress.Width
                         Case DockStyle.Bottom
-                            rect.Offset(0, rect.Height - emcControl.ctrControl.Height)
-                            rect.Height = emcControl.ctrControl.Height
+                            rect.Offset(0, rect.Height - emcControl.prgProgress.Height)
+                            rect.Height = emcControl.prgProgress.Height
                         Case DockStyle.Right
-                            rect.Offset(rect.Width - emcControl.ctrControl.Width, 0)
-                            rect.Width = emcControl.ctrControl.Width
+                            rect.Offset(rect.Width - emcControl.prgProgress.Width, 0)
+                            rect.Width = emcControl.prgProgress.Width
                         Case DockStyle.None
-                            rect.Size = emcControl.ctrControl.Size
+                            rect.Size = emcControl.prgProgress.Size
                     End Select
 
                     ' Set embedded control's bounds
-                    emcControl.ctrControl.Bounds = rect
+                    emcControl.prgProgress.Bounds = rect
                 Next
         End Select
 
@@ -203,8 +204,8 @@ Public Class ExtListView : Inherits ListView
 
     Private Sub embeddedControl_Click(ByVal sender As Object, ByVal e As EventArgs)
         ' When a control is clicked the ListViewItem holding it is selected
-        For Each emcControl As EmbeddedControl In embeddedControls
-            If emcControl.ctrControl.Equals(DirectCast(sender, Control)) Then
+        For Each emcControl As EmbeddedProgress In embeddedControls
+            If emcControl.prgProgress.Equals(DirectCast(sender, Control)) Then
                 Me.SelectedItems.Clear()
                 emcControl.lstItem.Selected = True
             End If
