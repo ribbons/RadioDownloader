@@ -404,6 +404,8 @@ Public Class frmMain
                 If clsProgData.IsProgramStillAvailable(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate) = False Then
                     Call clsProgData.CancelDownload(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
 
+                    clsBackgroundThread = Nothing
+
                     If tbtDownloads.Selected = True Then
                         Call TabAdjustments() ' Revert back to tab info so prog info goes
                     End If
