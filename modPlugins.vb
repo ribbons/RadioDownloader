@@ -97,7 +97,7 @@ Public Interface IRadioProvider
     Event DldError(ByVal strError As String)
     Event Finished()
 
-    Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strFinalName As String)
+    Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer)
 End Interface
 
 Module modPlugins

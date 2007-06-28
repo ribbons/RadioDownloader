@@ -38,6 +38,10 @@
         Me.lblRunAfter = New System.Windows.Forms.Label
         Me.txtRunAfter = New System.Windows.Forms.TextBox
         Me.lblRunAfterFileDef = New System.Windows.Forms.Label
+        Me.lblBandwidthLimit = New System.Windows.Forms.Label
+        Me.updBandwidthLimit = New System.Windows.Forms.NumericUpDown
+        Me.lblKB = New System.Windows.Forms.Label
+        CType(Me.updBandwidthLimit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'cmdCancel
@@ -47,7 +51,7 @@
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdCancel.Location = New System.Drawing.Point(245, 214)
+        Me.cmdCancel.Location = New System.Drawing.Point(266, 267)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdCancel.Size = New System.Drawing.Size(77, 25)
@@ -62,7 +66,7 @@
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdOK.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdOK.Location = New System.Drawing.Point(162, 214)
+        Me.cmdOK.Location = New System.Drawing.Point(183, 267)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdOK.Size = New System.Drawing.Size(77, 25)
@@ -77,7 +81,7 @@
         Me.cmdChangeFolder.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdChangeFolder.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdChangeFolder.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdChangeFolder.Location = New System.Drawing.Point(332, 28)
+        Me.cmdChangeFolder.Location = New System.Drawing.Point(353, 28)
         Me.cmdChangeFolder.Name = "cmdChangeFolder"
         Me.cmdChangeFolder.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdChangeFolder.Size = New System.Drawing.Size(73, 25)
@@ -98,7 +102,7 @@
         Me.txtSaveIn.Name = "txtSaveIn"
         Me.txtSaveIn.ReadOnly = True
         Me.txtSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.txtSaveIn.Size = New System.Drawing.Size(289, 21)
+        Me.txtSaveIn.Size = New System.Drawing.Size(310, 21)
         Me.txtSaveIn.TabIndex = 3
         '
         'lblSaveIn
@@ -129,7 +133,7 @@
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtFileNameFormat.Location = New System.Drawing.Point(37, 85)
         Me.txtFileNameFormat.Name = "txtFileNameFormat"
-        Me.txtFileNameFormat.Size = New System.Drawing.Size(368, 21)
+        Me.txtFileNameFormat.Size = New System.Drawing.Size(389, 21)
         Me.txtFileNameFormat.TabIndex = 6
         '
         'lblFilenameFormatResult
@@ -148,7 +152,7 @@
         Me.cmdReset.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdReset.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdReset.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdReset.Location = New System.Drawing.Point(328, 214)
+        Me.cmdReset.Location = New System.Drawing.Point(349, 267)
         Me.cmdReset.Name = "cmdReset"
         Me.cmdReset.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdReset.Size = New System.Drawing.Size(77, 25)
@@ -171,7 +175,7 @@
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtRunAfter.Location = New System.Drawing.Point(37, 155)
         Me.txtRunAfter.Name = "txtRunAfter"
-        Me.txtRunAfter.Size = New System.Drawing.Size(368, 21)
+        Me.txtRunAfter.Size = New System.Drawing.Size(389, 21)
         Me.txtRunAfter.TabIndex = 11
         '
         'lblRunAfterFileDef
@@ -183,12 +187,41 @@
         Me.lblRunAfterFileDef.TabIndex = 12
         Me.lblRunAfterFileDef.Text = "%file% = full path to the downloaded file"
         '
+        'lblBandwidthLimit
+        '
+        Me.lblBandwidthLimit.AutoSize = True
+        Me.lblBandwidthLimit.Location = New System.Drawing.Point(12, 209)
+        Me.lblBandwidthLimit.Name = "lblBandwidthLimit"
+        Me.lblBandwidthLimit.Size = New System.Drawing.Size(193, 13)
+        Me.lblBandwidthLimit.TabIndex = 13
+        Me.lblBandwidthLimit.Text = "Download bandwidth limit (0 for none):"
+        '
+        'updBandwidthLimit
+        '
+        Me.updBandwidthLimit.Location = New System.Drawing.Point(37, 225)
+        Me.updBandwidthLimit.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
+        Me.updBandwidthLimit.Name = "updBandwidthLimit"
+        Me.updBandwidthLimit.Size = New System.Drawing.Size(56, 21)
+        Me.updBandwidthLimit.TabIndex = 15
+        '
+        'lblKB
+        '
+        Me.lblKB.AutoSize = True
+        Me.lblKB.Location = New System.Drawing.Point(99, 229)
+        Me.lblKB.Name = "lblKB"
+        Me.lblKB.Size = New System.Drawing.Size(27, 13)
+        Me.lblKB.TabIndex = 16
+        Me.lblKB.Text = "kB/s"
+        '
         'frmPreferences
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(417, 251)
+        Me.ClientSize = New System.Drawing.Size(438, 304)
+        Me.Controls.Add(Me.lblKB)
+        Me.Controls.Add(Me.updBandwidthLimit)
+        Me.Controls.Add(Me.lblBandwidthLimit)
         Me.Controls.Add(Me.lblRunAfterFileDef)
         Me.Controls.Add(Me.txtRunAfter)
         Me.Controls.Add(Me.lblRunAfter)
@@ -213,6 +246,7 @@
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Options"
+        CType(Me.updBandwidthLimit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -224,5 +258,8 @@
     Friend WithEvents lblRunAfter As System.Windows.Forms.Label
     Friend WithEvents txtRunAfter As System.Windows.Forms.TextBox
     Friend WithEvents lblRunAfterFileDef As System.Windows.Forms.Label
+    Friend WithEvents lblBandwidthLimit As System.Windows.Forms.Label
+    Friend WithEvents updBandwidthLimit As System.Windows.Forms.NumericUpDown
+    Friend WithEvents lblKB As System.Windows.Forms.Label
 #End Region
 End Class

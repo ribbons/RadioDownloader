@@ -38,13 +38,15 @@ Friend Class frmPreferences
         My.Settings.SaveFolder = txtSaveIn.Text
         My.Settings.FileNameFormat = txtFileNameFormat.Text
         My.Settings.RunAfterCommand = txtRunAfter.Text
-		Me.Close()
-	End Sub
-	
-	Private Sub frmPreferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
+        My.Settings.BandwidthLimit = CInt(updBandwidthLimit.Value)
+        Me.Close()
+    End Sub
+
+    Private Sub frmPreferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         txtSaveIn.Text = GetSaveFolder()
         txtFileNameFormat.Text = My.Settings.FileNameFormat
         txtRunAfter.Text = My.Settings.RunAfterCommand
+        updBandwidthLimit.Value = My.Settings.BandwidthLimit
     End Sub
 
     Private Sub txtFileNameFormat_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFileNameFormat.TextChanged

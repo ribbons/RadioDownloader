@@ -114,7 +114,7 @@ Friend Class clsBackground
 
         strFinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, strProgTitle, "mp3", dteProgDate, GetSaveFolder())
 
-        ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strFinalName)
+        ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strFinalName, My.Settings.BandwidthLimit)
     End Sub
 
     Private Sub ThisInstance_DldError(ByVal strError As String) Handles ThisInstance.DldError
