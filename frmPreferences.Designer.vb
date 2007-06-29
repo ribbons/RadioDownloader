@@ -199,7 +199,7 @@
         'updBandwidthLimit
         '
         Me.updBandwidthLimit.Location = New System.Drawing.Point(37, 225)
-        Me.updBandwidthLimit.Maximum = New Decimal(New Integer() {10000, 0, 0, 0})
+        Me.updBandwidthLimit.Maximum = New Decimal(New Integer() {268435, 0, 0, 0})
         Me.updBandwidthLimit.Name = "updBandwidthLimit"
         Me.updBandwidthLimit.Size = New System.Drawing.Size(56, 21)
         Me.updBandwidthLimit.TabIndex = 15
