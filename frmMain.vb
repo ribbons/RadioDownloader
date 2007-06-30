@@ -36,6 +36,7 @@ Public Class frmMain
     Private thrBackgroundThread As Thread
 
     Private WithEvents clsProgData As clsData
+    Private clsDoDBUpdate As clsUpdateDB
 
     Private strCurrentType As String
     Private strCurrentStation As String
@@ -125,8 +126,8 @@ Public Class frmMain
             ' and then make sure that the current db's structure matches it.
             IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\spec-store.db", True)
 
-            Dim UpdateDB As New clsUpdateDB(GetAppDataFolder() + "\spec-store.db", GetAppDataFolder() + "\store.db")
-            Call UpdateDB.UpdateStructure()
+            clsDoDBUpdate = New clsUpdateDB(GetAppDataFolder() + "\spec-store.db", GetAppDataFolder() + "\store.db")
+            Call clsDoDBUpdate.UpdateStructure()
         End If
 
         lstSubscribed.Top = lstNew.Top
