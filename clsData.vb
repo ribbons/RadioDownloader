@@ -176,7 +176,7 @@ Friend Class clsData
     End Function
 
     Public Sub UpdateDlList(ByRef lstListview As ExtListView, ByRef prgProgressBar As ProgressBar)
-        Dim comCommand As New SQLiteCommand("select * from tblDownloads order by Date desc", sqlConnection)
+        Dim comCommand As New SQLiteCommand("select Type,Station,ID,Date,Status,PlayCount from tblDownloads order by Date desc", sqlConnection)
         Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
         Dim lstAdd As ListViewItem
@@ -200,8 +200,13 @@ Friend Class clsData
                     lstAdd.SubItems.Add("Waiting")
                     lstAdd.ImageKey = "waiting"
                 Case Statuses.Downloaded
-                    lstAdd.SubItems.Add("Downloaded")
-                    lstAdd.ImageKey = "downloaded"
+                    If sqlReader.GetInt32(sqlReader.GetOrdinal("PlayCount")) > 0 Then
+                        lstAdd.SubItems.Add("Downloaded")
+                        lstAdd.ImageKey = "downloaded"
+                    Else
+                        lstAdd.SubItems.Add("Newly Downloaded")
+                        lstAdd.ImageKey = "downloaded_new"
+                    End If
                 Case Statuses.Errored
                     lstAdd.SubItems.Add("Error")
                     lstAdd.ImageKey = "error"
@@ -477,4 +482,9 @@ Friend Class clsData
 
         Return ThisInstance.ProviderName
     End Function
+
+    Public Sub IncreasePlayCount(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
+        Dim sqlCommand As New SQLiteCommand("update tblDownloads set PlayCount=PlayCount+1 where type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        sqlCommand.ExecuteNonQuery()
+    End Sub
 End Class

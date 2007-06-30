@@ -599,6 +599,11 @@ Public Class frmMain
         strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
 
         Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+
+        ' Bump the play count of this item up by one, and update the list so that the icon can change colour
+        clsProgData.IncreasePlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+        clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        Call TabAdjustments() ' Revert back to downloads view default page
     End Sub
 
     Public Sub FlSubscribe()

@@ -269,10 +269,11 @@
         Me.imlListIcons.Images.SetKeyName(0, "downloading")
         Me.imlListIcons.Images.SetKeyName(1, "waiting")
         Me.imlListIcons.Images.SetKeyName(2, "converting")
-        Me.imlListIcons.Images.SetKeyName(3, "downloaded")
-        Me.imlListIcons.Images.SetKeyName(4, "new")
-        Me.imlListIcons.Images.SetKeyName(5, "subscribed")
-        Me.imlListIcons.Images.SetKeyName(6, "error")
+        Me.imlListIcons.Images.SetKeyName(3, "downloaded_new")
+        Me.imlListIcons.Images.SetKeyName(4, "downloaded")
+        Me.imlListIcons.Images.SetKeyName(5, "new")
+        Me.imlListIcons.Images.SetKeyName(6, "subscribed")
+        Me.imlListIcons.Images.SetKeyName(7, "error")
         '
         'imlStations
         '
