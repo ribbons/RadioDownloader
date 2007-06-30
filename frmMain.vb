@@ -120,6 +120,13 @@ Public Class frmMain
         Dim fileExits As New IO.FileInfo(GetAppDataFolder() + "\store.db")
         If fileExits.Exists = False Then
             IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\store.db")
+        Else
+            ' As the database already exists, copy the specimin database across from the program folder
+            ' and then make sure that the current db's structure matches it.
+            IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\spec-store.db", True)
+
+            Dim UpdateDB As New clsUpdateDB(GetAppDataFolder() + "\spec-store.db", GetAppDataFolder() + "\store.db")
+            Call UpdateDB.UpdateStructure()
         End If
 
         lstSubscribed.Top = lstNew.Top
@@ -384,6 +391,9 @@ Public Class frmMain
         Catch exp As IOException
             ' Ignore an IOException - this just means that a file in the temp folder is still in use.
         End Try
+
+        ' Clean up the specimin database (if it exists)
+        IO.File.Delete(GetAppDataFolder() + "\spec-store.db")
     End Sub
 
     Private Sub nicTrayIcon_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles nicTrayIcon.MouseDoubleClick

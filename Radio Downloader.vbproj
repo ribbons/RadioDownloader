@@ -79,6 +79,7 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="clsUpdateDB.vb" />
     <Compile Include="frmError.Designer.vb">
       <DependentUpon>frmError.vb</DependentUpon>
     </Compile>
