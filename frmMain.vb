@@ -391,9 +391,6 @@ Public Class frmMain
         Catch exp As IOException
             ' Ignore an IOException - this just means that a file in the temp folder is still in use.
         End Try
-
-        ' Clean up the specimin database (if it exists)
-        IO.File.Delete(GetAppDataFolder() + "\spec-store.db")
     End Sub
 
     Private Sub nicTrayIcon_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles nicTrayIcon.MouseDoubleClick
