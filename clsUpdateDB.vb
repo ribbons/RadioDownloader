@@ -61,21 +61,21 @@ Public Class clsUpdateDB
                         Try
                             ' Rename the existing table to table_name_old
                             sqlUpdCommand = New SQLiteCommand("ALTER TABLE [" + .GetString(.GetOrdinal("name")) + "] RENAME TO [" + .GetString(.GetOrdinal("name")) + "_old]", sqlUpdConn)
-                            Debug.WriteLine(sqlUpdCommand.ExecuteNonQuery())
+                            sqlUpdCommand.ExecuteNonQuery()
 
                             ' Create the new table with the correct structure
                             sqlUpdCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), sqlUpdConn)
-                            Debug.WriteLine(sqlUpdCommand.ExecuteNonQuery())
+                            sqlUpdCommand.ExecuteNonQuery()
 
                             ' Copy across the data
                             If strColNames <> "" Then
                                 sqlUpdCommand = New SQLiteCommand("INSERT INTO [" + .GetString(.GetOrdinal("name")) + "] (" + strColNames + ") SELECT " + strColNames + " FROM [" + .GetString(.GetOrdinal("name")) + "_old]", sqlUpdConn)
-                                Debug.WriteLine(sqlUpdCommand.ExecuteNonQuery())
+                                sqlUpdCommand.ExecuteNonQuery()
                             End If
                             
                             ' Delete the old table
                             sqlUpdCommand = New SQLiteCommand("DROP TABLE [" + .GetString(.GetOrdinal("name")) + "_old]", sqlUpdConn)
-                            Debug.WriteLine(sqlUpdCommand.ExecuteNonQuery())
+                            sqlUpdCommand.ExecuteNonQuery()
 
                             ' Commit the transaction
                             sqlUpdCommand = New SQLiteCommand("COMMIT TRANSACTION", sqlUpdConn)
