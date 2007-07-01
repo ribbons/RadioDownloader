@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <MyType>WindowsForms</MyType>
@@ -42,11 +42,12 @@
     <DebugSymbols>False</DebugSymbols>
     <DefineDebug>False</DefineDebug>
     <DefineTrace>True</DefineTrace>
+    <Optimize>True</Optimize>
     <DefineConstants>Win32=True</DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
     <NoWarn>
     </NoWarn>
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
