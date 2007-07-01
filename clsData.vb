@@ -351,7 +351,7 @@ Friend Class clsData
             End If
         Next SinglePlugin
 
-        Return ThisInstance.IsLatestProgram(strStationID, strProgramID, dteLatest)
+        Return ThisInstance.CouldBeNewEpisode(strStationID, strProgramID, dteLatest) = False
     End Function
 
     Private Sub StoreLatestInfo(ByVal strProgramType As String, ByVal strStationID As String, ByRef strProgramID As String)
@@ -442,6 +442,11 @@ Friend Class clsData
     End Sub
 
     Public Function IsProgramStillAvailable(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
+        Dim booIsLatestProg As Boolean
+
+        Call GetLatest(strProgramType, strStationID, strProgramID)
+        booIsLatestProg = (dteProgramDate = LatestDate(strProgramType, strStationID, strProgramID))
+
         Dim ThisInstance As IRadioProvider = Nothing
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
@@ -452,7 +457,7 @@ Friend Class clsData
             End If
         Next SinglePlugin
 
-        Return ThisInstance.IsStillAvailable(strStationID, strProgramID, dteProgramDate)
+        Return ThisInstance.IsStillAvailable(strStationID, strProgramID, dteProgramDate, booIsLatestProg)
     End Function
 
     Public Function StationName(ByVal strProgramType As String, ByVal strStationID As String) As String
