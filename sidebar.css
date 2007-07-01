@@ -39,6 +39,7 @@ td {
 
 .bottomrow {
 	vertical-align: bottom;
+	padding-top: 0px;
 }
 
 .contentbox {

@@ -487,4 +487,17 @@ Friend Class clsData
         Dim sqlCommand As New SQLiteCommand("update tblDownloads set PlayCount=PlayCount+1 where type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
     End Sub
+
+    Public Function PlayCount(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
+        Dim sqlCommand As New SQLiteCommand("SELECT PlayCount FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        With sqlReader
+            If .Read Then
+                PlayCount = .GetInt32(.GetOrdinal("PlayCount"))
+            End If
+        End With
+
+        sqlReader.Close()
+    End Function
 End Class

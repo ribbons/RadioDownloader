@@ -191,9 +191,9 @@ Public Class frmMain
                 strGotHtml = clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2))
 
                 If strGotHtml = "" Then
-                    Call CreateHtml("Programme Info", "<p>Unfortunately, there was a problem getting information about this programme.</p><p>The available data could be invalid.</p>You may like to try again later.", "")
+                    Call CreateHtml("Programme Info", "<p>Unfortunately, there was a problem getting information about this programme.</p><p>The available data could be invalid.</p>You may like to try again later.", "", "")
                 Else
-                    Call CreateHtml("Programme Info", strGotHtml, "Download,Subscribe")
+                    Call CreateHtml("Programme Info", strGotHtml, "", "Download,Subscribe")
                 End If
             End If
         Else
@@ -215,7 +215,7 @@ Public Class frmMain
             strCurrentType = strSplit(0)
             strCurrentStation = strSplit(1)
 
-            Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", "")
+            Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", "", "")
 
             lstNew.Items.Clear()
 
@@ -230,7 +230,7 @@ Public Class frmMain
             Dim strSplit() As String
             strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
 
-            Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2)), "Unsubscribe")
+            Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2)), "", "Unsubscribe")
         Else
             Call TabAdjustments() ' Revert back to subscribed items view default page
         End If
@@ -245,6 +245,7 @@ Public Class frmMain
 
             With clsProgData
                 Dim staDownloadStatus As clsData.Statuses
+                Dim strInfoBox As String = ""
                 Dim strActionString As String
 
                 staDownloadStatus = .DownloadStatus(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
@@ -255,13 +256,15 @@ Public Class frmMain
                     Else
                         strActionString = ""
                     End If
+
+                    strInfoBox = "<h2>Info</h2>Play count: " + CStr(.PlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
                 ElseIf staDownloadStatus = clsData.Statuses.Errored Then
                     strActionString = "Retry,Cancel"
                 Else
                     strActionString = "Cancel"
                 End If
 
-                Call CreateHtml(strTitle, .ProgramHTML(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), strActionString)
+                Call CreateHtml(strTitle, .ProgramHTML(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), strInfoBox, strActionString)
             End With
         Else
             Call TabAdjustments() ' Revert back to downloads view default page
@@ -276,7 +279,7 @@ Public Class frmMain
             tbtCleanUp.Enabled = False
             tbtRefresh.Enabled = True
             tbtUp.Enabled = lstNew.View = View.Details
-            Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", "")
+            Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", "", "")
         ElseIf tbtSubscriptions.Checked Then
             lstNew.Visible = False
             lstSubscribed.Visible = True
@@ -284,7 +287,7 @@ Public Class frmMain
             tbtCleanUp.Enabled = False
             tbtRefresh.Enabled = False
             tbtUp.Enabled = False
-            Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", "")
+            Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", "", "")
         ElseIf tbtDownloads.Checked Then
             lstNew.Visible = False
             lstSubscribed.Visible = False
@@ -292,22 +295,26 @@ Public Class frmMain
             'tbtCleanUp.Enabled = True
             tbtRefresh.Enabled = False
             tbtUp.Enabled = False
-            Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", "")
+            Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", "", "")
         End If
     End Sub
 
-    Private Sub CreateHtml(ByVal strTitle As String, ByVal strMiddleContent As String, ByVal strBottomLinks As String)
+    Private Sub CreateHtml(ByVal strTitle As String, ByVal strTopBox As String, ByVal strBottomBox As String, ByVal strBottomLinks As String)
         Dim strHtml As String
 
         Dim strCss As String
         Dim strHtmlStart As String
 
-        strCss = ASCII.GetChars(MyResources.CSS_STYLES)
-        'strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style><script type=""text/javascript"">function handleError() { return true; } window.onerror = handleError;</script></head><body><table><tr><td class=""maintd"">"
-        strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" & strCss & "</style></head><body><table><tr><td class=""maintd"">"
-        Const strHtmlEnd As String = "</td></tr></table></body></html>"
+        strCss = My.Resources.SIDEBAR_CSS
+        strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" + strCss + "</style></head><body><table><tr><td class=""maintd"">"
 
-        strHtml = strHtmlStart & "<h1>" & strTitle & "</h1><div class=""contentbox"">" & strMiddleContent & "</div></td></tr><tr><td class=""maintd bottomrow"">"
+        strHtml = strHtmlStart + "<h1>" + strTitle + "</h1><div class=""contentbox"">" + strTopBox + "</div>"
+
+        If strBottomBox <> "" Then
+            strHtml += "<div class=""contentbox"" style=""margin-top: 10px;"">" + strBottomBox + "</div>"
+        End If
+
+        strHtml += "</td></tr><tr><td class=""maintd bottomrow"">"
 
         Dim strSplitLinks() As String
         Dim strBuiltLinks As String = ""
@@ -331,12 +338,12 @@ Public Class frmMain
         Next strLoopLinks
 
         If strBuiltLinks <> "" Then
-            strHtml = strHtml & "<div class=""contentbox""><h2>Actions</h2>"
-            strHtml = strHtml & strBuiltLinks
-            strHtml = strHtml & "</div>"
+            strHtml += "<div class=""contentbox""><h2>Actions</h2>"
+            strHtml += strBuiltLinks
+            strHtml += "</div>"
         End If
 
-        strHtml = strHtml & strHtmlEnd
+        strHtml += "</td></tr></table></body></html>"
 
         webDetails.DocumentText = strHtml
     End Sub

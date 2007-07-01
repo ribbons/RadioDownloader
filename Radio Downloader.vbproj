@@ -133,11 +133,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="My Project\MyResources.Designer.vb">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>MyResources.resx</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="frmError.resx">
       <SubType>Designer</SubType>
       <DependentUpon>frmError.vb</DependentUpon>
@@ -152,11 +147,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmPreferences.resX">
       <DependentUpon>frmPreferences.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="My Project\MyResources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>MyResources.Designer.vb</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -174,7 +164,7 @@
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </Content>
     <EmbeddedResource Include="Working.ico" />
-    <None Include="sidebar.css" />
+    <EmbeddedResource Include="sidebar.css" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

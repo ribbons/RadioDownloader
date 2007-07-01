@@ -59,5 +59,55 @@ Namespace My.Resources
                 resourceCulture = value
             End Set
         End Property
+        
+        '''<summary>
+        '''  Looks up a localized string similar to body { 
+        '''	background-color: #3F3F3F;
+        '''	font: 8pt verdana;
+        '''	color: white;
+        '''}
+        '''
+        '''html, body, table {
+        '''	height: 100%;
+        '''	margin: 0px;
+        '''}
+        '''
+        '''h1 {
+        '''	font-size: 10pt;
+        '''	margin-bottom: 12px;
+        '''	padding-left: 5px;
+        '''}
+        '''
+        '''h2 {
+        '''	color: #999999;
+        '''	font-size: 8pt;
+        '''	margin-top: 0px;
+        '''	margin-bottom: 5px;
+        '''}
+        '''
+        '''table {
+        '''	width: 100%;
+        '''	border-collapse: collapse;
+        '''	margin: 0px;
+        '''}
+        '''
+        '''td {
+        '''	vertical-align: top;
+        '''	margin: 0px;	
+        '''}
+        '''
+        '''.maintd {
+        '''	padding-top: 10px;
+        '''	border: 1px solid purple;
+        '''}
+        '''
+        '''.bottomrow {
+        '''	vertical-a [rest of string was truncated]&quot;;.
+        '''</summary>
+        Friend ReadOnly Property SIDEBAR_CSS() As String
+            Get
+                Return ResourceManager.GetString("SIDEBAR_CSS", resourceCulture)
+            End Get
+        End Property
     End Module
 End Namespace
