@@ -56,11 +56,14 @@ Public Class frmMain
 
         If booErrorStatus = True Then
             nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Error.ico"))
+            nicTrayIcon.Text = Me.Text + ": Error"
         Else
             If booActive = True Then
                 nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Working.ico"))
+                nicTrayIcon.Text = Me.Text + ": Downloading"
             Else
                 nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
+                nicTrayIcon.Text = Me.Text
             End If
         End If
     End Sub
@@ -150,6 +153,7 @@ Public Class frmMain
         Call AddStations()
         Call TabAdjustments()
         nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
+        nicTrayIcon.Text = Me.Text
         nicTrayIcon.Visible = True
 
         ' Set up the web browser so that public methods of this form can be called from javascript in the html
