@@ -97,12 +97,12 @@ Namespace My.Resources
         '''}
         '''
         '''.maintd {
-        '''	padding-top: 10px;
-        '''	border: 1px solid purple;
+        '''	padding: 10px;
         '''}
         '''
         '''.bottomrow {
-        '''	vertical-a [rest of string was truncated]&quot;;.
+        '''	vertical-align: bottom;
+        '''	padding-top: 0px [rest of string was truncated]&quot;;.
         '''</summary>
         Friend ReadOnly Property SIDEBAR_CSS() As String
             Get

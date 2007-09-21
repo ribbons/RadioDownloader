@@ -172,4 +172,9 @@ Module modMain
         frmError.strStackTrace = e.Exception.ToString()
         frmError.ShowDialog()
     End Sub
+
+    Public Sub StartupNextInstanceHandler(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs)
+        ' This is called when another instance is started, so do the same as a double click on the tray icon
+        Call frmMain.mnuTrayShow_Click(New Object, New System.EventArgs)
+    End Sub
 End Module

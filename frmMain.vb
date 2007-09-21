@@ -106,6 +106,8 @@ Public Class frmMain
         AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
         ' Add a handler for thread exceptions
         AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
+        ' Add a handler for when a second instance is loaded
+        AddHandler My.Application.StartupNextInstance, AddressOf StartupNextInstanceHandler
 
         ' Load all of the available plugins into an array for later reference
         AvailablePlugins = FindPlugins(My.Application.Info.DirectoryPath)
@@ -378,7 +380,7 @@ Public Class frmMain
         Call frmAbout.ShowDialog()
     End Sub
 
-    Private Sub mnuTrayShow_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuTrayShow.Click
+    Public Sub mnuTrayShow_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuTrayShow.Click
         If Me.Visible = False Then
             Call TrayAnimate(Me, False)
             Me.Visible = True
