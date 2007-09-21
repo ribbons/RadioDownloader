@@ -528,9 +528,9 @@ Public Class frmMain
     Private Sub clsBackgroundThread_Finished_FormThread()
         Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
 
-        ' If the item that has just finished is selected & the html links are out of date, go back to tab overview.
+        ' If the item that has just finished is selected then update it.
         If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.StationID + "||" + clsBackgroundThread.ProgramType).Selected Then
-            Call TabAdjustments()
+            Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
         End If
 
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
@@ -589,6 +589,15 @@ Public Class frmMain
         Call SetTrayStatus(True)
     End Sub
 
+    Private Sub frmMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+        For Each strCommand As String In Environment.GetCommandLineArgs()
+            If strCommand = "-starttray" Then
+                Call TrayAnimate(Me, True)
+                Me.Visible = False
+            End If
+        Next
+    End Sub
+
     ' Called from JavaScript in embedded XHTML -------------------------------------
 
     Public Sub FlDownload()
@@ -612,10 +621,12 @@ Public Class frmMain
 
         Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
 
-        ' Bump the play count of this item up by one, and update the list so that the icon can change colour
+        ' Bump the play count of this item up by one, and update the list so that the icon changes colour
         clsProgData.IncreasePlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
         clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        Call TabAdjustments() ' Revert back to downloads view default page
+
+        ' Update the prog info pane to show the updated play count
+        Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
     End Sub
 
     Public Sub FlSubscribe()
@@ -691,16 +702,8 @@ Public Class frmMain
         strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
         Call clsProgData.ResetDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)), False)
+        Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs) ' Update prog info pane
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         tmrStartProcess.Enabled = True
-    End Sub
-
-    Private Sub frmMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
-        For Each strCommand As String In Environment.GetCommandLineArgs()
-            If strCommand = "-starttray" Then
-                Call TrayAnimate(Me, True)
-                Me.Visible = False
-            End If
-        Next
     End Sub
 End Class
