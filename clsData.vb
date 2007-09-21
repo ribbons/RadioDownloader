@@ -243,7 +243,7 @@ Friend Class clsData
     Public Sub UpdateSubscrList(ByRef lstListview As ListView)
         Dim lstAdd As ListViewItem
 
-        Dim sqlCommand As New SQLiteCommand("select type, station, id, type from tblSubscribed", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select type, station, id from tblSubscribed", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         lstListview.Items.Clear()
@@ -268,7 +268,7 @@ Friend Class clsData
     End Sub
 
     Public Sub CheckSubscriptions(ByRef lstList As ExtListView, ByRef tmrTimer As System.Windows.Forms.Timer, ByRef prgDldProg As ProgressBar)
-        Dim sqlCommand As New SQLiteCommand("select type, station, id, date from tblSubscribed", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select type, station, id from tblSubscribed", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         With sqlReader
