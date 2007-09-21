@@ -243,7 +243,7 @@ Public Class frmMain
     Private Sub lstDownloads_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstDownloads.SelectedIndexChanged
         If lstDownloads.SelectedItems.Count > 0 Then
             Dim strSplit() As String
-            strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
+            strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
             Const strTitle As String = "Download Info"
 
@@ -608,7 +608,7 @@ Public Class frmMain
 
     Public Sub FlPlay()
         Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
+        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
         Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
 
@@ -669,7 +669,7 @@ Public Class frmMain
 
         Dim strSplit() As String
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
+            strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
             If clsBackgroundThread Is Nothing = False Then
                 thrBackgroundThread.Abort()
@@ -688,7 +688,7 @@ Public Class frmMain
 
     Public Sub FlRetry()
         Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Tag.ToString, "||")
+        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
         Call clsProgData.ResetDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)), False)
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)

@@ -179,41 +179,56 @@ Friend Class clsData
         Dim comCommand As New SQLiteCommand("select Type,Station,ID,Date,Status,PlayCount from tblDownloads order by Date desc", sqlConnection)
         Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
-        Dim lstAdd As ListViewItem
-        lstListview.Items.Clear()
-
         lstListview.RemoveAllControls()
 
+        Dim lstItem As ListViewItem
         Dim booErrorStatus As Boolean = False
+        Dim intExistingPos As Integer = 0
 
         Do While sqlReader.Read()
             Dim strUniqueId As String = sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Station")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
 
-            lstAdd = lstListview.Items.Add(strUniqueId, "", 0)
-            lstAdd.Tag = strUniqueId
-            lstAdd.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")))
+            If lstListview.Items.Count - 1 < intExistingPos Then
+                lstItem = lstListview.Items.Add(strUniqueId, "", 0)
+            Else
+                While lstListview.Items.ContainsKey(strUniqueId) And CStr(lstListview.Items(intExistingPos).Name) <> strUniqueId
+                    lstListview.Items.RemoveAt(intExistingPos)
+                End While
 
-            lstAdd.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToShortDateString())
+                If CStr(lstListview.Items(intExistingPos).Name) = strUniqueId Then
+                    lstItem = lstListview.Items(intExistingPos)
+                Else
+                    lstItem = lstListview.Items.Insert(intExistingPos, strUniqueId, "", 0)
+                End If
+            End If
+
+            intExistingPos += 1
+
+            lstItem.SubItems.Clear()
+            lstItem.Name = strUniqueId
+            lstItem.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date"))) '+ " " + strUniqueId
+
+            lstItem.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToShortDateString())
 
             Select Case sqlReader.GetInt32(sqlReader.GetOrdinal("Status"))
                 Case Statuses.Waiting
-                    lstAdd.SubItems.Add("Waiting")
-                    lstAdd.ImageKey = "waiting"
+                    lstItem.SubItems.Add("Waiting")
+                    lstItem.ImageKey = "waiting"
                 Case Statuses.Downloaded
                     If sqlReader.GetInt32(sqlReader.GetOrdinal("PlayCount")) > 0 Then
-                        lstAdd.SubItems.Add("Downloaded")
-                        lstAdd.ImageKey = "downloaded"
+                        lstItem.SubItems.Add("Downloaded")
+                        lstItem.ImageKey = "downloaded"
                     Else
-                        lstAdd.SubItems.Add("Newly Downloaded")
-                        lstAdd.ImageKey = "downloaded_new"
+                        lstItem.SubItems.Add("Newly Downloaded")
+                        lstItem.ImageKey = "downloaded_new"
                     End If
                 Case Statuses.Errored
-                    lstAdd.SubItems.Add("Error")
-                    lstAdd.ImageKey = "error"
+                    lstItem.SubItems.Add("Error")
+                    lstItem.ImageKey = "error"
                     booErrorStatus = True
             End Select
 
-            lstAdd.SubItems.Add("")
+            lstItem.SubItems.Add("")
         Loop
 
         If booErrorStatus Then
