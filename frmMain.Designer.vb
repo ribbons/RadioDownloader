@@ -306,6 +306,7 @@
         Me.lstSubscribed.MultiSelect = False
         Me.lstSubscribed.Name = "lstSubscribed"
         Me.lstSubscribed.Size = New System.Drawing.Size(547, 110)
+        Me.lstSubscribed.Sorting = System.Windows.Forms.SortOrder.Ascending
         Me.lstSubscribed.TabIndex = 14
         Me.lstSubscribed.UseCompatibleStateImageBehavior = False
         Me.lstSubscribed.View = System.Windows.Forms.View.Details
