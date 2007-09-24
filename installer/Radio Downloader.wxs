@@ -1025,10 +1025,12 @@
     <Binary Id="repairic" src="Binary\repairic.ico" />
     <Binary Id="Up" src="Binary\Up.ico" />
     <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder" Name="PFiles">
+      <Directory Id="ProgramFilesFolder" Name="PFiles" LongName="Program Files">
         <Directory Id="INSTALLDIR" Name="RadioDld" LongName="Radio Downloader">
           <Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E" DiskId="1">
-            <File Id="RadioDownloaderExe" Name="RadioDld.exe" LongName="Radio Downloader.exe" Vital="yes" Source="..\bin\Radio Downloader.exe" />
+            <File Id="RadioDownloaderExe" Name="RadioDld.exe" LongName="Radio Downloader.exe" Vital="yes" Source="..\bin\Radio Downloader.exe">
+              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="RadioDld" IconIndex="0" LongName="Radio Downloader" WorkingDirectory="INSTALLDIR" />
+            </File>
             <File Id="RadioDownloaderPdb" Name="RadioDld.pdb" LongName="Radio Downloader.pdb" Source="..\bin\Radio Downloader.pdb" Vital="no" />
           </Component>
           <Component Id="SQLiteDll" Guid="DC4B5709-7257-4230-824D-DBA2E103ED29" DiskId="1">
@@ -1042,6 +1044,7 @@
           </Component>
         </Directory>
       </Directory>
+      <Directory Id="ProgramMenuFolder" LongName="Start Menu Programs" Name="PMenu" />
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
     </Media>
