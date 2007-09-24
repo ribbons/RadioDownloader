@@ -412,7 +412,6 @@
           <Publish Property="Progress1" Value="Changing"><![CDATA[1]]></Publish>
           <Publish Property="Progress2" Value="changes"><![CDATA[1]]></Publish>
           <Publish Event="NewDialog" Value="CustomizeDlg"><![CDATA[1]]></Publish>
-          <Condition>0</Condition>
         </Control>
         <Control Id="RepairLabel" Type="Text" X="105" Y="114" Width="100" Height="10" TabSkip="no">
           <Text>[DlgTitleFont]Re&amp;pair</Text>
@@ -1046,7 +1045,7 @@
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
     </Media>
-    <Feature Id="RadioDownloader" Level="1" Title="Core Application">
+    <Feature Id="RadioDownloader" Level="1" Title="Core Application" Absent="disallow">
       <ComponentRef Id="RadioDownloaderExe" />
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
