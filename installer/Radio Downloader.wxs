@@ -329,7 +329,7 @@
           <Text>{120}{70}{70}{70}{70}</Text>
         </Control>
       </Dialog>
-      <Dialog Id="ErrorDlg" Y="10" Width="270" Height="105" Title="Installer Information" ErrorDialog="yes" NoMinimize="yes">
+      <Dialog Id="ErrorDlg" Width="270" Height="105" Title="Installer Information" ErrorDialog="yes" NoMinimize="yes">
         <Control Id="ErrorText" Type="Text" X="48" Y="15" Width="205" Height="60" TabSkip="no" Text="Information text" />
         <Control Id="Y" Type="PushButton" X="100" Y="80" Width="56" Height="17" TabSkip="yes" Text="[ButtonText_Yes]">
           <Publish Event="EndDialog" Value="ErrorYes"><![CDATA[1]]></Publish>
@@ -1051,5 +1051,6 @@
       <ComponentRef Id="Database" />
       <ComponentRef Id="GplTxt" />
     </Feature>
+    <Condition Message="Radio Downloader requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
   </Product>
 </Wix>
