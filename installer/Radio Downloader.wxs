@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-  <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="nerdoftheherd.com" Name="Radio Downloader" Version="0.3.5" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
-    <Package Id="D993EE96-B7AE-4C21-9A3A-2DCC5F97B277" />
+  <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="www.nerdoftheherd.com" Name="Radio Downloader" Version="0.3.5" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
+    <Package Id="D993EE96-B7AE-4C21-9A3A-2DCC5F97B277" Compressed="yes" />
     <UI>
       <Property Id="ErrorDialog"><![CDATA[ErrorDlg]]></Property>
       <Property Id="DefaultUIFont"><![CDATA[DlgFont8]]></Property>
@@ -392,7 +392,8 @@
         </Control>
         <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
         <Control Id="AgreementText" Type="ScrollableText" X="20" Y="60" Width="330" Height="160" Sunken="yes" TabSkip="no">
-          <Text src="..\license.txt" />
+          <Text SourceFile="..\license.rtf">
+          </Text>
         </Control>
         <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
@@ -1095,26 +1096,27 @@
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder" Name="PFiles">
         <Directory Id="INSTALLDIR" Name="RadioDld" LongName="Radio Downloader">
-          <Component Id="RadioDownloader" Guid="F960FE9C-5378-4052-8517-43F67D5A582E" DiskId="1">
+          <Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E" DiskId="1">
             <File Id="RadioDownloaderExe" Name="RadioDld.exe" LongName="Radio Downloader.exe" Vital="yes" Source="..\bin\Radio Downloader.exe" />
             <File Id="RadioDownloaderPdb" Name="RadioDld.pdb" LongName="Radio Downloader.pdb" Source="..\bin\Radio Downloader.pdb" Vital="no" />
           </Component>
-          <Component Id="SQLiteAssembly" Guid="DC4B5709-7257-4230-824D-DBA2E103ED29" DiskId="1">
+          <Component Id="SQLiteDll" Guid="DC4B5709-7257-4230-824D-DBA2E103ED29" DiskId="1">
             <File Id="SystemDataSqliteDll" Name="Sqlite.DLL" LongName="System.Data.SQLite.DLL" Source="..\bin\System.Data.SQLite.DLL" Vital="yes" />
           </Component>
           <Component Id="Database" Guid="D8715547-94E1-40C0-BAA3-37B364884EB5" DiskId="1">
-            <File Id="StoreDb" Name="store.db" Source="..\bin\store.db" />
+            <File Id="StoreDb" Name="store.db" Source="..\bin\store.db" Vital="yes" />
           </Component>
           <Component Id="GplTxt" Guid="66264481-3504-4FFD-B8EC-AA10DC2250C5" DiskId="1">
-            <File Id="GplTxt" Name="GPL.txt" Source="..\GPL.txt" />
+            <File Id="GplTxt" Name="GPL.txt" Source="..\GPL.txt" Vital="yes" />
           </Component>
         </Directory>
       </Directory>
     </Directory>
-    <Media Id="1" Cabinet="RadioDownloader.cab" CompressionLevel="high" EmbedCab="yes" />
+    <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
+    </Media>
     <Feature Id="RadioDownloader" Level="1" Title="Core Application">
-      <ComponentRef Id="RadioDownloader" />
-      <ComponentRef Id="SQLiteAssembly" />
+      <ComponentRef Id="RadioDownloaderExe" />
+      <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
       <ComponentRef Id="GplTxt" />
     </Feature>
