@@ -26,6 +26,7 @@
       <Dialog Id="ExitDialog" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Finish]">
           <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
+          <Publish Value="RunAfterInstall" Event="DoAction">InstallMode = "Custom" AND RUNAFTERINSTALLATION = 1</Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Cancel]" />
         <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
@@ -35,7 +36,7 @@
           <Text>Click the Finish button to exit the [Wizard].</Text>
         </Control>
         <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
-          <Text>{\VerdanaBold13}Completing the [ProductName] [Wizard]</Text>
+          <Text>{\VerdanaBold13}[ProductName] setup is complete.</Text>
         </Control>
       </Dialog>
       <Dialog Id="FatalError" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
@@ -1065,5 +1066,6 @@
       <ComponentRef Id="RunOnStartup" />
     </Feature>
     <Condition Message="Radio Downloader requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
+    <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" />
   </Product>
 </Wix>
