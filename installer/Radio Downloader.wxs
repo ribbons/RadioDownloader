@@ -335,8 +335,8 @@
         <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
           <Text>[DlgTitleFont]Options</Text>
         </Control>
-        <Control Type="CheckBox" Width="188" Height="13" X="25" Y="110" Id="RunAtStartup" Text="Run at Startup" Property="RUNATSTARTUP" />
-        <Control Type="CheckBox" Width="114" Height="17" X="25" Y="140" Id="RunAfterInstallation" Text="Run after Installation" Property="RUNAFTERINSTALLATION" />
+        <Control Type="CheckBox" Width="188" Height="13" X="25" Y="110" Id="RunAtStartup" Text="Run at Startup" Property="RUNATSTARTUP" CheckBoxValue="1" />
+        <Control Type="CheckBox" Width="114" Height="17" X="25" Y="140" Id="RunAfterInstallation" Text="Run after Installation" Property="RUNAFTERINSTALLATION" CheckBoxValue="1" />
       </Dialog>
       <Dialog Id="DiskCostDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_OK]">
@@ -1010,6 +1010,7 @@
     <Property Id="DialogBitmap"><![CDATA[dlgbmp]]></Property>
     <Property Id="RUNATSTARTUP"><![CDATA[1]]></Property>
     <Property Id="RUNAFTERINSTALLATION"><![CDATA[1]]></Property>
+    <Property Id="ALLUSERS"><![CDATA[2]]></Property>
     <AdminExecuteSequence />
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallFinalize" />
@@ -1045,7 +1046,14 @@
           </Component>
         </Directory>
       </Directory>
-      <Directory Id="ProgramMenuFolder" LongName="Start Menu Programs" Name="PMenu" />
+      <Directory Id="ProgramMenuFolder" LongName="Start Menu Programs" Name="PMenu">
+      </Directory>
+      <Component Id="RunOnStartup" Guid="FC61531E-1B54-4680-A20A-6CBFC605B1C6">
+        <Registry Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string">
+          <RegistryValue>"[INSTALLDIR]Radio Downloader.exe" -starttray</RegistryValue>
+        </Registry>
+        <Condition>RUNATSTARTUP=1</Condition>
+      </Component>
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
     </Media>
@@ -1054,6 +1062,7 @@
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
       <ComponentRef Id="GplTxt" />
+      <ComponentRef Id="RunOnStartup" />
     </Feature>
     <Condition Message="Radio Downloader requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
   </Product>
