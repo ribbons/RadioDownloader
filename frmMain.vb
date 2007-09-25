@@ -167,7 +167,7 @@ Public Class frmMain
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/")
+        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/downloads/")
         If My.Settings.UpdateDownloaded Then
             Call InstallUpdate()
         End If
