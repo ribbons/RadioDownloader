@@ -113,6 +113,30 @@ Namespace My
                 Me("BandwidthLimit") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property UpdateDownloaded() As Boolean
+            Get
+                Return CType(Me("UpdateDownloaded"),Boolean)
+            End Get
+            Set
+                Me("UpdateDownloaded") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property AskedAboutUpdate() As Boolean
+            Get
+                Return CType(Me("AskedAboutUpdate"),Boolean)
+            End Get
+            Set
+                Me("AskedAboutUpdate") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

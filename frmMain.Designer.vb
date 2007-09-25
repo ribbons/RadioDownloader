@@ -64,6 +64,7 @@
         Me.stlStatusText = New System.Windows.Forms.ToolStripStatusLabel
         Me.lstSubscribed = New System.Windows.Forms.ListView
         Me.prgDldProg = New System.Windows.Forms.ProgressBar
+        Me.tmrCheckForUpdates = New System.Windows.Forms.Timer(Me.components)
         Me.lstDownloads = New RadioDld.ExtListView
         Me.mnuMainMenu.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
@@ -319,6 +320,11 @@
         Me.prgDldProg.TabIndex = 16
         Me.prgDldProg.Visible = False
         '
+        'tmrCheckForUpdates
+        '
+        Me.tmrCheckForUpdates.Enabled = True
+        Me.tmrCheckForUpdates.Interval = 28800000
+        '
         'lstDownloads
         '
         Me.lstDownloads.Activation = System.Windows.Forms.ItemActivation.TwoClick
@@ -391,5 +397,6 @@
     Friend WithEvents lstSubscribed As System.Windows.Forms.ListView
     Friend WithEvents prgDldProg As System.Windows.Forms.ProgressBar
     Friend WithEvents lstDownloads As RadioDld.ExtListView
+    Friend WithEvents tmrCheckForUpdates As System.Windows.Forms.Timer
 #End Region
 End Class

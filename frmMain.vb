@@ -38,6 +38,8 @@ Public Class frmMain
     Private WithEvents clsProgData As clsData
     Private clsDoDBUpdate As clsUpdateDB
 
+    Private clsUpdate As clsAutoUpdate
+
     Private strCurrentType As String
     Private strCurrentStation As String
 
@@ -164,6 +166,11 @@ Public Class frmMain
         clsProgData = New clsData(AvailablePlugins)
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
+
+        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/")
+        If My.Settings.UpdateDownloaded Then
+            Call InstallUpdate()
+        End If
 
         stlStatusText.Text = ""
         lstNew.Height = staStatus.Top - lstNew.Top
@@ -598,6 +605,26 @@ Public Class frmMain
                 Me.Visible = False
             End If
         Next
+    End Sub
+
+    Private Sub tmrCheckForUpdates_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrCheckForUpdates.Tick
+        If My.Settings.UpdateDownloaded Then
+            If My.Settings.AskedAboutUpdate = False Then
+                If MsgBox("A new version of Radio Downloader has been downloaded and is ready to be installed.  Would you like to install the update now?  (If you choose 'No' the update will be installed next time you start Radio Downloader)", MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+                    Call InstallUpdate()
+                Else
+                    My.Settings.AskedAboutUpdate = True
+                End If
+            End If
+        Else
+            clsUpdate.CheckForUpdates()
+        End If
+    End Sub
+
+    Private Sub InstallUpdate()
+        My.Settings.AskedAboutUpdate = False
+        clsUpdate.InstallUpdate()
+        mnuFileExit_Click(New Object, New EventArgs)
     End Sub
 
     ' Called from JavaScript in embedded XHTML -------------------------------------
