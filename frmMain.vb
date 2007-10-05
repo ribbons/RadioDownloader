@@ -265,9 +265,9 @@ Public Class frmMain
 
                 If staDownloadStatus = clsData.Statuses.Downloaded Then
                     If Exists(.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
-                        strActionString = "Play"
+                        strActionString = "Play,Delete"
                     Else
-                        strActionString = ""
+                        strActionString = "Delete"
                     End If
 
                     strInfoBox = "<h2>Info</h2>Play count: " + CStr(.PlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
@@ -343,6 +343,8 @@ Public Class frmMain
                     strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Unsubscribe", "FlUnsubscribe", "Stop getting this programme downloaded regularly"))
                 Case "Play"
                     strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Play", "FlPlay", "Play this programme"))
+                Case "Delete"
+                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Delete", "FlDelete", "Delete this programme"))
                 Case "Cancel"
                     strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Cancel", "FlCancel", "Cancel downloading this programme"))
                 Case "Retry"
@@ -430,7 +432,7 @@ Public Class frmMain
 
             If clsBackgroundThread Is Nothing = False Then
                 If clsProgData.IsProgramStillAvailable(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate) = False Then
-                    Call clsProgData.CancelDownload(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
+                    Call clsProgData.RemoveDownload(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
 
                     clsBackgroundThread = Nothing
 
@@ -658,6 +660,19 @@ Public Class frmMain
         Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
     End Sub
 
+    Public Sub FlDelete()
+        Dim strSplit() As String
+        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+
+        If MsgBox("Are you sure that you would like to delete this program and the associated audio file?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+            If Exists(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
+                Delete(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+            End If
+            clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+            clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        End If
+    End Sub
+
     Public Sub FlSubscribe()
         Dim strSplit() As String
         strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
@@ -718,7 +733,7 @@ Public Class frmMain
                 tmrStartProcess.Enabled = True
             End If
 
-            Call clsProgData.CancelDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+            Call clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
             Call TabAdjustments() ' Revert back to tab info so prog info goes
             Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         End If
