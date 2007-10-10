@@ -175,7 +175,6 @@
         '
         'lstStations
         '
-        Me.lstStations.Activation = System.Windows.Forms.ItemActivation.TwoClick
         Me.lstStations.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -209,7 +208,6 @@
         '
         'lstSubscribed
         '
-        Me.lstSubscribed.Activation = System.Windows.Forms.ItemActivation.TwoClick
         Me.lstSubscribed.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -439,7 +437,6 @@
         '
         'lstStationProgs
         '
-        Me.lstStationProgs.Activation = System.Windows.Forms.ItemActivation.TwoClick
         Me.lstStationProgs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
@@ -455,7 +452,6 @@
         '
         'lstDownloads
         '
-        Me.lstDownloads.Activation = System.Windows.Forms.ItemActivation.TwoClick
         Me.lstDownloads.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
