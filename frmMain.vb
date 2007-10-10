@@ -168,14 +168,11 @@ Public Class frmMain
     End Sub
 
     Private Sub frmMain_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
-        Dim Cancel As Boolean = eventArgs.Cancel
-        Dim UnloadMode As System.Windows.Forms.CloseReason = eventArgs.CloseReason
-        If UnloadMode = System.Windows.Forms.CloseReason.UserClosing Then
+        If eventArgs.CloseReason = CloseReason.UserClosing Then
             Call TrayAnimate(Me, True)
             Me.Visible = False
-            Cancel = True
+            eventArgs.Cancel = True
         End If
-        eventArgs.Cancel = True
     End Sub
 
     Private Sub lstStations_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstStations.ItemActivate
