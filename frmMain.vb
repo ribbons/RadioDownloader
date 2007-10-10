@@ -70,18 +70,8 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub SetNewView(ByVal booStations As Boolean)
-        lstNew.Items.Clear()
-
-        If booStations Then
-            lstNew.View = View.LargeIcon
-        Else
-            lstNew.View = View.Details
-        End If
-    End Sub
-
     Private Sub AddStations()
-        Call SetNewView(True)
+        lstStations.Items.Clear()
 
         Dim ThisInstance As IRadioProvider
 
@@ -100,7 +90,7 @@ Public Class frmMain
         lstAdd.Tag = strStationType & "||" & strStationId
         lstAdd.ImageKey = "default" 'imlStations.ListImages(strStationId).Index
 
-        lstAdd = lstNew.Items.Add(lstAdd)
+        lstAdd = lstStations.Items.Add(lstAdd)
     End Sub
 
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
@@ -137,10 +127,7 @@ Public Class frmMain
             Call clsDoDBUpdate.UpdateStructure()
         End If
 
-        lstSubscribed.Top = lstNew.Top
-        lstDownloads.Top = lstNew.Top
-
-        Call lstNew.Columns.Add("Programme Name", 500)
+        Call lstStationProgs.Columns.Add("Programme Name", 500)
         Call lstSubscribed.Columns.Add("Programme Name", 275)
         Call lstSubscribed.Columns.Add("Station", 125)
         Call lstSubscribed.Columns.Add("Provider", 125)
@@ -149,8 +136,8 @@ Public Class frmMain
         Call lstDownloads.Columns.Add("Status", 125)
         Call lstDownloads.Columns.Add("Progress", 100)
 
-        lstNew.SmallImageList = imlListIcons
-        lstNew.LargeImageList = imlStations
+        lstStations.LargeImageList = imlStations
+        lstStationProgs.SmallImageList = imlListIcons
         lstSubscribed.SmallImageList = imlListIcons
         lstDownloads.SmallImageList = imlListIcons
 
@@ -159,9 +146,6 @@ Public Class frmMain
         nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
         nicTrayIcon.Text = Me.Text
         nicTrayIcon.Visible = True
-
-        ' Set up the web browser so that public methods of this form can be called from javascript in the html
-        webDetails.ObjectForScripting = Me
 
         clsProgData = New clsData(AvailablePlugins)
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
@@ -172,10 +156,12 @@ Public Class frmMain
             Call InstallUpdate()
         End If
 
-        stlStatusText.Text = ""
-        lstNew.Height = staStatus.Top - lstNew.Top
-        lstSubscribed.Height = lstNew.Height
-        lstDownloads.Height = lstNew.Height
+        tblInfo.Dock = DockStyle.Left
+
+        lstStations.Dock = DockStyle.Fill
+        lstStationProgs.Dock = DockStyle.Fill
+        lstSubscribed.Dock = DockStyle.Fill
+        lstDownloads.Dock = DockStyle.Fill
 
         tbtCleanUp.Visible = False
         ttxSearch.Visible = False
@@ -192,49 +178,42 @@ Public Class frmMain
         eventArgs.Cancel = True
     End Sub
 
-    Private Sub lstNew_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstNew.SelectedIndexChanged
-        If lstNew.SelectedItems.Count > 0 Then
-            Dim strSplit() As String
-            strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
+    Private Sub lstStations_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstStations.ItemActivate
+        Dim strSplit() As String
+        strSplit = Split(lstStations.SelectedItems(0).Tag.ToString, "||")
 
-            If lstNew.View = View.LargeIcon Then
-                ' Do nothing
-            Else
-                Dim strGotHtml As String
-                strGotHtml = clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2))
+        tbtCurrStation.Image = imlStations.Images(lstStations.SelectedItems(0).ImageKey)
+        tbtCurrStation.Text = lstStations.SelectedItems(0).Text
+        tbtCurrStation.Visible = True
+        tbtCurrStation.Checked = True
+        tbtFindNew.Checked = False
+        strCurrentType = strSplit(0)
+        strCurrentStation = strSplit(1)
 
-                If strGotHtml = "" Then
-                    Call CreateHtml("Programme Info", "<p>Unfortunately, there was a problem getting information about this programme.</p><p>The available data could be invalid.</p>You may like to try again later.", "", "")
-                Else
-                    Call CreateHtml("Programme Info", strGotHtml, "", "Download,Subscribe")
-                End If
-            End If
-        Else
-            If lstNew.View = View.LargeIcon Then
-                ' Do nothing
-            Else
-                Call TabAdjustments() ' Revert back to new items view default page
-            End If
-        End If
+        Call TabAdjustments()
+
+        lstStationProgs.Items.Clear()
+        Call clsProgData.StartListingStation(strSplit(0), strSplit(1))
     End Sub
 
-    Private Sub lstNew_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstNew.ItemActivate
-        Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
+    Private Sub lstStationProgs_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstStationProgs.SelectedIndexChanged
+        If lstStationProgs.SelectedItems.Count > 0 Then
+            Dim strSplit() As String
+            strSplit = Split(lstStationProgs.SelectedItems(0).Tag.ToString, "||")
 
-        If lstNew.View = View.LargeIcon Then
-            lstNew.View = View.Details
-            tbtUp.Enabled = True
-            strCurrentType = strSplit(0)
-            strCurrentStation = strSplit(1)
+            With clsProgData
+                Call .GetLatest(strSplit(0), strSplit(1), strSplit(2))
 
-            Call CreateHtml(lstNew.SelectedItems(0).Text, "<p>This view is a list of programmes available from " & lstNew.SelectedItems(0).Text & ".</p>Select a programme for more information, and to download or subscribe to it.", "", "")
-
-            lstNew.Items.Clear()
-
-            Call clsProgData.StartListingStation(strSplit(0), strSplit(1))
+                If .LatestDate(strSplit(0), strSplit(1), strSplit(2)) = Nothing = False Then
+                    Call SetSideBar(.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramDetails(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramImgUrl(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))))
+                    Call SetToolbarButtons("Download,Subscribe")
+                Else
+                    Call SetSideBar("Programme Info", "Unfortunately, there was a problem getting information about this programme." + vbCrLf + "The available data could be invalid." + vbCrLf + "You may like to try again later.", Nothing)
+                    Call SetToolbarButtons("")
+                End If
+            End With
         Else
-            ' Do nothing
+            Call TabAdjustments() ' Revert back to new items view default page
         End If
     End Sub
 
@@ -243,7 +222,8 @@ Public Class frmMain
             Dim strSplit() As String
             strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
 
-            Call CreateHtml("Subscribed Programme", clsProgData.ProgramHTML(strSplit(0), strSplit(1), strSplit(2)), "", "Unsubscribe")
+            Call SetSideBar(clsProgData.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramDetails(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramImgUrl(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))))
+            Call SetToolbarButtons("Unsubscribe")
         Else
             Call TabAdjustments() ' Revert back to subscribed items view default page
         End If
@@ -253,8 +233,6 @@ Public Class frmMain
         If lstDownloads.SelectedItems.Count > 0 Then
             Dim strSplit() As String
             strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
-
-            Const strTitle As String = "Download Info"
 
             With clsProgData
                 Dim staDownloadStatus As clsData.Statuses
@@ -270,14 +248,15 @@ Public Class frmMain
                         strActionString = "Delete"
                     End If
 
-                    strInfoBox = "<h2>Info</h2>Play count: " + CStr(.PlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+                    strInfoBox = vbCrLf + vbCrLf + "Play count: " + CStr(.PlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
                 ElseIf staDownloadStatus = clsData.Statuses.Errored Then
                     strActionString = "Retry,Cancel"
                 Else
                     strActionString = "Cancel"
                 End If
 
-                Call CreateHtml(strTitle, .ProgramHTML(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), strInfoBox, strActionString)
+                Call SetSideBar(.ProgramTitle(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), .ProgramDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))) + strInfoBox, .ProgramImgUrl(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+                Call SetToolbarButtons(strActionString)
             End With
         Else
             Call TabAdjustments() ' Revert back to downloads view default page
@@ -286,107 +265,82 @@ Public Class frmMain
 
     Private Sub TabAdjustments()
         If tbtFindNew.Checked Then
-            lstNew.Visible = True
+            lstStations.Visible = True
+            lstStationProgs.Visible = False
             lstSubscribed.Visible = False
             lstDownloads.Visible = False
+            tbtCurrStation.Visible = False
             tbtCleanUp.Enabled = False
-            tbtRefresh.Enabled = True
-            tbtUp.Enabled = lstNew.View = View.Details
-            Call CreateHtml("Choose New Programme", "<p>This view allows you to browse all of the programmes that are available for you to download or subscribe to.</p>Select a station icon to show the programmes available from it.", "", "")
+            Call SetSideBar("Find New", "This view allows you to browse all of the programmes that are available for you to download or subscribe to." + vbCrLf + "Select a station icon to show the programmes available from it.", Nothing)
+            Call SetToolbarButtons("")
+        ElseIf tbtCurrStation.Checked Then
+            lstStations.Visible = False
+            lstStationProgs.Visible = True
+            lstSubscribed.Visible = False
+            lstDownloads.Visible = False
+            Call SetSideBar(lstStations.SelectedItems(0).Text, "This view is a list of programmes available from " & lstStations.SelectedItems(0).Text & "." + vbCrLf + "Select a programme for more information, and to download or subscribe to it.", Nothing)
+            Call SetToolbarButtons("")
         ElseIf tbtSubscriptions.Checked Then
-            lstNew.Visible = False
+            lstStations.Visible = False
+            lstStationProgs.Visible = False
             lstSubscribed.Visible = True
             lstDownloads.Visible = False
             tbtCleanUp.Enabled = False
-            tbtRefresh.Enabled = False
-            tbtUp.Enabled = False
-            Call CreateHtml("Subscribed Programmes", "<p>This view shows you the programmes that you are currently subscribed to.</p><p>To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it.", "", "")
+            Call SetSideBar("Subscriptions", "This view shows you the programmes that you are currently subscribed to." + vbCrLf + "To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it.", Nothing)
+            Call SetToolbarButtons("")
         ElseIf tbtDownloads.Checked Then
-            lstNew.Visible = False
+            lstStations.Visible = False
+            lstStationProgs.Visible = False
             lstSubscribed.Visible = False
             lstDownloads.Visible = True
             'tbtCleanUp.Enabled = True
-            tbtRefresh.Enabled = False
-            tbtUp.Enabled = False
-            Call CreateHtml("Programme Downloads", "<p>Here you can see programmes that are being downloaded, or have been downloaded already.</p><p>To download a programme, start by choosing the 'Find New' button on the toolbar.</p>Select a programme in the list to get more information about it, or for completed downloads, play it.", "", "")
+            Call SetSideBar("Downloads", "Here you can see programmes that are being downloaded, or have been downloaded already." + vbCrLf + "To download a programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it, or for completed downloads, play it.", Nothing)
+            Call SetToolbarButtons("")
         End If
     End Sub
 
-    Private Sub CreateHtml(ByVal strTitle As String, ByVal strTopBox As String, ByVal strBottomBox As String, ByVal strBottomLinks As String)
-        Dim strHtml As String
+    Private Sub SetSideBar(ByVal strTitle As String, ByVal strDescription As String, ByVal strPicUrl As String)
+        lblSideMainTitle.Text = strTitle
+        lblSideDescript.Text = strDescription
 
-        Dim strCss As String
-        Dim strHtmlStart As String
-
-        strCss = My.Resources.SIDEBAR_CSS
-        strHtmlStart = "<!DOCTYPE html PUBLIC ""-//W3C//DTD XHTML 1.0 Strict//EN"" ""http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd""><html><head><style type=""text/css"">" + strCss + "</style></head><body><table><tr><td class=""maintd"">"
-
-        strHtml = strHtmlStart + "<h1>" + strTitle + "</h1><div class=""contentbox"">" + strTopBox + "</div>"
-
-        If strBottomBox <> "" Then
-            strHtml += "<div class=""contentbox"" style=""margin-top: 10px;"">" + strBottomBox + "</div>"
-        End If
-
-        strHtml += "</td></tr><tr><td class=""maintd bottomrow"">"
-
-        Dim strSplitLinks() As String
-        Dim strBuiltLinks As String = ""
-        strSplitLinks = Split(strBottomLinks, ",")
-
-        For Each strLoopLinks As String In strSplitLinks
-            Select Case strLoopLinks
-                Case "Download"
-                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Download Now", "FlDownload", "Download this programme now"))
-                Case "Subscribe"
-                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Subscribe", "FlSubscribe", "Get this programme downloaded regularly"))
-                Case "Unsubscribe"
-                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Unsubscribe", "FlUnsubscribe", "Stop getting this programme downloaded regularly"))
-                Case "Play"
-                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Play", "FlPlay", "Play this programme"))
-                Case "Delete"
-                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Delete", "FlDelete", "Delete this programme"))
-                Case "Cancel"
-                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Cancel", "FlCancel", "Cancel downloading this programme"))
-                Case "Retry"
-                    strBuiltLinks = AddLink(strBuiltLinks, BuildLink("Retry", "FlRetry", "Try downloading this programme again"))
-            End Select
-        Next strLoopLinks
-
-        If strBuiltLinks <> "" Then
-            strHtml += "<div class=""contentbox""><h2>Actions</h2>"
-            strHtml += strBuiltLinks
-            strHtml += "</div>"
-        End If
-
-        strHtml += "</td></tr></table></body></html>"
-
-        webDetails.DocumentText = strHtml
-    End Sub
-
-    Private Function BuildLink(ByRef strTitle As String, ByRef strCall As String, ByRef strStatusText As String) As String
-        BuildLink = "<a href=""#"" onclick=""window.external." & strCall & "(); return false;"" onmouseover=""window.external.FlStatusText('" & strStatusText & "'); return true;"" onmouseout=""window.external.FlStatusText(''); return true;"">" & strTitle & "</a>"
-    End Function
-
-    Private Function AddLink(ByVal strCurrentLinks As String, ByVal strNewlink As String) As String
-        If Len(strCurrentLinks) > 0 Then
-            AddLink = strCurrentLinks & " | "
+        If strPicUrl <> Nothing Then
+            picSidebarImg.Image = New Bitmap(70, 70)
+            picSidebarImg.ImageLocation = strPicUrl
+            picSidebarImg.Visible = True
         Else
-            AddLink = ""
+            picSidebarImg.Visible = False
         End If
-
-        AddLink = AddLink + strNewlink
-    End Function
-
-    Public Sub mnuFileExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuFileExit.Click
-        Call mnuTrayExit_Click(mnuTrayExit, eventArgs)
     End Sub
 
-    Public Sub mnuToolsPrefs_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuToolsPrefs.Click
-        Call frmPreferences.ShowDialog()
-    End Sub
+    Private Sub SetToolbarButtons(ByVal strButtons As String)
+        Dim strSplitButtons() As String = Split(strButtons, ",")
 
-    Private Sub mnuHelpAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpAbout.Click
-        Call frmAbout.ShowDialog()
+        tbtDownload.Visible = False
+        tbtSubscribe.Visible = False
+        tbtUnsubscribe.Visible = False
+        tbtPlay.Visible = False
+        tbtCancel.Visible = False
+        tbtDelete.Visible = False
+        tbtRetry.Visible = False
+
+        For Each strLoopButtons As String In strSplitButtons
+            Select Case strLoopButtons
+                Case "Download"
+                    tbtDownload.Visible = True
+                Case "Subscribe"
+                    tbtSubscribe.Visible = True
+                Case "Unsubscribe"
+                    tbtUnsubscribe.Visible = True
+                Case "Play"
+                    tbtPlay.Visible = True
+                Case "Delete"
+                    tbtDelete.Visible = True
+                Case "Cancel"
+                    tbtCancel.Visible = True
+                Case "Retry"
+                    tbtRetry.Visible = True
+            End Select
+        Next
     End Sub
 
     Public Sub mnuTrayShow_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuTrayShow.Click
@@ -456,13 +410,28 @@ Public Class frmMain
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
         tbtFindNew.Checked = True
+        tbtCurrStation.Checked = False
         tbtSubscriptions.Checked = False
         tbtDownloads.Checked = False
         Call TabAdjustments()
+
+        Call AddStations()
+    End Sub
+
+    Private Sub tbtCurrStation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCurrStation.Click
+        tbtFindNew.Checked = False
+        tbtCurrStation.Checked = True
+        tbtSubscriptions.Checked = False
+        tbtDownloads.Checked = False
+        Call TabAdjustments()
+
+        lstStationProgs.Items.Clear()
+        Call clsProgData.StartListingStation(strCurrentType, strCurrentStation)
     End Sub
 
     Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
         tbtSubscriptions.Checked = True
+        tbtCurrStation.Checked = False
         tbtFindNew.Checked = False
         tbtDownloads.Checked = False
         Call TabAdjustments()
@@ -470,31 +439,10 @@ Public Class frmMain
 
     Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
         tbtDownloads.Checked = True
+        tbtCurrStation.Checked = False
         tbtSubscriptions.Checked = False
         tbtFindNew.Checked = False
         Call TabAdjustments()
-    End Sub
-
-    Private Sub tbtUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUp.Click
-        tbtUp.Enabled = False
-        strCurrentType = ""
-        strCurrentStation = ""
-
-        If lstNew.View = View.Details Then
-            Call AddStations()
-        End If
-
-        Call TabAdjustments()
-    End Sub
-
-    Private Sub tbtRefresh_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtRefresh.Click
-        If strCurrentType = "" Then
-            Call AddStations()
-        Else
-            Call TabAdjustments()
-            lstNew.Items.Clear()
-            Call clsProgData.StartListingStation(strCurrentType, strCurrentStation)
-        End If
     End Sub
 
     Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
@@ -502,7 +450,7 @@ Public Class frmMain
         lstAddItem.Text = strProgramName
         lstAddItem.ImageKey = "new"
         lstAddItem.Tag = strProgramType + "||" + strStationID + "||" + strProgramID
-        Call lstNew.Items.Add(lstAddItem)
+        Call lstStationProgs.Items.Add(lstAddItem)
     End Sub
 
     Private Sub clsBackgroundThread_DldError(ByVal strError As String) Handles clsBackgroundThread.DldError
@@ -626,58 +574,12 @@ Public Class frmMain
     Private Sub InstallUpdate()
         My.Settings.AskedAboutUpdate = False
         clsUpdate.InstallUpdate()
-        mnuFileExit_Click(New Object, New EventArgs)
+        Call mnuTrayExit_Click(mnuTrayExit, New EventArgs)
     End Sub
 
-    ' Called from JavaScript in embedded XHTML -------------------------------------
-
-    Public Sub FlDownload()
+    Private Sub tbtSubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscribe.Click
         Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
-
-        If clsProgData.AddDownload(strSplit(0), strSplit(1), strSplit(2)) Then
-            Call tbtDownloads_Click(New Object, New EventArgs)
-            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-            tmrStartProcess.Enabled = True
-        Else
-            Call FlStatusText("")
-            Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
-            Call FlStatusText("", True)
-        End If
-    End Sub
-
-    Public Sub FlPlay()
-        Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
-
-        Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
-
-        ' Bump the play count of this item up by one, and update the list so that the icon changes colour
-        clsProgData.IncreasePlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
-        clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-
-        ' Update the prog info pane to show the updated play count
-        Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
-    End Sub
-
-    Public Sub FlDelete()
-        Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
-
-        If MsgBox("Are you sure that you would like to delete this program and the associated audio file?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            If Exists(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
-                Delete(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
-            End If
-            clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
-            clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        End If
-    End Sub
-
-    Public Sub FlSubscribe()
-        Dim strSplit() As String
-        strSplit = Split(lstNew.SelectedItems(0).Tag.ToString, "||")
-
-        Call FlStatusText("")
+        strSplit = Split(lstStations.SelectedItems(0).Tag.ToString, "||")
 
         If clsProgData.AddSubscription(strSplit(0), strSplit(1), strSplit(2)) = False Then
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
@@ -685,43 +587,20 @@ Public Class frmMain
             Call tbtSubscriptions_Click(New Object, New EventArgs)
             Call clsProgData.UpdateSubscrList(lstSubscribed)
         End If
-
-        Call FlStatusText("", True)
     End Sub
 
-    Public Sub FlUnsubscribe()
+    Private Sub tbtUnsubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUnsubscribe.Click
         Dim strSplit() As String
         strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
-
-        Call FlStatusText("")
 
         If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
             Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1), strSplit(2))
             Call TabAdjustments() ' Revert back to tab info so prog info goes
             Call clsProgData.UpdateSubscrList(lstSubscribed)
         End If
-
-        Call FlStatusText("", True)
     End Sub
 
-    Public Sub FlStatusText(ByVal strText As String, Optional ByVal booInIgnoreNext As Boolean = False)
-        ' The rather strange ignore next option is for stopping the mouseover text from the html links
-        ' popping back into the status bar after a modal dialog is shown from html.
-
-        Static booIgnoreNext As Boolean
-
-        If booIgnoreNext Then
-            booIgnoreNext = False
-            Exit Sub
-        End If
-
-        stlStatusText.Text = strText
-        booIgnoreNext = booInIgnoreNext
-    End Sub
-
-    Public Sub FlCancel()
-        Call FlStatusText("")
-
+    Private Sub tbtCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCancel.Click
         Dim strSplit() As String
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
             strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
@@ -737,11 +616,36 @@ Public Class frmMain
             Call TabAdjustments() ' Revert back to tab info so prog info goes
             Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         End If
-
-        Call FlStatusText("", True)
     End Sub
 
-    Public Sub FlRetry()
+    Private Sub tbtPlay_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtPlay.Click
+        Dim strSplit() As String
+        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+
+        Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+
+        ' Bump the play count of this item up by one, and update the list so that the icon changes colour
+        clsProgData.IncreasePlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+        clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+
+        ' Update the prog info pane to show the updated play count
+        Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+    End Sub
+
+    Private Sub tbtDelete_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDelete.Click
+        Dim strSplit() As String
+        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+
+        If MsgBox("Are you sure that you would like to delete this program and the associated audio file?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+            If Exists(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
+                Delete(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+            End If
+            clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+            clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        End If
+    End Sub
+
+    Private Sub tbtRetry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtRetry.Click
         Dim strSplit() As String
         strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
@@ -749,5 +653,30 @@ Public Class frmMain
         Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs) ' Update prog info pane
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         tmrStartProcess.Enabled = True
+    End Sub
+
+    Private Sub tbtDownload_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownload.Click
+        Dim strSplit() As String
+        strSplit = Split(lstStations.SelectedItems(0).Tag.ToString, "||")
+
+        If clsProgData.AddDownload(strSplit(0), strSplit(1), strSplit(2)) Then
+            Call tbtDownloads_Click(New Object, New EventArgs)
+            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            tmrStartProcess.Enabled = True
+        Else
+            Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
+        End If
+    End Sub
+
+    Private Sub tbmOptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmOptions.Click
+        Call frmPreferences.ShowDialog()
+    End Sub
+
+    Private Sub tbmExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmExit.Click
+        Call mnuTrayExit_Click(mnuTrayExit, e)
+    End Sub
+
+    Private Sub tbmAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmAbout.Click
+        Call frmAbout.ShowDialog()
     End Sub
 End Class

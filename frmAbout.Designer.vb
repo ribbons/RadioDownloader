@@ -31,8 +31,6 @@ Partial Class frmAbout
         Me.HomepageLink = New System.Windows.Forms.LinkLabel
         Me.LabelLicense = New System.Windows.Forms.Label
         Me.ButtonOK = New System.Windows.Forms.Button
-        Me.lblIconCredit = New System.Windows.Forms.Label
-        Me.IconsLink = New System.Windows.Forms.LinkLabel
         CType(Me.LogoPictureBox, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -57,11 +55,9 @@ Partial Class frmAbout
         '
         'TextboxLicense
         '
-        Me.TextboxLicense.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
+        Me.TextboxLicense.Anchor = CType(((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.TextboxLicense.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.TextboxLicense.Location = New System.Drawing.Point(12, 129)
+        Me.TextboxLicense.Location = New System.Drawing.Point(12, 108)
         Me.TextboxLicense.Multiline = True
         Me.TextboxLicense.Name = "TextboxLicense"
         Me.TextboxLicense.ReadOnly = True
@@ -91,8 +87,9 @@ Partial Class frmAbout
         '
         'LabelLicense
         '
+        Me.LabelLicense.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.LabelLicense.AutoSize = True
-        Me.LabelLicense.Location = New System.Drawing.Point(12, 113)
+        Me.LabelLicense.Location = New System.Drawing.Point(12, 92)
         Me.LabelLicense.Name = "LabelLicense"
         Me.LabelLicense.Size = New System.Drawing.Size(47, 13)
         Me.LabelLicense.TabIndex = 4
@@ -101,38 +98,18 @@ Partial Class frmAbout
         'ButtonOK
         '
         Me.ButtonOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.ButtonOK.Location = New System.Drawing.Point(419, 275)
+        Me.ButtonOK.Location = New System.Drawing.Point(419, 254)
         Me.ButtonOK.Name = "ButtonOK"
         Me.ButtonOK.Size = New System.Drawing.Size(82, 26)
         Me.ButtonOK.TabIndex = 0
         Me.ButtonOK.Text = "OK"
         Me.ButtonOK.UseVisualStyleBackColor = True
         '
-        'lblIconCredit
-        '
-        Me.lblIconCredit.AutoSize = True
-        Me.lblIconCredit.Location = New System.Drawing.Point(12, 90)
-        Me.lblIconCredit.Name = "lblIconCredit"
-        Me.lblIconCredit.Size = New System.Drawing.Size(0, 13)
-        Me.lblIconCredit.TabIndex = 7
-        '
-        'IconsLink
-        '
-        Me.IconsLink.AutoSize = True
-        Me.IconsLink.Location = New System.Drawing.Point(12, 90)
-        Me.IconsLink.Name = "IconsLink"
-        Me.IconsLink.Size = New System.Drawing.Size(244, 13)
-        Me.IconsLink.TabIndex = 8
-        Me.IconsLink.TabStop = True
-        Me.IconsLink.Text = "Toolbar and list icons are crystal icons by everaldo"
-        '
         'frmAbout
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(513, 313)
-        Me.Controls.Add(Me.IconsLink)
-        Me.Controls.Add(Me.lblIconCredit)
+        Me.ClientSize = New System.Drawing.Size(513, 292)
         Me.Controls.Add(Me.ButtonOK)
         Me.Controls.Add(Me.LabelLicense)
         Me.Controls.Add(Me.HomepageLink)
@@ -161,7 +138,5 @@ Partial Class frmAbout
     Friend WithEvents HomepageLink As System.Windows.Forms.LinkLabel
     Friend WithEvents LabelLicense As System.Windows.Forms.Label
     Friend WithEvents ButtonOK As System.Windows.Forms.Button
-    Friend WithEvents lblIconCredit As System.Windows.Forms.Label
-    Friend WithEvents IconsLink As System.Windows.Forms.LinkLabel
 
 End Class

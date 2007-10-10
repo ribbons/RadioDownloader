@@ -124,53 +124,45 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function ProgramHTML(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, Optional ByVal dteProgramDate As Date = #12:00:00 AM#) As String
-        Dim sqlCommand As SQLiteCommand
-
-        If dteProgramDate > System.DateTime.FromOADate(0) Then
-            sqlCommand = New SQLiteCommand("SELECT name, imageurl, description, date, duration FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
-        Else
-            Call GetLatest(strProgramType, strStationID, strProgramID)
-            sqlCommand = New SQLiteCommand("SELECT name, imageurl, description, date, duration FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ ORDER BY Date DESC", sqlConnection)
-        End If
-
+    Public Function ProgramDescription(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
+        Dim sqlCommand As New SQLiteCommand("SELECT description FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        If sqlReader.Read() = False Then
-            Return ""
+        sqlReader.Read()
+        ProgramDescription = sqlReader.GetString(sqlReader.GetOrdinal("description"))
+
+        sqlReader.Close()
+    End Function
+
+    Public Function ProgramDetails(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
+        ProgramDetails = ProgramDescription(strProgramType, strStationID, strProgramID, dteProgramDate) + vbCrLf + vbCrLf
+        ProgramDetails += "Date: " + dteProgramDate.ToString("ddd dd/MMM/yy HH:mm") + vbCrLf
+        ProgramDetails += "Duration: "
+
+        Dim lngDuration As Integer = ProgramDuration(strProgramType, strStationID, strProgramID, dteProgramDate)
+        Dim lngHours As Integer = lngDuration \ 60
+        Dim lngMins As Integer = lngDuration Mod 60
+
+        If lngHours > 0 Then
+            ProgramDetails += CStr(lngHours) + "hr"
+            If lngHours > 1 Then
+                ProgramDetails += "s"
+            End If
         End If
+        If lngHours > 0 And lngMins > 0 Then
+            ProgramDetails += " "
+        End If
+        If lngMins > 0 Then
+            ProgramDetails += CStr(lngMins) + "min"
+        End If
+    End Function
 
-        Dim lngHours As Integer
-        Dim lngMins As Integer
+    Public Function ProgramImgUrl(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
+        Dim sqlCommand As New SQLiteCommand("SELECT imageurl FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        With sqlReader
-            ProgramHTML = "<h2>" + .GetString(.GetOrdinal("Name")) + "</h2>"
-            ProgramHTML = ProgramHTML + "<p><img src=""" + .GetString(.GetOrdinal("ImageURL")) + """ />"
-            ProgramHTML = ProgramHTML + .GetString(.GetOrdinal("Description")) + "</p>"
-
-            ProgramHTML = ProgramHTML + "<div style=""clear: both;""></div>"
-            ProgramHTML = ProgramHTML + .GetDateTime(.GetOrdinal("Date")).ToString("ddd dd/MMM/yy HH:mm") & " "
-
-            lngMins = .GetInt32(.GetOrdinal("Duration")) Mod 60
-            lngHours = .GetInt32(.GetOrdinal("Duration")) \ 60
-
-            ProgramHTML = ProgramHTML + "<span style=""white-space: nowrap;"">"
-
-            If lngHours > 0 Then
-                ProgramHTML = ProgramHTML + CStr(lngHours) + "hr"
-                If lngHours > 1 Then
-                    ProgramHTML = ProgramHTML + "s"
-                End If
-            End If
-            If lngHours > 0 And lngMins > 0 Then
-                ProgramHTML = ProgramHTML + " "
-            End If
-            If lngMins > 0 Then
-                ProgramHTML = ProgramHTML + CStr(lngMins) + "min"
-            End If
-
-            ProgramHTML = ProgramHTML + "</span>"
-        End With
+        sqlReader.Read()
+        ProgramImgUrl = sqlReader.GetString(sqlReader.GetOrdinal("imageurl"))
 
         sqlReader.Close()
     End Function
@@ -327,19 +319,19 @@ Friend Class clsData
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Private Sub GetLatest(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String)
+    Public Sub GetLatest(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String)
         If HaveLatest(strProgramType, strStationID, strProgramID) = False Then
             Call StoreLatestInfo(strProgramType, strStationID, strProgramID)
         End If
     End Sub
 
-    Private Function LatestDate(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As DateTime
+    Public Function LatestDate(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As DateTime
         Dim sqlCommand As New SQLiteCommand("SELECT date FROM tblInfo WHERE type=""" + strProgramType + """  and Station=""" + strStationID + """ and ID=""" & strProgramID & """ ORDER BY Date DESC", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         With sqlReader
             If .Read = False Then
-                Exit Function
+                Return Nothing
             End If
 
             LatestDate = .GetDateTime(.GetOrdinal("Date"))

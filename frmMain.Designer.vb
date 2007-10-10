@@ -18,14 +18,6 @@
 	Private components As System.ComponentModel.IContainer
     Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
     Public WithEvents tmrStartProcess As System.Windows.Forms.Timer
-    Public WithEvents webDetails As System.Windows.Forms.WebBrowser
-    Public WithEvents mnuFileExit As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents File As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents mnuToolsPrefs As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents mnuTools As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents mnuHelpAbout As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents mnuHelp As System.Windows.Forms.ToolStripMenuItem
-    Public WithEvents mnuMainMenu As System.Windows.Forms.MenuStrip
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.
     'Do not modify it using the code editor.
@@ -34,42 +26,52 @@
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
-        Me.webDetails = New System.Windows.Forms.WebBrowser
-        Me.mnuMainMenu = New System.Windows.Forms.MenuStrip
-        Me.File = New System.Windows.Forms.ToolStripMenuItem
-        Me.mnuFileExit = New System.Windows.Forms.ToolStripMenuItem
-        Me.mnuTools = New System.Windows.Forms.ToolStripMenuItem
-        Me.mnuToolsPrefs = New System.Windows.Forms.ToolStripMenuItem
-        Me.mnuHelp = New System.Windows.Forms.ToolStripMenuItem
-        Me.mnuHelpAbout = New System.Windows.Forms.ToolStripMenuItem
-        Me.tbrToolbar = New System.Windows.Forms.ToolStrip
+        Me.tbrView = New System.Windows.Forms.ToolStrip
         Me.tbtFindNew = New System.Windows.Forms.ToolStripButton
+        Me.tbtCurrStation = New System.Windows.Forms.ToolStripButton
         Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton
         Me.tbtDownloads = New System.Windows.Forms.ToolStripButton
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
-        Me.tbtUp = New System.Windows.Forms.ToolStripButton
-        Me.ToolStripSeparator2 = New System.Windows.Forms.ToolStripSeparator
-        Me.tbtRefresh = New System.Windows.Forms.ToolStripButton
-        Me.tbtCleanUp = New System.Windows.Forms.ToolStripButton
         Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
+        Me.tbtCleanUp = New System.Windows.Forms.ToolStripButton
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.mnuTray = New System.Windows.Forms.ContextMenuStrip(Me.components)
         Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
         Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
-        Me.lstNew = New System.Windows.Forms.ListView
+        Me.lstStations = New System.Windows.Forms.ListView
         Me.imlListIcons = New System.Windows.Forms.ImageList(Me.components)
         Me.imlStations = New System.Windows.Forms.ImageList(Me.components)
-        Me.staStatus = New System.Windows.Forms.StatusStrip
-        Me.stlStatusText = New System.Windows.Forms.ToolStripStatusLabel
         Me.lstSubscribed = New System.Windows.Forms.ListView
         Me.prgDldProg = New System.Windows.Forms.ProgressBar
         Me.tmrCheckForUpdates = New System.Windows.Forms.Timer(Me.components)
+        Me.tbrToolbar = New System.Windows.Forms.ToolStrip
+        Me.tbmMisc = New System.Windows.Forms.ToolStripDropDownButton
+        Me.tbmOptions = New System.Windows.Forms.ToolStripMenuItem
+        Me.tbmSep1 = New System.Windows.Forms.ToolStripSeparator
+        Me.tbmExit = New System.Windows.Forms.ToolStripMenuItem
+        Me.tbtDownload = New System.Windows.Forms.ToolStripButton
+        Me.tbtSubscribe = New System.Windows.Forms.ToolStripButton
+        Me.tbtUnsubscribe = New System.Windows.Forms.ToolStripButton
+        Me.tbtCancel = New System.Windows.Forms.ToolStripButton
+        Me.tbtPlay = New System.Windows.Forms.ToolStripButton
+        Me.tbtDelete = New System.Windows.Forms.ToolStripButton
+        Me.tbtRetry = New System.Windows.Forms.ToolStripButton
+        Me.tbmHelp = New System.Windows.Forms.ToolStripDropDownButton
+        Me.tbmShowHelp = New System.Windows.Forms.ToolStripMenuItem
+        Me.tbmReportABug = New System.Windows.Forms.ToolStripMenuItem
+        Me.tbmSep2 = New System.Windows.Forms.ToolStripSeparator
+        Me.tbmAbout = New System.Windows.Forms.ToolStripMenuItem
+        Me.tblInfo = New System.Windows.Forms.TableLayoutPanel
+        Me.lblSideMainTitle = New System.Windows.Forms.Label
+        Me.picSidebarImg = New System.Windows.Forms.PictureBox
+        Me.lblSideDescript = New System.Windows.Forms.Label
+        Me.lstStationProgs = New System.Windows.Forms.ListView
         Me.lstDownloads = New RadioDld.ExtListView
-        Me.mnuMainMenu.SuspendLayout()
-        Me.tbrToolbar.SuspendLayout()
+        Me.tbrView.SuspendLayout()
         Me.mnuTray.SuspendLayout()
-        Me.staStatus.SuspendLayout()
+        Me.tbrToolbar.SuspendLayout()
+        Me.tblInfo.SuspendLayout()
+        CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'tmrCheckSub
@@ -82,76 +84,15 @@
         Me.tmrStartProcess.Enabled = True
         Me.tmrStartProcess.Interval = 2000
         '
-        'webDetails
+        'tbrView
         '
-        Me.webDetails.AllowWebBrowserDrop = False
-        Me.webDetails.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.webDetails.IsWebBrowserContextMenuEnabled = False
-        Me.webDetails.Location = New System.Drawing.Point(0, 55)
-        Me.webDetails.Name = "webDetails"
-        Me.webDetails.ScrollBarsEnabled = False
-        Me.webDetails.Size = New System.Drawing.Size(210, 394)
-        Me.webDetails.TabIndex = 2
-        Me.webDetails.WebBrowserShortcutsEnabled = False
-        '
-        'mnuMainMenu
-        '
-        Me.mnuMainMenu.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.File, Me.mnuTools, Me.mnuHelp})
-        Me.mnuMainMenu.Location = New System.Drawing.Point(0, 0)
-        Me.mnuMainMenu.Name = "mnuMainMenu"
-        Me.mnuMainMenu.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
-        Me.mnuMainMenu.Size = New System.Drawing.Size(757, 24)
-        Me.mnuMainMenu.TabIndex = 10
-        '
-        'File
-        '
-        Me.File.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuFileExit})
-        Me.File.Name = "File"
-        Me.File.Size = New System.Drawing.Size(37, 20)
-        Me.File.Text = "&File"
-        '
-        'mnuFileExit
-        '
-        Me.mnuFileExit.Name = "mnuFileExit"
-        Me.mnuFileExit.Size = New System.Drawing.Size(92, 22)
-        Me.mnuFileExit.Text = "E&xit"
-        '
-        'mnuTools
-        '
-        Me.mnuTools.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuToolsPrefs})
-        Me.mnuTools.Name = "mnuTools"
-        Me.mnuTools.Size = New System.Drawing.Size(48, 20)
-        Me.mnuTools.Text = "&Tools"
-        '
-        'mnuToolsPrefs
-        '
-        Me.mnuToolsPrefs.Name = "mnuToolsPrefs"
-        Me.mnuToolsPrefs.Size = New System.Drawing.Size(135, 22)
-        Me.mnuToolsPrefs.Text = "&Preferences"
-        '
-        'mnuHelp
-        '
-        Me.mnuHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuHelpAbout})
-        Me.mnuHelp.Name = "mnuHelp"
-        Me.mnuHelp.Size = New System.Drawing.Size(44, 20)
-        Me.mnuHelp.Text = "&Help"
-        '
-        'mnuHelpAbout
-        '
-        Me.mnuHelpAbout.Name = "mnuHelpAbout"
-        Me.mnuHelpAbout.Size = New System.Drawing.Size(107, 22)
-        Me.mnuHelpAbout.Text = "&About"
-        '
-        'tbrToolbar
-        '
-        Me.tbrToolbar.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtFindNew, Me.tbtSubscriptions, Me.tbtDownloads, Me.ToolStripSeparator1, Me.tbtUp, Me.ToolStripSeparator2, Me.tbtRefresh, Me.tbtCleanUp, Me.ttxSearch})
-        Me.tbrToolbar.Location = New System.Drawing.Point(0, 24)
-        Me.tbrToolbar.Name = "tbrToolbar"
-        Me.tbrToolbar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
-        Me.tbrToolbar.Size = New System.Drawing.Size(757, 31)
-        Me.tbrToolbar.TabIndex = 11
+        Me.tbrView.ImageScalingSize = New System.Drawing.Size(24, 24)
+        Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtFindNew, Me.tbtCurrStation, Me.tbtSubscriptions, Me.tbtDownloads, Me.ttxSearch})
+        Me.tbrView.Location = New System.Drawing.Point(0, 0)
+        Me.tbrView.Name = "tbrView"
+        Me.tbrView.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
+        Me.tbrView.Size = New System.Drawing.Size(757, 31)
+        Me.tbrView.TabIndex = 11
         '
         'tbtFindNew
         '
@@ -160,8 +101,16 @@
         Me.tbtFindNew.Image = CType(resources.GetObject("tbtFindNew.Image"), System.Drawing.Image)
         Me.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtFindNew.Name = "tbtFindNew"
-        Me.tbtFindNew.Size = New System.Drawing.Size(85, 28)
-        Me.tbtFindNew.Text = "Find New"
+        Me.tbtFindNew.Size = New System.Drawing.Size(106, 28)
+        Me.tbtFindNew.Text = "Select Station"
+        '
+        'tbtCurrStation
+        '
+        Me.tbtCurrStation.Image = CType(resources.GetObject("tbtCurrStation.Image"), System.Drawing.Image)
+        Me.tbtCurrStation.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtCurrStation.Name = "tbtCurrStation"
+        Me.tbtCurrStation.Size = New System.Drawing.Size(115, 28)
+        Me.tbtCurrStation.Text = "Current Station"
         '
         'tbtSubscriptions
         '
@@ -179,46 +128,21 @@
         Me.tbtDownloads.Size = New System.Drawing.Size(94, 28)
         Me.tbtDownloads.Text = "Downloads"
         '
-        'ToolStripSeparator1
+        'ttxSearch
         '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 31)
-        '
-        'tbtUp
-        '
-        Me.tbtUp.Image = CType(resources.GetObject("tbtUp.Image"), System.Drawing.Image)
-        Me.tbtUp.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtUp.Name = "tbtUp"
-        Me.tbtUp.Size = New System.Drawing.Size(50, 28)
-        Me.tbtUp.Text = "Up"
-        '
-        'ToolStripSeparator2
-        '
-        Me.ToolStripSeparator2.Name = "ToolStripSeparator2"
-        Me.ToolStripSeparator2.Size = New System.Drawing.Size(6, 31)
-        '
-        'tbtRefresh
-        '
-        Me.tbtRefresh.Image = CType(resources.GetObject("tbtRefresh.Image"), System.Drawing.Image)
-        Me.tbtRefresh.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtRefresh.Name = "tbtRefresh"
-        Me.tbtRefresh.Size = New System.Drawing.Size(74, 28)
-        Me.tbtRefresh.Text = "Refresh"
+        Me.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.ttxSearch.Name = "ttxSearch"
+        Me.ttxSearch.Size = New System.Drawing.Size(130, 31)
+        Me.ttxSearch.Text = "Search..."
         '
         'tbtCleanUp
         '
         Me.tbtCleanUp.Image = CType(resources.GetObject("tbtCleanUp.Image"), System.Drawing.Image)
         Me.tbtCleanUp.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtCleanUp.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
         Me.tbtCleanUp.Name = "tbtCleanUp"
-        Me.tbtCleanUp.Size = New System.Drawing.Size(83, 28)
+        Me.tbtCleanUp.Size = New System.Drawing.Size(75, 22)
         Me.tbtCleanUp.Text = "Clean Up"
-        '
-        'ttxSearch
-        '
-        Me.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        Me.ttxSearch.Name = "ttxSearch"
-        Me.ttxSearch.Size = New System.Drawing.Size(100, 31)
-        Me.ttxSearch.Text = "Search..."
         '
         'nicTrayIcon
         '
@@ -249,19 +173,20 @@
         Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
         Me.mnuTrayExit.Text = "E&xit"
         '
-        'lstNew
+        'lstStations
         '
-        Me.lstNew.Activation = System.Windows.Forms.ItemActivation.TwoClick
-        Me.lstNew.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+        Me.lstStations.Activation = System.Windows.Forms.ItemActivation.TwoClick
+        Me.lstStations.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lstNew.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstNew.Location = New System.Drawing.Point(210, 55)
-        Me.lstNew.MultiSelect = False
-        Me.lstNew.Name = "lstNew"
-        Me.lstNew.Size = New System.Drawing.Size(547, 110)
-        Me.lstNew.TabIndex = 12
-        Me.lstNew.UseCompatibleStateImageBehavior = False
+        Me.lstStations.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstStations.Location = New System.Drawing.Point(187, 56)
+        Me.lstStations.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstStations.MultiSelect = False
+        Me.lstStations.Name = "lstStations"
+        Me.lstStations.Size = New System.Drawing.Size(570, 71)
+        Me.lstStations.TabIndex = 12
+        Me.lstStations.UseCompatibleStateImageBehavior = False
         '
         'imlListIcons
         '
@@ -282,20 +207,6 @@
         Me.imlStations.TransparentColor = System.Drawing.Color.Transparent
         Me.imlStations.Images.SetKeyName(0, "default")
         '
-        'staStatus
-        '
-        Me.staStatus.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.stlStatusText})
-        Me.staStatus.Location = New System.Drawing.Point(0, 449)
-        Me.staStatus.Name = "staStatus"
-        Me.staStatus.Size = New System.Drawing.Size(757, 22)
-        Me.staStatus.TabIndex = 13
-        '
-        'stlStatusText
-        '
-        Me.stlStatusText.Name = "stlStatusText"
-        Me.stlStatusText.Size = New System.Drawing.Size(64, 17)
-        Me.stlStatusText.Text = "Status Text"
-        '
         'lstSubscribed
         '
         Me.lstSubscribed.Activation = System.Windows.Forms.ItemActivation.TwoClick
@@ -303,10 +214,11 @@
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstSubscribed.Location = New System.Drawing.Point(210, 197)
+        Me.lstSubscribed.Location = New System.Drawing.Point(187, 260)
+        Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
         Me.lstSubscribed.MultiSelect = False
         Me.lstSubscribed.Name = "lstSubscribed"
-        Me.lstSubscribed.Size = New System.Drawing.Size(547, 110)
+        Me.lstSubscribed.Size = New System.Drawing.Size(570, 91)
         Me.lstSubscribed.Sorting = System.Windows.Forms.SortOrder.Ascending
         Me.lstSubscribed.TabIndex = 14
         Me.lstSubscribed.UseCompatibleStateImageBehavior = False
@@ -314,7 +226,7 @@
         '
         'prgDldProg
         '
-        Me.prgDldProg.Location = New System.Drawing.Point(424, 384)
+        Me.prgDldProg.Location = New System.Drawing.Point(427, 408)
         Me.prgDldProg.Name = "prgDldProg"
         Me.prgDldProg.Size = New System.Drawing.Size(100, 23)
         Me.prgDldProg.TabIndex = 16
@@ -325,6 +237,222 @@
         Me.tmrCheckForUpdates.Enabled = True
         Me.tmrCheckForUpdates.Interval = 28800000
         '
+        'tbrToolbar
+        '
+        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmMisc, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtCleanUp, Me.tbmHelp})
+        Me.tbrToolbar.Location = New System.Drawing.Point(0, 31)
+        Me.tbrToolbar.Name = "tbrToolbar"
+        Me.tbrToolbar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
+        Me.tbrToolbar.Size = New System.Drawing.Size(757, 25)
+        Me.tbrToolbar.TabIndex = 17
+        '
+        'tbmMisc
+        '
+        Me.tbmMisc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmOptions, Me.tbmSep1, Me.tbmExit})
+        Me.tbmMisc.Image = CType(resources.GetObject("tbmMisc.Image"), System.Drawing.Image)
+        Me.tbmMisc.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbmMisc.Margin = New System.Windows.Forms.Padding(0, 1, 2, 2)
+        Me.tbmMisc.Name = "tbmMisc"
+        Me.tbmMisc.Size = New System.Drawing.Size(78, 22)
+        Me.tbmMisc.Text = "Options"
+        '
+        'tbmOptions
+        '
+        Me.tbmOptions.Name = "tbmOptions"
+        Me.tbmOptions.Size = New System.Drawing.Size(148, 22)
+        Me.tbmOptions.Text = "Show &Options"
+        '
+        'tbmSep1
+        '
+        Me.tbmSep1.Name = "tbmSep1"
+        Me.tbmSep1.Size = New System.Drawing.Size(145, 6)
+        '
+        'tbmExit
+        '
+        Me.tbmExit.Name = "tbmExit"
+        Me.tbmExit.Size = New System.Drawing.Size(148, 22)
+        Me.tbmExit.Text = "E&xit"
+        '
+        'tbtDownload
+        '
+        Me.tbtDownload.Image = CType(resources.GetObject("tbtDownload.Image"), System.Drawing.Image)
+        Me.tbtDownload.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtDownload.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
+        Me.tbtDownload.Name = "tbtDownload"
+        Me.tbtDownload.Size = New System.Drawing.Size(81, 22)
+        Me.tbtDownload.Text = "Download"
+        '
+        'tbtSubscribe
+        '
+        Me.tbtSubscribe.Image = CType(resources.GetObject("tbtSubscribe.Image"), System.Drawing.Image)
+        Me.tbtSubscribe.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtSubscribe.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
+        Me.tbtSubscribe.Name = "tbtSubscribe"
+        Me.tbtSubscribe.Size = New System.Drawing.Size(78, 22)
+        Me.tbtSubscribe.Text = "Subscribe"
+        '
+        'tbtUnsubscribe
+        '
+        Me.tbtUnsubscribe.Image = CType(resources.GetObject("tbtUnsubscribe.Image"), System.Drawing.Image)
+        Me.tbtUnsubscribe.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtUnsubscribe.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
+        Me.tbtUnsubscribe.Name = "tbtUnsubscribe"
+        Me.tbtUnsubscribe.Size = New System.Drawing.Size(92, 22)
+        Me.tbtUnsubscribe.Text = "Unsubscribe"
+        '
+        'tbtCancel
+        '
+        Me.tbtCancel.Image = CType(resources.GetObject("tbtCancel.Image"), System.Drawing.Image)
+        Me.tbtCancel.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtCancel.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
+        Me.tbtCancel.Name = "tbtCancel"
+        Me.tbtCancel.Size = New System.Drawing.Size(63, 22)
+        Me.tbtCancel.Text = "Cancel"
+        '
+        'tbtPlay
+        '
+        Me.tbtPlay.Image = CType(resources.GetObject("tbtPlay.Image"), System.Drawing.Image)
+        Me.tbtPlay.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtPlay.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
+        Me.tbtPlay.Name = "tbtPlay"
+        Me.tbtPlay.Size = New System.Drawing.Size(49, 22)
+        Me.tbtPlay.Text = "Play"
+        '
+        'tbtDelete
+        '
+        Me.tbtDelete.Image = CType(resources.GetObject("tbtDelete.Image"), System.Drawing.Image)
+        Me.tbtDelete.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtDelete.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
+        Me.tbtDelete.Name = "tbtDelete"
+        Me.tbtDelete.Size = New System.Drawing.Size(60, 22)
+        Me.tbtDelete.Text = "Delete"
+        '
+        'tbtRetry
+        '
+        Me.tbtRetry.Image = CType(resources.GetObject("tbtRetry.Image"), System.Drawing.Image)
+        Me.tbtRetry.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtRetry.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
+        Me.tbtRetry.Name = "tbtRetry"
+        Me.tbtRetry.Size = New System.Drawing.Size(54, 22)
+        Me.tbtRetry.Text = "Retry"
+        '
+        'tbmHelp
+        '
+        Me.tbmHelp.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.tbmHelp.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tbmHelp.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmShowHelp, Me.tbmReportABug, Me.tbmSep2, Me.tbmAbout})
+        Me.tbmHelp.Image = CType(resources.GetObject("tbmHelp.Image"), System.Drawing.Image)
+        Me.tbmHelp.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbmHelp.Name = "tbmHelp"
+        Me.tbmHelp.Size = New System.Drawing.Size(29, 22)
+        Me.tbmHelp.Text = "Help"
+        '
+        'tbmShowHelp
+        '
+        Me.tbmShowHelp.Name = "tbmShowHelp"
+        Me.tbmShowHelp.Size = New System.Drawing.Size(142, 22)
+        Me.tbmShowHelp.Text = "&Help"
+        Me.tbmShowHelp.Visible = False
+        '
+        'tbmReportABug
+        '
+        Me.tbmReportABug.Name = "tbmReportABug"
+        Me.tbmReportABug.Size = New System.Drawing.Size(142, 22)
+        Me.tbmReportABug.Text = "Report a &Bug"
+        Me.tbmReportABug.Visible = False
+        '
+        'tbmSep2
+        '
+        Me.tbmSep2.Name = "tbmSep2"
+        Me.tbmSep2.Size = New System.Drawing.Size(139, 6)
+        Me.tbmSep2.Visible = False
+        '
+        'tbmAbout
+        '
+        Me.tbmAbout.Name = "tbmAbout"
+        Me.tbmAbout.Size = New System.Drawing.Size(142, 22)
+        Me.tbmAbout.Text = "&About"
+        '
+        'tblInfo
+        '
+        Me.tblInfo.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
+        Me.tblInfo.BackColor = System.Drawing.Color.Transparent
+        Me.tblInfo.BackgroundImage = CType(resources.GetObject("tblInfo.BackgroundImage"), System.Drawing.Image)
+        Me.tblInfo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
+        Me.tblInfo.ColumnCount = 1
+        Me.tblInfo.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.tblInfo.Controls.Add(Me.lblSideMainTitle, 0, 0)
+        Me.tblInfo.Controls.Add(Me.picSidebarImg, 0, 1)
+        Me.tblInfo.Controls.Add(Me.lblSideDescript, 0, 2)
+        Me.tblInfo.Location = New System.Drawing.Point(0, 56)
+        Me.tblInfo.Margin = New System.Windows.Forms.Padding(3, 0, 0, 0)
+        Me.tblInfo.Name = "tblInfo"
+        Me.tblInfo.RowCount = 4
+        Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle)
+        Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle)
+        Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle)
+        Me.tblInfo.Size = New System.Drawing.Size(187, 415)
+        Me.tblInfo.TabIndex = 18
+        '
+        'lblSideMainTitle
+        '
+        Me.lblSideMainTitle.AutoSize = True
+        Me.lblSideMainTitle.BackColor = System.Drawing.Color.Transparent
+        Me.lblSideMainTitle.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblSideMainTitle.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblSideMainTitle.ForeColor = System.Drawing.Color.White
+        Me.lblSideMainTitle.Location = New System.Drawing.Point(8, 10)
+        Me.lblSideMainTitle.Margin = New System.Windows.Forms.Padding(8, 10, 8, 8)
+        Me.lblSideMainTitle.Name = "lblSideMainTitle"
+        Me.lblSideMainTitle.Size = New System.Drawing.Size(171, 19)
+        Me.lblSideMainTitle.TabIndex = 0
+        Me.lblSideMainTitle.Text = "Title"
+        Me.lblSideMainTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'picSidebarImg
+        '
+        Me.picSidebarImg.ErrorImage = Nothing
+        Me.picSidebarImg.InitialImage = Nothing
+        Me.picSidebarImg.Location = New System.Drawing.Point(12, 40)
+        Me.picSidebarImg.Margin = New System.Windows.Forms.Padding(12, 3, 12, 5)
+        Me.picSidebarImg.MaximumSize = New System.Drawing.Size(100, 100)
+        Me.picSidebarImg.Name = "picSidebarImg"
+        Me.picSidebarImg.Size = New System.Drawing.Size(70, 70)
+        Me.picSidebarImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
+        Me.picSidebarImg.TabIndex = 1
+        Me.picSidebarImg.TabStop = False
+        '
+        'lblSideDescript
+        '
+        Me.lblSideDescript.AutoSize = True
+        Me.lblSideDescript.BackColor = System.Drawing.Color.Transparent
+        Me.lblSideDescript.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblSideDescript.ForeColor = System.Drawing.Color.White
+        Me.lblSideDescript.Location = New System.Drawing.Point(8, 120)
+        Me.lblSideDescript.Margin = New System.Windows.Forms.Padding(8, 5, 8, 6)
+        Me.lblSideDescript.Name = "lblSideDescript"
+        Me.lblSideDescript.Size = New System.Drawing.Size(171, 289)
+        Me.lblSideDescript.TabIndex = 2
+        Me.lblSideDescript.Text = "Description"
+        '
+        'lstStationProgs
+        '
+        Me.lstStationProgs.Activation = System.Windows.Forms.ItemActivation.TwoClick
+        Me.lstStationProgs.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
+                    Or System.Windows.Forms.AnchorStyles.Left) _
+                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.lstStationProgs.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstStationProgs.Location = New System.Drawing.Point(187, 155)
+        Me.lstStationProgs.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstStationProgs.MultiSelect = False
+        Me.lstStationProgs.Name = "lstStationProgs"
+        Me.lstStationProgs.Size = New System.Drawing.Size(570, 77)
+        Me.lstStationProgs.TabIndex = 19
+        Me.lstStationProgs.UseCompatibleStateImageBehavior = False
+        Me.lstStationProgs.View = System.Windows.Forms.View.Details
+        '
         'lstDownloads
         '
         Me.lstDownloads.Activation = System.Windows.Forms.ItemActivation.TwoClick
@@ -332,10 +460,11 @@
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstDownloads.Location = New System.Drawing.Point(210, 340)
+        Me.lstDownloads.Location = New System.Drawing.Point(187, 375)
+        Me.lstDownloads.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
         Me.lstDownloads.MultiSelect = False
         Me.lstDownloads.Name = "lstDownloads"
-        Me.lstDownloads.Size = New System.Drawing.Size(547, 109)
+        Me.lstDownloads.Size = New System.Drawing.Size(570, 96)
         Me.lstDownloads.TabIndex = 15
         Me.lstDownloads.UseCompatibleStateImageBehavior = False
         Me.lstDownloads.View = System.Windows.Forms.View.Details
@@ -347,13 +476,13 @@
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 471)
         Me.Controls.Add(Me.prgDldProg)
-        Me.Controls.Add(Me.lstSubscribed)
-        Me.Controls.Add(Me.staStatus)
-        Me.Controls.Add(Me.tbrToolbar)
-        Me.Controls.Add(Me.lstNew)
-        Me.Controls.Add(Me.webDetails)
-        Me.Controls.Add(Me.mnuMainMenu)
         Me.Controls.Add(Me.lstDownloads)
+        Me.Controls.Add(Me.lstSubscribed)
+        Me.Controls.Add(Me.lstStationProgs)
+        Me.Controls.Add(Me.lstStations)
+        Me.Controls.Add(Me.tblInfo)
+        Me.Controls.Add(Me.tbrToolbar)
+        Me.Controls.Add(Me.tbrView)
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
@@ -363,25 +492,22 @@
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
-        Me.mnuMainMenu.ResumeLayout(False)
-        Me.mnuMainMenu.PerformLayout()
+        Me.tbrView.ResumeLayout(False)
+        Me.tbrView.PerformLayout()
+        Me.mnuTray.ResumeLayout(False)
         Me.tbrToolbar.ResumeLayout(False)
         Me.tbrToolbar.PerformLayout()
-        Me.mnuTray.ResumeLayout(False)
-        Me.staStatus.ResumeLayout(False)
-        Me.staStatus.PerformLayout()
+        Me.tblInfo.ResumeLayout(False)
+        Me.tblInfo.PerformLayout()
+        CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents tbrToolbar As System.Windows.Forms.ToolStrip
+    Friend WithEvents tbrView As System.Windows.Forms.ToolStrip
     Friend WithEvents tbtFindNew As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtSubscriptions As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtDownloads As System.Windows.Forms.ToolStripButton
-    Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents tbtUp As System.Windows.Forms.ToolStripButton
-    Friend WithEvents ToolStripSeparator2 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents tbtRefresh As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtCleanUp As System.Windows.Forms.ToolStripButton
     Friend WithEvents nicTrayIcon As System.Windows.Forms.NotifyIcon
     Friend WithEvents mnuTray As System.Windows.Forms.ContextMenuStrip
@@ -389,14 +515,35 @@
     Friend WithEvents ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ttxSearch As System.Windows.Forms.ToolStripTextBox
-    Friend WithEvents lstNew As System.Windows.Forms.ListView
+    Friend WithEvents lstStations As System.Windows.Forms.ListView
     Friend WithEvents imlListIcons As System.Windows.Forms.ImageList
     Friend WithEvents imlStations As System.Windows.Forms.ImageList
-    Friend WithEvents staStatus As System.Windows.Forms.StatusStrip
-    Friend WithEvents stlStatusText As System.Windows.Forms.ToolStripStatusLabel
     Friend WithEvents lstSubscribed As System.Windows.Forms.ListView
     Friend WithEvents prgDldProg As System.Windows.Forms.ProgressBar
     Friend WithEvents lstDownloads As RadioDld.ExtListView
     Friend WithEvents tmrCheckForUpdates As System.Windows.Forms.Timer
+    Friend WithEvents tbrToolbar As System.Windows.Forms.ToolStrip
+    Friend WithEvents tblInfo As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents lblSideMainTitle As System.Windows.Forms.Label
+    Friend WithEvents picSidebarImg As System.Windows.Forms.PictureBox
+    Friend WithEvents lblSideDescript As System.Windows.Forms.Label
+    Friend WithEvents tbtPlay As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtCancel As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtSubscribe As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtUnsubscribe As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtDownload As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtDelete As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtRetry As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbmHelp As System.Windows.Forms.ToolStripDropDownButton
+    Friend WithEvents tbtCurrStation As System.Windows.Forms.ToolStripButton
+    Friend WithEvents lstStationProgs As System.Windows.Forms.ListView
+    Friend WithEvents tbmMisc As System.Windows.Forms.ToolStripDropDownButton
+    Friend WithEvents tbmOptions As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tbmSep1 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents tbmExit As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tbmShowHelp As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tbmAbout As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tbmReportABug As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tbmSep2 As System.Windows.Forms.ToolStripSeparator
 #End Region
 End Class

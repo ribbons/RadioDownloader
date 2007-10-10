@@ -26,6 +26,7 @@ Public NotInheritable Class frmAbout
         Else
             ApplicationTitle = System.IO.Path.GetFileNameWithoutExtension(My.Application.Info.AssemblyName)
         End If
+
         Me.Text = String.Format("About {0}", ApplicationTitle)
         Me.LabelNameAndVer.Text = String.Format("{0} {1}", My.Application.Info.ProductName, My.Application.Info.Version.ToString)
         Me.LabelCopyright.Text = My.Application.Info.Copyright
@@ -37,9 +38,5 @@ Public NotInheritable Class frmAbout
 
     Private Sub HomepageLink_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles HomepageLink.Click
         Start("http://www.nerdoftheherd.com/tools/radiodld/")
-    End Sub
-
-    Private Sub IconsLink_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles IconsLink.LinkClicked
-        Start("http://www.everaldo.com/")
     End Sub
 End Class
