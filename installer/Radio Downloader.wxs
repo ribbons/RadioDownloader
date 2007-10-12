@@ -1025,7 +1025,7 @@
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
     </Media>
-    <Feature Id="RadioDownloader" Level="1" Title="Core Application" Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="TARGETDIR">
+    <Feature Id="RadioDownloader" Level="1" Title="Core Application" Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="TARGETDIR" Description="The core Radio Downloader application.">
       <ComponentRef Id="RadioDownloaderExe" />
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
