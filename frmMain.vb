@@ -151,7 +151,7 @@ Public Class frmMain
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/downloads/")
+        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/downloads/", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vomus")
         If My.Settings.UpdateDownloaded Then
             Call InstallUpdate()
         End If
@@ -557,7 +557,7 @@ Public Class frmMain
     Private Sub tmrCheckForUpdates_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrCheckForUpdates.Tick
         If My.Settings.UpdateDownloaded Then
             If My.Settings.AskedAboutUpdate = False Then
-                If MsgBox("A new version of Radio Downloader has been downloaded and is ready to be installed.  Would you like to install the update now?  (If you choose 'No' the update will be installed next time you start Radio Downloader)", MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+                If MsgBox("A new version of Radio Downloader has been downloaded and is ready to be installed.  Would you like to install the update now?" + vbCrLf + "(If you choose 'No' the update will be installed next time you start Radio Downloader)", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, "Radio Downloader") = MsgBoxResult.Yes Then
                     Call InstallUpdate()
                 Else
                     My.Settings.AskedAboutUpdate = True

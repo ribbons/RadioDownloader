@@ -233,7 +233,7 @@
         'tmrCheckForUpdates
         '
         Me.tmrCheckForUpdates.Enabled = True
-        Me.tmrCheckForUpdates.Interval = 28800000
+        Me.tmrCheckForUpdates.Interval = 300000
         '
         'tbrToolbar
         '
