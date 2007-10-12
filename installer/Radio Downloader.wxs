@@ -26,7 +26,7 @@
       <Dialog Id="ExitDialog" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Finish]">
           <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
-          <Publish Value="RunAfterInstall" Event="DoAction">InstallMode = "Custom" AND RUNAFTERINSTALLATION = 1</Publish>
+          <Publish Value="RunAfterInstall" Event="DoAction">InstallMode = "Custom"</Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Cancel]" />
         <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
@@ -164,7 +164,7 @@
         </Control>
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
           <Publish Event="SetTargetPath" Value="TARGETDIR"><![CDATA[1]]></Publish>
-          <Publish Event="NewDialog" Value="AdditionalOptsDlg"><![CDATA[1]]></Publish>
+          <Publish Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[1]]></Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
           <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
@@ -254,15 +254,15 @@
       </Dialog>
       <Dialog Id="CustomizeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
         <Control Id="Tree" Type="SelectionTree" X="25" Y="85" Width="175" Height="95" Property="_BrowseProperty" Sunken="yes" TabSkip="no" Text="Tree of selections" />
-        <Control Id="Browse" Type="PushButton" X="304" Y="200" Width="56" Height="17" Text="[ButtonText_Browse]">
+        <Control Id="Browse" Type="PushButton" X="304" Y="200" Width="56" Height="17" Text="[ButtonText_Browse]" Hidden="yes">
           <Publish Event="SelectionBrowse" Value="BrowseDlg"><![CDATA[1]]></Publish>
           <Condition Action="hide"><![CDATA[Installed]]></Condition>
         </Control>
-        <Control Id="Reset" Type="PushButton" X="42" Y="243" Width="56" Height="17" Text="[ButtonText_Reset]">
+        <Control Id="Reset" Type="PushButton" X="42" Y="243" Width="56" Height="17" Text="[ButtonText_Reset]" Hidden="yes">
           <Publish Event="Reset" Value="0"><![CDATA[1]]></Publish>
           <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
         </Control>
-        <Control Id="DiskCost" Type="PushButton" X="111" Y="243" Width="56" Height="17">
+        <Control Id="DiskCost" Type="PushButton" X="111" Y="243" Width="56" Height="17" Hidden="yes">
           <Text>Disk &amp;Usage</Text>
           <Publish Event="SpawnDialog" Value="DiskCostDlg"><![CDATA[1]]></Publish>
           <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
@@ -272,7 +272,7 @@
           <Publish Event="NewDialog" Value="LicenseAgreementDlg"><![CDATA[InstallMode <> "Change"]]></Publish>
         </Control>
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
-          <Publish Event="NewDialog" Value="AdditionalOptsDlg"><![CDATA[1]]></Publish>
+          <Publish Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[1]]></Publish>
           <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
@@ -309,35 +309,6 @@
           <Subscribe Event="SelectionPathOn" Attribute="Visible" />
           <Condition Action="hide"><![CDATA[Installed]]></Condition>
         </Control>
-      </Dialog>
-      <Dialog Id="AdditionalOptsDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
-        <Control Id="Text" Type="Text" X="25" Y="65" Width="320" Height="20">
-          <Text>Deselect any options you do not require below, and then click Install to begin the installation.  Click Cancel to exit the wizard.</Text>
-        </Control>
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
-          <Publish Event="NewDialog" Value="LicenseAgreementDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]">
-          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace <> 1]]></Publish>
-          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]></Publish>
-          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
-          <Publish Event="EnableRollback" Value="False"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
-          <Publish Event="SpawnDialog" Value="OutOfDiskDlg"><![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]></Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
-          <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="BannerBitmap" Type="Bitmap" X="548" Y="49" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Select installation options and confirm.</Text>
-        </Control>
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>[DlgTitleFont]Options</Text>
-        </Control>
-        <Control Type="CheckBox" Width="188" Height="13" X="25" Y="110" Id="RunAtStartup" Text="Run at Startup" Property="RUNATSTARTUP" CheckBoxValue="1" />
-        <Control Type="CheckBox" Width="114" Height="17" X="25" Y="140" Id="RunAfterInstallation" Text="Run after Installation" Property="RUNAFTERINSTALLATION" CheckBoxValue="1" />
       </Dialog>
       <Dialog Id="DiskCostDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_OK]">
@@ -410,9 +381,8 @@
       </Dialog>
       <Dialog Id="LicenseAgreementDlg" Width="370" Height="270" Title="[ProductName] License Agreement" NoMinimize="yes">
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_IAgree]">
-          <Publish Event="NewDialog" Value="UserRegistrationDlg"><![CDATA[ShowUserRegistrationDlg = 1]]></Publish>
           <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg"><![CDATA[CostingComplete = 1]]></Publish>
-          <Publish Event="NewDialog" Value="AdditionalOptsDlg"><![CDATA[ShowUserRegistrationDlg <> 1]]></Publish>
+          <Publish Event="NewDialog" Value="CustomizeDlg"><![CDATA[1]]></Publish>
         </Control>
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]" Disabled="yes">
         </Control>
@@ -574,36 +544,6 @@
           <Text>{\VerdanaBold13}[ProductName] Update</Text>
         </Control>
       </Dialog>
-      <Dialog Id="UserRegistrationDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="NameLabel" Type="Text" X="45" Y="73" Width="100" Height="15" TabSkip="no" Text="&amp;User Name:" />
-        <Control Id="NameEdit" Type="Edit" X="45" Y="85" Width="220" Height="18" Property="USERNAME" Text="{80}" />
-        <Control Id="OrganizationLabel" Type="Text" X="45" Y="110" Width="100" Height="15" TabSkip="no" Text="&amp;Organization:" />
-        <Control Id="OrganizationEdit" Type="Edit" X="45" Y="122" Width="220" Height="18" Property="COMPANYNAME" Text="{80}" />
-        <Control Id="CDKeyLabel" Type="Text" X="45" Y="147" Width="50" Height="10" TabSkip="no">
-          <Text>CD &amp;Key:</Text>
-        </Control>
-        <Control Id="CDKeyEdit" Type="MaskedEdit" X="45" Y="159" Width="250" Height="16" Property="PIDKEY" Text="[PIDTemplate]" />
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
-          <Publish Event="NewDialog" Value="LicenseAgreementDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
-          <Publish Event="ValidateProductID" Value="0"><![CDATA[0]]></Publish>
-          <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg"><![CDATA[CostingComplete = 1]]></Publish>
-          <Publish Event="NewDialog" Value="LicenseAgreementDlg"><![CDATA[ProductID]]></Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
-          <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Please enter your customer information</Text>
-        </Control>
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>[DlgTitleFont]Customer Information</Text>
-        </Control>
-      </Dialog>
       <Dialog Id="VerifyRemoveDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Back]">
           <Publish Event="NewDialog" Value="MaintenanceTypeDlg"><![CDATA[1]]></Publish>
@@ -669,6 +609,35 @@
           <Text>Please wait while the installer finishes determining your disk space requirements.</Text>
         </Control>
         <Control Id="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" ToolTip="Exclamation icon" FixedSize="yes" IconSize="32" Text="[ExclamationIcon]" />
+      </Dialog>
+      <Dialog Id="VerifyReadyDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
+        <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]">
+          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace <> 1]]></Publish>
+          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]></Publish>
+          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
+          <Publish Event="EnableRollback" Value="False"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
+          <Publish Event="SpawnDialog" Value="OutOfDiskDlg"><![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]></Publish>
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="AdminInstallPointDlg"><![CDATA[InstallMode = "Server Image"]]></Publish>
+          <Publish Event="NewDialog" Value="CustomizeDlg"><![CDATA[InstallMode = "Custom" OR InstallMode = "Change"]]></Publish>
+          <Publish Event="NewDialog" Value="MaintenanceTypeDlg"><![CDATA[InstallMode = "Repair"]]></Publish>
+        </Control>
+        <Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="20">
+          <Text>Click Install to begin the installation. If you want to review or change any of your installation settings, click Back.  Click Cancel to exit the wizard.</Text>
+        </Control>
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Setup is ready to begin the installation</Text>
+        </Control>
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>[DlgTitleFont]Ready to Install</Text>
+        </Control>
       </Dialog>
       <TextStyle Id="DlgFont8" FaceName="Tahoma" Size="8" />
       <TextStyle Id="DlgFontBold8" FaceName="Tahoma" Size="8" Bold="yes" />
@@ -991,7 +960,6 @@
     <Property Id="ProductID"><![CDATA[none]]></Property>
     <Property Id="ButtonText_Reset"><![CDATA[&Reset]]></Property>
     <Property Id="ButtonText_Remove"><![CDATA[&Remove]]></Property>
-    <Property Id="ShowUserRegistrationDlg"><![CDATA[0]]></Property>
     <Property Id="ButtonText_Exit"><![CDATA[&Exit]]></Property>
     <Property Id="ButtonText_Return"><![CDATA[&Return]]></Property>
     <Property Id="ButtonText_OK"><![CDATA[OK]]></Property>
@@ -1009,8 +977,6 @@
     <Property Id="ComponentDownload"><![CDATA[ftp://anonymous@microsoft.com/components/]]></Property>
     <Property Id="BannerBitmap"><![CDATA[bannrbmp]]></Property>
     <Property Id="DialogBitmap"><![CDATA[dlgbmp]]></Property>
-    <Property Id="RUNATSTARTUP"><![CDATA[1]]></Property>
-    <Property Id="RUNAFTERINSTALLATION"><![CDATA[1]]></Property>
     <Property Id="ALLUSERS"><![CDATA[2]]></Property>
     <Property Id="PATCHFOUND"><![CDATA[0]]></Property>
     <Property Id="ButtonText_Update"><![CDATA[&Update]]></Property>
@@ -1029,9 +995,9 @@
     <Binary Id="removico" src="Binary\removico.ico" />
     <Binary Id="repairic" src="Binary\repairic.ico" />
     <Binary Id="Up" src="Binary\Up.ico" />
-    <Directory Id="TARGETDIR" Name="SourceDir">
+    <Directory Id="SOURCEDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder" Name="PFiles" LongName="Program Files">
-        <Directory Id="INSTALLDIR" Name="RadioDld" LongName="Radio Downloader">
+        <Directory Id="TARGETDIR" Name="RadioDld" LongName="Radio Downloader">
           <Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E" DiskId="1">
             <File Id="RadioDownloaderExe" Name="RadioDld.exe" LongName="Radio Downloader.exe" Vital="yes" Source="..\bin\Radio Downloader.exe">
               <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="RadioDld" IconIndex="0" LongName="Radio Downloader" WorkingDirectory="INSTALLDIR" />
@@ -1055,12 +1021,11 @@
         <Registry Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string">
           <RegistryValue>"[INSTALLDIR]Radio Downloader.exe" -starttray</RegistryValue>
         </Registry>
-        <Condition>RUNATSTARTUP=1</Condition>
       </Component>
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
     </Media>
-    <Feature Id="RadioDownloader" Level="1" Title="Core Application" Absent="disallow">
+    <Feature Id="RadioDownloader" Level="1" Title="Core Application" Absent="disallow" AllowAdvertise="no">
       <ComponentRef Id="RadioDownloaderExe" />
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
@@ -1068,7 +1033,7 @@
       <ComponentRef Id="RunOnStartup" />
     </Feature>
     <Condition Message="Radio Downloader requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
-    <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" />
+    <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
     <Upgrade Id="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
       <UpgradeVersion OnlyDetect="yes" Property="PATCHFOUND" />
     </Upgrade>
