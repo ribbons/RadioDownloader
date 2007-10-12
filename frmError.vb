@@ -25,23 +25,27 @@ Public Class frmError
     Public strStackTrace As String
 
     Private Sub cmdSend_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSend.Click
-        Me.Visible = False
+        Try
+            Me.Visible = False
 
-        Dim webSend As New WebClient()
-        webSend.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+            Dim webSend As New WebClient()
+            webSend.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
 
-        Dim PostData As Byte() = ASCII.GetBytes("stacktrace=" + HttpUtility.UrlEncode(strStackTrace) + "&version=" + My.Application.Info.Version.ToString)
-        Dim Result As Byte() = webSend.UploadData("http://www.nerdoftheherd.com/tools/radiodld/error_report.php", "POST", PostData)
+            Dim PostData As Byte() = ASCII.GetBytes("stacktrace=" + HttpUtility.UrlEncode(strStackTrace) + "&version=" + My.Application.Info.Version.ToString)
+            Dim Result As Byte() = webSend.UploadData("http://www.nerdoftheherd.com/tools/radiodld/error_report.php", "POST", PostData)
 
-        Dim strReturnLines() As String = Split(ASCII.GetString(Result), vbLf)
+            Dim strReturnLines() As String = Split(ASCII.GetString(Result), vbLf)
 
-        If strReturnLines(0) = "success" Then
-            MsgBox("Your error report was sent successfully.")
+            If strReturnLines(0) = "success" Then
+                MsgBox("Your error report was sent successfully.")
 
-            If strReturnLines(1).Substring(0, 7) = "http://" Then
-                Start(strReturnLines(1))
+                If strReturnLines(1).Substring(0, 7) = "http://" Then
+                    Start(strReturnLines(1))
+                End If
             End If
-        End If
+        Catch
+            ' No way of reporting errors that have happened here, so just give up
+        End Try
 
         Me.Close()
     End Sub
