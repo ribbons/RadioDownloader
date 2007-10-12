@@ -254,7 +254,7 @@
       </Dialog>
       <Dialog Id="CustomizeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
         <Control Id="Tree" Type="SelectionTree" X="25" Y="85" Width="175" Height="95" Property="_BrowseProperty" Sunken="yes" TabSkip="no" Text="Tree of selections" />
-        <Control Id="Browse" Type="PushButton" X="304" Y="200" Width="56" Height="17" Text="[ButtonText_Browse]" Hidden="yes">
+        <Control Id="Browse" Type="PushButton" X="304" Y="200" Width="56" Height="17" Text="[ButtonText_Browse]">
           <Publish Event="SelectionBrowse" Value="BrowseDlg"><![CDATA[1]]></Publish>
           <Condition Action="hide"><![CDATA[Installed]]></Condition>
         </Control>
@@ -1025,7 +1025,7 @@
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
     </Media>
-    <Feature Id="RadioDownloader" Level="1" Title="Core Application" Absent="disallow" AllowAdvertise="no">
+    <Feature Id="RadioDownloader" Level="1" Title="Core Application" Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="TARGETDIR">
       <ComponentRef Id="RadioDownloaderExe" />
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
