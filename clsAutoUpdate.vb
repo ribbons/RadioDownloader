@@ -59,16 +59,16 @@ Public Class clsAutoUpdate
                         strSplitInfo = Split(strVersionInfo, vbCrLf)
 
                         If strSplitInfo.GetUpperBound(0) > 0 Then ' Make sure that we have at least two items in the array
-                            'If strSplitInfo(0) > My.Application.Info.Version.ToString Then ' There is a new version available
-                            strNewVersionURL = strUrlPrefix + strSplitInfo(1)
-                            thrDownloadThread = New Thread(AddressOf DownloadUpdate)
-                            thrDownloadThread.Start()
-                            'End If
+                            If strSplitInfo(0) > My.Application.Info.Version.ToString Then ' There is a new version available
+                                strNewVersionURL = strUrlPrefix + strSplitInfo(1)
+                                thrDownloadThread = New Thread(AddressOf DownloadUpdate)
+                                thrDownloadThread.Start()
+                            End If
                         End If
                     End If
                 Catch expWeb As WebException
-                ' Temporary problem downloading the information, we will try again later
-            End Try
+                    ' Temporary problem downloading the information, we will try again later
+                End Try
             End If
         End If
     End Sub
