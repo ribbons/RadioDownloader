@@ -95,9 +95,9 @@ Public Class frmMain
 
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' Add a handler to catch otherwise unhandled exceptions
-        'AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
+        AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
         ' Add a handler for thread exceptions
-        'AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
+        AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
         ' Add a handler for when a second instance is loaded
         AddHandler My.Application.StartupNextInstance, AddressOf StartupNextInstanceHandler
 
@@ -172,6 +172,13 @@ Public Class frmMain
             Call TrayAnimate(Me, True)
             Me.Visible = False
             eventArgs.Cancel = True
+
+            If My.Settings.ShownTrayBalloon = False Then
+                nicTrayIcon.BalloonTipIcon = ToolTipIcon.Info
+                nicTrayIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + vbCrLf + "Click here to hide this message in future."
+                nicTrayIcon.BalloonTipTitle = "Radio Downloader is Still Running"
+                nicTrayIcon.ShowBalloonTip(30000)
+            End If
         End If
     End Sub
 
@@ -365,6 +372,10 @@ Public Class frmMain
         Catch exp As IOException
             ' Ignore an IOException - this just means that a file in the temp folder is still in use.
         End Try
+    End Sub
+
+    Private Sub nicTrayIcon_BalloonTipClicked(ByVal sender As Object, ByVal e As System.EventArgs) Handles nicTrayIcon.BalloonTipClicked
+        My.Settings.ShownTrayBalloon = True
     End Sub
 
     Private Sub nicTrayIcon_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles nicTrayIcon.MouseDoubleClick

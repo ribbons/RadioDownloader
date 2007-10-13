@@ -149,6 +149,18 @@ Namespace My
                 Me("LastCheckForUpdates") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property ShownTrayBalloon() As Boolean
+            Get
+                Return CType(Me("ShownTrayBalloon"),Boolean)
+            End Get
+            Set
+                Me("ShownTrayBalloon") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
