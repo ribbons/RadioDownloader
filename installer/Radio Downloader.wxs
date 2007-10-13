@@ -1019,7 +1019,7 @@
       </Directory>
       <Component Id="RunOnStartup" Guid="FC61531E-1B54-4680-A20A-6CBFC605B1C6">
         <Registry Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string">
-          <RegistryValue>"[INSTALLDIR]Radio Downloader.exe" -starttray</RegistryValue>
+          <RegistryValue>"[TARGETDIR]Radio Downloader.exe" -starttray</RegistryValue>
         </Registry>
       </Component>
     </Directory>
