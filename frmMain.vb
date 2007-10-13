@@ -95,9 +95,9 @@ Public Class frmMain
 
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' Add a handler to catch otherwise unhandled exceptions
-        AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
+        'AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
         ' Add a handler for thread exceptions
-        AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
+        'AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
         ' Add a handler for when a second instance is loaded
         AddHandler My.Application.StartupNextInstance, AddressOf StartupNextInstanceHandler
 
@@ -576,7 +576,7 @@ Public Class frmMain
 
     Private Sub tbtSubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscribe.Click
         Dim strSplit() As String
-        strSplit = Split(lstStations.SelectedItems(0).Tag.ToString, "||")
+        strSplit = Split(lstStationProgs.SelectedItems(0).Tag.ToString, "||")
 
         If clsProgData.AddSubscription(strSplit(0), strSplit(1), strSplit(2)) = False Then
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
@@ -654,7 +654,7 @@ Public Class frmMain
 
     Private Sub tbtDownload_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownload.Click
         Dim strSplit() As String
-        strSplit = Split(lstStations.SelectedItems(0).Tag.ToString, "||")
+        strSplit = Split(lstStationProgs.SelectedItems(0).Tag.ToString, "||")
 
         If clsProgData.AddDownload(strSplit(0), strSplit(1), strSplit(2)) Then
             Call tbtDownloads_Click(New Object, New EventArgs)
