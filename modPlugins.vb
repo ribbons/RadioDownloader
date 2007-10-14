@@ -62,7 +62,7 @@ Public Interface IRadioProvider
         Dim ProgramDescription As String
         Dim ProgramDuration As Long
         Dim ProgramDate As Date
-        Dim ImageUrl As String
+        Dim Image As Bitmap
     End Structure
 
     Structure ProgramListItem

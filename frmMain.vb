@@ -209,7 +209,7 @@ Public Class frmMain
                 Call .GetLatest(strSplit(0), strSplit(1), strSplit(2))
 
                 If .LatestDate(strSplit(0), strSplit(1), strSplit(2)) = Nothing = False Then
-                    Call SetSideBar(.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramDetails(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramImgUrl(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))))
+                    Call SetSideBar(.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramDetails(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramImage(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))))
                     Call SetToolbarButtons("Download,Subscribe")
                 Else
                     Call SetSideBar("Programme Info", "Unfortunately, there was a problem getting information about this programme." + vbCrLf + "The available data could be invalid." + vbCrLf + "You may like to try again later.", Nothing)
@@ -226,7 +226,7 @@ Public Class frmMain
             Dim strSplit() As String
             strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
 
-            Call SetSideBar(clsProgData.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramDetails(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramImgUrl(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))))
+            Call SetSideBar(clsProgData.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramDetails(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramImage(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))))
             Call SetToolbarButtons("Unsubscribe")
         Else
             Call TabAdjustments() ' Revert back to subscribed items view default page
@@ -259,7 +259,7 @@ Public Class frmMain
                     strActionString = "Cancel"
                 End If
 
-                Call SetSideBar(.ProgramTitle(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), .ProgramDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))) + strInfoBox, .ProgramImgUrl(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+                Call SetSideBar(.ProgramTitle(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), .ProgramDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))) + strInfoBox, .ProgramImage(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
                 Call SetToolbarButtons(strActionString)
             End With
         Else
@@ -303,13 +303,12 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub SetSideBar(ByVal strTitle As String, ByVal strDescription As String, ByVal strPicUrl As String)
+    Private Sub SetSideBar(ByVal strTitle As String, ByVal strDescription As String, ByVal bmpPicture As Bitmap)
         lblSideMainTitle.Text = strTitle
         lblSideDescript.Text = strDescription
 
-        If strPicUrl <> Nothing Then
-            picSidebarImg.Image = New Bitmap(70, 70)
-            picSidebarImg.ImageLocation = strPicUrl
+        If bmpPicture Is Nothing = False Then
+            picSidebarImg.Image = bmpPicture
             picSidebarImg.Visible = True
         Else
             picSidebarImg.Visible = False

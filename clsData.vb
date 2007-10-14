@@ -15,6 +15,7 @@
 Option Strict On
 Option Explicit On
 
+Imports System.IO
 Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
@@ -157,12 +158,20 @@ Friend Class clsData
         End If
     End Function
 
-    Public Function ProgramImgUrl(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT imageurl FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function ProgramImage(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Bitmap
+        Dim sqlCommand As New SQLiteCommand("SELECT image FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
-        ProgramImgUrl = sqlReader.GetString(sqlReader.GetOrdinal("imageurl"))
+
+        Dim objBlob As Object = sqlReader.GetValue(sqlReader.GetOrdinal("image")) 
+
+        If IsDBNull(objBlob) = False Then
+            Dim stmStream As New MemoryStream(CType(objBlob, Byte()))
+            ProgramImage = New Bitmap(stmStream)
+        Else
+            ProgramImage = Nothing
+        End If
 
         sqlReader.Close()
     End Function
@@ -391,8 +400,26 @@ Friend Class clsData
             sqlReader = sqlCommand.ExecuteReader
 
             If sqlReader.Read = False Then
-                sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, ImageURL, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName + """, """ + ProgInfo.ProgramDescription + """, """ + ProgInfo.ImageUrl + """, """ + CStr(ProgInfo.ProgramDuration) + """)", sqlConnection)
-                Call sqlCommand.ExecuteNonQuery()
+                sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, Image, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName + """, """ + ProgInfo.ProgramDescription + """, @image, """ + CStr(ProgInfo.ProgramDuration) + """)", sqlConnection)
+                Dim sqlImage As SQLiteParameter
+
+                If ProgInfo.Image Is Nothing = False Then
+                    ' Convert the image into a byte array
+                    Dim mstImage As New MemoryStream()
+                    ProgInfo.Image.Save(mstImage, Imaging.ImageFormat.Bmp)
+                    Dim bteImage(CInt(mstImage.Length - 1)) As Byte
+                    mstImage.Position = 0
+                    mstImage.Read(bteImage, 0, CInt(mstImage.Length))
+
+                    ' Add the image as a parameter
+                    sqlImage = New SQLiteParameter("@image", bteImage)
+                Else
+                    sqlImage = New SQLiteParameter("@image", Nothing)
+                End If
+
+
+                sqlCommand.Parameters.Add(sqlImage)
+                sqlCommand.ExecuteNonQuery()
             End If
 
             sqlReader.Close()
