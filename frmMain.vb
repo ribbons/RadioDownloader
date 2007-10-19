@@ -20,6 +20,7 @@ Imports System.IO.File
 Imports System.Threading
 Imports System.Reflection
 Imports System.Text.ASCIIEncoding
+Imports System.Diagnostics.Process
 
 Public Class frmMain
     Inherits System.Windows.Forms.Form
@@ -685,5 +686,13 @@ Public Class frmMain
 
     Private Sub tbmAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmAbout.Click
         Call frmAbout.ShowDialog()
+    End Sub
+
+    Private Sub tbmShowHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmShowHelp.Click
+        Start("http://www.nerdoftheherd.com/tools/radiodld/help/")
+    End Sub
+
+    Private Sub tbmReportABug_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmReportABug.Click
+        Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php")
     End Sub
 End Class
