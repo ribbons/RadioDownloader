@@ -22,16 +22,15 @@ Imports System.Diagnostics
 
 Public Class clsAutoUpdate
     Private strVersionInfoURL As String
-    Private strNewVersionURL As String
-    Private strUrlPrefix As String
+    Private strDownloadUrl As String
     Private strSaveFileName As String
     Private strRunCommand As String
     Private strRunArguments As String
     Private thrDownloadThread As New Thread(AddressOf DownloadUpdate)
 
-    Public Sub New(ByVal strVersionInfoURL As String, ByVal strUrlPrefix As String, ByVal strSaveFileName As String, ByVal strRunCommand As String, ByVal strRunArguments As String)
+    Public Sub New(ByVal strVersionInfoURL As String, ByVal strDownloadUrl As String, ByVal strSaveFileName As String, ByVal strRunCommand As String, ByVal strRunArguments As String)
         Me.strVersionInfoURL = strVersionInfoURL
-        Me.strUrlPrefix = strUrlPrefix
+        Me.strDownloadUrl = strDownloadUrl
         Me.strSaveFileName = strSaveFileName
         Me.strRunCommand = strRunCommand
         Me.strRunArguments = strRunArguments
@@ -61,7 +60,6 @@ Public Class clsAutoUpdate
 
                             If strSplitInfo.GetUpperBound(0) > 0 Then ' Make sure that we have at least two items in the array
                                 If strSplitInfo(0) > My.Application.Info.Version.ToString Then ' There is a new version available
-                                    strNewVersionURL = strUrlPrefix + strSplitInfo(1)
                                     thrDownloadThread = New Thread(AddressOf DownloadUpdate)
                                     thrDownloadThread.Start()
                                 End If
@@ -90,7 +88,7 @@ Public Class clsAutoUpdate
     Private Sub DownloadUpdate()
         Dim webUpdate As New WebClient
         Try
-            webUpdate.DownloadFile(strNewVersionURL, strSaveFileName)
+            webUpdate.DownloadFile(strDownloadUrl, strSaveFileName)
         Catch expWeb As WebException
             ' Temporary problem downloading the file, we will try again later
             Exit Sub

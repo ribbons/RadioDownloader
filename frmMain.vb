@@ -152,7 +152,7 @@ Public Class frmMain
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/downloads/", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vomus")
+        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vomus")
         If My.Settings.UpdateDownloaded Then
             Call InstallUpdate()
         End If
