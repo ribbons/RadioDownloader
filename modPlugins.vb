@@ -83,6 +83,11 @@ Public Interface IRadioProvider
         Converting
     End Enum
 
+    Enum ErrorType
+        UnknownError
+        MissingDependency
+    End Enum
+
     ReadOnly Property ProviderUniqueID() As String
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
@@ -94,7 +99,7 @@ Public Interface IRadioProvider
     Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean
 
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
-    Event DldError(ByVal strError As String)
+    Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
     Event Finished()
 
     Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer)

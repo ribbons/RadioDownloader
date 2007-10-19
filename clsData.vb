@@ -47,8 +47,8 @@ Friend Class clsData
         MyBase.Finalize()
     End Sub
 
-    Public Sub SetErrored(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=" + CStr(Statuses.Errored) + ", ErrorTime=""" + Now.ToString(strSqlDateFormat) + """ WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub SetErrored(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=" + CStr(Statuses.Errored) + ", ErrorTime=""" + Now.ToString(strSqlDateFormat) + """, ErrorType=" + CStr(CInt(errType)) + ", ErrorDetails=""" + strErrorDetails.Replace("""", """""") + """ WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
     End Sub
 
@@ -536,6 +536,36 @@ Friend Class clsData
                 PlayCount = .GetInt32(.GetOrdinal("PlayCount"))
             End If
         End With
+
+        sqlReader.Close()
+    End Function
+
+    Public Function ErrorType(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As IRadioProvider.ErrorType
+        Dim sqlCommand As New SQLiteCommand("SELECT ErrorType FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        sqlReader.Read()
+
+        If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("ErrorType"))) Then
+            ErrorType = IRadioProvider.ErrorType.UnknownError
+        Else
+            ErrorType = CType(sqlReader.GetInt32(sqlReader.GetOrdinal("ErrorType")), IRadioProvider.ErrorType)
+        End If
+
+        sqlReader.Close()
+    End Function
+
+    Public Function ErrorDetails(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
+        Dim sqlCommand As New SQLiteCommand("SELECT ErrorDetails FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        sqlReader.Read()
+
+        If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("ErrorDetails"))) Then
+            ErrorDetails = ""
+        Else
+            ErrorDetails = sqlReader.GetString(sqlReader.GetOrdinal("ErrorDetails"))
+        End If
 
         sqlReader.Close()
     End Function

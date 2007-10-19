@@ -21,7 +21,7 @@ Friend Class clsBackground
     Private WithEvents ThisInstance As IRadioProvider
 
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Event DldError(ByVal strError As String)
+    Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
     Event Finished()
 
     ' Private variables to store information about the current task
@@ -117,8 +117,8 @@ Friend Class clsBackground
         ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strFinalName, My.Settings.BandwidthLimit)
     End Sub
 
-    Private Sub ThisInstance_DldError(ByVal strError As String) Handles ThisInstance.DldError
-        RaiseEvent DldError(strError)
+    Private Sub ThisInstance_DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles ThisInstance.DldError
+        RaiseEvent DldError(errType, strErrorDetails)
     End Sub
 
     Private Sub ThisInstance_Finished() Handles ThisInstance.Finished

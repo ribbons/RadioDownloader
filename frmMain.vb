@@ -45,7 +45,7 @@ Public Class frmMain
     Private strCurrentStation As String
 
     Private Delegate Sub clsBackgroundThread_Progress_Delegate(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal strError As String)
+    Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
     Private Delegate Sub clsBackgroundThread_Finished_Delegate()
 
     Public Sub SetTrayStatus(ByVal booActive As Boolean, Optional ByVal ErrorStatus As ErrorStatus = ErrorStatus.NoChange)
@@ -255,6 +255,22 @@ Public Class frmMain
 
                     strInfoBox = vbCrLf + vbCrLf + "Play count: " + CStr(.PlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
                 ElseIf staDownloadStatus = clsData.Statuses.Errored Then
+                    Dim strErrorName As String = ""
+                    Dim strErrorDetails As String = .ErrorDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+
+                    Select Case .ErrorType(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+                        Case IRadioProvider.ErrorType.MissingDependency
+                            strErrorName = "Missing Dependency"
+                        Case IRadioProvider.ErrorType.UnknownError
+                            strErrorName = "Unknown Error"
+                            strErrorDetails = ""
+                    End Select
+
+                    strInfoBox = vbCrLf + vbCrLf + "Error: " + strErrorName
+                    If strErrorDetails <> "" Then
+                        strInfoBox += vbCrLf + vbCrLf + strErrorDetails
+                    End If
+
                     strActionString = "Retry,Cancel"
                 Else
                     strActionString = "Cancel"
@@ -461,20 +477,20 @@ Public Class frmMain
         Call lstStationProgs.Items.Add(lstAddItem)
     End Sub
 
-    Private Sub clsBackgroundThread_DldError(ByVal strError As String) Handles clsBackgroundThread.DldError
+    Private Sub clsBackgroundThread_DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsBackgroundThread.DldError
         ' Check if the form exists still before calling delegate
         If Me.IsHandleCreated Then
             Dim DelegateInst As New clsBackgroundThread_DldError_Delegate(AddressOf clsBackgroundThread_DldError_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {strError})
+            Call Me.Invoke(DelegateInst, New Object() {errType, strErrorDetails})
         End If
     End Sub
 
-    Private Sub clsBackgroundThread_DldError_FormThread(ByVal strError As String)
-        Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
+    Private Sub clsBackgroundThread_DldError_FormThread(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+        Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, errType, strErrorDetails)
 
-        ' If the item that has just errored is selected & the html links are out of date, go back to tab overview.
+        ' If the item that has just errored is selected then update the information.
         If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.StationID + "||" + clsBackgroundThread.ProgramType).Selected Then
-            Call TabAdjustments()
+            Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
         End If
 
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
