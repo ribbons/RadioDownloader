@@ -164,12 +164,16 @@ Module modMain
         Dim expException As Exception
         expException = DirectCast(e.ExceptionObject, Exception)
 
-        frmError.strStackTrace = expException.ToString()
+        Dim clsReport As New clsErrorReporting(expException.Message, expException.StackTrace)
+        frmError.AssignReport(clsReport)
+
         frmError.ShowDialog()
     End Sub
 
     Public Sub ThreadExceptionHandler(ByVal sender As Object, ByVal e As Threading.ThreadExceptionEventArgs)
-        frmError.strStackTrace = e.Exception.ToString()
+        Dim clsReport As New clsErrorReporting(e.Exception.Message, e.Exception.StackTrace)
+        frmError.AssignReport(clsReport)
+
         frmError.ShowDialog()
     End Sub
 
