@@ -1013,6 +1013,10 @@
           <Component Id="GplTxt" Guid="66264481-3504-4FFD-B8EC-AA10DC2250C5" DiskId="1">
             <File Id="GplTxt" Name="GPL.txt" Source="..\GPL.txt" Vital="yes" />
           </Component>
+          <Component Id="BBCPodcastsDll" Guid="4B6DBD87-EB57-4E5F-A87A-CF6A21BC4C02" DiskId="1">
+            <File Id="BBCPodcastsDll" Name="BBCPodca.dll" Source="..\bin\BBCPodcasts.dll" Vital="yes" LongName="BBCPodcasts.dll" />
+            <File Id="BBCPodcastsPdb" Name="BBCPodca.dll" LongName="BBCPodcasts.pdb" Source="..\bin\BBCPodcasts.pdb" Vital="yes" />
+          </Component>
         </Directory>
       </Directory>
       <Directory Id="ProgramMenuFolder" LongName="Start Menu Programs" Name="PMenu">
@@ -1031,6 +1035,9 @@
       <ComponentRef Id="Database" />
       <ComponentRef Id="GplTxt" />
       <ComponentRef Id="RunOnStartup" />
+    </Feature>
+    <Feature Id="BBCPodcasts" Level="1" Absent="disallow" AllowAdvertise="no" Description="A plugin to allow downloading Podcasts made available by the BBC." Title="BBC Podcasts" ConfigurableDirectory="TARGETDIR">
+      <ComponentRef Id="BBCPodcastsDll" />
     </Feature>
     <Condition Message="Radio Downloader requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
     <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
