@@ -77,6 +77,7 @@ Friend Class clsData
                 clsBkgInst.ProgramDate = .GetDateTime(.GetOrdinal("Date"))
                 clsBkgInst.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
                 clsBkgInst.ProgramTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                clsBkgInst.DownloadUrl = ProgramDldUrl(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
             End With
 
             sqlReader.Close()
@@ -172,6 +173,16 @@ Friend Class clsData
         Else
             ProgramImage = Nothing
         End If
+
+        sqlReader.Close()
+    End Function
+
+    Private Function ProgramDldUrl(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
+        Dim sqlCommand As New SQLiteCommand("SELECT downloadurl FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        sqlReader.Read()
+        ProgramDldUrl = sqlReader.GetString(sqlReader.GetOrdinal("DownloadUrl"))
 
         sqlReader.Close()
     End Function
@@ -353,7 +364,7 @@ Friend Class clsData
         Dim dteLatest As Date
         dteLatest = LatestDate(strProgramType, strStationID, strProgramID)
 
-        If dteLatest = DateTime.FromOADate(0) Then
+        If dteLatest = Nothing Then
             Return False
         End If
 
@@ -400,7 +411,7 @@ Friend Class clsData
             sqlReader = sqlCommand.ExecuteReader
 
             If sqlReader.Read = False Then
-                sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, Image, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName + """, """ + ProgInfo.ProgramDescription + """, @image, """ + CStr(ProgInfo.ProgramDuration) + """)", sqlConnection)
+                sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, DownloadUrl, Image, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName.Replace("""", """""") + """, """ + ProgInfo.ProgramDescription.Replace("""", """""") + """, """ + ProgInfo.ProgramDldUrl.Replace("""", """""") + """, @image, " + CStr(ProgInfo.ProgramDuration) + ")", sqlConnection)
                 Dim sqlImage As SQLiteParameter
 
                 If ProgInfo.Image Is Nothing = False Then

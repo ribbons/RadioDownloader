@@ -62,6 +62,7 @@ Public Interface IRadioProvider
         Dim ProgramDescription As String
         Dim ProgramDuration As Long
         Dim ProgramDate As Date
+        Dim ProgramDldUrl As String
         Dim Image As Bitmap
     End Structure
 
@@ -102,7 +103,7 @@ Public Interface IRadioProvider
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
     Event Finished()
 
-    Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer)
+    Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer)
 End Interface
 
 Module modPlugins

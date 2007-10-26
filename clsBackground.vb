@@ -32,6 +32,7 @@ Friend Class clsBackground
     Private strProgTitle As String
     Private strStationID As String
     Private strFinalName As String
+    Private strProgDldUrl As String
     Private AvailablePlugins As AvailablePlugin()
 
     Public Property ProgramType() As String
@@ -94,6 +95,15 @@ Friend Class clsBackground
         End Get
     End Property
 
+    Public Property DownloadUrl() As String
+        Get
+            Return strProgDldUrl
+        End Get
+        Set(ByVal strProgDldUrl As String)
+            Me.strProgDldUrl = strProgDldUrl
+        End Set
+    End Property
+
     Public Property PluginsList() As AvailablePlugin()
         Get
             Return AvailablePlugins
@@ -114,7 +124,7 @@ Friend Class clsBackground
 
         strFinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, strProgTitle, "mp3", dteProgDate, GetSaveFolder())
 
-        ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strFinalName, My.Settings.BandwidthLimit)
+        ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strProgDldUrl, strFinalName, My.Settings.BandwidthLimit)
     End Sub
 
     Private Sub ThisInstance_DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles ThisInstance.DldError

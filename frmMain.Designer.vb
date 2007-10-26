@@ -348,25 +348,25 @@
         'tbmShowHelp
         '
         Me.tbmShowHelp.Name = "tbmShowHelp"
-        Me.tbmShowHelp.Size = New System.Drawing.Size(152, 22)
+        Me.tbmShowHelp.Size = New System.Drawing.Size(142, 22)
         Me.tbmShowHelp.Text = "&Help"
         Me.tbmShowHelp.Visible = False
         '
         'tbmReportABug
         '
         Me.tbmReportABug.Name = "tbmReportABug"
-        Me.tbmReportABug.Size = New System.Drawing.Size(152, 22)
+        Me.tbmReportABug.Size = New System.Drawing.Size(142, 22)
         Me.tbmReportABug.Text = "Report a &Bug"
         '
         'tbmSep2
         '
         Me.tbmSep2.Name = "tbmSep2"
-        Me.tbmSep2.Size = New System.Drawing.Size(149, 6)
+        Me.tbmSep2.Size = New System.Drawing.Size(139, 6)
         '
         'tbmAbout
         '
         Me.tbmAbout.Name = "tbmAbout"
-        Me.tbmAbout.Size = New System.Drawing.Size(152, 22)
+        Me.tbmAbout.Size = New System.Drawing.Size(142, 22)
         Me.tbmAbout.Text = "&About"
         '
         'tblInfo
@@ -406,6 +406,7 @@
         Me.lblSideMainTitle.TabIndex = 0
         Me.lblSideMainTitle.Text = "Title"
         Me.lblSideMainTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblSideMainTitle.UseMnemonic = False
         '
         'picSidebarImg
         '
