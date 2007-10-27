@@ -262,14 +262,26 @@ Friend Class clsData
 
         With sqlReader
             Do While .Read()
-                Call GetLatest(.GetString(sqlReader.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("Station")), .GetString(sqlReader.GetOrdinal("ID")))
+                Call GetLatest(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
 
                 lstAdd = New ListViewItem
 
-                lstAdd.Text = ProgramTitle(.GetString(.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))))
-                lstAdd.SubItems.Add(StationName(.GetString(.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station"))))
+                Dim strDynamicTitle As String
+                strDynamicTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), LatestDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))))
+
+                If ProviderDynamicSubscriptionName(.GetString(.GetOrdinal("Type"))) Then
+                    lstAdd.Text = strDynamicTitle
+                Else
+                    lstAdd.Text = SubscriptionName(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
+
+                    If lstAdd.Text = "" Then
+                        lstAdd.Text = strDynamicTitle
+                    End If
+                End If
+
+                lstAdd.SubItems.Add(StationName(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station"))))
                 lstAdd.SubItems.Add(ProviderName(.GetString(.GetOrdinal("Type"))))
-                lstAdd.Tag = .GetString(sqlReader.GetOrdinal("Type")) + "||" + .GetString(sqlReader.GetOrdinal("Station")) + "||" + .GetString(sqlReader.GetOrdinal("ID"))
+                lstAdd.Tag = .GetString(.GetOrdinal("Type")) + "||" + .GetString(.GetOrdinal("Station")) + "||" + .GetString(.GetOrdinal("ID"))
                 lstAdd.ImageKey = "subscribed"
 
                 lstListview.Items.Add(lstAdd)
@@ -278,6 +290,21 @@ Friend Class clsData
 
         sqlReader.Close()
     End Sub
+
+    Private Function SubscriptionName(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As String
+        Dim sqlCommand As New SQLiteCommand("SELECT SubscriptionName FROM tblSubscribed WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        sqlReader.Read()
+
+        If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("SubscriptionName"))) Then
+            SubscriptionName = ""
+        Else
+            SubscriptionName = sqlReader.GetString(sqlReader.GetOrdinal("SubscriptionName"))
+        End If
+
+        sqlReader.Close()
+    End Function
 
     Public Sub CheckSubscriptions(ByRef lstList As ExtListView, ByRef tmrTimer As System.Windows.Forms.Timer, ByRef prgDldProg As ProgressBar)
         Dim sqlCommand As New SQLiteCommand("select type, station, id from tblSubscribed", sqlConnection)
@@ -321,8 +348,8 @@ Friend Class clsData
         Return True
     End Function
 
-    Public Function AddSubscription(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As Boolean
-        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, Station, ID) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """)", sqlConnection)
+    Public Function AddSubscription(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strSubscriptionName As String) As Boolean
+        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, Station, ID, SubscriptionName) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + strSubscriptionName.Replace("""", """""") + """)", sqlConnection)
 
         Try
             Call sqlCommand.ExecuteNonQuery()
@@ -519,18 +546,32 @@ Friend Class clsData
         Return ThisInstance.ReturnStations.Item(strStationID).StationName
     End Function
 
-    Public Function ProviderName(ByVal strProgramType As String) As String
+    Public Function ProviderName(ByVal strProviderID As String) As String
         Dim ThisInstance As IRadioProvider = Nothing
 
         For Each SinglePlugin As AvailablePlugin In AvailablePlugins
             ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
 
-            If ThisInstance.ProviderUniqueID = strProgramType Then
+            If ThisInstance.ProviderUniqueID = strProviderID Then
                 Exit For
             End If
         Next SinglePlugin
 
         Return ThisInstance.ProviderName
+    End Function
+
+    Public Function ProviderDynamicSubscriptionName(ByVal strProviderID As String) As Boolean
+        Dim ThisInstance As IRadioProvider = Nothing
+
+        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
+            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
+
+            If ThisInstance.ProviderUniqueID = strProviderID Then
+                Exit For
+            End If
+        Next SinglePlugin
+
+        Return ThisInstance.DynamicSubscriptionName
     End Function
 
     Public Sub IncreasePlayCount(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)

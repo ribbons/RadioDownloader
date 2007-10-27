@@ -51,6 +51,12 @@ Public Class clsBBCPodcasts
         End Get
     End Property
 
+    ReadOnly Property DynamicSubscriptionName() As Boolean Implements IRadioProvider.DynamicSubscriptionName
+        Get
+            Return False
+        End Get
+    End Property
+
     Public Function ReturnStations() As IRadioProvider.StationTable Implements IRadioProvider.ReturnStations
         Dim Stations As New IRadioProvider.StationTable
 

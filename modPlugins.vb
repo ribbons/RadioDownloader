@@ -92,6 +92,7 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderUniqueID() As String
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
+    ReadOnly Property DynamicSubscriptionName() As Boolean
 
     Function ReturnStations() As StationTable
     Function ListProgramIDs(ByVal strStationID As String) As ProgramListItem()

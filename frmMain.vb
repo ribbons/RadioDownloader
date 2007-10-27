@@ -605,7 +605,7 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstStationProgs.SelectedItems(0).Tag.ToString, "||")
 
-        If clsProgData.AddSubscription(strSplit(0), strSplit(1), strSplit(2)) = False Then
+        If clsProgData.AddSubscription(strSplit(0), strSplit(1), strSplit(2), lstStationProgs.SelectedItems(0).Text) = False Then
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
         Else
             Call tbtSubscriptions_Click(New Object, New EventArgs)
