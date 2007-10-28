@@ -528,10 +528,12 @@ Public Class frmMain
     Private Sub tmrCheckForUpdates_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrCheckForUpdates.Tick
         If My.Settings.UpdateDownloaded Then
             If My.Settings.AskedAboutUpdate = False Then
+                ' Set AskedAboutUpdate to true before asking to prevent a messagebox an
+                ' hour being popped up until the messagebox is answered.
+                My.Settings.AskedAboutUpdate = True
+
                 If MsgBox("A new version of Radio Downloader has been downloaded and is ready to be installed.  Would you like to install the update now?" + vbCrLf + "(If you choose 'No' the update will be installed next time you start Radio Downloader)", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, "Radio Downloader") = MsgBoxResult.Yes Then
                     Call InstallUpdate()
-                Else
-                    My.Settings.AskedAboutUpdate = True
                 End If
             End If
         Else
