@@ -85,6 +85,12 @@
     <Compile Include="clsErrorReporting.vb" />
     <Compile Include="clsPlugins.vb" />
     <Compile Include="clsUpdateDB.vb" />
+    <Compile Include="frmChooseStations.Designer.vb">
+      <DependentUpon>frmChooseStations.vb</DependentUpon>
+    </Compile>
+    <Compile Include="frmChooseStations.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="frmError.Designer.vb">
       <DependentUpon>frmError.vb</DependentUpon>
     </Compile>
@@ -160,6 +166,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="frmChooseStations.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>frmChooseStations.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Icon.ico" />
     <EmbeddedResource Include="Error.ico" />
     <Content Include="My Project\Application.myapp">

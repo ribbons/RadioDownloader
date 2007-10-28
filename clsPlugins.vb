@@ -24,11 +24,12 @@ Public Interface IRadioProvider
 
         Private SortedList(-1) As StationInfo
 
-        Public Shadows Sub Add(ByVal strStationUniqueID As String, ByVal strStationName As String, Optional ByVal icoStationIcon As Icon = Nothing)
+        Public Shadows Sub Add(ByVal strStationUniqueID As String, ByVal strStationName As String, ByVal booVisibleByDefault As Boolean, Optional ByVal icoStationIcon As Icon = Nothing)
             Dim Station As StationInfo
 
             Station.StationUniqueID = strStationUniqueID
             Station.StationName = strStationName
+            Station.VisibleByDefault = booVisibleByDefault
             Station.StationIcon = icoStationIcon
 
             ReDim Preserve SortedList(SortedList.GetUpperBound(0) + 1)
@@ -54,6 +55,7 @@ Public Interface IRadioProvider
         Dim StationUniqueID As String
         Dim StationName As String
         Dim StationIcon As Icon
+        Dim VisibleByDefault As Boolean
     End Structure
 
     Structure ProgramInfo

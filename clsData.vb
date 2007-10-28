@@ -36,7 +36,7 @@ Friend Class clsData
     Private thrDownloadThread As Thread
     Private WithEvents DownloadPluginInst As IRadioProvider
 
-    Public Event AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String)
+    Public Event AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String, ByVal booVisible As Boolean)
     Public Event AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String)
     Public Event Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Public Event DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
@@ -661,7 +661,7 @@ Friend Class clsData
         Return clsCurDldProgData
     End Function
 
-    Public Sub StartListingStations()
+    Public Sub StartListingStations(ByVal booFullList As Boolean)
         Dim strPluginIDs() As String
         strPluginIDs = clsPluginsInst.GetPluginIdList
 
@@ -671,8 +671,58 @@ Friend Class clsData
             ThisInstance = clsPluginsInst.GetPluginInstance(strPluginID)
 
             For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations.SortedValues
-                RaiseEvent AddStationToList(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID)
+                If booFullList = False Then
+                    If IsStationVisible(strPluginID, NewStation.StationUniqueID, NewStation.VisibleByDefault) = False Then
+                        Continue For
+                    End If
+                End If
+
+                RaiseEvent AddStationToList(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID, IsStationVisible(strPluginID, NewStation.StationUniqueID, NewStation.VisibleByDefault))
             Next
         Next
+    End Sub
+
+    Private Function IsStationVisible(ByVal strPluginID As String, ByVal strStationID As String, ByVal booDefault As Boolean) As Boolean
+        Dim sqlCommand As New SQLiteCommand("select Visible from tblStationVisibility where ProviderID=""" + strPluginID + """ and StationID=""" + strStationID + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read() Then
+            If sqlReader.GetBoolean(sqlReader.GetOrdinal("Visible")) Then
+                IsStationVisible = True
+            Else
+                IsStationVisible = False
+            End If
+        Else
+            If booDefault Then
+                IsStationVisible = True
+            Else
+                IsStationVisible = False
+            End If
+        End If
+
+        sqlReader.Close()
+    End Function
+
+    Public Sub SetStationVisibility(ByVal strStationType As String, ByVal strStationID As String, ByVal booVisible As Boolean)
+        Dim sqlCommand As New SQLiteCommand("select Visible from tblStationVisibility where ProviderID=""" + strStationType + """ and StationID=""" + strStationID + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        Dim strVisible As String
+        If booVisible Then
+            strVisible = "1"
+        Else
+            strVisible = "0"
+        End If
+
+
+        If sqlReader.Read Then
+            sqlCommand = New SQLiteCommand("update tblStationVisibility set Visible=" + strVisible + " where ProviderID=""" + strStationType + """ and StationID=""" + strStationID + """", sqlConnection)
+            sqlCommand.ExecuteNonQuery()
+        Else
+            sqlCommand = New SQLiteCommand("insert into tblStationVisibility (ProviderID, StationID, Visible) VALUES (""" + strStationType + """, """ + strStationID + """, " + strVisible + ")", sqlConnection)
+            Call sqlCommand.ExecuteNonQuery()
+        End If
+
+        sqlReader.Close()
     End Sub
 End Class

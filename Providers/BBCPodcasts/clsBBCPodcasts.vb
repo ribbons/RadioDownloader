@@ -60,20 +60,20 @@ Public Class clsBBCPodcasts
     Public Function ReturnStations() As IRadioProvider.StationTable Implements IRadioProvider.ReturnStations
         Dim Stations As New IRadioProvider.StationTable
 
-        Stations.Add("radio1", "Radio 1 Podcasts")
-        Stations.Add("1xtra", "1Xtra Podcasts")
-        Stations.Add("radio2", "Radio 2 Podcasts")
-        Stations.Add("radio3", "Radio 3 Podcasts")
-        Stations.Add("radio4", "Radio 4 Podcasts")
-        Stations.Add("fivelive", "Five Live Podcasts")
-        Stations.Add("6music", "Six Music Podcasts")
-        Stations.Add("bbc7", "BBC 7 Podcasts")
-        Stations.Add("asiannet", "BBC Asian Network Podcasts")
-        Stations.Add("wservice", "BBC World Service Podcasts")
-        Stations.Add("scotland", "Radio Scotland / Nan Gaidheal Podcasts")
-        Stations.Add("ulster", "Radio Ulster / Foyle Podcasts")
-        Stations.Add("wales", "Radio Wales / Cymru Podcasts")
-        Stations.Add("local", "English Local Radio Podcasts")
+        Stations.Add("radio1", "Radio 1 Podcasts", True)
+        Stations.Add("1xtra", "1Xtra Podcasts", False)
+        Stations.Add("radio2", "Radio 2 Podcasts", True)
+        Stations.Add("radio3", "Radio 3 Podcasts", True)
+        Stations.Add("radio4", "Radio 4 Podcasts", True)
+        Stations.Add("fivelive", "Five Live Podcasts", True)
+        Stations.Add("6music", "Six Music Podcasts", True)
+        Stations.Add("bbc7", "BBC 7 Podcasts", True)
+        Stations.Add("asiannet", "BBC Asian Network Podcasts", False)
+        Stations.Add("wservice", "BBC World Service Podcasts", True)
+        Stations.Add("scotland", "Radio Scotland / Nan Gaidheal Podcasts", True)
+        Stations.Add("ulster", "Radio Ulster / Foyle Podcasts", True)
+        Stations.Add("wales", "Radio Wales / Cymru Podcasts", True)
+        Stations.Add("local", "English Local Radio Podcasts", False)
 
         Return Stations
     End Function

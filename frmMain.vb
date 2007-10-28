@@ -64,7 +64,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String) Handles clsProgData.AddStationToList
+    Private Sub AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String, ByVal booVisible As Boolean) Handles clsProgData.AddStationToList
         Dim lstAdd As New System.Windows.Forms.ListViewItem
         lstAdd.Text = strStationName
         lstAdd.Tag = strStationType & "||" & strStationId
@@ -122,7 +122,7 @@ Public Class frmMain
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        clsProgData.StartListingStations()
+        clsProgData.StartListingStations(False)
         Call TabAdjustments()
         nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
         nicTrayIcon.Text = Me.Text
@@ -387,7 +387,7 @@ Public Class frmMain
         Call TabAdjustments()
 
         lstStations.Items.Clear()
-        clsProgData.StartListingStations()
+        clsProgData.StartListingStations(False)
     End Sub
 
     Private Sub tbtCurrStation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCurrStation.Click
@@ -662,7 +662,11 @@ Public Class frmMain
         Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php")
     End Sub
 
-    Private Sub lstStations_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstStations.SelectedIndexChanged
+    Private Sub tbmChooseStations_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmChooseStations.Click
+        Call frmChooseStations.ShowDialog()
 
+        If tbtFindNew.Checked Then
+            Call tbtFindNew_Click(sender, e)
+        End If
     End Sub
 End Class
