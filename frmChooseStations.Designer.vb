@@ -34,6 +34,7 @@ Partial Class frmChooseStations
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstStations.CheckBoxes = True
         Me.lstStations.Location = New System.Drawing.Point(12, 12)
+        Me.lstStations.MultiSelect = False
         Me.lstStations.Name = "lstStations"
         Me.lstStations.Size = New System.Drawing.Size(514, 282)
         Me.lstStations.TabIndex = 0
@@ -70,6 +71,8 @@ Partial Class frmChooseStations
         Me.Controls.Add(Me.lstStations)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.MaximizeBox = False
+        Me.MinimizeBox = False
         Me.Name = "frmChooseStations"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent

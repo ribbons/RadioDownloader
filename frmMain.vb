@@ -65,10 +65,15 @@ Public Class frmMain
     End Sub
 
     Private Sub AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String, ByVal booVisible As Boolean) Handles clsProgData.AddStationToList
+        If lstStations.Groups(strStationType) Is Nothing Then
+            lstStations.Groups.Add(strStationType, clsProgData.ProviderName(strStationType))
+        End If
+
         Dim lstAdd As New System.Windows.Forms.ListViewItem
         lstAdd.Text = strStationName
         lstAdd.Tag = strStationType & "||" & strStationId
         lstAdd.ImageKey = "default" 'imlStations.ListImages(strStationId).Index
+        lstAdd.Group = lstStations.Groups(strStationType)
 
         lstAdd = lstStations.Items.Add(lstAdd)
     End Sub
