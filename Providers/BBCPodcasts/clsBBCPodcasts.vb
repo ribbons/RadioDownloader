@@ -194,7 +194,7 @@ Public Class clsBBCPodcasts
     End Function
 
     Public Function CouldBeNewEpisode(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean Implements IRadioProvider.CouldBeNewEpisode
-        Return dteProgramDate.AddDays(1) > Now
+        Return dteProgramDate.AddDays(1) < Now
     End Function
 
     Public Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean Implements IRadioProvider.IsStillAvailable
