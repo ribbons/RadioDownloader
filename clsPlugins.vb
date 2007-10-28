@@ -107,41 +107,51 @@ Public Interface IRadioProvider
     Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer)
 End Interface
 
-Module modPlugins
+Public Class clsPlugins
     Private Const strInterfaceName As String = "IRadioProvider"
+    Private htbPlugins As New Hashtable
 
-    Public Structure AvailablePlugin
+    Private Structure AvailablePlugin
         Dim AssemblyPath As String
         Dim ClassName As String
     End Structure
 
-    ' Next three functions are from http://www.developerfusion.co.uk/show/4371/3/
+    Public Function PluginExists(ByVal strPluginID As String) As Boolean
+        Return htbPlugins.ContainsKey(strPluginID)
+    End Function
 
-    Public Function FindPlugins(ByVal strPath As String) As AvailablePlugin()
-        Dim Plugins As ArrayList = New ArrayList()
-        Dim strDLLs() As String, intIndex As Integer
-        Dim objDLL As [Assembly]
-        'Go through all DLLs in the directory, attempting to load them
-        strDLLs = Directory.GetFileSystemEntries(strPath, "*.dll")
-        For intIndex = 0 To strDLLs.Length - 1
-            Try
-                objDLL = [Assembly].LoadFrom(strDLLs(intIndex))
-                ExamineAssembly(objDLL, Plugins)
-            Catch e As Exception
-                'Error loading DLL, we don't need to do anything special
-            End Try
-        Next
-        'Return all plugins found
-        Dim Results(Plugins.Count - 1) As AvailablePlugin
-        If Plugins.Count <> 0 Then
-            Plugins.CopyTo(Results)
-            Return Results
+    Public Function GetPluginInstance(ByVal strPluginID As String) As IRadioProvider
+        If PluginExists(strPluginID) Then
+            Return CreateInstance(DirectCast(htbPlugins.Item(strPluginID), AvailablePlugin))
         Else
             Return Nothing
         End If
     End Function
 
-    Private Sub ExamineAssembly(ByVal objDLL As [Assembly], ByVal Plugins As ArrayList)
+    Public Function GetPluginIdList() As String()
+        ReDim GetPluginIdList(htbPlugins.Keys.Count - 1)
+        htbPlugins.Keys.CopyTo(GetPluginIdList, 0)
+    End Function
+
+    ' Next three functions are based on code from http://www.developerfusion.co.uk/show/4371/3/
+
+    Public Sub New(ByVal strPath As String)
+        Dim strDLLs() As String, intIndex As Integer
+        Dim objDLL As Assembly
+
+        'Go through all DLLs in the directory, attempting to load them
+        strDLLs = Directory.GetFileSystemEntries(strPath, "*.dll")
+        For intIndex = 0 To strDLLs.Length - 1
+            Try
+                objDLL = [Assembly].LoadFrom(strDLLs(intIndex))
+                ExamineAssembly(objDLL)
+            Catch
+                'Error loading DLL, we don't need to do anything special
+            End Try
+        Next
+    End Sub
+
+    Private Sub ExamineAssembly(ByVal objDLL As Assembly)
         Dim objType As Type
         Dim objInterface As Type
         Dim Plugin As AvailablePlugin
@@ -154,28 +164,36 @@ Module modPlugins
                     'See if this type implements our interface
                     objInterface = objType.GetInterface(strInterfaceName, True)
                     If Not (objInterface Is Nothing) Then
-                        'It does
                         Plugin = New AvailablePlugin()
                         Plugin.AssemblyPath = objDLL.Location
                         Plugin.ClassName = objType.FullName
-                        Plugins.Add(Plugin)
+
+                        Try
+                            Dim objPlugin As IRadioProvider
+                            objPlugin = CreateInstance(Plugin)
+                            htbPlugins.Add(objPlugin.ProviderUniqueID, Plugin)
+                        Catch
+                            Continue For
+                        End Try
                     End If
                 End If
             End If
         Next
     End Sub
 
-    Public Function CreateInstance(ByVal Plugin As AvailablePlugin) As Object
-        Dim objDLL As [Assembly]
+    Private Function CreateInstance(ByVal Plugin As AvailablePlugin) As IRadioProvider
+        Dim objDLL As Assembly
         Dim objPlugin As Object
+
         Try
             'Load dll
-            objDLL = [Assembly].LoadFrom(Plugin.AssemblyPath)
+            objDLL = Assembly.LoadFrom(Plugin.AssemblyPath)
             'Create and return class instance
             objPlugin = objDLL.CreateInstance(Plugin.ClassName)
-        Catch e As Exception
+            ' Cast to IRadioProvider and return
+            Return DirectCast(objPlugin, IRadioProvider)
+        Catch
             Return Nothing
         End Try
-        Return objPlugin
     End Function
-End Module
+End Class

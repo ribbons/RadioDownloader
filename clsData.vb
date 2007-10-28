@@ -16,6 +16,7 @@ Option Strict On
 Option Explicit On
 
 Imports System.IO
+Imports System.Threading
 Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
@@ -29,21 +30,30 @@ Friend Class clsData
     Private Const strSqlDateFormat As String = "yyyy-MM-dd HH:mm"
 
     Private sqlConnection As SQLiteConnection
-    Private AvailablePlugins() As AvailablePlugin
+    Private clsPluginsInst As clsPlugins
 
+    Private clsCurDldProgData As clsDldProgData
+    Private thrDownloadThread As Thread
+    Private WithEvents DownloadPluginInst As IRadioProvider
+
+    Public Event AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String)
     Public Event AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String)
+    Public Event Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    Public Event DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+    Public Event Finished(ByVal clsCurDldProgData As clsDldProgData)
 
-    Public Sub New(ByVal AvailablePlugins() As AvailablePlugin)
+    Public Sub New()
         MyBase.New()
 
         sqlConnection = New SQLiteConnection("Data Source=" + GetAppDataFolder() + "\store.db;Version=3;New=False")
         sqlConnection.Open()
 
-        Me.AvailablePlugins = AvailablePlugins
+        clsPluginsInst = New clsPlugins(My.Application.Info.DirectoryPath)
     End Sub
 
     Protected Overrides Sub Finalize()
         sqlConnection.Close()
+        Call AbortDownloadThread()
         MyBase.Finalize()
     End Sub
 
@@ -57,34 +67,52 @@ Friend Class clsData
         sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Function FindNewDownload() As clsBackground
+    Public Sub FindAndDownload()
         Const lngMaxErrors As Integer = 2
-        Dim clsBkgInst As clsBackground = Nothing
 
-        Dim sqlCommand As New SQLiteCommand("select status, type, station, id, date from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by date", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+        If thrDownloadThread Is Nothing Then
+            Dim sqlCommand As New SQLiteCommand("select status, type, station, id, date from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by date", sqlConnection)
+            Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        If sqlReader.Read() Then
             With sqlReader
-                If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
-                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")), True)
-                End If
+                While thrDownloadThread Is Nothing
+                    If sqlReader.Read() Then
+                        If clsPluginsInst.PluginExists(.GetString(.GetOrdinal("Type"))) Then
+                            If IsProgramStillAvailable(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date"))) = False Then
+                                Call RemoveDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                            Else
+                                If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
+                                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")), True)
+                                End If
 
-                clsBkgInst = New clsBackground
-                clsBkgInst.ProgramType = .GetString(.GetOrdinal("Type"))
-                clsBkgInst.StationID = .GetString(.GetOrdinal("Station"))
-                clsBkgInst.ProgramID = .GetString(.GetOrdinal("ID"))
-                clsBkgInst.ProgramDate = .GetDateTime(.GetOrdinal("Date"))
-                clsBkgInst.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
-                clsBkgInst.ProgramTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
-                clsBkgInst.DownloadUrl = ProgramDldUrl(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                                clsCurDldProgData = New clsDldProgData
+                                clsCurDldProgData.ProgramType = .GetString(.GetOrdinal("Type"))
+                                clsCurDldProgData.StationID = .GetString(.GetOrdinal("Station"))
+                                clsCurDldProgData.ProgramID = .GetString(.GetOrdinal("ID"))
+                                clsCurDldProgData.ProgramDate = .GetDateTime(.GetOrdinal("Date"))
+                                clsCurDldProgData.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                                clsCurDldProgData.DownloadUrl = ProgramDldUrl(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                                clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date"))), "mp3", .GetDateTime(.GetOrdinal("Date")), GetSaveFolder())
+                                clsCurDldProgData.BandwidthLimit = My.Settings.BandwidthLimit
+
+                                thrDownloadThread = New Thread(AddressOf DownloadProgThread)
+                                thrDownloadThread.Start()
+                            End If
+                        End If
+                    Else
+                        Exit While
+                    End If
+                End While
+
+                sqlReader.Close()
             End With
-
-            sqlReader.Close()
         End If
+    End Sub
 
-        Return clsBkgInst
-    End Function
+    Public Sub DownloadProgThread()
+        DownloadPluginInst = clsPluginsInst.GetPluginInstance(clsCurDldProgData.ProgramType)
+        DownloadPluginInst.DownloadProgram(clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.ProgramDuration, clsCurDldProgData.DownloadUrl, clsCurDldProgData.FinalName, clsCurDldProgData.BandwidthLimit)
+    End Sub
 
     Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
         Dim sqlCommand As New SQLiteCommand("SELECT path FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
@@ -395,33 +423,28 @@ Friend Class clsData
             Return False
         End If
 
-        Dim ThisInstance As IRadioProvider = Nothing
-
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            If ThisInstance.ProviderUniqueID = strProgramType Then
-                Exit For
-            End If
-        Next SinglePlugin
-
-        Return ThisInstance.CouldBeNewEpisode(strStationID, strProgramID, dteLatest) = False
+        If clsPluginsInst.PluginExists(strProgramType) Then
+            Dim ThisInstance As IRadioProvider
+            ThisInstance = clsPluginsInst.GetPluginInstance(strProgramType)
+            Return ThisInstance.CouldBeNewEpisode(strStationID, strProgramID, dteLatest) = False
+        Else
+            ' As we can't check if we have the latest, just assume that we do for the moment
+            Return True
+        End If
     End Function
 
     Private Sub StoreLatestInfo(ByVal strProgramType As String, ByVal strStationID As String, ByRef strProgramID As String)
-        Dim ThisInstance As IRadioProvider = Nothing
-
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            If ThisInstance.ProviderUniqueID = strProgramType Then
-                Exit For
-            End If
-        Next SinglePlugin
+        If clsPluginsInst.PluginExists(strProgramType) = False Then
+            ' The plugin type for this program is unavailable, so no point trying to call it
+            Exit Sub
+        End If
 
         Dim sqlCommand As SQLiteCommand
         Dim sqlReader As SQLiteDataReader
         Dim dteLastAttempt As Date = Nothing
+        Dim ThisInstance As IRadioProvider
+
+        ThisInstance = clsPluginsInst.GetPluginInstance(strProgramType)
 
         sqlCommand = New SQLiteCommand("SELECT LastTry FROM tblLastFetch WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """", sqlConnection)
         sqlReader = sqlCommand.ExecuteReader
@@ -492,16 +515,14 @@ Friend Class clsData
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Sub StartListingStation(ByVal strProgramType As String, ByVal strStationID As String)
-        Dim ThisInstance As IRadioProvider = Nothing
+    Public Sub StartListingProgrammes(ByVal strProgramType As String, ByVal strStationID As String)
+        If clsPluginsInst.PluginExists(strProgramType) = False Then
+            ' Plugin doesn't exist at the moment, so we can't list the station
+            Exit Sub
+        End If
 
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            If ThisInstance.ProviderUniqueID = strProgramType Then
-                Exit For
-            End If
-        Next SinglePlugin
+        Dim ThisInstance As IRadioProvider
+        ThisInstance = clsPluginsInst.GetPluginInstance(strProgramType)
 
         Dim Programs() As IRadioProvider.ProgramListItem
         Programs = ThisInstance.ListProgramIDs(strStationID)
@@ -519,57 +540,48 @@ Friend Class clsData
         Call GetLatest(strProgramType, strStationID, strProgramID)
         booIsLatestProg = (dteProgramDate = LatestDate(strProgramType, strStationID, strProgramID))
 
-        Dim ThisInstance As IRadioProvider = Nothing
+        If clsPluginsInst.PluginExists(strProgramType) = False Then
+            ' Guess that the program is still available, as otherwise if the plugin is unavailable for a 
+            ' short time, downloads will be deleted that should be downloaded when it becomes available again.
+            Return True
+        End If
 
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            If ThisInstance.ProviderUniqueID = strProgramType Then
-                Exit For
-            End If
-        Next SinglePlugin
+        Dim ThisInstance As IRadioProvider
+        ThisInstance = clsPluginsInst.GetPluginInstance(strProgramType)
 
         Return ThisInstance.IsStillAvailable(strStationID, strProgramID, dteProgramDate, booIsLatestProg)
     End Function
 
     Public Function StationName(ByVal strProgramType As String, ByVal strStationID As String) As String
-        Dim ThisInstance As IRadioProvider = Nothing
+        If clsPluginsInst.PluginExists(strProgramType) = False Then
+            Return ""
+        End If
 
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            If ThisInstance.ProviderUniqueID = strProgramType Then
-                Exit For
-            End If
-        Next SinglePlugin
+        Dim ThisInstance As IRadioProvider
+        ThisInstance = clsPluginsInst.GetPluginInstance(strProgramType)
 
         Return ThisInstance.ReturnStations.Item(strStationID).StationName
     End Function
 
     Public Function ProviderName(ByVal strProviderID As String) As String
-        Dim ThisInstance As IRadioProvider = Nothing
+        If clsPluginsInst.PluginExists(strProviderID) = False Then
+            Return ""
+        End If
 
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            If ThisInstance.ProviderUniqueID = strProviderID Then
-                Exit For
-            End If
-        Next SinglePlugin
+        Dim ThisInstance As IRadioProvider
+        ThisInstance = clsPluginsInst.GetPluginInstance(strProviderID)
 
         Return ThisInstance.ProviderName
     End Function
 
     Public Function ProviderDynamicSubscriptionName(ByVal strProviderID As String) As Boolean
-        Dim ThisInstance As IRadioProvider = Nothing
+        If clsPluginsInst.PluginExists(strProviderID) = False Then
+            ' Just choose an option, as there is no way of finding out when the plugin is not available
+            Return True
+        End If
 
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            If ThisInstance.ProviderUniqueID = strProviderID Then
-                Exit For
-            End If
-        Next SinglePlugin
+        Dim ThisInstance As IRadioProvider
+        ThisInstance = clsPluginsInst.GetPluginInstance(strProviderID)
 
         Return ThisInstance.DynamicSubscriptionName
     End Function
@@ -621,4 +633,46 @@ Friend Class clsData
 
         sqlReader.Close()
     End Function
+
+    Private Sub DownloadPluginInst_DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles DownloadPluginInst.DldError
+        RaiseEvent DldError(clsCurDldProgData, errType, strErrorDetails)
+        thrDownloadThread = Nothing
+        clsCurDldProgData = Nothing
+    End Sub
+
+    Private Sub DownloadPluginInst_Finished() Handles DownloadPluginInst.Finished
+        RaiseEvent Finished(clsCurDldProgData)
+        thrDownloadThread = Nothing
+        clsCurDldProgData = Nothing
+    End Sub
+
+    Private Sub DownloadPluginInst_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles DownloadPluginInst.Progress
+        RaiseEvent Progress(clsCurDldProgData, intPercent, strStatusText, Icon)
+    End Sub
+
+    Public Sub AbortDownloadThread()
+        If thrDownloadThread Is Nothing = False Then
+            thrDownloadThread.Abort()
+            thrDownloadThread = Nothing
+        End If
+    End Sub
+
+    Public Function GetCurrentDownloadInfo() As clsDldProgData
+        Return clsCurDldProgData
+    End Function
+
+    Public Sub StartListingStations()
+        Dim strPluginIDs() As String
+        strPluginIDs = clsPluginsInst.GetPluginIdList
+
+        Dim ThisInstance As IRadioProvider
+
+        For Each strPluginID As String In strPluginIDs
+            ThisInstance = clsPluginsInst.GetPluginInstance(strPluginID)
+
+            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations.SortedValues
+                RaiseEvent AddStationToList(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID)
+            Next
+        Next
+    End Sub
 End Class

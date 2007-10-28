@@ -81,7 +81,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsAutoUpdate.vb" />
+    <Compile Include="clsDldProgData.vb" />
     <Compile Include="clsErrorReporting.vb" />
+    <Compile Include="clsPlugins.vb" />
     <Compile Include="clsUpdateDB.vb" />
     <Compile Include="frmError.Designer.vb">
       <DependentUpon>frmError.vb</DependentUpon>
@@ -91,7 +93,6 @@
     </Compile>
     <Compile Include="My Project\ApplicationEvents.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
-    <Compile Include="clsBackground.vb" />
     <Compile Include="clsData.vb">
       <SubType>Code</SubType>
     </Compile>
@@ -121,7 +122,6 @@
     <Compile Include="modMain.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="modPlugins.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>

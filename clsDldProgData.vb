@@ -15,16 +15,7 @@
 Option Strict On
 Option Explicit On
 
-Friend Class clsBackground
-    Private Declare Function MoveFile Lib "kernel32" Alias "MoveFileA" (ByVal lpExistingFileName As String, ByVal lpNewFileName As String) As Integer
-
-    Private WithEvents ThisInstance As IRadioProvider
-
-    Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-    Event Finished()
-
-    ' Private variables to store information about the current task
+Friend Class clsDldProgData
     Private strProgType As String
     Private strProgID As String
     Private intDuration As Integer
@@ -33,7 +24,7 @@ Friend Class clsBackground
     Private strStationID As String
     Private strFinalName As String
     Private strProgDldUrl As String
-    Private AvailablePlugins As AvailablePlugin()
+    Private intBandwidthLimit As Integer
 
     Public Property ProgramType() As String
         Get
@@ -89,10 +80,13 @@ Friend Class clsBackground
         End Set
     End Property
 
-    Public ReadOnly Property FinalName() As String
+    Public Property FinalName() As String
         Get
             FinalName = strFinalName
         End Get
+        Set(ByVal strFinalName As String)
+            Me.strFinalName = strFinalName
+        End Set
     End Property
 
     Public Property DownloadUrl() As String
@@ -104,38 +98,12 @@ Friend Class clsBackground
         End Set
     End Property
 
-    Public Property PluginsList() As AvailablePlugin()
+    Public Property BandwidthLimit() As Integer
         Get
-            Return AvailablePlugins
+            Return intbandwidthlimit
         End Get
-        Set(ByVal InPluginsList As AvailablePlugin())
-            AvailablePlugins = InPluginsList
+        Set(ByVal intBandwidthLimit As Integer)
+            Me.intbandwidthlimit = intBandwidthLimit
         End Set
     End Property
-
-    Public Sub DownloadProgram()
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            If ThisInstance.ProviderUniqueID = strProgType Then
-                Exit For
-            End If
-        Next SinglePlugin
-
-        strFinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, strProgTitle, "mp3", dteProgDate, GetSaveFolder())
-
-        ThisInstance.DownloadProgram(strStationID, strProgID, dteProgDate, intDuration, strProgDldUrl, strFinalName, My.Settings.BandwidthLimit)
-    End Sub
-
-    Private Sub ThisInstance_DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles ThisInstance.DldError
-        RaiseEvent DldError(errType, strErrorDetails)
-    End Sub
-
-    Private Sub ThisInstance_Finished() Handles ThisInstance.Finished
-        RaiseEvent Finished()
-    End Sub
-
-    Private Sub ThisInstance_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles ThisInstance.Progress
-        RaiseEvent Progress(intPercent, strStatusText, Icon)
-    End Sub
 End Class

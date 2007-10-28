@@ -17,7 +17,6 @@ Option Explicit On
 
 Imports System.IO
 Imports System.IO.File
-Imports System.Threading
 Imports System.Reflection
 Imports System.Text.ASCIIEncoding
 Imports System.Diagnostics.Process
@@ -31,22 +30,16 @@ Public Class frmMain
         [Error]
     End Enum
 
-    Private AvailablePlugins As AvailablePlugin()
-
-    Private WithEvents clsBackgroundThread As clsBackground
-    Private thrBackgroundThread As Thread
-
     Private WithEvents clsProgData As clsData
     Private clsDoDBUpdate As clsUpdateDB
-
     Private clsUpdate As clsAutoUpdate
 
     Private strCurrentType As String
     Private strCurrentStation As String
 
-    Private Delegate Sub clsBackgroundThread_Progress_Delegate(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Private Delegate Sub clsBackgroundThread_DldError_Delegate(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-    Private Delegate Sub clsBackgroundThread_Finished_Delegate()
+    Private Delegate Sub clsProgData_Progress_Delegate(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    Private Delegate Sub clsProgData_DldError_Delegate(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+    Private Delegate Sub clsProgData_Finished_Delegate(ByVal clsCurDldProgData As clsDldProgData)
 
     Public Sub SetTrayStatus(ByVal booActive As Boolean, Optional ByVal ErrorStatus As ErrorStatus = ErrorStatus.NoChange)
         Dim booErrorStatus As Boolean
@@ -71,21 +64,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub AddStations()
-        lstStations.Items.Clear()
-
-        Dim ThisInstance As IRadioProvider
-
-        For Each SinglePlugin As AvailablePlugin In AvailablePlugins
-            ThisInstance = DirectCast(CreateInstance(SinglePlugin), IRadioProvider)
-
-            For Each NewStation As IRadioProvider.StationInfo In ThisInstance.ReturnStations.SortedValues
-                Call AddStation(NewStation.StationName, NewStation.StationUniqueID, ThisInstance.ProviderUniqueID)
-            Next
-        Next SinglePlugin
-    End Sub
-
-    Private Sub AddStation(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String)
+    Private Sub AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String) Handles clsProgData.AddStationToList
         Dim lstAdd As New System.Windows.Forms.ListViewItem
         lstAdd.Text = strStationName
         lstAdd.Tag = strStationType & "||" & strStationId
@@ -101,9 +80,6 @@ Public Class frmMain
         AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
         ' Add a handler for when a second instance is loaded
         AddHandler My.Application.StartupNextInstance, AddressOf StartupNextInstanceHandler
-
-        ' Load all of the available plugins into an array for later reference
-        AvailablePlugins = FindPlugins(My.Application.Info.DirectoryPath)
 
         ' If this is the first run of a new version of the application, then upgrade the settings from the old version.
         If My.Settings.UpgradeSettings Then
@@ -142,15 +118,15 @@ Public Class frmMain
         lstSubscribed.SmallImageList = imlListIcons
         lstDownloads.SmallImageList = imlListIcons
 
-        Call AddStations()
+        clsProgData = New clsData()
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        Call clsProgData.UpdateSubscrList(lstSubscribed)
+
+        clsProgData.StartListingStations()
         Call TabAdjustments()
         nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
         nicTrayIcon.Text = Me.Text
         nicTrayIcon.Visible = True
-
-        clsProgData = New clsData(AvailablePlugins)
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        Call clsProgData.UpdateSubscrList(lstSubscribed)
 
         clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vomus")
         If My.Settings.UpdateDownloaded Then
@@ -198,7 +174,7 @@ Public Class frmMain
         Call TabAdjustments()
 
         lstStationProgs.Items.Clear()
-        Call clsProgData.StartListingStation(strSplit(0), strSplit(1))
+        Call clsProgData.StartListingProgrammes(strSplit(0), strSplit(1))
     End Sub
 
     Private Sub lstStationProgs_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstStationProgs.SelectedIndexChanged
@@ -375,11 +351,6 @@ Public Class frmMain
     End Sub
 
     Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
-        ' Stop a background download thread from running, as it will error when trying to access the form
-        If thrBackgroundThread Is Nothing = False Then
-            thrBackgroundThread.Abort()
-        End If
-
         Me.Close()
         Me.Dispose()
 
@@ -403,32 +374,8 @@ Public Class frmMain
     End Sub
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
-        ' Make sure that it isn't currently working
-        If clsBackgroundThread Is Nothing Then
-            ' Look for a program to download
-            clsBackgroundThread = clsProgData.FindNewDownload
-
-            If clsBackgroundThread Is Nothing = False Then
-                If clsProgData.IsProgramStillAvailable(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate) = False Then
-                    Call clsProgData.RemoveDownload(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate)
-
-                    clsBackgroundThread = Nothing
-
-                    If tbtDownloads.Selected = True Then
-                        Call TabAdjustments() ' Revert back to tab info so prog info goes
-                    End If
-
-                    Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-                    Exit Sub
-                End If
-
-                clsBackgroundThread.PluginsList = AvailablePlugins
-
-                thrBackgroundThread = New Thread(New ThreadStart(AddressOf clsBackgroundThread.DownloadProgram))
-                thrBackgroundThread.Start()
-            End If
-        End If
-
+        Call clsProgData.FindAndDownload()
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         tmrStartProcess.Enabled = False
     End Sub
 
@@ -439,7 +386,8 @@ Public Class frmMain
         tbtDownloads.Checked = False
         Call TabAdjustments()
 
-        Call AddStations()
+        lstStations.Items.Clear()
+        clsProgData.StartListingStations()
     End Sub
 
     Private Sub tbtCurrStation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCurrStation.Click
@@ -450,7 +398,7 @@ Public Class frmMain
         Call TabAdjustments()
 
         lstStationProgs.Items.Clear()
-        Call clsProgData.StartListingStation(strCurrentType, strCurrentStation)
+        Call clsProgData.StartListingProgrammes(strCurrentType, strCurrentStation)
     End Sub
 
     Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
@@ -477,42 +425,40 @@ Public Class frmMain
         Call lstStationProgs.Items.Add(lstAddItem)
     End Sub
 
-    Private Sub clsBackgroundThread_DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsBackgroundThread.DldError
+    Private Sub clsProgData_DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsProgData.DldError
         ' Check if the form exists still before calling delegate
         If Me.IsHandleCreated Then
-            Dim DelegateInst As New clsBackgroundThread_DldError_Delegate(AddressOf clsBackgroundThread_DldError_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {errType, strErrorDetails})
+            Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, errType, strErrorDetails})
         End If
     End Sub
 
-    Private Sub clsBackgroundThread_DldError_FormThread(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-        Call clsProgData.SetErrored(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, errType, strErrorDetails)
+    Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+        Call clsProgData.SetErrored(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, errType, strErrorDetails)
 
         ' If the item that has just errored is selected then update the information.
-        If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.StationID + "||" + clsBackgroundThread.ProgramType).Selected Then
+        If tbtDownloads.Checked = True And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
             Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
         End If
 
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
-        clsBackgroundThread = Nothing
-        clsBackgroundThread = Nothing
         tmrStartProcess.Enabled = True
     End Sub
 
-    Private Sub clsBackgroundThread_Finished() Handles clsBackgroundThread.Finished
+    Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
         ' Check if the form exists still before calling delegate
         If Me.IsHandleCreated Then
-            Dim DelegateInst As New clsBackgroundThread_Finished_Delegate(AddressOf clsBackgroundThread_Finished_FormThread)
-            Call Me.Invoke(DelegateInst)
+            Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData})
         End If
     End Sub
 
-    Private Sub clsBackgroundThread_Finished_FormThread()
-        Call clsProgData.SetDownloaded(clsBackgroundThread.ProgramType, clsBackgroundThread.StationID, clsBackgroundThread.ProgramID, clsBackgroundThread.ProgramDate, clsBackgroundThread.FinalName)
+    Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As clsDldProgData)
+        Call clsProgData.SetDownloaded(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.FinalName)
 
         ' If the item that has just finished is selected then update it.
-        If tbtDownloads.Checked = True And lstDownloads.Items(clsBackgroundThread.ProgramDate.ToString + "||" + clsBackgroundThread.ProgramID + "||" + clsBackgroundThread.StationID + "||" + clsBackgroundThread.ProgramType).Selected Then
+        If tbtDownloads.Checked = True And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
             Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
         End If
 
@@ -521,26 +467,24 @@ Public Class frmMain
         If My.Settings.RunAfterCommand <> "" Then
             Try
                 ' Environ("comspec") will give the path to cmd.exe or command.com
-                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsBackgroundThread.FinalName), AppWinStyle.NormalNoFocus)
+                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
             Catch ex As Exception
                 ' Just ignore the error, as it just means that something has gone wrong with the run after command.
             End Try
         End If
 
-        clsBackgroundThread = Nothing
-        thrBackgroundThread = Nothing
         tmrStartProcess.Enabled = True
     End Sub
 
-    Private Sub clsBackgroundThread_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsBackgroundThread.Progress
+    Private Sub clsProgData_Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
         ' Check if the form exists still before calling delegate
         If Me.IsHandleCreated Then
-            Dim DelegateInst As New clsBackgroundThread_Progress_Delegate(AddressOf clsBackgroundThread_Progress_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {intPercent, strStatusText, Icon})
+            Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, intPercent, strStatusText, Icon})
         End If
     End Sub
 
-    Private Sub clsBackgroundThread_Progress_FormThread(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    Private Sub clsProgData_Progress_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
         Static intLastNum As Integer
 
         If intLastNum = Nothing Then intLastNum = -1
@@ -550,7 +494,7 @@ Public Class frmMain
 
         intLastNum = intPercent
 
-        With clsBackgroundThread
+        With clsCurDldProgData
             Dim lstItem As ListViewItem
             lstItem = lstDownloads.Items(.ProgramDate.ToString + "||" + .ProgramID + "||" + .StationID + "||" + .ProgramType)
 
@@ -629,11 +573,15 @@ Public Class frmMain
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
             strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
-            If clsBackgroundThread Is Nothing = False Then
-                thrBackgroundThread.Abort()
-                clsBackgroundThread = Nothing
-                clsBackgroundThread = Nothing
-                tmrStartProcess.Enabled = True
+            Dim clsCurrentProgInfo As clsDldProgData
+            clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
+
+            If clsCurrentProgInfo Is Nothing = False Then
+                If clsCurrentProgInfo.ProgramType = strSplit(3) And clsCurrentProgInfo.StationID = strSplit(2) And clsCurrentProgInfo.ProgramID = strSplit(1) And clsCurrentProgInfo.ProgramDate = CDate(strSplit(0)) Then
+                    ' The program is currently being downloaded
+                    clsProgData.AbortDownloadThread()
+                    tmrStartProcess.Enabled = True
+                End If
             End If
 
             Call clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
@@ -710,5 +658,9 @@ Public Class frmMain
 
     Private Sub tbmReportABug_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmReportABug.Click
         Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php")
+    End Sub
+
+    Private Sub lstStations_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstStations.SelectedIndexChanged
+
     End Sub
 End Class
