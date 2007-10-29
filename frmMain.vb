@@ -306,6 +306,19 @@ Public Class frmMain
         lblSideDescript.Text = strDescription
 
         If bmpPicture Is Nothing = False Then
+            If bmpPicture.Width > picSidebarImg.MaximumSize.Width Or bmpPicture.Height > picSidebarImg.MaximumSize.Height Then
+                Dim bmpOrigImg As Bitmap = bmpPicture
+                bmpPicture = New Bitmap(picSidebarImg.MaximumSize.Width, picSidebarImg.MaximumSize.Height)
+                Dim graGraphics As Graphics
+
+                graGraphics = Graphics.FromImage(bmpPicture)
+                graGraphics.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+
+                graGraphics.DrawImage(bmpOrigImg, 0, 0, picSidebarImg.MaximumSize.Width, picSidebarImg.MaximumSize.Height)
+
+                bmpOrigImg.Dispose()
+            End If
+
             picSidebarImg.Image = bmpPicture
             picSidebarImg.Visible = True
         Else
