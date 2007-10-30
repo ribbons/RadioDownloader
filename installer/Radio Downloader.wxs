@@ -1029,16 +1029,13 @@
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
     </Media>
-    <Feature Id="RadioDownloader" Level="1" Title="Core Application" Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="TARGETDIR" Description="The core Radio Downloader application.">
+    <Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="TARGETDIR" Description="The Radio Downloader application.">
       <ComponentRef Id="RadioDownloaderExe" />
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
       <ComponentRef Id="GplTxt" />
       <ComponentRef Id="RunOnStartup" />
-    </Feature>
-    <Feature Id="BBCPodcasts" Level="1" Absent="disallow" AllowAdvertise="no" Description="A plugin to allow downloading Podcasts made available by the BBC." Title="BBC Podcasts" ConfigurableDirectory="TARGETDIR">
       <ComponentRef Id="BBCPodcastsDll" />
-      <ComponentRef Id="HtmlAgilityPackDll" />
     </Feature>
     <Condition Message="Radio Downloader requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
     <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
