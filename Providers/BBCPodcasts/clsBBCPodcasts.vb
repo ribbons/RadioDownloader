@@ -20,18 +20,25 @@ Imports System.IO
 Imports System.Net
 Imports System.Web
 Imports System.Xml
+Imports Microsoft.Win32
 Imports HtmlAgilityPack
+Imports System.Threading.Thread
 
 Public Class clsBBCPodcasts
     Implements IRadioProvider
+
+    Private Shared Event PowerModeChanged As PowerModeChangedEventHandler
 
     Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
     Public Event Finished() Implements IRadioProvider.Finished
 
     Private WithEvents webDownload As WebClient
-    Private strDownloadFileName As String
+
     Private strFinalName As String
+    Private strProgDldUrl As String
+    Private strDownloadFileName As String
+    Private booIgnoreNextCompleted As Boolean
 
     Public ReadOnly Property ProviderUniqueID() As String Implements IRadioProvider.ProviderUniqueID
         Get
@@ -234,11 +241,30 @@ Public Class clsBBCPodcasts
 
     Public Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer) Implements IRadioProvider.DownloadProgram
         Dim lngTrimPos As Integer = InStr(1, strProgramID, "/")
-        strDownloadFileName = System.IO.Path.GetTempPath + "\RadioDownloader\" + Mid(strProgramID, lngTrimPos + 1) + Right(strProgDldUrl, 4)
+        Me.strDownloadFileName = System.IO.Path.GetTempPath + "\RadioDownloader\" + Mid(strProgramID, lngTrimPos + 1) + Right(strProgDldUrl, 4)
         Me.strFinalName = strFinalName
+        Me.strProgDldUrl = strProgDldUrl
+
+        AddHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange
 
         webDownload = New WebClient
         webDownload.DownloadFileAsync(New Uri(strProgDldUrl), strDownloadFileName)
+    End Sub
+
+    Private Sub PowerModeChange(ByVal sender As Object, ByVal e As PowerModeChangedEventArgs)
+        If e.Mode = PowerModes.Resume Then
+            ' Restart the download, as it is quite likely to have hung during the suspend / hibernate
+            If webDownload.IsBusy Then
+                ' Ignore the error given when we cancel the download
+                booIgnoreNextCompleted = True
+                webDownload.CancelAsync()
+
+                ' Pause for 20 seconds to be give the pc a chance to settle down after the suspend. 
+                Sleep(20000)
+
+                webDownload.DownloadFileAsync(New Uri(strProgDldUrl), strDownloadFileName)
+            End If
+        End If
     End Sub
 
     Private Function CreateNamespaceMgr(ByVal xmlDocument As XmlDocument) As XmlNamespaceManager
@@ -254,19 +280,25 @@ Public Class clsBBCPodcasts
     End Function
 
     Private Sub webDownload_DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs) Handles webDownload.DownloadFileCompleted
-        If e.Error Is Nothing = False Then
-            RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.Message + vbCrLf + e.Error.StackTrace)
+        If booIgnoreNextCompleted Then
+            booIgnoreNextCompleted = False
         Else
-            RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
+            RemoveHandler PowerModeChanged, AddressOf PowerModeChange
 
-            Try
-                Call File.Move(strDownloadFileName, strFinalName)
-            Catch
-                RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.StackTrace)
-                Exit Sub
-            End Try
+            If e.Error Is Nothing = False Then
+                RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.Message + vbCrLf + e.Error.StackTrace)
+            Else
+                RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
 
-            RaiseEvent Finished()
+                Try
+                    Call File.Move(strDownloadFileName, strFinalName)
+                Catch
+                    RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.StackTrace)
+                    Exit Sub
+                End Try
+
+                RaiseEvent Finished()
+            End If
         End If
     End Sub
 
