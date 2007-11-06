@@ -210,7 +210,12 @@ Friend Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         sqlReader.Read()
-        ProgramDldUrl = sqlReader.GetString(sqlReader.GetOrdinal("DownloadUrl"))
+
+        If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("DownloadUrl"))) Then
+            ProgramDldUrl = ""
+        Else
+            ProgramDldUrl = sqlReader.GetString(sqlReader.GetOrdinal("DownloadUrl"))
+        End If
 
         sqlReader.Close()
     End Function
