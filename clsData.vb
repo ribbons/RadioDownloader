@@ -295,8 +295,6 @@ Friend Class clsData
 
         With sqlReader
             Do While .Read()
-                Call GetLatest(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
-
                 lstAdd = New ListViewItem
 
                 Dim strDynamicTitle As String
