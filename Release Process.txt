@@ -1,0 +1,15 @@
+Release process
+===============
+
+ 1. Update version number in Core Application & Plugins
+ 2. Run publish.bat to compile Core Application & Plugins
+ 3. Update version number in installer
+ 4. Build installer
+ 5. Test installer
+ 6. Commit version changes.
+ 7. Create tag for release number in form radio_downloader/tags/x.x.x
+ 8. Run zipped source creator batch file
+ 9. Copy Source and Installer to local nerdoftheherd folder.
+10. Update local latestversion.txt with latest version number, and to point to latest installer.
+11. Add new version number & new target milestone into the Radio Downloader product in Bugzilla.
+12. Upload to website, and write news item.
