@@ -440,6 +440,7 @@
         Me.lblSideDescript.Size = New System.Drawing.Size(171, 289)
         Me.lblSideDescript.TabIndex = 2
         Me.lblSideDescript.Text = "Description"
+        Me.lblSideDescript.UseMnemonic = False
         '
         'lstStationProgs
         '
