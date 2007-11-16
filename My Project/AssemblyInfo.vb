@@ -14,6 +14,6 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyTrademark("")>
 <Assembly: AssemblyCulture("")>
 
-<Assembly: AssemblyVersion("0.4.5.*")> 
+<Assembly: AssemblyVersion("0.4.6.*")> 
 
 
