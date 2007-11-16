@@ -10,6 +10,6 @@ Release process
  7. Create tag for release number in form radio_downloader/tags/x.x.x
  8. Run zipped source creator batch file
  9. Copy Source and Installer to local nerdoftheherd folder.
-10. Update local latestversion.txt with latest version number, and to point to latest installer.
+10. Update local latestversion.txt with latest version number.
 11. Add new version number & new target milestone into the Radio Downloader product in Bugzilla.
 12. Upload to website, and write news item.
