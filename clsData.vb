@@ -76,23 +76,23 @@ Friend Class clsData
 
             With sqlReader
                 While thrDownloadThread Is Nothing
-                    If sqlReader.Read() Then
+                    If sqlReader.Read Then
                         If clsPluginsInst.PluginExists(.GetString(.GetOrdinal("Type"))) Then
-                            If IsProgramStillAvailable(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date"))) = False Then
-                                Call RemoveDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
+                            If IsProgramStillAvailable(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")) = False Then
+                                Call RemoveDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
                             Else
                                 If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
-                                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")), True)
+                                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"), True)
                                 End If
 
                                 clsCurDldProgData = New clsDldProgData
                                 clsCurDldProgData.ProgramType = .GetString(.GetOrdinal("Type"))
                                 clsCurDldProgData.StationID = .GetString(.GetOrdinal("Station"))
                                 clsCurDldProgData.ProgramID = .GetString(.GetOrdinal("ID"))
-                                clsCurDldProgData.ProgramDate = .GetDateTime(.GetOrdinal("Date"))
-                                clsCurDldProgData.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
-                                clsCurDldProgData.DownloadUrl = ProgramDldUrl(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date")))
-                                clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), .GetDateTime(.GetOrdinal("Date"))), "mp3", .GetDateTime(.GetOrdinal("Date")), GetSaveFolder())
+                                clsCurDldProgData.ProgramDate = GetCustFormatDateTime(sqlReader, "Date")
+                                clsCurDldProgData.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
+                                clsCurDldProgData.DownloadUrl = ProgramDldUrl(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
+                                clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")), "mp3", GetCustFormatDateTime(sqlReader, "Date"), GetSaveFolder())
                                 clsCurDldProgData.BandwidthLimit = My.Settings.BandwidthLimit
 
                                 thrDownloadThread = New Thread(AddressOf DownloadProgThread)
@@ -191,13 +191,15 @@ Friend Class clsData
         Dim sqlCommand As New SQLiteCommand("SELECT image FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
+        If sqlReader.Read Then
+            Dim objBlob As Object = sqlReader.GetValue(sqlReader.GetOrdinal("image"))
 
-        Dim objBlob As Object = sqlReader.GetValue(sqlReader.GetOrdinal("image")) 
-
-        If IsDBNull(objBlob) = False Then
-            Dim stmStream As New MemoryStream(CType(objBlob, Byte()))
-            ProgramImage = New Bitmap(stmStream)
+            If IsDBNull(objBlob) = False Then
+                Dim stmStream As New MemoryStream(CType(objBlob, Byte()))
+                ProgramImage = New Bitmap(stmStream)
+            Else
+                ProgramImage = Nothing
+            End If
         Else
             ProgramImage = Nothing
         End If
@@ -209,12 +211,14 @@ Friend Class clsData
         Dim sqlCommand As New SQLiteCommand("SELECT downloadurl FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-
-        If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("DownloadUrl"))) Then
-            ProgramDldUrl = ""
+        If sqlReader.Read Then
+            If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("DownloadUrl"))) Then
+                ProgramDldUrl = ""
+            Else
+                ProgramDldUrl = sqlReader.GetString(sqlReader.GetOrdinal("DownloadUrl"))
+            End If
         Else
-            ProgramDldUrl = sqlReader.GetString(sqlReader.GetOrdinal("DownloadUrl"))
+            ProgramDldUrl = ""
         End If
 
         sqlReader.Close()
@@ -230,8 +234,8 @@ Friend Class clsData
         Dim booErrorStatus As Boolean = False
         Dim intExistingPos As Integer = 0
 
-        Do While sqlReader.Read()
-            Dim strUniqueId As String = sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Station")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
+        Do While sqlReader.Read
+            Dim strUniqueId As String = GetCustFormatDateTime(sqlReader, "Date").ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Station")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
 
             If lstListview.Items.Count - 1 < intExistingPos Then
                 lstItem = lstListview.Items.Add(strUniqueId, "", 0)
@@ -251,9 +255,9 @@ Friend Class clsData
 
             lstItem.SubItems.Clear()
             lstItem.Name = strUniqueId
-            lstItem.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), sqlReader.GetDateTime(sqlReader.GetOrdinal("Date"))) '+ " " + strUniqueId
+            lstItem.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")) '+ " " + strUniqueId
 
-            lstItem.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("Date")).ToShortDateString())
+            lstItem.SubItems.Add(GetCustFormatDateTime(sqlReader, "Date").ToShortDateString())
 
             Select Case sqlReader.GetInt32(sqlReader.GetOrdinal("Status"))
                 Case Statuses.Waiting
@@ -326,12 +330,14 @@ Friend Class clsData
         Dim sqlCommand As New SQLiteCommand("SELECT SubscriptionName FROM tblSubscribed WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-
-        If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("SubscriptionName"))) Then
-            SubscriptionName = ""
+        If sqlReader.Read Then
+            If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("SubscriptionName"))) Then
+                SubscriptionName = ""
+            Else
+                SubscriptionName = sqlReader.GetString(sqlReader.GetOrdinal("SubscriptionName"))
+            End If
         Else
-            SubscriptionName = sqlReader.GetString(sqlReader.GetOrdinal("SubscriptionName"))
+            SubscriptionName = ""
         End If
 
         sqlReader.Close()
@@ -367,7 +373,7 @@ Friend Class clsData
         Dim sqlCommand As New SQLiteCommand("SELECT id FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ AND date=""" + LatestDate(strProgramType, strStationID, strProgramID).ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        If sqlReader.Read() Then
+        If sqlReader.Read Then
             Return False
         End If
 
@@ -403,16 +409,29 @@ Friend Class clsData
         End If
     End Sub
 
+    Private Function GetCustFormatDateTime(ByVal sqlReader As SQLiteDataReader, ByVal strColumn As String) As Date
+        Try
+            GetCustFormatDateTime = DateTime.ParseExact(sqlReader.GetString(sqlReader.GetOrdinal(strColumn)), strSqlDateFormat, Nothing)
+        Catch expException As InvalidCastException
+            ' Somehow we have a value which can't be cast as a date, return nothing
+            GetCustFormatDateTime = Nothing
+        Catch expException As FormatException
+            ' Somehow we have a valid date string of the wrong format, return nothing
+            GetCustFormatDateTime = Nothing
+        End Try
+    End Function
+
     Public Function LatestDate(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As DateTime
         Dim sqlCommand As New SQLiteCommand("SELECT date FROM tblInfo WHERE type=""" + strProgramType + """  and Station=""" + strStationID + """ and ID=""" & strProgramID & """ ORDER BY Date DESC", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         With sqlReader
             If .Read = False Then
-                Return Nothing
+                ' No programs of this type in the database, return nothing
+                LatestDate = Nothing
+            Else
+                LatestDate = GetCustFormatDateTime(sqlReader, "Date")
             End If
-
-            LatestDate = .GetDateTime(.GetOrdinal("Date"))
         End With
 
         sqlReader.Close()
@@ -453,7 +472,7 @@ Friend Class clsData
         sqlReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
-            dteLastAttempt = sqlReader.GetDateTime(sqlReader.GetOrdinal("LastTry"))
+            dteLastAttempt = GetCustFormatDateTime(sqlReader, "LastTry")
         End If
 
         Dim ProgInfo As IRadioProvider.ProgramInfo
@@ -480,7 +499,6 @@ Friend Class clsData
                 Else
                     sqlImage = New SQLiteParameter("@image", Nothing)
                 End If
-
 
                 sqlCommand.Parameters.Add(sqlImage)
                 sqlCommand.ExecuteNonQuery()
@@ -611,12 +629,14 @@ Friend Class clsData
         Dim sqlCommand As New SQLiteCommand("SELECT ErrorType FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-
-        If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("ErrorType"))) Then
-            ErrorType = IRadioProvider.ErrorType.UnknownError
+        If sqlReader.Read Then
+            If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("ErrorType"))) Then
+                ErrorType = IRadioProvider.ErrorType.UnknownError
+            Else
+                ErrorType = CType(sqlReader.GetInt32(sqlReader.GetOrdinal("ErrorType")), IRadioProvider.ErrorType)
+            End If
         Else
-            ErrorType = CType(sqlReader.GetInt32(sqlReader.GetOrdinal("ErrorType")), IRadioProvider.ErrorType)
+            ErrorType = IRadioProvider.ErrorType.UnknownError
         End If
 
         sqlReader.Close()
@@ -626,12 +646,14 @@ Friend Class clsData
         Dim sqlCommand As New SQLiteCommand("SELECT ErrorDetails FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-
-        If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("ErrorDetails"))) Then
-            ErrorDetails = ""
+        If sqlReader.Read Then
+            If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("ErrorDetails"))) Then
+                ErrorDetails = ""
+            Else
+                ErrorDetails = sqlReader.GetString(sqlReader.GetOrdinal("ErrorDetails"))
+            End If
         Else
-            ErrorDetails = sqlReader.GetString(sqlReader.GetOrdinal("ErrorDetails"))
+            ErrorDetails = ""
         End If
 
         sqlReader.Close()
@@ -689,7 +711,7 @@ Friend Class clsData
         Dim sqlCommand As New SQLiteCommand("select Visible from tblStationVisibility where ProviderID=""" + strPluginID + """ and StationID=""" + strStationID + """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        If sqlReader.Read() Then
+        If sqlReader.Read Then
             If sqlReader.GetBoolean(sqlReader.GetOrdinal("Visible")) Then
                 IsStationVisible = True
             Else
