@@ -25,6 +25,7 @@ Friend Class clsDldProgData
     Private strFinalName As String
     Private strProgDldUrl As String
     Private intBandwidthLimit As Integer
+    Private intAttemptNumber As Integer
 
     Public Property ProgramType() As String
         Get
@@ -104,6 +105,15 @@ Friend Class clsDldProgData
         End Get
         Set(ByVal intBandwidthLimit As Integer)
             Me.intbandwidthlimit = intBandwidthLimit
+        End Set
+    End Property
+
+    Public Property AttemptNumber() As Integer
+        Get
+            Return intAttemptNumber
+        End Get
+        Set(ByVal intAttemptNumber As Integer)
+            Me.intAttemptNumber = intAttemptNumber
         End Set
     End Property
 End Class

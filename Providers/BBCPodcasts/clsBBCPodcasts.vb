@@ -239,7 +239,7 @@ Public Class clsBBCPodcasts
         Return False
     End Function
 
-    Public Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer) Implements IRadioProvider.DownloadProgram
+    Public Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttemptNumber As Integer) Implements IRadioProvider.DownloadProgram
         Dim lngTrimPos As Integer = InStr(1, strProgramID, "/")
         Me.strDownloadFileName = System.IO.Path.GetTempPath + "\RadioDownloader\" + Mid(strProgramID, lngTrimPos + 1) + Right(strProgDldUrl, 4)
         Me.strFinalName = strFinalName

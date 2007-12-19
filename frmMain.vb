@@ -246,6 +246,8 @@ Public Class frmMain
                     Select Case .ErrorType(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
                         Case IRadioProvider.ErrorType.MissingDependency
                             strErrorName = "Missing Dependency"
+                        Case IRadioProvider.ErrorType.ShorterThanExpected
+                            strErrorName = "Programme Shorter Than Expected"
                         Case IRadioProvider.ErrorType.UnknownError
                             strErrorName = "Unknown Error"
                             strErrorDetails = ""

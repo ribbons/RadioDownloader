@@ -71,7 +71,7 @@ Friend Class clsData
         Const lngMaxErrors As Integer = 2
 
         If thrDownloadThread Is Nothing Then
-            Dim sqlCommand As New SQLiteCommand("select status, type, station, id, date from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by date", sqlConnection)
+            Dim sqlCommand As New SQLiteCommand("select status, type, station, id, date, errorcount from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by date", sqlConnection)
             Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
             With sqlReader
@@ -81,10 +81,6 @@ Friend Class clsData
                             If IsProgramStillAvailable(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")) = False Then
                                 Call RemoveDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
                             Else
-                                If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
-                                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"), True)
-                                End If
-
                                 clsCurDldProgData = New clsDldProgData
                                 clsCurDldProgData.ProgramType = .GetString(.GetOrdinal("Type"))
                                 clsCurDldProgData.StationID = .GetString(.GetOrdinal("Station"))
@@ -94,6 +90,13 @@ Friend Class clsData
                                 clsCurDldProgData.DownloadUrl = ProgramDldUrl(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
                                 clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")), "mp3", GetCustFormatDateTime(sqlReader, "Date"), GetSaveFolder())
                                 clsCurDldProgData.BandwidthLimit = My.Settings.BandwidthLimit
+
+                                If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
+                                    Call ResetDownload(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"), True)
+                                    clsCurDldProgData.AttemptNumber = .GetInt32(.GetOrdinal("ErrorCount")) + 2
+                                Else
+                                    clsCurDldProgData.AttemptNumber = 1
+                                End If
 
                                 thrDownloadThread = New Thread(AddressOf DownloadProgThread)
                                 thrDownloadThread.Start()
@@ -111,7 +114,7 @@ Friend Class clsData
 
     Public Sub DownloadProgThread()
         DownloadPluginInst = clsPluginsInst.GetPluginInstance(clsCurDldProgData.ProgramType)
-        DownloadPluginInst.DownloadProgram(clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.ProgramDuration, clsCurDldProgData.DownloadUrl, clsCurDldProgData.FinalName, clsCurDldProgData.BandwidthLimit)
+        DownloadPluginInst.DownloadProgram(clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.ProgramDuration, clsCurDldProgData.DownloadUrl, clsCurDldProgData.FinalName, clsCurDldProgData.BandwidthLimit, clsCurDldProgData.AttemptNumber)
     End Sub
 
     Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String

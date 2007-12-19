@@ -89,6 +89,7 @@ Public Interface IRadioProvider
     Enum ErrorType
         UnknownError
         MissingDependency
+        ShorterThanExpected
     End Enum
 
     ReadOnly Property ProviderUniqueID() As String
@@ -106,7 +107,7 @@ Public Interface IRadioProvider
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
     Event Finished()
 
-    Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer)
+    Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttemptNumber As Integer)
 End Interface
 
 Public Class clsPlugins
