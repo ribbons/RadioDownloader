@@ -366,6 +366,8 @@ Public Class frmMain
         If Me.WindowState = FormWindowState.Minimized Then
             Me.WindowState = FormWindowState.Normal
         End If
+
+        Me.Activate()
     End Sub
 
     Public Sub mnuTrayExit_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles mnuTrayExit.Click
