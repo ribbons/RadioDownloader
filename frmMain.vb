@@ -215,6 +215,10 @@ Public Class frmMain
         End If
     End Sub
 
+    Private Sub lstDownloads_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstDownloads.ItemActivate
+        Call tbtPlay_Click(sender, e)
+    End Sub
+
     Private Sub lstDownloads_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstDownloads.SelectedIndexChanged
         If lstDownloads.SelectedItems.Count > 0 Then
             Dim strSplit() As String
@@ -616,14 +620,18 @@ Public Class frmMain
         Dim strSplit() As String
         strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
-        Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+        If clsProgData.DownloadStatus(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))) = clsData.Statuses.Downloaded Then
+            If Exists(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
+                Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
 
-        ' Bump the play count of this item up by one, and update the list so that the icon changes colour
-        clsProgData.IncreasePlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
-        clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+                ' Bump the play count of this item up by one, and update the list so that the icon changes colour
+                clsProgData.IncreasePlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+                clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
-        ' Update the prog info pane to show the updated play count
-        Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+                ' Update the prog info pane to show the updated play count
+                Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+            End If
+        End If
     End Sub
 
     Private Sub tbtDelete_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDelete.Click
