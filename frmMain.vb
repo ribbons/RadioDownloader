@@ -402,6 +402,11 @@ Public Class frmMain
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
         Call clsProgData.FindAndDownload()
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+
+        If tbtDownloads.Checked Then
+            Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+        End If
+
         tmrStartProcess.Enabled = False
     End Sub
 
@@ -432,7 +437,10 @@ Public Class frmMain
         tbtCurrStation.Checked = False
         tbtFindNew.Checked = False
         tbtDownloads.Checked = False
+
         Call TabAdjustments()
+        lstSubscribed_SelectedIndexChanged(sender, e)
+        lstSubscribed.Focus()
     End Sub
 
     Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
@@ -440,7 +448,10 @@ Public Class frmMain
         tbtCurrStation.Checked = False
         tbtSubscriptions.Checked = False
         tbtFindNew.Checked = False
+
         Call TabAdjustments()
+        lstDownloads_SelectedIndexChanged(sender, e)
+        lstDownloads.Focus()
     End Sub
 
     Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
