@@ -451,7 +451,7 @@ Public Class frmMain
 
     Private Sub clsProgData_DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsProgData.DldError
         ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated Then
+        If Me.IsHandleCreated And Me.IsDisposed = False Then
             Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
             Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, errType, strErrorDetails})
         End If
@@ -472,7 +472,7 @@ Public Class frmMain
 
     Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
         ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated Then
+        If Me.IsHandleCreated And Me.IsDisposed = False Then
             Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
             Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData})
         End If
@@ -502,7 +502,7 @@ Public Class frmMain
 
     Private Sub clsProgData_Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
         ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated Then
+        If Me.IsHandleCreated And Me.IsDisposed = False Then
             Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
             Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, intPercent, strStatusText, Icon})
         End If
