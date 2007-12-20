@@ -396,15 +396,17 @@ Public Class frmMain
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        Call clsProgData.CheckSubscriptions(lstDownloads, tmrStartProcess, prgDldProg)
+        Call clsProgData.CheckSubscriptions(lstDownloads, prgDldProg)
+        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
-        Call clsProgData.FindAndDownload()
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        If clsProgData.FindAndDownload Then
+            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
-        If tbtDownloads.Checked Then
-            Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+            If tbtDownloads.Checked Then
+                Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+            End If
         End If
 
         tmrStartProcess.Enabled = False

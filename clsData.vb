@@ -67,7 +67,7 @@ Friend Class clsData
         sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Sub FindAndDownload()
+    Public Function FindAndDownload() As Boolean
         If thrDownloadThread Is Nothing Then
             Dim sqlCommand As New SQLiteCommand("select status, type, station, id, date, errorcount from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ((ErrorCount=0 and ErrorTime<""" + Now.AddHours(-2).ToString(strSqlDateFormat) + """) or (ErrorCount=1 and ErrorTime<""" + Now.AddHours(-8).ToString(strSqlDateFormat) + """))) order by date", sqlConnection)
             Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
@@ -98,6 +98,8 @@ Friend Class clsData
 
                                 thrDownloadThread = New Thread(AddressOf DownloadProgThread)
                                 thrDownloadThread.Start()
+
+                                FindAndDownload = True
                             End If
                         End If
                     Else
@@ -108,7 +110,7 @@ Friend Class clsData
                 sqlReader.Close()
             End With
         End If
-    End Sub
+    End Function
 
     Public Sub DownloadProgThread()
         DownloadPluginInst = clsPluginsInst.GetPluginInstance(clsCurDldProgData.ProgramType)
@@ -344,7 +346,7 @@ Friend Class clsData
         sqlReader.Close()
     End Function
 
-    Public Sub CheckSubscriptions(ByRef lstList As ExtListView, ByRef tmrTimer As System.Windows.Forms.Timer, ByRef prgDldProg As ProgressBar)
+    Public Sub CheckSubscriptions(ByRef lstList As ExtListView, ByRef prgDldProg As ProgressBar)
         Dim sqlCommand As New SQLiteCommand("select type, station, id from tblSubscribed", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
@@ -358,7 +360,6 @@ Friend Class clsData
                 If sqlRdrCheckDld.Read() = False Then
                     Call AddDownload(.GetString(.GetOrdinal("Type")), .GetString(sqlReader.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
                     Call UpdateDlList(lstList, prgDldProg)
-                    tmrTimer.Enabled = True
                 End If
 
                 sqlRdrCheckDld.Close()
