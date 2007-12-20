@@ -189,8 +189,6 @@ Public Class clsBBCPodcasts
                     .Image = Nothing
                 End Try
             End With
-
-
         Catch expException As Exception
             ProgInfo.Result = IRadioProvider.ProgInfoResult.OtherError
             Return ProgInfo
@@ -286,17 +284,10 @@ Public Class clsBBCPodcasts
             RemoveHandler PowerModeChanged, AddressOf PowerModeChange
 
             If e.Error Is Nothing = False Then
-                RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.Message + vbCrLf + e.Error.StackTrace)
+                RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.GetType.ToString + ": " + e.Error.Message + vbCrLf + e.Error.StackTrace)
             Else
                 RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
-
-                Try
-                    Call File.Move(strDownloadFileName, strFinalName)
-                Catch
-                    RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.StackTrace)
-                    Exit Sub
-                End Try
-
+                Call File.Move(strDownloadFileName, strFinalName)
                 RaiseEvent Finished()
             End If
         End If

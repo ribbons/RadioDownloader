@@ -243,6 +243,8 @@ Public Class frmMain
                     Dim strErrorName As String = ""
                     Dim strErrorDetails As String = .ErrorDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
 
+                    strActionString = "Retry,Cancel"
+
                     Select Case .ErrorType(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
                         Case IRadioProvider.ErrorType.MissingDependency
                             strErrorName = "Missing Dependency"
@@ -250,15 +252,14 @@ Public Class frmMain
                             strErrorName = "Shorter Than Expected"
                         Case IRadioProvider.ErrorType.UnknownError
                             strErrorName = "Unknown Error"
-                            strErrorDetails = ""
+                            strErrorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
+                            strActionString = "Retry,Cancel,ReportError"
                     End Select
 
                     strInfoBox = vbCrLf + vbCrLf + "Error: " + strErrorName
                     If strErrorDetails <> "" Then
                         strInfoBox += vbCrLf + vbCrLf + strErrorDetails
                     End If
-
-                    strActionString = "Retry,Cancel"
                 Else
                     strActionString = "Cancel"
                 End If
@@ -342,6 +343,7 @@ Public Class frmMain
         tbtCancel.Visible = False
         tbtDelete.Visible = False
         tbtRetry.Visible = False
+        tbtReportError.Visible = False
 
         For Each strLoopButtons As String In strSplitButtons
             Select Case strLoopButtons
@@ -359,6 +361,8 @@ Public Class frmMain
                     tbtCancel.Visible = True
                 Case "Retry"
                     tbtRetry.Visible = True
+                Case "ReportError"
+                    tbtReportError.Visible = True
             End Select
         Next
     End Sub
@@ -698,6 +702,14 @@ Public Class frmMain
         Else
             Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
         End If
+    End Sub
+
+    Private Sub tbtReportError_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtReportError.Click
+        Dim strSplit() As String
+        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+
+        Dim clsReport As New clsErrorReporting("Download Error: " + clsProgData.ErrorType(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))).ToString, clsProgData.ErrorDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+        clsReport.SendReport("http://www.nerdoftheherd.com/tools/radiodld/error_report.php")
     End Sub
 
     Private Sub tbmOptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmOptions.Click

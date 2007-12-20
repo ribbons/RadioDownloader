@@ -67,6 +67,7 @@
         Me.picSidebarImg = New System.Windows.Forms.PictureBox
         Me.lblSideDescript = New System.Windows.Forms.Label
         Me.lstStationProgs = New System.Windows.Forms.ListView
+        Me.tbtReportError = New System.Windows.Forms.ToolStripButton
         Me.lstDownloads = New RadioDld.ExtListView
         Me.tbrView.SuspendLayout()
         Me.mnuTray.SuspendLayout()
@@ -142,7 +143,7 @@
         Me.tbtCleanUp.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtCleanUp.Margin = New System.Windows.Forms.Padding(2, 1, 2, 2)
         Me.tbtCleanUp.Name = "tbtCleanUp"
-        Me.tbtCleanUp.Size = New System.Drawing.Size(75, 22)
+        Me.tbtCleanUp.Size = New System.Drawing.Size(75, 20)
         Me.tbtCleanUp.Text = "Clean Up"
         '
         'nicTrayIcon
@@ -238,7 +239,7 @@
         '
         'tbrToolbar
         '
-        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmMisc, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtCleanUp, Me.tbmHelp})
+        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmMisc, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp, Me.tbmHelp})
         Me.tbrToolbar.Location = New System.Drawing.Point(0, 31)
         Me.tbrToolbar.Name = "tbrToolbar"
         Me.tbrToolbar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
@@ -349,7 +350,7 @@
         Me.tbmHelp.Image = CType(resources.GetObject("tbmHelp.Image"), System.Drawing.Image)
         Me.tbmHelp.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbmHelp.Name = "tbmHelp"
-        Me.tbmHelp.Size = New System.Drawing.Size(29, 22)
+        Me.tbmHelp.Size = New System.Drawing.Size(29, 20)
         Me.tbmHelp.Text = "Help"
         '
         'tbmShowHelp
@@ -457,6 +458,14 @@
         Me.lstStationProgs.UseCompatibleStateImageBehavior = False
         Me.lstStationProgs.View = System.Windows.Forms.View.Details
         '
+        'tbtReportError
+        '
+        Me.tbtReportError.Image = CType(resources.GetObject("tbtReportError.Image"), System.Drawing.Image)
+        Me.tbtReportError.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtReportError.Name = "tbtReportError"
+        Me.tbtReportError.Size = New System.Drawing.Size(90, 22)
+        Me.tbtReportError.Text = "Report Error"
+        '
         'lstDownloads
         '
         Me.lstDownloads.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
@@ -549,5 +558,6 @@
     Friend WithEvents tbmReportABug As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tbmSep2 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents tbmChooseStations As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents tbtReportError As System.Windows.Forms.ToolStripButton
 #End Region
 End Class

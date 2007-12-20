@@ -114,7 +114,12 @@ Friend Class clsData
 
     Public Sub DownloadProgThread()
         DownloadPluginInst = clsPluginsInst.GetPluginInstance(clsCurDldProgData.ProgramType)
-        DownloadPluginInst.DownloadProgram(clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.ProgramDuration, clsCurDldProgData.DownloadUrl, clsCurDldProgData.FinalName, clsCurDldProgData.BandwidthLimit, clsCurDldProgData.AttemptNumber)
+
+        Try
+            DownloadPluginInst.DownloadProgram(clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.ProgramDuration, clsCurDldProgData.DownloadUrl, clsCurDldProgData.FinalName, clsCurDldProgData.BandwidthLimit, clsCurDldProgData.AttemptNumber)
+        Catch expUnknown As Exception
+            Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, expUnknown.GetType.ToString + ": " + expUnknown.Message + vbCrLf + expUnknown.StackTrace)
+        End Try
     End Sub
 
     Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
