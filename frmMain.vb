@@ -465,11 +465,16 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsProgData.DldError
-        ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated And Me.IsDisposed = False Then
-            Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, errType, strErrorDetails})
-        End If
+        Try
+            ' Check if the form exists still before calling delegate
+            If Me.IsHandleCreated And Me.IsDisposed = False Then
+                Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
+                Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, errType, strErrorDetails})
+            End If
+        Catch expDisposed As ObjectDisposedException
+            ' Edge case: it seems that form can be disposed between the if statement and the delegate call.
+            ' As the form isn't there, we just need to ignore the error.
+        End Try
     End Sub
 
     Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
@@ -486,11 +491,16 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
-        ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated And Me.IsDisposed = False Then
-            Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData})
-        End If
+        Try
+            ' Check if the form exists still before calling delegate
+            If Me.IsHandleCreated And Me.IsDisposed = False Then
+                Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
+                Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData})
+            End If
+        Catch expDisposed As ObjectDisposedException
+            ' Edge case: it seems that form can be disposed between the if statement and the delegate call.
+            ' As the form isn't there, we just need to ignore the error.
+        End Try
     End Sub
 
     Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As clsDldProgData)
@@ -516,11 +526,16 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
-        ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated And Me.IsDisposed = False Then
-            Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, intPercent, strStatusText, Icon})
-        End If
+        Try
+            ' Check if the form exists still before calling delegate
+            If Me.IsHandleCreated And Me.IsDisposed = False Then
+                Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
+                Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, intPercent, strStatusText, Icon})
+            End If
+        Catch expDisposed As ObjectDisposedException
+            ' Edge case: it seems that form can be disposed between the if statement and the delegate call.
+            ' As the form isn't there, we just need to ignore the error.
+        End Try
     End Sub
 
     Private Sub clsProgData_Progress_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
