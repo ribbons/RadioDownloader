@@ -247,7 +247,7 @@ Public Class frmMain
                         Case IRadioProvider.ErrorType.MissingDependency
                             strErrorName = "Missing Dependency"
                         Case IRadioProvider.ErrorType.ShorterThanExpected
-                            strErrorName = "Programme Shorter Than Expected"
+                            strErrorName = "Shorter Than Expected"
                         Case IRadioProvider.ErrorType.UnknownError
                             strErrorName = "Unknown Error"
                             strErrorDetails = ""
