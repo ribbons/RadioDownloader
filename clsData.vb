@@ -68,10 +68,8 @@ Friend Class clsData
     End Sub
 
     Public Sub FindAndDownload()
-        Const lngMaxErrors As Integer = 2
-
         If thrDownloadThread Is Nothing Then
-            Dim sqlCommand As New SQLiteCommand("select status, type, station, id, date, errorcount from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ErrorCount<" + lngMaxErrors.ToString + ") order by date", sqlConnection)
+            Dim sqlCommand As New SQLiteCommand("select status, type, station, id, date, errorcount from tblDownloads where status=" + CStr(Statuses.Waiting) + " or (status=" + CStr(Statuses.Errored) + " and ((ErrorCount=0 and ErrorTime<""" + Now.AddHours(-2).ToString(strSqlDateFormat) + """) or (ErrorCount=1 and ErrorTime<""" + Now.AddHours(-8).ToString(strSqlDateFormat) + """))) order by date", sqlConnection)
             Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
             With sqlReader
