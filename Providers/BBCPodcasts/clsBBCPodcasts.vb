@@ -54,7 +54,7 @@ Public Class clsBBCPodcasts
 
     Public ReadOnly Property ProviderDescription() As String Implements IRadioProvider.ProviderDescription
         Get
-            Return "Allows you to download programs made available by the BBC as Podcasts."
+            Return "Allows you to download programmes made available by the BBC as Podcasts."
         End Get
     End Property
 
