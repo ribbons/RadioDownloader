@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Basic Express 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Basic Express 2008
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Radio Downloader", "Radio Downloader.vbproj", "{0B79D58E-5E08-493F-AC06-CC4922583572}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "BBCPodcasts", "Providers\BBCPodcasts\BBCPodcasts.vbproj", "{9469B481-D8BA-4EE2-B2BF-78D4AF52721C}"
