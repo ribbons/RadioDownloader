@@ -12,7 +12,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("BBC Podcasts plugin for Radio Downloader.")> 
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("BBC Podcasts Plugin")> 
-<Assembly: AssemblyCopyright("Copyright ©  2007")> 
+<Assembly: AssemblyCopyright("Copyright © 2008")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
