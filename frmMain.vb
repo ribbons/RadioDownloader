@@ -279,7 +279,6 @@ Public Class frmMain
             lstSubscribed.Visible = False
             lstDownloads.Visible = False
             tbtCurrStation.Visible = False
-            tbtCleanUp.Enabled = False
             Call SetSideBar("Find New", "This view allows you to browse all of the programmes that are available for you to download or subscribe to." + vbCrLf + "Select a station icon to show the programmes available from it.", Nothing)
             Call SetToolbarButtons("")
         ElseIf tbtCurrStation.Checked Then
@@ -294,7 +293,6 @@ Public Class frmMain
             lstStationProgs.Visible = False
             lstSubscribed.Visible = True
             lstDownloads.Visible = False
-            tbtCleanUp.Enabled = False
             Call SetSideBar("Subscriptions", "This view shows you the programmes that you are currently subscribed to." + vbCrLf + "To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it.", Nothing)
             Call SetToolbarButtons("")
         ElseIf tbtDownloads.Checked Then
@@ -302,9 +300,8 @@ Public Class frmMain
             lstStationProgs.Visible = False
             lstSubscribed.Visible = False
             lstDownloads.Visible = True
-            'tbtCleanUp.Enabled = True
             Call SetSideBar("Downloads", "Here you can see programmes that are being downloaded, or have been downloaded already." + vbCrLf + "To download a programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it, or for completed downloads, play it.", Nothing)
-            Call SetToolbarButtons("")
+            Call SetToolbarButtons("CleanUp")
         End If
     End Sub
 
@@ -344,6 +341,7 @@ Public Class frmMain
         tbtDelete.Visible = False
         tbtRetry.Visible = False
         tbtReportError.Visible = False
+        tbtCleanUp.Visible = False
 
         For Each strLoopButtons As String In strSplitButtons
             Select Case strLoopButtons
@@ -363,6 +361,8 @@ Public Class frmMain
                     tbtRetry.Visible = True
                 Case "ReportError"
                     tbtReportError.Visible = True
+                Case "CleanUp"
+                    tbtCleanUp.Visible = True
             End Select
         Next
     End Sub
@@ -737,6 +737,16 @@ Public Class frmMain
 
         If tbtFindNew.Checked Then
             Call tbtFindNew_Click(sender, e)
+        End If
+    End Sub
+
+    Private Sub tbtCleanUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCleanUp.Click
+        Call frmCleanUp.ShowDialog()
+
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+
+        If tbtDownloads.Checked Then
+            Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
         End If
     End Sub
 End Class

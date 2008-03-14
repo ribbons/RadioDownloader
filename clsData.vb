@@ -16,6 +16,7 @@ Option Strict On
 Option Explicit On
 
 Imports System.IO
+Imports System.IO.File
 Imports System.Threading
 Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
@@ -754,6 +755,22 @@ Friend Class clsData
             sqlCommand = New SQLiteCommand("insert into tblStationVisibility (ProviderID, StationID, Visible) VALUES (""" + strStationType + """, """ + strStationID + """, " + strVisible + ")", sqlConnection)
             Call sqlCommand.ExecuteNonQuery()
         End If
+
+        sqlReader.Close()
+    End Sub
+
+    Public Sub PerformCleanup()
+        Dim sqlCommand As New SQLiteCommand("select type,station,id,date,path from tblDownloads where status=" + CStr(Statuses.Downloaded), sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
+
+        With sqlReader
+            Do While .Read
+                ' Remove programmes for which the associated audio file no longer exists
+                If Exists(.GetString(.GetOrdinal("path"))) = False Then
+                    RemoveDownload(.GetString(.GetOrdinal("type")), .GetString(.GetOrdinal("station")), .GetString(.GetOrdinal("id")), GetCustFormatDateTime(sqlReader, "date"))
+                End If
+            Loop
+        End With
 
         sqlReader.Close()
     End Sub
