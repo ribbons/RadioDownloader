@@ -309,7 +309,7 @@ Public Class frmMain
         lblSideMainTitle.Text = strTitle
         lblSideDescript.Text = strDescription
 
-        If bmpPicture Is Nothing = False Then
+        If bmpPicture IsNot Nothing Then
             If bmpPicture.Width > picSidebarImg.MaximumSize.Width Or bmpPicture.Height > picSidebarImg.MaximumSize.Height Then
                 Dim bmpOrigImg As Bitmap = bmpPicture
                 bmpPicture = New Bitmap(picSidebarImg.MaximumSize.Width, picSidebarImg.MaximumSize.Height)
@@ -636,7 +636,7 @@ Public Class frmMain
             Dim clsCurrentProgInfo As clsDldProgData
             clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
 
-            If clsCurrentProgInfo Is Nothing = False Then
+            If clsCurrentProgInfo IsNot Nothing Then
                 If clsCurrentProgInfo.ProgramType = strSplit(3) And clsCurrentProgInfo.StationID = strSplit(2) And clsCurrentProgInfo.ProgramID = strSplit(1) And clsCurrentProgInfo.ProgramDate = CDate(strSplit(0)) Then
                     ' The program is currently being downloaded
                     clsProgData.AbortDownloadThread()

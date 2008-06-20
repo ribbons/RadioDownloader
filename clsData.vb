@@ -494,7 +494,7 @@ Friend Class clsData
                 sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, DownloadUrl, Image, Duration) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName.Replace("""", """""") + """, """ + ProgInfo.ProgramDescription.Replace("""", """""") + """, """ + ProgInfo.ProgramDldUrl.Replace("""", """""") + """, @image, " + CStr(ProgInfo.ProgramDuration) + ")", sqlConnection)
                 Dim sqlImage As SQLiteParameter
 
-                If ProgInfo.Image Is Nothing = False Then
+                If ProgInfo.Image IsNot Nothing Then
                     ' Convert the image into a byte array
                     Dim mstImage As New MemoryStream()
                     ProgInfo.Image.Save(mstImage, Imaging.ImageFormat.Bmp)
@@ -684,7 +684,7 @@ Friend Class clsData
     End Sub
 
     Public Sub AbortDownloadThread()
-        If thrDownloadThread Is Nothing = False Then
+        If thrDownloadThread IsNot Nothing Then
             thrDownloadThread.Abort()
             thrDownloadThread = Nothing
         End If

@@ -283,7 +283,7 @@ Public Class clsBBCPodcasts
         Else
             RemoveHandler PowerModeChanged, AddressOf PowerModeChange
 
-            If e.Error Is Nothing = False Then
+            If e.Error IsNot Nothing Then
                 RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.GetType.ToString + ": " + e.Error.Message + vbCrLf + e.Error.StackTrace)
             Else
                 RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)

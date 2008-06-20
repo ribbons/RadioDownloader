@@ -166,7 +166,7 @@ Public Class clsPlugins
                 If Not ((objType.Attributes And TypeAttributes.Abstract) = TypeAttributes.Abstract) Then
                     'See if this type implements our interface
                     objInterface = objType.GetInterface(strInterfaceName, True)
-                    If Not (objInterface Is Nothing) Then
+                    If objInterface IsNot Nothing Then
                         Plugin = New AvailablePlugin()
                         Plugin.AssemblyPath = objDLL.Location
                         Plugin.ClassName = objType.FullName
