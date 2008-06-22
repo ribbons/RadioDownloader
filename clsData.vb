@@ -289,6 +289,11 @@ Friend Class clsData
             lstItem.SubItems.Add("")
         Loop
 
+        ' Remove any left over items from the end of the list
+        While lstListview.Items.Count > intExistingPos
+            lstListview.Items.RemoveAt(intExistingPos)
+        End While
+
         If booErrorStatus Then
             frmMain.SetTrayStatus(False, frmMain.ErrorStatus.Error)
         Else
