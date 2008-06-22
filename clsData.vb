@@ -49,6 +49,24 @@ Friend Class clsData
         sqlConnection = New SQLiteConnection("Data Source=" + GetAppDataFolder() + "\store.db;Version=3;New=False")
         sqlConnection.Open()
 
+        ' Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
+        Call VacuumDatabase()
+
+        ' Perform any database changes required:
+        If GetDBSetting("databaseversion") Is Nothing Then
+            ' Nothing to do, as this should be the most up to date version of the database
+        Else
+            Dim intCurrentVersion As Integer = Convert.ToInt32(GetDBSetting("databaseversion"))
+
+            ' Logic for database updates can go here when there is some
+        End If
+
+        ' Now set the current database version
+        SetDBSetting("databaseversion", "1")
+
+        ' Thin out the records in the info table if required
+        Call PruneInfoTable()
+
         clsPluginsInst = New clsPlugins(My.Application.Info.DirectoryPath)
     End Sub
 
@@ -778,5 +796,114 @@ Friend Class clsData
         End With
 
         sqlReader.Close()
+    End Sub
+
+    Private Sub SetDBSetting(ByVal strPropertyName As String, ByVal strValue As String)
+        Dim sqlCommand As New SQLiteCommand("select value from tblSettings where property=""" + strPropertyName + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
+
+        If sqlReader.Read Then
+            sqlCommand = New SQLiteCommand("update tblSettings set value=""" + strValue.Replace("""", """""") + """ where property=""" + strPropertyName + """", sqlConnection)
+            sqlCommand.ExecuteNonQuery()
+        Else
+            sqlCommand = New SQLiteCommand("insert into tblSettings (property, value) VALUES (""" + strPropertyName + """, """ + strValue.Replace("""", """""") + """)", sqlConnection)
+            Call sqlCommand.ExecuteNonQuery()
+        End If
+
+        sqlCommand.Cancel()
+    End Sub
+
+    Private Function GetDBSetting(ByVal strPropertyName As String) As String
+        Dim sqlCommand As New SQLiteCommand("select value from tblSettings where property=""" + strPropertyName + """", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
+
+        If sqlReader.Read = False Then
+            Return Nothing
+        End If
+
+        Dim strValue As String = sqlReader.GetString(sqlReader.GetOrdinal("value"))
+
+        sqlReader.Close()
+
+        Return strValue
+    End Function
+
+    Private Sub PruneInfoTable()
+        Dim intInfoCount As Integer
+        Dim intDownloadCount As Integer
+        Dim intSubscriptionCount As Integer
+        Dim booDoDelete As Boolean
+        Dim sqlCheckCmd As SQLiteCommand
+        Dim sqlCheckRdr As SQLiteDataReader
+        Dim sqlRemoveCmd As SQLiteCommand
+
+        Dim sqlCommand As New SQLiteCommand("select (select count(*) from tblInfo) as infocount, (select count(*) from tblDownloads) as downloadcount, (select count(*) from tblSubscribed) as subscriptioncount", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
+        sqlReader.Read()
+
+        intInfoCount = sqlReader.GetInt32(sqlReader.GetOrdinal("infocount"))
+        intDownloadCount = sqlReader.GetInt32(sqlReader.GetOrdinal("downloadcount"))
+        intSubscriptionCount = sqlReader.GetInt32(sqlReader.GetOrdinal("subscriptioncount"))
+
+        ' Only prune the DB if we have more info records than 1.5 times the subscriptions and downloads combined
+        If intInfoCount > ((intSubscriptionCount + intDownloadCount) / 2) * 3 Then
+            sqlCommand = New SQLiteCommand("select type, station, id, date from tblInfo", sqlConnection)
+            sqlReader = sqlCommand.ExecuteReader
+
+            With sqlReader
+                While .Read
+                    booDoDelete = False
+
+                    sqlCheckCmd = New SQLiteCommand("select count(*) from tblDownloads where type=""" + .GetString(.GetOrdinal("type")) + """ and station=""" + .GetString(.GetOrdinal("station")) + """ and id=""" + .GetString(.GetOrdinal("id")) + """ and date=""" + GetCustFormatDateTime(sqlReader, "date").ToString(strSqlDateFormat) + """", sqlConnection)
+                    sqlCheckRdr = sqlCheckCmd.ExecuteReader
+                    sqlCheckRdr.Read()
+
+                    If sqlCheckRdr.GetInt32(sqlCheckRdr.GetOrdinal("count(*)")) = 0 Then
+                        If LatestDate(.GetString(.GetOrdinal("type")), .GetString(.GetOrdinal("station")), .GetString(.GetOrdinal("id"))) <> GetCustFormatDateTime(sqlReader, "date") Then
+                            ' Can be deleted, as it is not the latest info and doesn't relate to a downloaded programme
+                            booDoDelete = True
+                        Else
+                            If GetCustFormatDateTime(sqlReader, "date").AddMonths(3) < Now Then
+                                sqlCheckCmd = New SQLiteCommand("select count(*) from tblSubscribed where type=""" + .GetString(.GetOrdinal("type")) + """ and station=""" + .GetString(.GetOrdinal("station")) + """ and id=""" + .GetString(.GetOrdinal("id")) + """", sqlConnection)
+                                sqlCheckRdr = sqlCheckCmd.ExecuteReader
+                                sqlCheckRdr.Read()
+
+                                If sqlCheckRdr.GetInt32(sqlCheckRdr.GetOrdinal("count(*)")) = 0 Then
+                                    ' Can be deleted, as is older than 3 months and doesn't relate to a download or subscription
+                                    booDoDelete = True
+                                End If
+                            End If
+                        End If
+                    End If
+
+                    If booDoDelete Then
+                        sqlRemoveCmd = New SQLiteCommand("delete from tblInfo where type=""" + .GetString(.GetOrdinal("type")) + """ and station=""" + .GetString(.GetOrdinal("station")) + """ and id=""" + .GetString(.GetOrdinal("id")) + """ and date=""" + GetCustFormatDateTime(sqlReader, "date").ToString(strSqlDateFormat) + """", sqlConnection)
+                        sqlRemoveCmd.ExecuteNonQuery()
+                    End If
+                End While
+
+                .Close()
+            End With
+        End If
+    End Sub
+
+    Private Sub VacuumDatabase()
+        ' Vacuum the database every couple of months - vacuums are spaced like this as they take ages to run
+        Dim booRunPrune As Boolean
+        Dim strLastPrune As String = GetDBSetting("lastvacuum")
+
+        If strLastPrune Is Nothing Then
+            booRunPrune = True
+        Else
+            booRunPrune = DateTime.ParseExact(strLastPrune, strSqlDateFormat, Nothing).AddMonths(2) < Now
+        End If
+
+        If booRunPrune Then
+            ' Make SQLite recreate the database to reduce the size on disk and remove fragmentation
+            Dim sqlCommand As New SQLiteCommand("vacuum", sqlConnection)
+            sqlCommand.ExecuteNonQuery()
+
+            SetDBSetting("lastvacuum", Now.ToString(strSqlDateFormat))
+        End If
     End Sub
 End Class
