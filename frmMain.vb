@@ -109,13 +109,14 @@ Public Class frmMain
             Call clsDoDBUpdate.UpdateStructure()
         End If
 
-        Call lstStationProgs.Columns.Add("Programme Name", 500)
-        Call lstSubscribed.Columns.Add("Programme Name", 275)
-        Call lstSubscribed.Columns.Add("Station", 125)
-        Call lstSubscribed.Columns.Add("Provider", 125)
+        Call lstStationProgs.Columns.Add("Programme Name", 540)
+        Call lstSubscribed.Columns.Add("Programme Name", 225)
+        Call lstSubscribed.Columns.Add("Last Download", 85)
+        Call lstSubscribed.Columns.Add("Station", 115)
+        Call lstSubscribed.Columns.Add("Provider", 115)
         Call lstDownloads.Columns.Add("Name", 225)
-        Call lstDownloads.Columns.Add("Date", 75)
-        Call lstDownloads.Columns.Add("Status", 125)
+        Call lstDownloads.Columns.Add("Date", 85)
+        Call lstDownloads.Columns.Add("Status", 130)
         Call lstDownloads.Columns.Add("Progress", 100)
 
         lstStations.LargeImageList = imlStations
@@ -510,12 +511,17 @@ Public Class frmMain
     Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As clsDldProgData)
         Call clsProgData.SetDownloaded(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.FinalName)
 
-        ' If the item that has just finished is selected then update it.
-        If tbtDownloads.Checked = True And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
+        If tbtDownloads.Checked And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
+            ' The item that has just finished downloading is selected, so update it.
             Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+        ElseIf tbtSubscriptions.Checked Then
+            ' Return to the tab information for subscriptions, as the selection will be lost when we update
+            ' the subscription list.
+            Call TabAdjustments()
         End If
 
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        Call clsProgData.UpdateSubscrList(lstSubscribed)
 
         If My.Settings.RunAfterCommand <> "" Then
             Try

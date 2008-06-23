@@ -346,6 +346,14 @@ Friend Class clsData
                     End If
                 End If
 
+                Dim dteLastDownload As Date = LatestDownloadDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
+
+                If dteLastDownload = Nothing Then
+                    lstAdd.SubItems.Add("Never")
+                Else
+                    lstAdd.SubItems.Add(dteLastDownload.ToShortDateString)
+                End If
+
                 lstAdd.SubItems.Add(StationName(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station"))))
                 lstAdd.SubItems.Add(ProviderName(.GetString(.GetOrdinal("Type"))))
                 lstAdd.Tag = .GetString(.GetOrdinal("Type")) + "||" + .GetString(.GetOrdinal("Station")) + "||" + .GetString(.GetOrdinal("ID"))
@@ -462,6 +470,22 @@ Friend Class clsData
                 LatestDate = Nothing
             Else
                 LatestDate = GetCustFormatDateTime(sqlReader, "Date")
+            End If
+        End With
+
+        sqlReader.Close()
+    End Function
+
+    Public Function LatestDownloadDate(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As DateTime
+        Dim sqlCommand As New SQLiteCommand("select date from tblDownloads where type=""" + strProgramType + """  and station=""" + strStationID + """ and id=""" + strProgramID + """ order by date desc", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        With sqlReader
+            If .Read = False Then
+                ' No downloads of this program, return nothing
+                LatestDownloadDate = Nothing
+            Else
+                LatestDownloadDate = GetCustFormatDateTime(sqlReader, "date")
             End If
         End With
 
