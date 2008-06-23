@@ -853,26 +853,24 @@ Friend Class clsData
     End Function
 
     Private Sub PruneInfoTable()
-        Dim intInfoCount As Integer
-        Dim intDownloadCount As Integer
-        Dim intSubscriptionCount As Integer
-        Dim booDoDelete As Boolean
-        Dim sqlCheckCmd As SQLiteCommand
-        Dim sqlCheckRdr As SQLiteDataReader
-        Dim sqlRemoveCmd As SQLiteCommand
+        ' Only prune the info table once a month, so that we don't slow down every startup
+        Dim booRunPrune As Boolean
+        Dim strLastPrune As String = GetDBSetting("lastinfoprune")
 
-        Dim sqlCommand As New SQLiteCommand("select (select count(*) from tblInfo) as infocount, (select count(*) from tblDownloads) as downloadcount, (select count(*) from tblSubscribed) as subscriptioncount", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
-        sqlReader.Read()
+        If strLastPrune Is Nothing Then
+            booRunPrune = True
+        Else
+            booRunPrune = DateTime.ParseExact(strLastPrune, strSqlDateFormat, Nothing).AddMonths(1) < Now
+        End If
 
-        intInfoCount = sqlReader.GetInt32(sqlReader.GetOrdinal("infocount"))
-        intDownloadCount = sqlReader.GetInt32(sqlReader.GetOrdinal("downloadcount"))
-        intSubscriptionCount = sqlReader.GetInt32(sqlReader.GetOrdinal("subscriptioncount"))
+        If booRunPrune Then
+            Dim booDoDelete As Boolean
+            Dim sqlCheckCmd As SQLiteCommand
+            Dim sqlCheckRdr As SQLiteDataReader
+            Dim sqlRemoveCmd As SQLiteCommand
 
-        ' Only prune the DB if we have more info records than 1.5 times the subscriptions and downloads combined
-        If intInfoCount > ((intSubscriptionCount + intDownloadCount) / 2) * 3 Then
-            sqlCommand = New SQLiteCommand("select type, station, id, date from tblInfo", sqlConnection)
-            sqlReader = sqlCommand.ExecuteReader
+            Dim sqlCommand As New SQLiteCommand("select type, station, id, date from tblInfo", sqlConnection)
+            Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
             With sqlReader
                 While .Read
@@ -908,21 +906,23 @@ Friend Class clsData
 
                 .Close()
             End With
+
+            SetDBSetting("lastinfoprune", Now.ToString(strSqlDateFormat))
         End If
     End Sub
 
     Private Sub VacuumDatabase()
         ' Vacuum the database every couple of months - vacuums are spaced like this as they take ages to run
-        Dim booRunPrune As Boolean
-        Dim strLastPrune As String = GetDBSetting("lastvacuum")
+        Dim booRunVacuum As Boolean
+        Dim strLastVacuum As String = GetDBSetting("lastvacuum")
 
-        If strLastPrune Is Nothing Then
-            booRunPrune = True
+        If strLastVacuum Is Nothing Then
+            booRunVacuum = True
         Else
-            booRunPrune = DateTime.ParseExact(strLastPrune, strSqlDateFormat, Nothing).AddMonths(2) < Now
+            booRunVacuum = DateTime.ParseExact(strLastVacuum, strSqlDateFormat, Nothing).AddMonths(2) < Now
         End If
 
-        If booRunPrune Then
+        If booRunVacuum Then
             ' Make SQLite recreate the database to reduce the size on disk and remove fragmentation
             Dim sqlCommand As New SQLiteCommand("vacuum", sqlConnection)
             sqlCommand.ExecuteNonQuery()
