@@ -1,4 +1,4 @@
-﻿' Plugin for Radio Downloader to download general Podcasts.
+﻿' Plugin for Radio Downloader to download general podcasts.
 ' Copyright © 2008  www.nerdoftheherd.com
 '
 ' This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
@@ -16,29 +16,31 @@ Option Strict On
 Option Explicit On
 
 Imports RadioDld
+Imports System.Windows.Forms
 
 Public Class clsGeneralPodcasts
     Implements IRadioProvider
 
+    Public Event FoundNew(ByVal gidPluginID As Guid, ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
     Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
     Public Event Finished() Implements IRadioProvider.Finished
 
-    Public ReadOnly Property ProviderUniqueID() As String Implements IRadioProvider.ProviderUniqueID
+    Public ReadOnly Property ProviderID() As Guid Implements IRadioProvider.ProviderID
         Get
-            Return "GENPODCAST"
+            Return New Guid("3cfbe63e-95b8-4f80-8570-4ace909e0921")
         End Get
     End Property
 
     Public ReadOnly Property ProviderName() As String Implements IRadioProvider.ProviderName
         Get
-            Return "BBC Podcasts"
+            Return "General Podcasts"
         End Get
     End Property
 
     Public ReadOnly Property ProviderDescription() As String Implements IRadioProvider.ProviderDescription
         Get
-            Return "Allows you to download programmes made available by the BBC as Podcasts."
+            Return "Allows you to download programmes made available as Podcasts."
         End Get
     End Property
 
@@ -48,16 +50,13 @@ Public Class clsGeneralPodcasts
         End Get
     End Property
 
-    Public Function ReturnStations() As IRadioProvider.StationTable Implements IRadioProvider.ReturnStations
-
+    Public Function GetFindNewPanel() As Panel Implements IRadioProvider.GetFindNewPanel
+        Dim frmFindNewInst As New frmFindNew
+        Return frmFindNewInst.pnlFindNew
     End Function
 
-    Public Function ListProgramIDs(ByVal strStationID As String) As IRadioProvider.ProgramListItem() Implements IRadioProvider.ListProgramIDs
-       
-    End Function
+    Public Function GetProgrammeInfo(ByVal strProgExtID As String) As IRadioProvider.ProgrammeInfo Implements IRadioProvider.GetProgrammeInfo
 
-    Public Function GetLatestProgramInfo(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteLastInfoFor As Date, ByVal dteLastAttempt As Date) As IRadioProvider.ProgramInfo Implements IRadioProvider.GetLatestProgramInfo
-        
     End Function
 
     Public Function CouldBeNewEpisode(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean Implements IRadioProvider.CouldBeNewEpisode

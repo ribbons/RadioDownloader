@@ -34,9 +34,6 @@ Public Class frmMain
     Private clsDoDBUpdate As clsUpdateDB
     Private clsUpdate As clsAutoUpdate
 
-    Private strCurrentType As String
-    Private strCurrentStation As String
-
     Private Delegate Sub clsProgData_Progress_Delegate(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Private Delegate Sub clsProgData_DldError_Delegate(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
     Private Delegate Sub clsProgData_Finished_Delegate(ByVal clsCurDldProgData As clsDldProgData)
@@ -64,25 +61,11 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String, ByVal booVisible As Boolean) Handles clsProgData.AddStationToList
-        If lstStations.Groups(strStationType) Is Nothing Then
-            lstStations.Groups.Add(strStationType, clsProgData.ProviderName(strStationType))
-        End If
-
-        Dim lstAdd As New System.Windows.Forms.ListViewItem
-        lstAdd.Text = strStationName
-        lstAdd.Tag = strStationType & "||" & strStationId
-        lstAdd.ImageKey = "default" 'imlStations.ListImages(strStationId).Index
-        lstAdd.Group = lstStations.Groups(strStationType)
-
-        lstAdd = lstStations.Items.Add(lstAdd)
-    End Sub
-
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' Add a handler to catch otherwise unhandled exceptions
-        AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
+        'AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
         ' Add a handler for thread exceptions
-        AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
+        'AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
         ' Add a handler for when a second instance is loaded
         AddHandler My.Application.StartupNextInstance, AddressOf StartupNextInstanceHandler
 
@@ -101,7 +84,7 @@ Public Class frmMain
         If fileExits.Exists = False Then
             IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\store.db")
         Else
-            ' As the database already exists, copy the specimin database across from the program folder
+            ' As the database already exists, copy the specimen database across from the program folder
             ' and then make sure that the current db's structure matches it.
             IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\spec-store.db", True)
 
@@ -109,7 +92,7 @@ Public Class frmMain
             Call clsDoDBUpdate.UpdateStructure()
         End If
 
-        Call lstStationProgs.Columns.Add("Programme Name", 540)
+        Call lstEpisodes.Columns.Add("Programme Name", 540)
         Call lstSubscribed.Columns.Add("Programme Name", 225)
         Call lstSubscribed.Columns.Add("Last Download", 85)
         Call lstSubscribed.Columns.Add("Station", 115)
@@ -119,8 +102,8 @@ Public Class frmMain
         Call lstDownloads.Columns.Add("Status", 130)
         Call lstDownloads.Columns.Add("Progress", 100)
 
-        lstStations.LargeImageList = imlStations
-        lstStationProgs.SmallImageList = imlListIcons
+        lstProviders.LargeImageList = imlProviders
+        lstEpisodes.SmallImageList = imlListIcons
         lstSubscribed.SmallImageList = imlListIcons
         lstDownloads.SmallImageList = imlListIcons
 
@@ -128,7 +111,7 @@ Public Class frmMain
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        clsProgData.StartListingStations(False)
+        clsProgData.UpdateProviderList(lstProviders)
         Call TabAdjustments()
         nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
         nicTrayIcon.Text = Me.Text
@@ -141,8 +124,9 @@ Public Class frmMain
 
         tblInfo.Dock = DockStyle.Left
 
-        lstStations.Dock = DockStyle.Fill
-        lstStationProgs.Dock = DockStyle.Fill
+        lstProviders.Dock = DockStyle.Fill
+        pnlPluginSpace.Dock = DockStyle.Fill
+        lstEpisodes.Dock = DockStyle.Fill
         lstSubscribed.Dock = DockStyle.Fill
         lstDownloads.Dock = DockStyle.Fill
 
@@ -165,43 +149,37 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub lstStations_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstStations.ItemActivate
-        Dim strSplit() As String
-        strSplit = Split(lstStations.SelectedItems(0).Tag.ToString, "||")
-
-        tbtCurrStation.Image = imlStations.Images(lstStations.SelectedItems(0).ImageKey)
-        tbtCurrStation.Text = lstStations.SelectedItems(0).Text
-        tbtCurrStation.Visible = True
-        tbtCurrStation.Checked = True
+    Private Sub lstStations_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
+        tbtProviderForm.Image = imlProviders.Images(lstProviders.SelectedItems(0).ImageKey)
+        tbtProviderForm.Text = lstProviders.SelectedItems(0).Text
+        tbtProviderForm.Visible = True
+        tbtProviderForm.Checked = True
         tbtFindNew.Checked = False
-        strCurrentType = strSplit(0)
-        strCurrentStation = strSplit(1)
 
         Call TabAdjustments()
 
-        lstStationProgs.Items.Clear()
-        Call clsProgData.StartListingProgrammes(strSplit(0), strSplit(1))
+        pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(DirectCast(lstProviders.SelectedItems(0).Tag, Guid)))
     End Sub
 
-    Private Sub lstStationProgs_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstStationProgs.SelectedIndexChanged
-        If lstStationProgs.SelectedItems.Count > 0 Then
-            Dim strSplit() As String
-            strSplit = Split(lstStationProgs.SelectedItems(0).Tag.ToString, "||")
+    Private Sub lstStationProgs_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
+        'If lstEpisodes.SelectedItems.Count > 0 Then
+        '    Dim strSplit() As String
+        '    strSplit = Split(lstEpisodes.SelectedItems(0).Tag.ToString, "||")
 
-            With clsProgData
-                Call .GetLatest(strSplit(0), strSplit(1), strSplit(2))
+        '    With clsProgData
+        '        Call .GetLatest(strSplit(0), strSplit(1), strSplit(2))
 
-                If .LatestDate(strSplit(0), strSplit(1), strSplit(2)) = Nothing = False Then
-                    Call SetSideBar(.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramDetails(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramImage(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))))
-                    Call SetToolbarButtons("Download,Subscribe")
-                Else
-                    Call SetSideBar("Programme Info", "Unfortunately, there was a problem getting information about this programme." + vbCrLf + "The available data could be invalid." + vbCrLf + "You may like to try again later.", Nothing)
-                    Call SetToolbarButtons("")
-                End If
-            End With
-        Else
-            Call TabAdjustments() ' Revert back to new items view default page
-        End If
+        '        If .LatestDate(strSplit(0), strSplit(1), strSplit(2)) = Nothing = False Then
+        '            Call SetSideBar(.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramDetails(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramImage(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))))
+        '            Call SetToolbarButtons("Download,Subscribe")
+        '        Else
+        '            Call SetSideBar("Programme Info", "Unfortunately, there was a problem getting information about this programme." + vbCrLf + "The available data could be invalid." + vbCrLf + "You may like to try again later.", Nothing)
+        '            Call SetToolbarButtons("")
+        '        End If
+        '    End With
+        'Else
+        '    Call TabAdjustments() ' Revert back to new items view default page
+        'End If
     End Sub
 
     Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
@@ -209,7 +187,7 @@ Public Class frmMain
             Dim strSplit() As String
             strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
 
-            Call SetSideBar(clsProgData.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramDetails(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramImage(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))))
+            'Call SetSideBar(clsProgData.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramDetails(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramImage(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))))
             Call SetToolbarButtons("Unsubscribe")
         Else
             Call TabAdjustments() ' Revert back to subscribed items view default page
@@ -275,30 +253,34 @@ Public Class frmMain
 
     Private Sub TabAdjustments()
         If tbtFindNew.Checked Then
-            lstStations.Visible = True
-            lstStationProgs.Visible = False
+            lstProviders.Visible = True
+            pnlPluginSpace.Visible = False
+            lstEpisodes.Visible = False
             lstSubscribed.Visible = False
             lstDownloads.Visible = False
-            tbtCurrStation.Visible = False
+            tbtProviderForm.Visible = False
             Call SetSideBar("Find New", "This view allows you to browse all of the programmes that are available for you to download or subscribe to." + vbCrLf + "Select a station icon to show the programmes available from it.", Nothing)
             Call SetToolbarButtons("")
-        ElseIf tbtCurrStation.Checked Then
-            lstStations.Visible = False
-            lstStationProgs.Visible = True
+        ElseIf tbtProviderForm.Checked Then
+            lstProviders.Visible = False
+            pnlPluginSpace.Visible = True
+            lstEpisodes.Visible = False
             lstSubscribed.Visible = False
             lstDownloads.Visible = False
-            Call SetSideBar(lstStations.SelectedItems(0).Text, "This view is a list of programmes available from " & lstStations.SelectedItems(0).Text & "." + vbCrLf + "Select a programme for more information, and to download or subscribe to it.", Nothing)
+            Call SetSideBar(lstProviders.SelectedItems(0).Text, "This view is a list of programmes available from " & lstProviders.SelectedItems(0).Text & "." + vbCrLf + "Select a programme for more information, and to download or subscribe to it.", Nothing)
             Call SetToolbarButtons("")
         ElseIf tbtSubscriptions.Checked Then
-            lstStations.Visible = False
-            lstStationProgs.Visible = False
+            lstProviders.Visible = False
+            pnlPluginSpace.Visible = False
+            lstEpisodes.Visible = False
             lstSubscribed.Visible = True
             lstDownloads.Visible = False
             Call SetSideBar("Subscriptions", "This view shows you the programmes that you are currently subscribed to." + vbCrLf + "To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it.", Nothing)
             Call SetToolbarButtons("")
         ElseIf tbtDownloads.Checked Then
-            lstStations.Visible = False
-            lstStationProgs.Visible = False
+            lstProviders.Visible = False
+            pnlPluginSpace.Visible = False
+            lstEpisodes.Visible = False
             lstSubscribed.Visible = False
             lstDownloads.Visible = True
             Call SetSideBar("Downloads", "Here you can see programmes that are being downloaded, or have been downloaded already." + vbCrLf + "To download a programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it, or for completed downloads, play it.", Nothing)
@@ -419,29 +401,26 @@ Public Class frmMain
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
         tbtFindNew.Checked = True
-        tbtCurrStation.Checked = False
+        tbtProviderForm.Checked = False
         tbtSubscriptions.Checked = False
         tbtDownloads.Checked = False
         Call TabAdjustments()
-
-        lstStations.Items.Clear()
-        clsProgData.StartListingStations(False)
     End Sub
 
-    Private Sub tbtCurrStation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCurrStation.Click
+    Private Sub tbtCurrStation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtProviderForm.Click
         tbtFindNew.Checked = False
-        tbtCurrStation.Checked = True
+        tbtProviderForm.Checked = True
         tbtSubscriptions.Checked = False
         tbtDownloads.Checked = False
         Call TabAdjustments()
 
-        lstStationProgs.Items.Clear()
-        Call clsProgData.StartListingProgrammes(strCurrentType, strCurrentStation)
+        lstEpisodes.Items.Clear()
+        'Call clsProgData.StartListingProgrammes(strCurrentType, strCurrentStation)
     End Sub
 
     Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
         tbtSubscriptions.Checked = True
-        tbtCurrStation.Checked = False
+        tbtProviderForm.Checked = False
         tbtFindNew.Checked = False
         tbtDownloads.Checked = False
 
@@ -452,7 +431,7 @@ Public Class frmMain
 
     Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
         tbtDownloads.Checked = True
-        tbtCurrStation.Checked = False
+        tbtProviderForm.Checked = False
         tbtSubscriptions.Checked = False
         tbtFindNew.Checked = False
 
@@ -461,13 +440,13 @@ Public Class frmMain
         lstDownloads.Focus()
     End Sub
 
-    Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
-        Dim lstAddItem As New ListViewItem
-        lstAddItem.Text = strProgramName
-        lstAddItem.ImageKey = "new"
-        lstAddItem.Tag = strProgramType + "||" + strStationID + "||" + strProgramID
-        Call lstStationProgs.Items.Add(lstAddItem)
-    End Sub
+    'Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
+    '    Dim lstAddItem As New ListViewItem
+    '    lstAddItem.Text = strProgramName
+    '    lstAddItem.ImageKey = "new"
+    '    lstAddItem.Tag = strProgramType + "||" + strStationID + "||" + strProgramID
+    '    Call lstEpisodes.Items.Add(lstAddItem)
+    'End Sub
 
     Private Sub clsProgData_DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsProgData.DldError
         Try
@@ -483,16 +462,16 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-        Call clsProgData.SetErrored(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, errType, strErrorDetails)
+        'Call clsProgData.SetErrored(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, errType, strErrorDetails)
 
-        ' If the item that has just errored is selected then update the information.
-        If tbtDownloads.Checked = True And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
-            Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
-        End If
+        '' If the item that has just errored is selected then update the information.
+        'If tbtDownloads.Checked = True And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
+        '    Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+        'End If
 
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        'Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
-        tmrStartProcess.Enabled = True
+        'tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
@@ -509,30 +488,30 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As clsDldProgData)
-        Call clsProgData.SetDownloaded(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.FinalName)
+        'Call clsProgData.SetDownloaded(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.FinalName)
 
-        If tbtDownloads.Checked And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
-            ' The item that has just finished downloading is selected, so update it.
-            Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
-        ElseIf tbtSubscriptions.Checked Then
-            ' Return to the tab information for subscriptions, as the selection will be lost when we update
-            ' the subscription list.
-            Call TabAdjustments()
-        End If
+        'If tbtDownloads.Checked And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
+        '    ' The item that has just finished downloading is selected, so update it.
+        '    Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+        'ElseIf tbtSubscriptions.Checked Then
+        '    ' Return to the tab information for subscriptions, as the selection will be lost when we update
+        '    ' the subscription list.
+        '    Call TabAdjustments()
+        'End If
 
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        Call clsProgData.UpdateSubscrList(lstSubscribed)
+        'Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        'Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        If My.Settings.RunAfterCommand <> "" Then
-            Try
-                ' Environ("comspec") will give the path to cmd.exe or command.com
-                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
-            Catch ex As Exception
-                ' Just ignore the error, as it just means that something has gone wrong with the run after command.
-            End Try
-        End If
+        'If My.Settings.RunAfterCommand <> "" Then
+        '    Try
+        '        ' Environ("comspec") will give the path to cmd.exe or command.com
+        '        Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
+        '    Catch ex As Exception
+        '        ' Just ignore the error, as it just means that something has gone wrong with the run after command.
+        '    End Try
+        'End If
 
-        tmrStartProcess.Enabled = True
+        'tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub clsProgData_Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
@@ -560,7 +539,7 @@ Public Class frmMain
 
         With clsCurDldProgData
             Dim lstItem As ListViewItem
-            lstItem = lstDownloads.Items(.ProgramDate.ToString + "||" + .ProgramID + "||" + .StationID + "||" + .ProgramType)
+            'lstItem = lstDownloads.Items(.ProgramDate.ToString + "||" + .ProgramID + "||" + .StationID + "||" + .PluginID)
 
             lstItem.SubItems(2).Text = strStatusText
             prgDldProg.Value = intPercent
@@ -613,9 +592,9 @@ Public Class frmMain
 
     Private Sub tbtSubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscribe.Click
         Dim strSplit() As String
-        strSplit = Split(lstStationProgs.SelectedItems(0).Tag.ToString, "||")
+        strSplit = Split(lstEpisodes.SelectedItems(0).Tag.ToString, "||")
 
-        If clsProgData.AddSubscription(strSplit(0), strSplit(1), strSplit(2), lstStationProgs.SelectedItems(0).Text) = False Then
+        If clsProgData.AddSubscription(strSplit(0), strSplit(1), strSplit(2), lstEpisodes.SelectedItems(0).Text) = False Then
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
         Else
             Call tbtSubscriptions_Click(New Object, New EventArgs)
@@ -635,25 +614,25 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCancel.Click
-        Dim strSplit() As String
-        If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+        'Dim strSplit() As String
+        'If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
+        '    strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
-            Dim clsCurrentProgInfo As clsDldProgData
-            clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
+        '    Dim clsCurrentProgInfo As clsDldProgData
+        '    clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
 
-            If clsCurrentProgInfo IsNot Nothing Then
-                If clsCurrentProgInfo.ProgramType = strSplit(3) And clsCurrentProgInfo.StationID = strSplit(2) And clsCurrentProgInfo.ProgramID = strSplit(1) And clsCurrentProgInfo.ProgramDate = CDate(strSplit(0)) Then
-                    ' The program is currently being downloaded
-                    clsProgData.AbortDownloadThread()
-                    tmrStartProcess.Enabled = True
-                End If
-            End If
+        '    If clsCurrentProgInfo IsNot Nothing Then
+        '        If clsCurrentProgInfo.ProgramType = strSplit(3) And clsCurrentProgInfo.StationID = strSplit(2) And clsCurrentProgInfo.ProgramID = strSplit(1) And clsCurrentProgInfo.ProgramDate = CDate(strSplit(0)) Then
+        '            ' The program is currently being downloaded
+        '            clsProgData.AbortDownloadThread()
+        '            tmrStartProcess.Enabled = True
+        '        End If
+        '    End If
 
-            Call clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
-            Call TabAdjustments() ' Revert back to tab info so prog info goes
-            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        End If
+        '    Call clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+        '    Call TabAdjustments() ' Revert back to tab info so prog info goes
+        '    Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        'End If
     End Sub
 
     Private Sub tbtPlay_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtPlay.Click
@@ -699,15 +678,15 @@ Public Class frmMain
 
     Private Sub tbtDownload_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownload.Click
         Dim strSplit() As String
-        strSplit = Split(lstStationProgs.SelectedItems(0).Tag.ToString, "||")
+        strSplit = Split(lstEpisodes.SelectedItems(0).Tag.ToString, "||")
 
-        If clsProgData.AddDownload(strSplit(0), strSplit(1), strSplit(2)) Then
-            Call tbtDownloads_Click(New Object, New EventArgs)
-            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-            tmrStartProcess.Enabled = True
-        Else
-            Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
-        End If
+        'If clsProgData.AddDownload(strSplit(0), strSplit(1), strSplit(2)) Then
+        'Call tbtDownloads_Click(New Object, New EventArgs)
+        'Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        'tmrStartProcess.Enabled = True
+        'Else
+        'Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
+        'End If
     End Sub
 
     Private Sub tbtReportError_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtReportError.Click

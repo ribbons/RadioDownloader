@@ -16,7 +16,7 @@ Option Strict On
 Option Explicit On
 
 Friend Class clsDldProgData
-    Private strProgType As String
+    Private gidPluginID As Guid
     Private strProgID As String
     Private intDuration As Integer
     Private dteProgDate As Date
@@ -27,12 +27,12 @@ Friend Class clsDldProgData
     Private intBandwidthLimit As Integer
     Private intAttemptNumber As Integer
 
-    Public Property ProgramType() As String
+    Public Property PluginID() As Guid
         Get
-            ProgramType = strProgType
+            PluginID = gidPluginID
         End Get
-        Set(ByVal strProgramType As String)
-            strProgType = strProgramType
+        Set(ByVal gidPluginID As Guid)
+            Me.gidPluginID = gidPluginID
         End Set
     End Property
 

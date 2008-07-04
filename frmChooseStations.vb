@@ -23,21 +23,21 @@ Public Class frmChooseStations
         lstStations.Columns.Add("Provider", 150)
 
         clsProgData = New clsData()
-        clsProgData.StartListingStations(True)
+        'clsProgData.StartListingStations(True)
     End Sub
 
-    Private Sub clsProgData_AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String, ByVal booVisible As Boolean) Handles clsProgData.AddStationToList
-        If lstStations.Groups(strStationType) Is Nothing Then
-            lstStations.Groups.Add(strStationType, clsProgData.ProviderName(strStationType))
-        End If
+    'Private Sub clsProgData_AddStationToList(ByRef strStationName As String, ByRef strStationId As String, ByRef strStationType As String, ByVal booVisible As Boolean) Handles clsProgData.AddStationToList
+    '    If lstStations.Groups(strStationType) Is Nothing Then
+    '        'lstStations.Groups.Add(strStationType, clsProgData.ProviderName(strStationType))
+    '    End If
 
-        Dim lstAddItem As ListViewItem
-        lstAddItem = lstStations.Items.Add(strStationName)
-        lstAddItem.Tag = strStationType + "||" + strStationId
-        lstAddItem.Group = lstStations.Groups(strStationType)
-        lstAddItem.SubItems.Add(clsProgData.ProviderName(strStationType))
-        lstAddItem.Checked = booVisible
-    End Sub
+    '    Dim lstAddItem As ListViewItem
+    '    lstAddItem = lstStations.Items.Add(strStationName)
+    '    lstAddItem.Tag = strStationType + "||" + strStationId
+    '    lstAddItem.Group = lstStations.Groups(strStationType)
+    '    'lstAddItem.SubItems.Add(clsProgData.ProviderName(strStationType))
+    '    lstAddItem.Checked = booVisible
+    'End Sub
 
     Private Sub cmdCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdCancel.Click
         Me.Close()

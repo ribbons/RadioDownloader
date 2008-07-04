@@ -58,7 +58,7 @@ Public Interface IRadioProvider
         Dim VisibleByDefault As Boolean
     End Structure
 
-    Structure ProgramInfo
+    Structure ProgrammeInfo
         Dim Result As ProgInfoResult
         Dim ProgramName As String
         Dim ProgramDescription As String
@@ -77,7 +77,6 @@ Public Interface IRadioProvider
     Enum ProgInfoResult
         OtherError
         TempError
-        Skipped
         Success
     End Enum
 
@@ -92,17 +91,17 @@ Public Interface IRadioProvider
         ShorterThanExpected
     End Enum
 
-    ReadOnly Property ProviderUniqueID() As String
+    ReadOnly Property ProviderID() As Guid
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
     ReadOnly Property DynamicSubscriptionName() As Boolean
 
-    Function ReturnStations() As StationTable
-    Function ListProgramIDs(ByVal strStationID As String) As ProgramListItem()
-    Function GetLatestProgramInfo(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteLastInfoFor As Date, ByVal dteLastAttempt As Date) As ProgramInfo
+    Function GetFindNewPanel() As Panel
+    Function GetProgrammeInfo(ByVal strProgExtID As String) As ProgrammeInfo
     Function CouldBeNewEpisode(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
     Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean
 
+    Event FoundNew(ByVal gidPluginID As Guid, ByVal strProgExtID As String)
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
     Event Finished()
@@ -119,19 +118,19 @@ Public Class clsPlugins
         Dim ClassName As String
     End Structure
 
-    Public Function PluginExists(ByVal strPluginID As String) As Boolean
-        Return htbPlugins.ContainsKey(strPluginID)
+    Public Function PluginExists(ByVal gidPluginID As Guid) As Boolean
+        Return htbPlugins.ContainsKey(gidPluginID)
     End Function
 
-    Public Function GetPluginInstance(ByVal strPluginID As String) As IRadioProvider
-        If PluginExists(strPluginID) Then
-            Return CreateInstance(DirectCast(htbPlugins.Item(strPluginID), AvailablePlugin))
+    Public Function GetPluginInstance(ByVal gidPluginID As Guid) As IRadioProvider
+        If PluginExists(gidPluginID) Then
+            Return CreateInstance(DirectCast(htbPlugins.Item(gidPluginID), AvailablePlugin))
         Else
             Return Nothing
         End If
     End Function
 
-    Public Function GetPluginIdList() As String()
+    Public Function GetPluginIdList() As Guid()
         ReDim GetPluginIdList(htbPlugins.Keys.Count - 1)
         htbPlugins.Keys.CopyTo(GetPluginIdList, 0)
     End Function
@@ -174,7 +173,7 @@ Public Class clsPlugins
                         Try
                             Dim objPlugin As IRadioProvider
                             objPlugin = CreateInstance(Plugin)
-                            htbPlugins.Add(objPlugin.ProviderUniqueID, Plugin)
+                            htbPlugins.Add(objPlugin.ProviderID, Plugin)
                         Catch
                             Continue For
                         End Try
