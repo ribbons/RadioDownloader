@@ -30,6 +30,30 @@ Public Class frmMain
         [Error]
     End Enum
 
+    Private Enum MainTab
+        FindProgramme
+        Favourites
+        Subscriptions
+        Downloads
+    End Enum
+
+    Private Enum View
+        FindNewChooseProvider
+        FindNewProviderForm
+        Favourites
+        Subscriptions
+        Downloads
+    End Enum
+
+    Private Structure ViewStore
+        Dim Tab As MainTab
+        Dim View As View
+        Dim ViewData As Object
+    End Structure
+
+    Private viwBackData(-1) As ViewStore
+    Private viwFwdData(-1) As ViewStore
+
     Private WithEvents clsProgData As clsData
     Private clsDoDBUpdate As clsUpdateDB
     Private clsUpdate As clsAutoUpdate
@@ -112,7 +136,7 @@ Public Class frmMain
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
         clsProgData.UpdateProviderList(lstProviders)
-        Call TabAdjustments()
+        Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
         nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
         nicTrayIcon.Text = Me.Text
         nicTrayIcon.Visible = True
@@ -150,15 +174,7 @@ Public Class frmMain
     End Sub
 
     Private Sub lstStations_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
-        tbtProviderForm.Image = imlProviders.Images(lstProviders.SelectedItems(0).ImageKey)
-        tbtProviderForm.Text = lstProviders.SelectedItems(0).Text
-        tbtProviderForm.Visible = True
-        tbtProviderForm.Checked = True
-        tbtFindNew.Checked = False
-
-        Call TabAdjustments()
-
-        pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(DirectCast(lstProviders.SelectedItems(0).Tag, Guid)))
+        Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, lstProviders.SelectedItems(0).Tag)
     End Sub
 
     Private Sub lstStationProgs_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
@@ -183,6 +199,10 @@ Public Class frmMain
     End Sub
 
     Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
+        Call SetContextForSelectedSubscription()
+    End Sub
+
+    Private Sub SetContextForSelectedSubscription()
         If lstSubscribed.SelectedItems.Count > 0 Then
             Dim strSplit() As String
             strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
@@ -190,7 +210,7 @@ Public Class frmMain
             'Call SetSideBar(clsProgData.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramDetails(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramImage(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))))
             Call SetToolbarButtons("Unsubscribe")
         Else
-            Call TabAdjustments() ' Revert back to subscribed items view default page
+            Call SetViewDefaults() ' Revert back to subscribed items view default sidebar and toolbar
         End If
     End Sub
 
@@ -199,6 +219,10 @@ Public Class frmMain
     End Sub
 
     Private Sub lstDownloads_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstDownloads.SelectedIndexChanged
+        Call SetContextForSelectedDownload()
+    End Sub
+
+    Private Sub SetContextForSelectedDownload()
         If lstDownloads.SelectedItems.Count > 0 Then
             Dim strSplit() As String
             strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
@@ -247,44 +271,7 @@ Public Class frmMain
                 Call SetToolbarButtons(strActionString)
             End With
         Else
-            Call TabAdjustments() ' Revert back to downloads view default page
-        End If
-    End Sub
-
-    Private Sub TabAdjustments()
-        If tbtFindNew.Checked Then
-            lstProviders.Visible = True
-            pnlPluginSpace.Visible = False
-            lstEpisodes.Visible = False
-            lstSubscribed.Visible = False
-            lstDownloads.Visible = False
-            tbtProviderForm.Visible = False
-            Call SetSideBar("Find New", "This view allows you to browse all of the programmes that are available for you to download or subscribe to." + vbCrLf + "Select a station icon to show the programmes available from it.", Nothing)
-            Call SetToolbarButtons("")
-        ElseIf tbtProviderForm.Checked Then
-            lstProviders.Visible = False
-            pnlPluginSpace.Visible = True
-            lstEpisodes.Visible = False
-            lstSubscribed.Visible = False
-            lstDownloads.Visible = False
-            Call SetSideBar(lstProviders.SelectedItems(0).Text, "This view is a list of programmes available from " & lstProviders.SelectedItems(0).Text & "." + vbCrLf + "Select a programme for more information, and to download or subscribe to it.", Nothing)
-            Call SetToolbarButtons("")
-        ElseIf tbtSubscriptions.Checked Then
-            lstProviders.Visible = False
-            pnlPluginSpace.Visible = False
-            lstEpisodes.Visible = False
-            lstSubscribed.Visible = True
-            lstDownloads.Visible = False
-            Call SetSideBar("Subscriptions", "This view shows you the programmes that you are currently subscribed to." + vbCrLf + "To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it.", Nothing)
-            Call SetToolbarButtons("")
-        ElseIf tbtDownloads.Checked Then
-            lstProviders.Visible = False
-            pnlPluginSpace.Visible = False
-            lstEpisodes.Visible = False
-            lstSubscribed.Visible = False
-            lstDownloads.Visible = True
-            Call SetSideBar("Downloads", "Here you can see programmes that are being downloaded, or have been downloaded already." + vbCrLf + "To download a programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it, or for completed downloads, play it.", Nothing)
-            Call SetToolbarButtons("CleanUp")
+            Call SetViewDefaults() ' Revert back to downloads view default sidebar and toolbar
         End If
     End Sub
 
@@ -400,44 +387,15 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
-        tbtFindNew.Checked = True
-        tbtProviderForm.Checked = False
-        tbtSubscriptions.Checked = False
-        tbtDownloads.Checked = False
-        Call TabAdjustments()
-    End Sub
-
-    Private Sub tbtCurrStation_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtProviderForm.Click
-        tbtFindNew.Checked = False
-        tbtProviderForm.Checked = True
-        tbtSubscriptions.Checked = False
-        tbtDownloads.Checked = False
-        Call TabAdjustments()
-
-        lstEpisodes.Items.Clear()
-        'Call clsProgData.StartListingProgrammes(strCurrentType, strCurrentStation)
+        Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
     End Sub
 
     Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
-        tbtSubscriptions.Checked = True
-        tbtProviderForm.Checked = False
-        tbtFindNew.Checked = False
-        tbtDownloads.Checked = False
-
-        Call TabAdjustments()
-        lstSubscribed_SelectedIndexChanged(sender, e)
-        lstSubscribed.Focus()
+        Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
     End Sub
 
     Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
-        tbtDownloads.Checked = True
-        tbtProviderForm.Checked = False
-        tbtSubscriptions.Checked = False
-        tbtFindNew.Checked = False
-
-        Call TabAdjustments()
-        lstDownloads_SelectedIndexChanged(sender, e)
-        lstDownloads.Focus()
+        Call SetView(MainTab.Downloads, View.Downloads, Nothing)
     End Sub
 
     'Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
@@ -462,6 +420,8 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+        ' Handle / report errors here manually?
+
         'Call clsProgData.SetErrored(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, errType, strErrorDetails)
 
         '' If the item that has just errored is selected then update the information.
@@ -488,6 +448,8 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As clsDldProgData)
+        ' Handle / report errors here manually?
+
         'Call clsProgData.SetDownloaded(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.FinalName)
 
         'If tbtDownloads.Checked And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
@@ -528,6 +490,8 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_Progress_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+        ' Handle / report errors here manually?
+
         Static intLastNum As Integer
 
         If intLastNum = Nothing Then intLastNum = -1
@@ -608,7 +572,7 @@ Public Class frmMain
 
         If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
             Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1), strSplit(2))
-            Call TabAdjustments() ' Revert back to tab info so prog info goes
+            Call SetViewDefaults() ' Revert back to the subscriptions default sidebar and toolbar
             Call clsProgData.UpdateSubscrList(lstSubscribed)
         End If
     End Sub
@@ -733,5 +697,106 @@ Public Class frmMain
         If tbtDownloads.Checked Then
             Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
         End If
+    End Sub
+
+    Private Sub SetView(ByVal Tab As MainTab, ByVal View As View, ByVal ViewData As Object)
+        Dim ViewDataStore As ViewStore
+
+        ViewDataStore.Tab = Tab
+        ViewDataStore.View = View
+        ViewDataStore.ViewData = ViewData
+
+        ReDim Preserve viwBackData(viwBackData.GetUpperBound(0) + 1)
+        viwBackData(viwBackData.GetUpperBound(0)) = ViewDataStore
+
+        If viwFwdData.GetUpperBound(0) > -1 Then
+            ReDim viwFwdData(-1)
+        End If
+
+        Call PerformViewChanges(ViewDataStore)
+    End Sub
+
+    Private Sub PerformViewChanges(ByVal ViewData As ViewStore)
+        tbtBack.Enabled = viwBackData.GetUpperBound(0) > 0
+        tbtForward.Enabled = viwFwdData.GetUpperBound(0) > -1
+
+        tbtFindNew.Checked = False
+        tbtFavourites.Checked = False
+        tbtSubscriptions.Checked = False
+        tbtDownloads.Checked = False
+
+        Select Case ViewData.Tab
+            Case MainTab.FindProgramme
+                tbtFindNew.Checked = True
+            Case MainTab.Favourites
+                tbtFavourites.Checked = True
+            Case MainTab.Subscriptions
+                tbtSubscriptions.Checked = True
+            Case MainTab.Downloads
+                tbtDownloads.Checked = True
+        End Select
+
+        SetViewDefaults(ViewData.View)
+
+        lstProviders.Visible = False
+        pnlPluginSpace.Visible = False
+        lstEpisodes.Visible = False
+        lstSubscribed.Visible = False
+        lstDownloads.Visible = False
+
+        Select Case ViewData.View
+            Case View.FindNewChooseProvider
+                lstProviders.Visible = True
+            Case View.FindNewProviderForm
+                pnlPluginSpace.Visible = True
+                pnlPluginSpace.Controls.Clear()
+                pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(DirectCast(ViewData.ViewData, Guid)))
+            Case View.Subscriptions
+                lstSubscribed.Visible = True
+                Call SetContextForSelectedSubscription()
+                lstSubscribed.Focus()
+            Case View.Downloads
+                lstDownloads.Visible = True
+                Call SetContextForSelectedDownload()
+                lstDownloads.Focus()
+        End Select
+    End Sub
+
+    Private Sub SetViewDefaults()
+        SetViewDefaults(viwBackData(viwBackData.GetUpperBound(0)).View)
+    End Sub
+
+    Private Sub SetViewDefaults(ByVal CurrentView As View)
+        Select Case CurrentView
+            Case View.FindNewChooseProvider
+                Call SetToolbarButtons("")
+                Call SetSideBar("Find New", "This view allows you to browse all of the programmes that are available for you to download or subscribe to." + vbCrLf + "Select a station icon to show the programmes available from it.", Nothing)
+            Case View.FindNewProviderForm
+                Dim gidProvider As Guid = DirectCast(viwBackData(viwBackData.GetUpperBound(0)).ViewData, Guid)
+                Call SetToolbarButtons("")
+                Call SetSideBar(clsProgData.ProviderName(gidProvider), "This view is a list of programmes available from " & clsProgData.ProviderName(gidProvider) & "." + vbCrLf + "Select a programme for more information, and to download or subscribe to it.", Nothing)
+            Case View.Subscriptions
+                Call SetToolbarButtons("")
+                Call SetSideBar("Subscriptions", "This view shows you the programmes that you are currently subscribed to." + vbCrLf + "To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it.", Nothing)
+            Case View.Downloads
+                Call SetToolbarButtons("CleanUp")
+                Call SetSideBar("Downloads", "Here you can see programmes that are being downloaded, or have been downloaded already." + vbCrLf + "To download a programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it, or for completed downloads, play it.", Nothing)
+        End Select
+    End Sub
+
+    Private Sub tbtBack_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtBack.Click
+        ReDim Preserve viwFwdData(viwFwdData.GetUpperBound(0) + 1)
+        viwFwdData(viwFwdData.GetUpperBound(0)) = viwBackData(viwBackData.GetUpperBound(0))
+        ReDim Preserve viwBackData(viwBackData.GetUpperBound(0) - 1)
+
+        Call PerformViewChanges(viwBackData(viwBackData.GetUpperBound(0)))
+    End Sub
+
+    Private Sub tbtForward_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtForward.Click
+        ReDim Preserve viwBackData(viwBackData.GetUpperBound(0) + 1)
+        viwBackData(viwBackData.GetUpperBound(0)) = viwFwdData(viwFwdData.GetUpperBound(0))
+        ReDim Preserve viwFwdData(viwFwdData.GetUpperBound(0) - 1)
+
+        Call PerformViewChanges(viwBackData(viwBackData.GetUpperBound(0)))
     End Sub
 End Class

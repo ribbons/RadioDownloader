@@ -27,8 +27,11 @@
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.tbrView = New System.Windows.Forms.ToolStrip
+        Me.tbtBack = New System.Windows.Forms.ToolStripButton
+        Me.tbtForward = New System.Windows.Forms.ToolStripButton
+        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
         Me.tbtFindNew = New System.Windows.Forms.ToolStripButton
-        Me.tbtProviderForm = New System.Windows.Forms.ToolStripButton
+        Me.tbtFavourites = New System.Windows.Forms.ToolStripButton
         Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton
         Me.tbtDownloads = New System.Windows.Forms.ToolStripButton
         Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
@@ -69,7 +72,6 @@
         Me.lblSideDescript = New System.Windows.Forms.Label
         Me.lstEpisodes = New System.Windows.Forms.ListView
         Me.pnlPluginSpace = New System.Windows.Forms.Panel
-        Me.tbtViewEpisodes = New System.Windows.Forms.ToolStripButton
         Me.lstDownloads = New RadioDld.ExtListView
         Me.tbrView.SuspendLayout()
         Me.mnuTray.SuspendLayout()
@@ -91,12 +93,35 @@
         'tbrView
         '
         Me.tbrView.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtFindNew, Me.tbtProviderForm, Me.tbtViewEpisodes, Me.tbtSubscriptions, Me.tbtDownloads, Me.ttxSearch})
+        Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtBack, Me.tbtForward, Me.ToolStripSeparator1, Me.tbtFindNew, Me.tbtFavourites, Me.tbtSubscriptions, Me.tbtDownloads, Me.ttxSearch})
         Me.tbrView.Location = New System.Drawing.Point(0, 0)
         Me.tbrView.Name = "tbrView"
         Me.tbrView.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
         Me.tbrView.Size = New System.Drawing.Size(757, 31)
         Me.tbrView.TabIndex = 11
+        '
+        'tbtBack
+        '
+        Me.tbtBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tbtBack.Image = CType(resources.GetObject("tbtBack.Image"), System.Drawing.Image)
+        Me.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtBack.Name = "tbtBack"
+        Me.tbtBack.Size = New System.Drawing.Size(28, 28)
+        Me.tbtBack.Text = "Back"
+        '
+        'tbtForward
+        '
+        Me.tbtForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tbtForward.Image = CType(resources.GetObject("tbtForward.Image"), System.Drawing.Image)
+        Me.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtForward.Name = "tbtForward"
+        Me.tbtForward.Size = New System.Drawing.Size(28, 28)
+        Me.tbtForward.Text = "Forward"
+        '
+        'ToolStripSeparator1
+        '
+        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
+        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 31)
         '
         'tbtFindNew
         '
@@ -108,13 +133,14 @@
         Me.tbtFindNew.Size = New System.Drawing.Size(124, 28)
         Me.tbtFindNew.Text = "Find Programme"
         '
-        'tbtProviderForm
+        'tbtFavourites
         '
-        Me.tbtProviderForm.Image = CType(resources.GetObject("tbtProviderForm.Image"), System.Drawing.Image)
-        Me.tbtProviderForm.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtProviderForm.Name = "tbtProviderForm"
-        Me.tbtProviderForm.Size = New System.Drawing.Size(122, 28)
-        Me.tbtProviderForm.Text = "Current Provider"
+        Me.tbtFavourites.Image = CType(resources.GetObject("tbtFavourites.Image"), System.Drawing.Image)
+        Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtFavourites.Name = "tbtFavourites"
+        Me.tbtFavourites.Size = New System.Drawing.Size(89, 28)
+        Me.tbtFavourites.Text = "Favourites"
+        Me.tbtFavourites.Visible = False
         '
         'tbtSubscriptions
         '
@@ -478,14 +504,6 @@
         Me.pnlPluginSpace.Size = New System.Drawing.Size(570, 62)
         Me.pnlPluginSpace.TabIndex = 20
         '
-        'tbtViewEpisodes
-        '
-        Me.tbtViewEpisodes.Image = CType(resources.GetObject("tbtViewEpisodes.Image"), System.Drawing.Image)
-        Me.tbtViewEpisodes.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtViewEpisodes.Name = "tbtViewEpisodes"
-        Me.tbtViewEpisodes.Size = New System.Drawing.Size(81, 28)
-        Me.tbtViewEpisodes.Text = "Episodes"
-        '
         'lstDownloads
         '
         Me.lstDownloads.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
@@ -568,7 +586,6 @@
     Friend WithEvents tbtDelete As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtRetry As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbmHelp As System.Windows.Forms.ToolStripDropDownButton
-    Friend WithEvents tbtProviderForm As System.Windows.Forms.ToolStripButton
     Friend WithEvents lstEpisodes As System.Windows.Forms.ListView
     Friend WithEvents tbmMisc As System.Windows.Forms.ToolStripDropDownButton
     Friend WithEvents tbmOptions As System.Windows.Forms.ToolStripMenuItem
@@ -581,6 +598,9 @@
     Friend WithEvents tbmChooseStations As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tbtReportError As System.Windows.Forms.ToolStripButton
     Friend WithEvents pnlPluginSpace As System.Windows.Forms.Panel
-    Friend WithEvents tbtViewEpisodes As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtFavourites As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtBack As System.Windows.Forms.ToolStripButton
+    Friend WithEvents tbtForward As System.Windows.Forms.ToolStripButton
+    Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
 #End Region
 End Class
