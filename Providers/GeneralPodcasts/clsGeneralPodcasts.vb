@@ -50,8 +50,9 @@ Public Class clsGeneralPodcasts
         End Get
     End Property
 
-    Public Function GetFindNewPanel() As Panel Implements IRadioProvider.GetFindNewPanel
+    Public Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient) As Panel Implements IRadioProvider.GetFindNewPanel
         Dim frmFindNewInst As New frmFindNew
+        frmFindNewInst.clsCachedHTTP = clsCachedHTTP
         Return frmFindNewInst.pnlFindNew
     End Function
 

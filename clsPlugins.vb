@@ -96,7 +96,7 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderDescription() As String
     ReadOnly Property DynamicSubscriptionName() As Boolean
 
-    Function GetFindNewPanel() As Panel
+    Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient) As Panel
     Function GetProgrammeInfo(ByVal strProgExtID As String) As ProgrammeInfo
     Function CouldBeNewEpisode(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
     Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean

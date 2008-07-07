@@ -21,7 +21,7 @@ Imports System.Threading
 Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
-Friend Class clsData
+Public Class clsData
     Public Enum Statuses
         Waiting
         Downloaded
@@ -36,6 +36,7 @@ Friend Class clsData
     Private clsCurDldProgData As clsDldProgData
     Private thrDownloadThread As Thread
     Private WithEvents DownloadPluginInst As IRadioProvider
+    Private WithEvents FindNewPluginInst As IRadioProvider
 
     Public Event FoundNew(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String)
     Public Event Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
@@ -65,6 +66,10 @@ Friend Class clsData
 
         ' Thin out the records in the info table if required
         Call PruneInfoTable()
+
+        ' Create the temp table for caching HTTP requests
+        Dim sqlCommand As New SQLiteCommand("create temporary table httpcache (uri varchar (1000), lastfetch datetime, data blob)", sqlConnection)
+        sqlCommand.ExecuteNonQuery()
 
         clsPluginsInst = New clsPlugins(My.Application.Info.DirectoryPath)
     End Sub
@@ -700,10 +705,6 @@ Friend Class clsData
         clsCurDldProgData = Nothing
     End Sub
 
-    Private Sub DownloadPluginInst_FoundNew(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String) Handles DownloadPluginInst.FoundNew
-
-    End Sub
-
     Private Sub DownloadPluginInst_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles DownloadPluginInst.Progress
         RaiseEvent Progress(clsCurDldProgData, intPercent, strStatusText, Icon)
     End Sub
@@ -909,9 +910,58 @@ Friend Class clsData
 
     Public Function GetFindNewPanel(ByVal gidPluginID As Guid) As Panel
         If clsPluginsInst.PluginExists(gidPluginID) Then
-            Return clsPluginsInst.GetPluginInstance(gidPluginID).GetFindNewPanel
+            FindNewPluginInst = clsPluginsInst.GetPluginInstance(gidPluginID)
+            Return FindNewPluginInst.GetFindNewPanel(New clsCachedWebClient(Me))
         Else
             Return New Panel
+        End If
+    End Function
+
+    Private Sub FindNewPluginInst_FoundNew(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String) Handles FindNewPluginInst.FoundNew
+        MsgBox("yes")
+    End Sub
+
+    Public Sub AddToHTTPCache(ByVal strURI As String, ByVal bteData As Byte())
+        Dim sqlTransaction As SQLiteTransaction = sqlConnection.BeginTransaction()
+
+        Dim sqlCommand As New SQLiteCommand("delete from httpcache where uri=@uri", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+        sqlCommand.ExecuteNonQuery()
+
+        sqlCommand = New SQLiteCommand("insert into httpcache (uri, lastfetch, data) values(@uri, datetime('now'), @data)", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@data", bteData))
+        sqlCommand.ExecuteNonQuery()
+
+        sqlTransaction.Commit()
+    End Sub
+
+    Public Function GetHTTPCacheLastUpdate(ByVal strURI As String) As Date
+        Dim sqlCommand As New SQLiteCommand("select lastfetch from httpcache where uri=@uri", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            Return sqlReader.GetDateTime(sqlReader.GetOrdinal("lastfetch"))
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Function GetHTTPCacheContent(ByVal strURI As String) As Byte()
+        Dim sqlCommand As New SQLiteCommand("select data from httpcache where uri=@uri", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            ' Get the length of the content by passing nothing to getbytes
+            Dim intContentLength As Integer = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("data"), 0, Nothing, 0, 0))
+            Dim bteContent(intContentLength) As Byte
+
+            sqlReader.GetBytes(sqlReader.GetOrdinal("data"), 0, bteContent, 0, intContentLength)
+            Return bteContent
+        Else
+            Return Nothing
         End If
     End Function
 End Class

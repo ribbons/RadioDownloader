@@ -15,7 +15,7 @@
 Option Strict On
 Option Explicit On
 
-Friend Class clsDldProgData
+Public Class clsDldProgData
     Private gidPluginID As Guid
     Private strProgID As String
     Private intDuration As Integer
@@ -101,10 +101,10 @@ Friend Class clsDldProgData
 
     Public Property BandwidthLimit() As Integer
         Get
-            Return intbandwidthlimit
+            Return intBandwidthLimit
         End Get
         Set(ByVal intBandwidthLimit As Integer)
-            Me.intbandwidthlimit = intBandwidthLimit
+            Me.intBandwidthLimit = intBandwidthLimit
         End Set
     End Property
 

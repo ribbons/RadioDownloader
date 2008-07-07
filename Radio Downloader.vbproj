@@ -99,6 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="clsAutoUpdate.vb" />
+    <Compile Include="clsCachedWebClient.vb" />
     <Compile Include="clsDldProgData.vb" />
     <Compile Include="clsErrorReporting.vb" />
     <Compile Include="clsPlugins.vb" />
