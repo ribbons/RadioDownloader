@@ -15,12 +15,71 @@
 Option Strict On
 Option Explicit On
 
+Imports System.Xml
+Imports System.Net
+Imports System.Windows.Forms
+
 Public Class frmFindNew
-    Friend clsCachedHTTP As RadioDld.clsCachedWebClient
+    Friend clsPluginInst As clsGeneralPodcasts
 
     Private Sub cmdViewEps_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdViewEps.Click
-        Dim strRSS As String = clsCachedHTTP.DownloadString(txtFeedURL.Text, 2)
+        cmdViewEps.Enabled = False
+        lblResult.ForeColor = Drawing.Color.Black
+        lblResult.Text = "Checking feed..."
 
+        Application.DoEvents()
 
+        Dim strURL As String = txtFeedURL.Text
+        Dim strRSS As String
+        Dim xmlRSS As New XmlDocument
+
+        ' First test that we can load something from the specified URL
+        Try
+            strRSS = clsPluginInst.clsCachedHTTP.DownloadString(strURL, 2)
+        Catch expArgument As ArgumentException
+            lblResult.Text = "The specified URL was not valid."
+            lblResult.ForeColor = Drawing.Color.Red
+            cmdViewEps.Enabled = True
+            Exit Sub
+        Catch expWeb As WebException
+            lblResult.Text = "There was a problem requesting the feed from the specified URL."
+            lblResult.ForeColor = Drawing.Color.Red
+            cmdViewEps.Enabled = True
+            Exit Sub
+        End Try
+
+        ' Now check that it is a valid XML document
+        Try
+            xmlRSS.LoadXml(strRSS)
+        Catch expXML As XmlException
+            lblResult.Text = "The data returned from the specified URL was not a valid RSS feed."
+            lblResult.ForeColor = Drawing.Color.Red
+            cmdViewEps.Enabled = True
+            Exit Sub
+        End Try
+
+        ' Finally, make sure that the required elements that we need (title and description) exist
+        Dim xmlCheckTitle As XmlNode = xmlRSS.SelectSingleNode("./rss/channel/title")
+        Dim xmlCheckDescription As XmlNode = xmlRSS.SelectSingleNode("./rss/channel/description")
+
+        If xmlCheckTitle Is Nothing Or xmlCheckDescription Is Nothing Then
+            lblResult.Text = "The RSS feed returned from the specified URL was not valid."
+            lblResult.ForeColor = Drawing.Color.Red
+            cmdViewEps.Enabled = True
+            Exit Sub
+        End If
+
+        clsPluginInst.RaiseFoundNew(strURL)
+
+        lblResult.Text = ""
+        cmdViewEps.Enabled = True
+    End Sub
+
+    Private Sub txtFeedURL_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtFeedURL.KeyPress
+        If Convert.ToInt32(e.KeyChar) = Keys.Enter Then
+            If cmdViewEps.Enabled Then
+                Call cmdViewEps_Click(sender, e)
+            End If
+        End If
     End Sub
 End Class

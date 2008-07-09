@@ -26,6 +26,8 @@ Public Class clsGeneralPodcasts
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
     Public Event Finished() Implements IRadioProvider.Finished
 
+    Friend clsCachedHTTP As RadioDld.clsCachedWebClient
+
     Public ReadOnly Property ProviderID() As Guid Implements IRadioProvider.ProviderID
         Get
             Return New Guid("3cfbe63e-95b8-4f80-8570-4ace909e0921")
@@ -51,8 +53,10 @@ Public Class clsGeneralPodcasts
     End Property
 
     Public Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient) As Panel Implements IRadioProvider.GetFindNewPanel
+        Me.clsCachedHTTP = clsCachedHTTP
+
         Dim frmFindNewInst As New frmFindNew
-        frmFindNewInst.clsCachedHTTP = clsCachedHTTP
+        frmFindNewInst.clsPluginInst = Me
         Return frmFindNewInst.pnlFindNew
     End Function
 
@@ -70,5 +74,9 @@ Public Class clsGeneralPodcasts
 
     Public Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttemptNumber As Integer) Implements IRadioProvider.DownloadProgram
 
+    End Sub
+
+    Friend Sub RaiseFoundNew(ByVal strExtID As String)
+        RaiseEvent FoundNew(Me.ProviderID, strExtID)
     End Sub
 End Class

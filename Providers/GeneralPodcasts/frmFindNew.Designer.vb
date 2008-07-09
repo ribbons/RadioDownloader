@@ -23,6 +23,8 @@ Partial Class frmFindNew
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.pnlFindNew = New System.Windows.Forms.Panel
+        Me.lblResult = New System.Windows.Forms.Label
+        Me.lblInstructions = New System.Windows.Forms.Label
         Me.cmdViewEps = New System.Windows.Forms.Button
         Me.txtFeedURL = New System.Windows.Forms.TextBox
         Me.pnlFindNew.SuspendLayout()
@@ -33,6 +35,8 @@ Partial Class frmFindNew
         Me.pnlFindNew.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.pnlFindNew.Controls.Add(Me.lblResult)
+        Me.pnlFindNew.Controls.Add(Me.lblInstructions)
         Me.pnlFindNew.Controls.Add(Me.cmdViewEps)
         Me.pnlFindNew.Controls.Add(Me.txtFeedURL)
         Me.pnlFindNew.Location = New System.Drawing.Point(0, 0)
@@ -40,10 +44,29 @@ Partial Class frmFindNew
         Me.pnlFindNew.Size = New System.Drawing.Size(570, 416)
         Me.pnlFindNew.TabIndex = 0
         '
+        'lblResult
+        '
+        Me.lblResult.AutoSize = True
+        Me.lblResult.Location = New System.Drawing.Point(36, 108)
+        Me.lblResult.Margin = New System.Windows.Forms.Padding(4, 20, 3, 0)
+        Me.lblResult.Name = "lblResult"
+        Me.lblResult.Size = New System.Drawing.Size(0, 13)
+        Me.lblResult.TabIndex = 3
+        '
+        'lblInstructions
+        '
+        Me.lblInstructions.AutoSize = True
+        Me.lblInstructions.Location = New System.Drawing.Point(36, 39)
+        Me.lblInstructions.Margin = New System.Windows.Forms.Padding(4, 0, 3, 10)
+        Me.lblInstructions.Name = "lblInstructions"
+        Me.lblInstructions.Size = New System.Drawing.Size(189, 13)
+        Me.lblInstructions.TabIndex = 2
+        Me.lblInstructions.Text = "Enter the URL of a podcast RSS feed:"
+        '
         'cmdViewEps
         '
         Me.cmdViewEps.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.cmdViewEps.Location = New System.Drawing.Point(434, 135)
+        Me.cmdViewEps.Location = New System.Drawing.Point(461, 63)
         Me.cmdViewEps.Name = "cmdViewEps"
         Me.cmdViewEps.Size = New System.Drawing.Size(73, 23)
         Me.cmdViewEps.TabIndex = 1
@@ -54,9 +77,9 @@ Partial Class frmFindNew
         '
         Me.txtFeedURL.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtFeedURL.Location = New System.Drawing.Point(63, 137)
+        Me.txtFeedURL.Location = New System.Drawing.Point(39, 65)
         Me.txtFeedURL.Name = "txtFeedURL"
-        Me.txtFeedURL.Size = New System.Drawing.Size(365, 20)
+        Me.txtFeedURL.Size = New System.Drawing.Size(416, 20)
         Me.txtFeedURL.TabIndex = 0
         '
         'frmFindNew
@@ -75,4 +98,6 @@ Partial Class frmFindNew
     Friend WithEvents pnlFindNew As System.Windows.Forms.Panel
     Friend WithEvents txtFeedURL As System.Windows.Forms.TextBox
     Friend WithEvents cmdViewEps As System.Windows.Forms.Button
+    Friend WithEvents lblInstructions As System.Windows.Forms.Label
+    Friend WithEvents lblResult As System.Windows.Forms.Label
 End Class
