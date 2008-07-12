@@ -73,7 +73,7 @@ Public Class clsErrorReporting
             Dim strReturnLines() As String = Split(ASCII.GetString(Result), vbLf)
 
             If strReturnLines(0) = "success" Then
-                MsgBox("Your error report was sent successfully.")
+                MsgBox("Your error report was sent successfully.", MsgBoxStyle.Information)
 
                 If strReturnLines(1).Substring(0, 7) = "http://" Then
                     Start(strReturnLines(1))
