@@ -27,7 +27,7 @@ Public Class frmError
     Private Sub cmdSend_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSend.Click
         Try
             Me.Visible = False
-            clsReport.SendReport("http://www.nerdoftheherd.com/tools/radiodld/error_report.php")
+            clsReport.SendReport(My.Settings.ErrorReportURL)
         Catch
             ' No way of reporting errors that have happened here, so just give up
         End Try

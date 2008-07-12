@@ -59,13 +59,10 @@ Public Interface IRadioProvider
     End Structure
 
     Structure ProgrammeInfo
-        Dim Result As ProgInfoResult
-        Dim ProgramName As String
-        Dim ProgramDescription As String
-        Dim ProgramDuration As Long
-        Dim ProgramDate As Date
-        Dim ProgramDldUrl As String
+        Dim Name As String
+        Dim Description As String
         Dim Image As Bitmap
+        Dim Success As Boolean
     End Structure
 
     Structure ProgramListItem
@@ -73,12 +70,6 @@ Public Interface IRadioProvider
         Dim StationID As String
         Dim ProgramName As String
     End Structure
-
-    Enum ProgInfoResult
-        OtherError
-        TempError
-        Success
-    End Enum
 
     Enum ProgressIcon
         Downloading

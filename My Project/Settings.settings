@@ -29,5 +29,8 @@
     <Setting Name="ShownTrayBalloon" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="ErrorReportURL" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">http://www.nerdoftheherd.com/tools/radiodld/error_report.php</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

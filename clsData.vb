@@ -38,7 +38,7 @@ Public Class clsData
     Private WithEvents DownloadPluginInst As IRadioProvider
     Private WithEvents FindNewPluginInst As IRadioProvider
 
-    Public Event FoundNew(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String)
+    Public Event FoundNew(ByVal intProgID As Integer)
     Public Event Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Public Event DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
     Public Event Finished(ByVal clsCurDldProgData As clsDldProgData)
@@ -918,8 +918,103 @@ Public Class clsData
     End Function
 
     Private Sub FindNewPluginInst_FoundNew(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String) Handles FindNewPluginInst.FoundNew
-        MsgBox("yes")
+        Dim PluginException As Exception = Nothing
+        If GetProgrammeInfo(gidPluginID, strProgExtID, PluginException) = False Then
+            If PluginException IsNot Nothing Then
+                If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + vbCrLf + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo And MsgBoxStyle.Question) = MsgBoxResult.Yes Then
+                    Dim clsReport As New clsErrorReporting(PluginException.GetType.ToString + ": " + PluginException.Message, PluginException.GetType.ToString + vbCrLf + PluginException.StackTrace)
+                    clsReport.SendReport(My.Settings.ErrorReportURL)
+                End If
+
+                Exit Sub
+            Else
+                Call MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation)
+                Exit Sub
+            End If
+        End If
+
+        Dim intProgID As Integer = ExtIDToProgID(gidPluginID, strProgExtID)
+        RaiseEvent FoundNew(intProgID)
     End Sub
+
+    Private Function GetProgrammeInfo(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String, ByRef PluginException As Exception) As Boolean
+        If clsPluginsInst.PluginExists(gidPluginID) = False Then
+            Return False
+        End If
+
+        Dim ThisInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(gidPluginID)
+        Dim ProgInfo As IRadioProvider.ProgrammeInfo
+
+        Try
+            ProgInfo = ThisInstance.GetProgrammeInfo(strProgExtID)
+        Catch PluginException
+            ' Catch unhandled errors in the plugin
+            Return False
+        End Try
+
+        If ProgInfo.Success = False Then
+            Return False
+        End If
+
+        Dim intProgID As Integer = ExtIDToProgID(gidPluginID, strProgExtID)
+        Dim sqlCommand As SQLiteCommand
+
+        If intProgID = Nothing Then
+            sqlCommand = New SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", sqlConnection)
+            sqlCommand.Parameters.Add(New SQLiteParameter("@pluginid", gidPluginID.ToString))
+            sqlCommand.Parameters.Add(New SQLiteParameter("@extid", strProgExtID))
+            sqlCommand.ExecuteNonQuery()
+
+            sqlCommand = New SQLiteCommand("select last_insert_rowid()")
+            intProgID = CInt(sqlCommand.ExecuteScalar)
+        End If
+
+        Dim intImgID As Integer
+        intImgID = StoreImage(ProgInfo.Image)
+
+        sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, lastupdate=datetime('now') where progid=@progid")
+        sqlCommand.Parameters.Add(New SQLiteParameter("@name", ProgInfo.Name))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@description", ProgInfo.Description))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@image", intImgID))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
+        sqlCommand.ExecuteNonQuery()
+    End Function
+
+    Private Function StoreImage(ByVal bmpImage As Bitmap) As Integer
+        If bmpImage Is Nothing Then
+            Return Nothing
+        End If
+
+        Dim sqlCommand As SQLiteCommand
+
+        sqlCommand = New SQLiteCommand("select imgid from images where image=@image")
+        sqlCommand.Parameters.Add(New SQLiteParameter("@image", bmpImage))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read() Then
+            Return sqlReader.GetInt32(sqlReader.GetOrdinal("imgid"))
+        End If
+
+        sqlCommand = New SQLiteCommand("insert into images (image) values (@image)")
+        sqlCommand.Parameters.Add(New SQLiteParameter("@image", bmpImage))
+        sqlCommand.ExecuteNonQuery()
+
+        sqlCommand = New SQLiteCommand("select last_insert_rowid()")
+        Return CInt(sqlCommand.ExecuteScalar)
+    End Function
+
+    Private Function ExtIDToProgID(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String) As Integer
+        Dim sqlCommand As New SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@pluginid", gidPluginID.ToString))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@extid", strProgExtID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            Return sqlReader.GetInt32(sqlReader.GetOrdinal("progid"))
+        Else
+            Return Nothing
+        End If
+    End Function
 
     Public Sub AddToHTTPCache(ByVal strURI As String, ByVal bteData As Byte())
         Dim sqlTransaction As SQLiteTransaction = sqlConnection.BeginTransaction()

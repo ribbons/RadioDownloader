@@ -658,7 +658,7 @@ Public Class frmMain
         strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
         Dim clsReport As New clsErrorReporting("Download Error: " + clsProgData.ErrorType(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))).ToString, clsProgData.ErrorDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
-        clsReport.SendReport("http://www.nerdoftheherd.com/tools/radiodld/error_report.php")
+        clsReport.SendReport(My.Settings.ErrorReportURL)
     End Sub
 
     Private Sub tbmOptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmOptions.Click
