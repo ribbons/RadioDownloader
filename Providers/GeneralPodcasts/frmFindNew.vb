@@ -35,7 +35,7 @@ Public Class frmFindNew
 
         ' First test that we can load something from the specified URL
         Try
-            strRSS = clsPluginInst.clsCachedHTTP.DownloadString(strURL, clsPluginInst.intCacheHTTPHours)
+            strRSS = clsPluginInst.clsCachedHTTP.DownloadString(strURL, clsGeneralPodcasts.intCacheHTTPHours)
         Catch expArgument As ArgumentException
             lblResult.Text = "The specified URL was not valid."
             lblResult.ForeColor = Drawing.Color.Red
