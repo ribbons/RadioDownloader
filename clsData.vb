@@ -921,7 +921,7 @@ Public Class clsData
         Dim PluginException As Exception = Nothing
         If GetProgrammeInfo(gidPluginID, strProgExtID, PluginException) = False Then
             If PluginException IsNot Nothing Then
-                If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + vbCrLf + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo And MsgBoxStyle.Question) = MsgBoxResult.Yes Then
+                If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + vbCrLf + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
                     Dim clsReport As New clsErrorReporting(PluginException.GetType.ToString + ": " + PluginException.Message, PluginException.GetType.ToString + vbCrLf + PluginException.StackTrace)
                     clsReport.SendReport(My.Settings.ErrorReportURL)
                 End If
@@ -946,7 +946,7 @@ Public Class clsData
         Dim ProgInfo As IRadioProvider.ProgrammeInfo
 
         Try
-            ProgInfo = ThisInstance.GetProgrammeInfo(strProgExtID)
+            ProgInfo = ThisInstance.GetProgrammeInfo(New clsCachedWebClient(Me), strProgExtID)
         Catch PluginException
             ' Catch unhandled errors in the plugin
             Return False
@@ -965,19 +965,21 @@ Public Class clsData
             sqlCommand.Parameters.Add(New SQLiteParameter("@extid", strProgExtID))
             sqlCommand.ExecuteNonQuery()
 
-            sqlCommand = New SQLiteCommand("select last_insert_rowid()")
+            sqlCommand = New SQLiteCommand("select last_insert_rowid()", sqlConnection)
             intProgID = CInt(sqlCommand.ExecuteScalar)
         End If
 
         Dim intImgID As Integer
         intImgID = StoreImage(ProgInfo.Image)
 
-        sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, lastupdate=datetime('now') where progid=@progid")
+        sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, lastupdate=datetime('now') where progid=@progid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@name", ProgInfo.Name))
         sqlCommand.Parameters.Add(New SQLiteParameter("@description", ProgInfo.Description))
         sqlCommand.Parameters.Add(New SQLiteParameter("@image", intImgID))
         sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         sqlCommand.ExecuteNonQuery()
+
+        Return True
     End Function
 
     Private Function StoreImage(ByVal bmpImage As Bitmap) As Integer
@@ -985,21 +987,26 @@ Public Class clsData
             Return Nothing
         End If
 
-        Dim sqlCommand As SQLiteCommand
+        ' Convert the image into a byte array
+        Dim mstImage As New MemoryStream()
+        bmpImage.Save(mstImage, Imaging.ImageFormat.Bmp)
+        Dim bteImage(CInt(mstImage.Length - 1)) As Byte
+        mstImage.Position = 0
+        mstImage.Read(bteImage, 0, CInt(mstImage.Length))
 
-        sqlCommand = New SQLiteCommand("select imgid from images where image=@image")
-        sqlCommand.Parameters.Add(New SQLiteParameter("@image", bmpImage))
+        Dim sqlCommand As New SQLiteCommand("select imgid from images where image=@image", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@image", bteImage))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read() Then
             Return sqlReader.GetInt32(sqlReader.GetOrdinal("imgid"))
         End If
 
-        sqlCommand = New SQLiteCommand("insert into images (image) values (@image)")
-        sqlCommand.Parameters.Add(New SQLiteParameter("@image", bmpImage))
+        sqlCommand = New SQLiteCommand("insert into images (image) values (@image)", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@image", bteImage))
         sqlCommand.ExecuteNonQuery()
 
-        sqlCommand = New SQLiteCommand("select last_insert_rowid()")
+        sqlCommand = New SQLiteCommand("select last_insert_rowid()", sqlConnection)
         Return CInt(sqlCommand.ExecuteScalar)
     End Function
 

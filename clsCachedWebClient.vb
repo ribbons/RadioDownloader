@@ -26,6 +26,10 @@ Public Class clsCachedWebClient
     End Sub
 
     Public Function DownloadData(ByVal strURI As String, ByVal intFetchIntervalHrs As Integer) As Byte()
+        If intFetchIntervalHrs = 0 Then
+            Throw New ArgumentException("intFetchIntervalHrs cannot be zero.")
+        End If
+
         Dim dteLastFetch As Date = clsDataInst.GetHTTPCacheLastUpdate(strURI)
 
         If dteLastFetch <> Nothing Then

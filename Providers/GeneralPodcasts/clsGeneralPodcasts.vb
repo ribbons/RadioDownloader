@@ -16,6 +16,8 @@ Option Strict On
 Option Explicit On
 
 Imports RadioDld
+Imports System.Xml
+Imports System.Net
 Imports System.Windows.Forms
 
 Public Class clsGeneralPodcasts
@@ -27,6 +29,7 @@ Public Class clsGeneralPodcasts
     Public Event Finished() Implements IRadioProvider.Finished
 
     Friend clsCachedHTTP As RadioDld.clsCachedWebClient
+    Friend Const intCacheHTTPHours As Integer = 2
 
     Public ReadOnly Property ProviderID() As Guid Implements IRadioProvider.ProviderID
         Get
@@ -60,8 +63,50 @@ Public Class clsGeneralPodcasts
         Return frmFindNewInst.pnlFindNew
     End Function
 
-    Public Function GetProgrammeInfo(ByVal strProgExtID As String) As IRadioProvider.ProgrammeInfo Implements IRadioProvider.GetProgrammeInfo
+    Public Function GetProgrammeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As IRadioProvider.ProgrammeInfo Implements IRadioProvider.GetProgrammeInfo
+        Dim ProgInfo As New IRadioProvider.ProgrammeInfo
+        ProgInfo.Success = False
 
+        Dim strRSS As String
+        Dim xmlRSS As New XmlDocument
+
+        Try
+            strRSS = clsCachedHTTP.DownloadString(strProgExtID, intCacheHTTPHours)
+        Catch expWeb As WebException
+            Return ProgInfo
+        End Try
+
+        Try
+            xmlRSS.LoadXml(strRSS)
+        Catch expXML As XmlException
+            Return ProgInfo
+        End Try
+
+        Dim xmlTitle As XmlNode = xmlRSS.SelectSingleNode("./rss/channel/title")
+        Dim xmlDescription As XmlNode = xmlRSS.SelectSingleNode("./rss/channel/description")
+
+        If xmlTitle Is Nothing Or xmlDescription Is Nothing Then
+            Return ProgInfo
+        End If
+
+        ProgInfo.Name = xmlTitle.InnerText
+        ProgInfo.Description = xmlDescription.InnerText
+
+        If ProgInfo.Name = "" Then
+            ProgInfo.Description = ""
+            Return ProgInfo
+        End If
+
+        Try
+            Dim strImageUrl As String = xmlRSS.SelectSingleNode("./rss/channel/image/url").InnerText
+            Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+            ProgInfo.Image = New System.Drawing.Bitmap(New IO.MemoryStream(bteImageData))
+        Catch
+            ProgInfo.Image = Nothing
+        End Try
+
+        ProgInfo.Success = True
+        Return ProgInfo
     End Function
 
     Public Function CouldBeNewEpisode(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean Implements IRadioProvider.CouldBeNewEpisode
