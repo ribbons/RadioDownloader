@@ -69,6 +69,9 @@ Public Class frmFindNew
             Exit Sub
         End If
 
+        lblResult.Text = "Loading information..."
+        Application.DoEvents()
+
         clsPluginInst.RaiseFoundNew(strURL)
 
         lblResult.Text = ""
