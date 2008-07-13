@@ -85,6 +85,7 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderID() As Guid
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
+    ReadOnly Property ProgInfoUpdateFreqDays() As Integer
     ReadOnly Property DynamicSubscriptionName() As Boolean
 
     Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient) As Panel

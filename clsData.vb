@@ -111,7 +111,7 @@ Public Class clsData
                                 clsCurDldProgData.ProgramDate = GetCustFormatDateTime(sqlReader, "Date")
                                 clsCurDldProgData.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
                                 clsCurDldProgData.DownloadUrl = ProgramDldUrl(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
-                                clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")), "mp3", GetCustFormatDateTime(sqlReader, "Date"), GetSaveFolder())
+                                'clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")), "mp3", GetCustFormatDateTime(sqlReader, "Date"), GetSaveFolder())
                                 clsCurDldProgData.BandwidthLimit = My.Settings.BandwidthLimit
 
                                 If .GetInt32(.GetOrdinal("Status")) = Statuses.Errored Then
@@ -177,30 +177,85 @@ Public Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function ProgramTitle(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT name FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Private Function UpdateProgInfoAsRequired(ByVal intProgID As Integer) As Date
+        Dim sqlCommand As New SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-        ProgramTitle = sqlReader.GetString(sqlReader.GetOrdinal("Name"))
+        If sqlReader.Read Then
+            Dim gidProviderID As New Guid(sqlReader.GetString(sqlReader.GetOrdinal("pluginid")))
+
+            If clsPluginsInst.PluginExists(gidProviderID) Then
+                Dim ThisInstance As IRadioProvider
+                ThisInstance = clsPluginsInst.GetPluginInstance(gidProviderID)
+
+                If sqlReader.GetDateTime(sqlReader.GetOrdinal("lastupdate")).AddDays(ThisInstance.ProgInfoUpdateFreqDays) < Now Then
+                    Call StoreProgrammeInfo(gidProviderID, sqlReader.GetString(sqlReader.GetOrdinal("extid")), Nothing)
+                End If
+            End If
+        End If
 
         sqlReader.Close()
     End Function
 
-    Public Function ProgramDescription(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT description FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function ProgrammeName(ByVal intProgID As Integer) As String
+        Call UpdateProgInfoAsRequired(intProgID)
+
+        Dim sqlCommand As New SQLiteCommand("select name from programmes where progid=@progid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-        ProgramDescription = sqlReader.GetString(sqlReader.GetOrdinal("description"))
+        If sqlReader.Read Then
+            ProgrammeName = sqlReader.GetString(sqlReader.GetOrdinal("name"))
+        Else
+            ProgrammeName = Nothing
+        End If
+
+        sqlReader.Close()
+    End Function
+
+    Public Function ProgrammeDescription(ByVal intProgID As Integer) As String
+        Call UpdateProgInfoAsRequired(intProgID)
+
+        Dim sqlCommand As New SQLiteCommand("select description from programmes where progid=@progid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            ProgrammeDescription = sqlReader.GetString(sqlReader.GetOrdinal("description"))
+        Else
+            ProgrammeDescription = Nothing
+        End If
+
+        sqlReader.Close()
+    End Function
+
+    Public Function ProgrammeImage(ByVal intProgID As Integer) As Bitmap
+        Call UpdateProgInfoAsRequired(intProgID)
+
+        Dim sqlCommand As New SQLiteCommand("select image from programmes where progid=@progid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            Dim intImgID As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("image"))
+
+            If intImgID <> Nothing Then
+                ProgrammeImage = RetrieveImage(intImgID)
+            Else
+                ProgrammeImage = Nothing
+            End If
+        Else
+            ProgrammeImage = Nothing
+        End If
 
         sqlReader.Close()
     End Function
 
     Public Function ProgramDetails(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        ProgramDetails = ProgramDescription(strProgramType, strStationID, strProgramID, dteProgramDate) + vbCrLf + vbCrLf
-        ProgramDetails += "Date: " + dteProgramDate.ToString("ddd dd/MMM/yy HH:mm") + vbCrLf
-        ProgramDetails += "Duration: "
+        'ProgramDetails = ProgramDescription(strProgramType, strStationID, strProgramID, dteProgramDate) + vbCrLf + vbCrLf
+        'ProgramDetails += "Date: " + dteProgramDate.ToString("ddd dd/MMM/yy HH:mm") + vbCrLf
+        'ProgramDetails += "Duration: "
 
         Dim lngDuration As Integer = ProgramDuration(strProgramType, strStationID, strProgramID, dteProgramDate)
         Dim lngHours As Integer = lngDuration \ 60
@@ -288,7 +343,7 @@ Public Class clsData
 
             lstItem.SubItems.Clear()
             lstItem.Name = strUniqueId
-            lstItem.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")) '+ " " + strUniqueId
+            'lstItem.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")) '+ " " + strUniqueId
 
             lstItem.SubItems.Add(GetCustFormatDateTime(sqlReader, "Date").ToShortDateString())
 
@@ -341,7 +396,7 @@ Public Class clsData
                 lstAdd = New ListViewItem
 
                 Dim strDynamicTitle As String
-                strDynamicTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), LatestDate(gidPluginID, .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))))
+                'strDynamicTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), LatestDate(gidPluginID, .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))))
 
                 If ProviderDynamicSubscriptionName(gidPluginID) Then
                     lstAdd.Text = strDynamicTitle
@@ -919,7 +974,7 @@ Public Class clsData
 
     Private Sub FindNewPluginInst_FoundNew(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String) Handles FindNewPluginInst.FoundNew
         Dim PluginException As Exception = Nothing
-        If GetProgrammeInfo(gidPluginID, strProgExtID, PluginException) = False Then
+        If StoreProgrammeInfo(gidPluginID, strProgExtID, PluginException) = False Then
             If PluginException IsNot Nothing Then
                 If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + vbCrLf + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
                     Dim clsReport As New clsErrorReporting(PluginException.GetType.ToString + ": " + PluginException.Message, PluginException.GetType.ToString + vbCrLf + PluginException.StackTrace)
@@ -937,7 +992,7 @@ Public Class clsData
         RaiseEvent FoundNew(intProgID)
     End Sub
 
-    Private Function GetProgrammeInfo(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String, ByRef PluginException As Exception) As Boolean
+    Private Function StoreProgrammeInfo(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String, ByRef PluginException As Exception) As Boolean
         If clsPluginsInst.PluginExists(gidPluginID) = False Then
             Return False
         End If
@@ -1010,6 +1065,25 @@ Public Class clsData
         Return CInt(sqlCommand.ExecuteScalar)
     End Function
 
+    Private Function RetrieveImage(ByVal intImgID As Integer) As Bitmap
+        Dim sqlCommand As New SQLiteCommand("select image from images where imgid=@imgid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@imgid", intImgID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            ' Get the size of the image data by passing nothing to getbytes
+            Dim intDataLength As Integer = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, Nothing, 0, 0))
+            Dim bteContent(intDataLength) As Byte
+
+            sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, bteContent, 0, intDataLength)
+            RetrieveImage = New Bitmap(New MemoryStream(bteContent))
+        Else
+            RetrieveImage = Nothing
+        End If
+
+        sqlReader.Close()
+    End Function
+
     Private Function ExtIDToProgID(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String) As Integer
         Dim sqlCommand As New SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@pluginid", gidPluginID.ToString))
@@ -1017,10 +1091,12 @@ Public Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
-            Return sqlReader.GetInt32(sqlReader.GetOrdinal("progid"))
+            ExtIDToProgID = sqlReader.GetInt32(sqlReader.GetOrdinal("progid"))
         Else
-            Return Nothing
+            ExtIDToProgID = Nothing
         End If
+
+        sqlReader.Close()
     End Function
 
     Public Sub AddToHTTPCache(ByVal strURI As String, ByVal bteData As Byte())
@@ -1044,10 +1120,12 @@ Public Class clsData
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
-            Return sqlReader.GetDateTime(sqlReader.GetOrdinal("lastfetch"))
+            GetHTTPCacheLastUpdate = sqlReader.GetDateTime(sqlReader.GetOrdinal("lastfetch"))
         Else
-            Return Nothing
+            GetHTTPCacheLastUpdate = Nothing
         End If
+
+        sqlReader.Close()
     End Function
 
     Public Function GetHTTPCacheContent(ByVal strURI As String) As Byte()
@@ -1061,9 +1139,11 @@ Public Class clsData
             Dim bteContent(intContentLength) As Byte
 
             sqlReader.GetBytes(sqlReader.GetOrdinal("data"), 0, bteContent, 0, intContentLength)
-            Return bteContent
+            GetHTTPCacheContent = bteContent
         Else
-            Return Nothing
+            GetHTTPCacheContent = Nothing
         End If
+
+        sqlReader.Close()
     End Function
 End Class

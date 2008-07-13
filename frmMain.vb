@@ -40,6 +40,7 @@ Public Class frmMain
     Private Enum View
         FindNewChooseProvider
         FindNewProviderForm
+        ProgEpisodes
         Favourites
         Subscriptions
         Downloads
@@ -267,7 +268,7 @@ Public Class frmMain
                     strActionString = "Cancel"
                 End If
 
-                Call SetSideBar(.ProgramTitle(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), .ProgramDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))) + strInfoBox, .ProgramImage(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+                'Call SetSideBar(.ProgramTitle(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), .ProgramDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))) + strInfoBox, .ProgramImage(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
                 Call SetToolbarButtons(strActionString)
             End With
         Else
@@ -474,6 +475,10 @@ Public Class frmMain
         'End If
 
         'tmrStartProcess.Enabled = True
+    End Sub
+
+    Private Sub clsProgData_FoundNew(ByVal intProgID As Integer) Handles clsProgData.FoundNew
+        Call SetView(MainTab.FindProgramme, View.ProgEpisodes, intProgID)
     End Sub
 
     Private Sub clsProgData_Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
@@ -736,7 +741,7 @@ Public Class frmMain
                 tbtDownloads.Checked = True
         End Select
 
-        SetViewDefaults(ViewData.View)
+        SetViewDefaults(ViewData)
 
         lstProviders.Visible = False
         pnlPluginSpace.Visible = False
@@ -751,6 +756,9 @@ Public Class frmMain
                 pnlPluginSpace.Visible = True
                 pnlPluginSpace.Controls.Clear()
                 pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(DirectCast(ViewData.ViewData, Guid)))
+            Case View.ProgEpisodes
+                lstEpisodes.Visible = True
+
             Case View.Subscriptions
                 lstSubscribed.Visible = True
                 Call SetContextForSelectedSubscription()
@@ -763,18 +771,22 @@ Public Class frmMain
     End Sub
 
     Private Sub SetViewDefaults()
-        SetViewDefaults(viwBackData(viwBackData.GetUpperBound(0)).View)
+        SetViewDefaults(viwBackData(viwBackData.GetUpperBound(0)))
     End Sub
 
-    Private Sub SetViewDefaults(ByVal CurrentView As View)
-        Select Case CurrentView
+    Private Sub SetViewDefaults(ByVal ViewData As ViewStore)
+        Select Case ViewData.View
             Case View.FindNewChooseProvider
                 Call SetToolbarButtons("")
                 Call SetSideBar("Find New", "This view allows you to browse all of the programmes that are available for you to download or subscribe to." + vbCrLf + "Select a station icon to show the programmes available from it.", Nothing)
             Case View.FindNewProviderForm
-                Dim gidProvider As Guid = DirectCast(viwBackData(viwBackData.GetUpperBound(0)).ViewData, Guid)
+                Dim gidProvider As Guid = DirectCast(ViewData.ViewData, Guid)
                 Call SetToolbarButtons("")
                 Call SetSideBar(clsProgData.ProviderName(gidProvider), "This view is a list of programmes available from " & clsProgData.ProviderName(gidProvider) & "." + vbCrLf + "Select a programme for more information, and to download or subscribe to it.", Nothing)
+            Case View.ProgEpisodes
+                Dim intProgID As Integer = CInt(ViewData.ViewData)
+                Call SetToolbarButtons("")
+                Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
             Case View.Subscriptions
                 Call SetToolbarButtons("")
                 Call SetSideBar("Subscriptions", "This view shows you the programmes that you are currently subscribed to." + vbCrLf + "To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it.", Nothing)

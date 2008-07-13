@@ -49,6 +49,13 @@ Public Class clsGeneralPodcasts
         End Get
     End Property
 
+    ReadOnly Property ProgInfoUpdateFreqDays() As Integer Implements IRadioProvider.ProgInfoUpdateFreqDays
+        Get
+            ' Updating the programme info every week should be a reasonable trade-off
+            Return 7
+        End Get
+    End Property
+
     ReadOnly Property DynamicSubscriptionName() As Boolean Implements IRadioProvider.DynamicSubscriptionName
         Get
             Return False
