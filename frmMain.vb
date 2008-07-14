@@ -117,7 +117,8 @@ Public Class frmMain
             Call clsDoDBUpdate.UpdateStructure()
         End If
 
-        Call lstEpisodes.Columns.Add("Programme Name", 540)
+        Call lstEpisodes.Columns.Add("Date", 100)
+        Call lstEpisodes.Columns.Add("Episode Name", 440)
         Call lstSubscribed.Columns.Add("Programme Name", 225)
         Call lstSubscribed.Columns.Add("Last Download", 85)
         Call lstSubscribed.Columns.Add("Station", 115)
@@ -758,7 +759,7 @@ Public Class frmMain
                 pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(DirectCast(ViewData.ViewData, Guid)))
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
-
+                clsProgData.ListEpisodes(CInt(ViewData.ViewData), lstEpisodes)
             Case View.Subscriptions
                 lstSubscribed.Visible = True
                 Call SetContextForSelectedSubscription()

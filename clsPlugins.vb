@@ -15,8 +15,9 @@
 Option Strict On
 Option Explicit On
 
-Imports System.Reflection
 Imports System.IO
+Imports System.Reflection
+Imports System.Collections.Generic
 
 Public Interface IRadioProvider
     Class StationTable
@@ -65,6 +66,16 @@ Public Interface IRadioProvider
         Dim Success As Boolean
     End Structure
 
+    Structure EpisodeInfo
+        Dim Name As String
+        Dim Description As String
+        Dim DurationSecs As Integer
+        Dim [Date] As DateTime
+        Dim Image As Bitmap
+        Dim ExtInfo As Dictionary(Of String, String)
+        Dim Success As Boolean
+    End Structure
+
     Structure ProgramListItem
         Dim ProgramID As String
         Dim StationID As String
@@ -90,7 +101,8 @@ Public Interface IRadioProvider
 
     Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient) As Panel
     Function GetProgrammeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As ProgrammeInfo
-    Function CouldBeNewEpisode(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
+    Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As String()
+    Function GetEpisodeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As EpisodeInfo
     Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean
 
     Event FoundNew(ByVal gidPluginID As Guid, ByVal strProgExtID As String)

@@ -18,6 +18,7 @@ Option Explicit On
 Imports RadioDld
 Imports System.Xml
 Imports System.Net
+Imports System.Drawing
 Imports System.Windows.Forms
 
 Public Class clsGeneralPodcasts
@@ -104,20 +105,144 @@ Public Class clsGeneralPodcasts
             Return ProgInfo
         End If
 
-        Try
-            Dim strImageUrl As String = xmlRSS.SelectSingleNode("./rss/channel/image/url").InnerText
-            Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
-            ProgInfo.Image = New System.Drawing.Bitmap(New IO.MemoryStream(bteImageData))
-        Catch
-            ProgInfo.Image = Nothing
-        End Try
+        ProgInfo.Image = RSSFeedImage(clsCachedHTTP, xmlRSS)
 
         ProgInfo.Success = True
         Return ProgInfo
     End Function
 
-    Public Function CouldBeNewEpisode(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean Implements IRadioProvider.CouldBeNewEpisode
+    Public Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
+        Dim strEpisodeIDs(-1) As String
+        GetAvailableEpisodeIDs = strEpisodeIDs
 
+        Dim strRSS As String
+        Dim xmlRSS As New XmlDocument
+
+        Try
+            strRSS = clsCachedHTTP.DownloadString(strProgExtID, intCacheHTTPHours)
+        Catch expWeb As WebException
+            Exit Function
+        End Try
+
+        Try
+            xmlRSS.LoadXml(strRSS)
+        Catch expXML As XmlException
+            Exit Function
+        End Try
+
+        Dim xmlItems As XmlNodeList
+        xmlItems = xmlRSS.SelectNodes("./rss/channel/item")
+
+        If xmlItems Is Nothing Then
+            Exit Function
+        End If
+
+        Dim strItemID As String
+
+        For Each xmlItem As XmlNode In xmlItems
+            strItemID = ItemNodeToEpisodeID(xmlItem)
+
+            If strItemID <> "" Then
+                ReDim Preserve strEpisodeIDs(strEpisodeIDs.GetUpperBound(0) + 1)
+                strEpisodeIDs(strEpisodeIDs.GetUpperBound(0)) = strItemID
+            End If
+        Next
+
+        Return strEpisodeIDs
+    End Function
+
+    Function GetEpisodeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As IRadioProvider.EpisodeInfo Implements IRadioProvider.GetEpisodeInfo
+        Dim EpisodeInfo As New IRadioProvider.EpisodeInfo
+        EpisodeInfo.Success = False
+
+        Dim strRSS As String
+        Dim xmlRSS As New XmlDocument
+
+        Try
+            strRSS = clsCachedHTTP.DownloadString(strProgExtID, intCacheHTTPHours)
+        Catch expWeb As WebException
+            Return EpisodeInfo
+        End Try
+
+        Try
+            xmlRSS.LoadXml(strRSS)
+        Catch expXML As XmlException
+            Return EpisodeInfo
+        End Try
+
+        Dim xmlItems As XmlNodeList
+        xmlItems = xmlRSS.SelectNodes("./rss/channel/item")
+
+        If xmlItems Is Nothing Then
+            Return EpisodeInfo
+        End If
+
+        Dim strItemID As String
+
+        For Each xmlItem As XmlNode In xmlItems
+            strItemID = ItemNodeToEpisodeID(xmlItem)
+
+            If strItemID = strEpisodeExtID Then
+                Dim xmlTitle As XmlNode = xmlItem.SelectSingleNode("./title")
+                Dim xmlDescription As XmlNode = xmlItem.SelectSingleNode("./description")
+                Dim xmlPubDate As XmlNode = xmlItem.SelectSingleNode("./pubDate")
+                Dim xmlEnclosure As XmlNode = xmlItem.SelectSingleNode("./enclosure")
+
+                If xmlEnclosure Is Nothing Then
+                    Return EpisodeInfo
+                End If
+
+                Dim xmlUrl As XmlAttribute = xmlEnclosure.Attributes("url")
+
+                If xmlUrl Is Nothing Then
+                    Return EpisodeInfo
+                End If
+
+                Try
+                    Dim uriTestValid As New Uri(xmlUrl.Value)
+                Catch expUriFormat As UriFormatException
+                    ' The enclosure url is empty or malformed, so return false for success
+                    Return EpisodeInfo
+                End Try
+
+                Dim dicExtInfo As New Dictionary(Of String, String)
+                dicExtInfo.Add("EnclosureURL", xmlUrl.Value)
+
+                If xmlTitle IsNot Nothing Then
+                    EpisodeInfo.Name = xmlTitle.InnerText
+                End If
+
+                If xmlDescription IsNot Nothing Then
+                    EpisodeInfo.Description = xmlDescription.InnerText
+                End If
+
+                If EpisodeInfo.Name = "" Then
+                    EpisodeInfo.Description = ""
+                    Return EpisodeInfo
+                End If
+
+                EpisodeInfo.DurationSecs = Nothing
+
+                If xmlPubDate IsNot Nothing Then
+                    Try
+                        EpisodeInfo.Date = CDate(xmlPubDate.InnerText)
+                    Catch expInvalidCast As InvalidCastException
+                        ' Pubdate is incorrectly formatted
+                        EpisodeInfo.Date = Now
+                    End Try
+                Else
+                    EpisodeInfo.Date = Now
+                End If
+
+                EpisodeInfo.Image = RSSFeedImage(clsCachedHTTP, xmlRSS)
+                EpisodeInfo.ExtInfo = dicExtInfo
+                EpisodeInfo.Success = True
+
+                Return EpisodeInfo
+            End If
+        Next
+
+        Return EpisodeInfo
     End Function
 
     Public Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean Implements IRadioProvider.IsStillAvailable
@@ -131,4 +256,37 @@ Public Class clsGeneralPodcasts
     Friend Sub RaiseFoundNew(ByVal strExtID As String)
         RaiseEvent FoundNew(Me.ProviderID, strExtID)
     End Sub
+
+    Private Function ItemNodeToEpisodeID(ByVal xmlItem As XmlNode) As String
+        Dim strItemID As String = ""
+        Dim xmlItemID As XmlNode = xmlItem.SelectSingleNode("./guid")
+
+        If xmlItemID IsNot Nothing Then
+            strItemID = xmlItemID.InnerText
+        End If
+
+        If strItemID = "" Then
+            xmlItemID = xmlItem.SelectSingleNode("./enclosure")
+
+            If xmlItemID IsNot Nothing Then
+                Dim xmlUrl As XmlAttribute = xmlItemID.Attributes("url")
+
+                If xmlUrl IsNot Nothing Then
+                    strItemID = xmlUrl.Value
+                End If
+            End If
+        End If
+
+        Return strItemID
+    End Function
+
+    Private Function RSSFeedImage(ByVal clsCachedHTTP As clsCachedWebClient, ByVal xmlRSS As XmlDocument) As Bitmap
+        Try
+            Dim strImageUrl As String = xmlRSS.SelectSingleNode("./rss/channel/image/url").InnerText
+            Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+            Return New Bitmap(New IO.MemoryStream(bteImageData))
+        Catch
+            Return Nothing
+        End Try
+    End Function
 End Class

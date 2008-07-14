@@ -252,6 +252,34 @@ Public Class clsData
         sqlReader.Close()
     End Function
 
+    Public Function EpisodeName(ByVal intEpID As Integer) As String
+        Dim sqlCommand As New SQLiteCommand("select name from episodes where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            EpisodeName = sqlReader.GetString(sqlReader.GetOrdinal("name"))
+        Else
+            EpisodeName = Nothing
+        End If
+
+        sqlReader.Close()
+    End Function
+
+    Public Function EpisodeDate(ByVal intEpID As Integer) As DateTime
+        Dim sqlCommand As New SQLiteCommand("select date from episodes where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            EpisodeDate = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
+        Else
+            EpisodeDate = Nothing
+        End If
+
+        sqlReader.Close()
+    End Function
+
     Public Function ProgramDetails(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
         'ProgramDetails = ProgramDescription(strProgramType, strStationID, strProgramID, dteProgramDate) + vbCrLf + vbCrLf
         'ProgramDetails += "Date: " + dteProgramDate.ToString("ddd dd/MMM/yy HH:mm") + vbCrLf
@@ -428,6 +456,24 @@ Public Class clsData
         sqlReader.Close()
     End Sub
 
+    Public Sub ListEpisodes(ByVal intProgID As Integer, ByRef lstListview As ListView)
+        Dim intAvailable As Integer()
+        intAvailable = GetAvailableEpisodes(intProgID)
+
+        lstListview.Items.Clear()
+
+        For Each intEpID As Integer In intAvailable
+            Dim lstAdd As New ListViewItem
+
+            lstAdd.Text = EpisodeDate(intEpID).ToShortDateString
+            lstAdd.SubItems.Add(EpisodeName(intEpID))
+            lstAdd.Tag = intEpID
+            lstAdd.ImageKey = "subscribed"
+
+            lstListview.Items.Add(lstAdd)
+        Next
+    End Sub
+
     Private Function SubscriptionName(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As String
         Dim sqlCommand As New SQLiteCommand("SELECT SubscriptionName FROM tblSubscribed WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
@@ -564,14 +610,14 @@ Public Class clsData
             Return False
         End If
 
-        If clsPluginsInst.PluginExists(gidProviderID) Then
-            Dim ThisInstance As IRadioProvider
-            ThisInstance = clsPluginsInst.GetPluginInstance(gidProviderID)
-            Return ThisInstance.CouldBeNewEpisode(strStationID, strProgramID, dteLatest) = False
-        Else
-            ' As we can't check if we have the latest, just assume that we do for the moment
-            Return True
-        End If
+        'If clsPluginsInst.PluginExists(gidProviderID) Then
+        '    Dim ThisInstance As IRadioProvider
+        '    ThisInstance = clsPluginsInst.GetPluginInstance(gidProviderID)
+        '    Return ThisInstance.CouldBeNewEpisode(strStationID, strProgramID, dteLatest) = False
+        'Else
+        '    ' As we can't check if we have the latest, just assume that we do for the moment
+        Return True
+        'End If
     End Function
 
     Private Sub StoreLatestInfo(ByVal gidPluginID As Guid, ByVal strStationID As String, ByRef strProgramID As String)
@@ -1024,13 +1070,11 @@ Public Class clsData
             intProgID = CInt(sqlCommand.ExecuteScalar)
         End If
 
-        Dim intImgID As Integer
-        intImgID = StoreImage(ProgInfo.Image)
-
-        sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, lastupdate=datetime('now') where progid=@progid", sqlConnection)
+        sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, lastupdate=@lastupdate where progid=@progid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@name", ProgInfo.Name))
         sqlCommand.Parameters.Add(New SQLiteParameter("@description", ProgInfo.Description))
-        sqlCommand.Parameters.Add(New SQLiteParameter("@image", intImgID))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@image", StoreImage(ProgInfo.Image)))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@lastupdate", Now))
         sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         sqlCommand.ExecuteNonQuery()
 
@@ -1073,7 +1117,7 @@ Public Class clsData
         If sqlReader.Read Then
             ' Get the size of the image data by passing nothing to getbytes
             Dim intDataLength As Integer = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, Nothing, 0, 0))
-            Dim bteContent(intDataLength) As Byte
+            Dim bteContent(intDataLength - 1) As Byte
 
             sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, bteContent, 0, intDataLength)
             RetrieveImage = New Bitmap(New MemoryStream(bteContent))
@@ -1100,18 +1144,15 @@ Public Class clsData
     End Function
 
     Public Sub AddToHTTPCache(ByVal strURI As String, ByVal bteData As Byte())
-        Dim sqlTransaction As SQLiteTransaction = sqlConnection.BeginTransaction()
-
         Dim sqlCommand As New SQLiteCommand("delete from httpcache where uri=@uri", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
         sqlCommand.ExecuteNonQuery()
 
-        sqlCommand = New SQLiteCommand("insert into httpcache (uri, lastfetch, data) values(@uri, datetime('now'), @data)", sqlConnection)
+        sqlCommand = New SQLiteCommand("insert into httpcache (uri, lastfetch, data) values(@uri, @lastfetch, @data)", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@lastfetch", Now))
         sqlCommand.Parameters.Add(New SQLiteParameter("@data", bteData))
         sqlCommand.ExecuteNonQuery()
-
-        sqlTransaction.Commit()
     End Sub
 
     Public Function GetHTTPCacheLastUpdate(ByVal strURI As String) As Date
@@ -1136,7 +1177,7 @@ Public Class clsData
         If sqlReader.Read Then
             ' Get the length of the content by passing nothing to getbytes
             Dim intContentLength As Integer = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("data"), 0, Nothing, 0, 0))
-            Dim bteContent(intContentLength) As Byte
+            Dim bteContent(intContentLength - 1) As Byte
 
             sqlReader.GetBytes(sqlReader.GetOrdinal("data"), 0, bteContent, 0, intContentLength)
             GetHTTPCacheContent = bteContent
@@ -1145,5 +1186,109 @@ Public Class clsData
         End If
 
         sqlReader.Close()
+    End Function
+
+    Private Function GetAvailableEpisodes(ByVal intProgID As Integer) As Integer()
+        Dim intEpisodeIDs(-1) As Integer
+        GetAvailableEpisodes = intEpisodeIDs
+
+        Dim sqlCommand As New SQLiteCommand("select pluginid, extid from programmes where progid=@progid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read = False Then
+            Exit Function
+        End If
+
+        Dim gidProviderID As New Guid(sqlReader.GetString(sqlReader.GetOrdinal("pluginid")))
+        Dim strProgExtID As String = sqlReader.GetString(sqlReader.GetOrdinal("extid"))
+
+        sqlReader.Close()
+
+        If clsPluginsInst.PluginExists(gidProviderID) = False Then
+            Exit Function
+        End If
+
+        Dim strEpisodeExtIDs As String()
+        Dim clsCachedWebInst As New clsCachedWebClient(Me)
+        Dim ThisInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(gidProviderID)
+
+        Try
+            strEpisodeExtIDs = ThisInstance.GetAvailableEpisodeIDs(clsCachedWebInst, strProgExtID)
+        Catch expException As Exception
+            ' Catch any unhandled provider exceptions
+            Exit Function
+        End Try
+
+        Dim EpisodeInfo As IRadioProvider.EpisodeInfo
+
+        If strEpisodeExtIDs IsNot Nothing Then
+            Dim sqlFindCmd As New SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", sqlConnection)
+            Dim sqlAddEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", sqlConnection)
+            Dim sqlGetRowIDCmd As New SQLiteCommand("select last_insert_rowid()", sqlConnection)
+            Dim sqlAddExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", sqlConnection)
+
+            For Each strEpisodeExtID As String In strEpisodeExtIDs
+                With sqlFindCmd
+                    .Parameters.Add(New SQLiteParameter("@progid", intProgID))
+                    .Parameters.Add(New SQLiteParameter("@extid", strEpisodeExtID))
+                    sqlReader = .ExecuteReader
+                End With
+
+                If sqlReader.Read Then
+                    ReDim Preserve intEpisodeIDs(intEpisodeIDs.GetUpperBound(0) + 1)
+                    intEpisodeIDs(intEpisodeIDs.GetUpperBound(0)) = sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))
+                Else
+                    Try
+                        EpisodeInfo = ThisInstance.GetEpisodeInfo(clsCachedWebInst, strProgExtID, strEpisodeExtID)
+                    Catch expException As Exception
+                        ' Catch any unhandled provider exceptions
+                        sqlReader.Close()
+                        Continue For
+                    End Try
+
+                    If EpisodeInfo.Success = False Then
+                        sqlReader.Close()
+                        Continue For
+                    End If
+
+                    If EpisodeInfo.Name = "" Or EpisodeInfo.Date = Nothing Then
+                        sqlReader.Close()
+                        Continue For
+                    End If
+
+                    With sqlAddEpisodeCmd
+                        .Parameters.Add(New SQLiteParameter("@progid", intProgID))
+                        .Parameters.Add(New SQLiteParameter("@extid", strEpisodeExtID))
+                        .Parameters.Add(New SQLiteParameter("@name", EpisodeInfo.Name))
+                        .Parameters.Add(New SQLiteParameter("@description", EpisodeInfo.Description))
+                        .Parameters.Add(New SQLiteParameter("@duration", EpisodeInfo.DurationSecs))
+                        .Parameters.Add(New SQLiteParameter("@date", EpisodeInfo.Date))
+                        .Parameters.Add(New SQLiteParameter("@image", StoreImage(EpisodeInfo.Image)))
+                        .ExecuteNonQuery()
+                    End With
+
+                    Dim intEpID As Integer = CInt(sqlGetRowIDCmd.ExecuteScalar)
+
+                    If EpisodeInfo.ExtInfo IsNot Nothing Then
+                        For Each strKey As String In EpisodeInfo.ExtInfo.Keys
+                            With sqlAddExtInfoCmd
+                                .Parameters.Add(New SQLiteParameter("@epid", intProgID))
+                                .Parameters.Add(New SQLiteParameter("@name", strEpisodeExtID))
+                                .Parameters.Add(New SQLiteParameter("@value", EpisodeInfo.Name))
+                                .ExecuteNonQuery()
+                            End With
+                        Next
+                    End If
+
+                    ReDim Preserve intEpisodeIDs(intEpisodeIDs.GetUpperBound(0) + 1)
+                    intEpisodeIDs(intEpisodeIDs.GetUpperBound(0)) = intEpID
+                End If
+
+                sqlReader.Close()
+            Next
+        End If
+
+        Return intEpisodeIDs
     End Function
 End Class
