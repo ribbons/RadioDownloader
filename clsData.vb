@@ -405,7 +405,7 @@ Public Class clsData
     End Function
 
     Public Sub UpdateDlList(ByRef lstListview As ExtListView, ByRef prgProgressBar As ProgressBar)
-        Dim comCommand As New SQLiteCommand("select Type,Station,ID,Date,Status,PlayCount from tblDownloads order by Date desc", sqlConnection)
+        Dim comCommand As New SQLiteCommand("select episodes.epid, name, date, status, playcount from episodes, downloads where episodes.epid=downloads.epid order by date desc", sqlConnection)
         Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
         lstListview.RemoveAllControls()
@@ -415,36 +415,36 @@ Public Class clsData
         Dim intExistingPos As Integer = 0
 
         Do While sqlReader.Read
-            Dim strUniqueId As String = GetCustFormatDateTime(sqlReader, "Date").ToString & "||" + sqlReader.GetString(sqlReader.GetOrdinal("ID")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Station")) + "||" + sqlReader.GetString(sqlReader.GetOrdinal("Type"))
+            Dim intEpID As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))
 
             If lstListview.Items.Count - 1 < intExistingPos Then
-                lstItem = lstListview.Items.Add(strUniqueId, "", 0)
+                lstItem = lstListview.Items.Add(CStr(intEpID), "", 0)
             Else
-                While lstListview.Items.ContainsKey(strUniqueId) And CStr(lstListview.Items(intExistingPos).Name) <> strUniqueId
+                While lstListview.Items.ContainsKey(CStr(intEpID)) And CInt(lstListview.Items(intExistingPos).Name) <> intEpID
                     lstListview.Items.RemoveAt(intExistingPos)
                 End While
 
-                If CStr(lstListview.Items(intExistingPos).Name) = strUniqueId Then
+                If CInt(lstListview.Items(intExistingPos).Name) = intEpID Then
                     lstItem = lstListview.Items(intExistingPos)
                 Else
-                    lstItem = lstListview.Items.Insert(intExistingPos, strUniqueId, "", 0)
+                    lstItem = lstListview.Items.Insert(intExistingPos, CStr(intEpID), "", 0)
                 End If
             End If
 
             intExistingPos += 1
 
             lstItem.SubItems.Clear()
-            lstItem.Name = strUniqueId
-            'lstItem.Text = ProgramTitle(sqlReader.GetString(sqlReader.GetOrdinal("Type")), sqlReader.GetString(sqlReader.GetOrdinal("Station")), sqlReader.GetString(sqlReader.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")) '+ " " + strUniqueId
+            lstItem.Name = CStr(intEpID)
+            lstItem.Text = sqlReader.GetString(sqlReader.GetOrdinal("name"))
 
-            lstItem.SubItems.Add(GetCustFormatDateTime(sqlReader, "Date").ToShortDateString())
+            lstItem.SubItems.Add(sqlReader.GetDateTime(sqlReader.GetOrdinal("date")).ToShortDateString())
 
-            Select Case sqlReader.GetInt32(sqlReader.GetOrdinal("Status"))
+            Select Case sqlReader.GetInt32(sqlReader.GetOrdinal("status"))
                 Case Statuses.Waiting
                     lstItem.SubItems.Add("Waiting")
                     lstItem.ImageKey = "waiting"
                 Case Statuses.Downloaded
-                    If sqlReader.GetInt32(sqlReader.GetOrdinal("PlayCount")) > 0 Then
+                    If sqlReader.GetInt32(sqlReader.GetOrdinal("playcount")) > 0 Then
                         lstItem.SubItems.Add("Downloaded")
                         lstItem.ImageKey = "downloaded"
                     Else
@@ -580,10 +580,9 @@ Public Class clsData
         'sqlReader.Close()
     End Sub
 
-    Public Function AddDownload(ByVal gidPluginID As Guid, ByVal strStationID As String, ByVal strProgramID As String) As Boolean
-        Call GetLatest(gidPluginID, strStationID, strProgramID)
-
-        Dim sqlCommand As New SQLiteCommand("SELECT id FROM tblDownloads WHERE type=""" + gidPluginID.ToString + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ AND date=""" + LatestDate(gidPluginID, strStationID, strProgramID).ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function AddDownload(ByVal intEpID As Integer) As Boolean
+        Dim sqlCommand As New SQLiteCommand("select epid from downloads where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
@@ -592,7 +591,9 @@ Public Class clsData
 
         sqlReader.Close()
 
-        sqlCommand = New SQLiteCommand("INSERT INTO tblDownloads (Type, Station, ID, Date, Status) VALUES (""" + gidPluginID.ToString + """, """ + strStationID + """, """ + strProgramID + """, """ + LatestDate(gidPluginID, strStationID, strProgramID).ToString(strSqlDateFormat) + """, " + CStr(Statuses.Waiting) + ")", sqlConnection)
+        sqlCommand = New SQLiteCommand("insert into downloads (epid, status) values (@epid, @status)", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Waiting))
         Call sqlCommand.ExecuteNonQuery()
 
         Return True

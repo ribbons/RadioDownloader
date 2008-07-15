@@ -642,16 +642,15 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtDownload_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownload.Click
-        Dim strSplit() As String
-        strSplit = Split(lstEpisodes.SelectedItems(0).Tag.ToString, "||")
+        Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
-        'If clsProgData.AddDownload(strSplit(0), strSplit(1), strSplit(2)) Then
-        'Call tbtDownloads_Click(New Object, New EventArgs)
-        'Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        'tmrStartProcess.Enabled = True
-        'Else
-        'Call MsgBox("The latest episode of this programme is already in the download list!", MsgBoxStyle.Exclamation, "Radio Downloader")
-        'End If
+        If clsProgData.AddDownload(intEpID) Then
+            Call SetView(MainTab.Downloads, View.Downloads, Nothing)
+            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            tmrStartProcess.Enabled = True
+        Else
+            Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
+        End If
     End Sub
 
     Private Sub tbtReportError_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtReportError.Click
