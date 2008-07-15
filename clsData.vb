@@ -322,6 +322,33 @@ Public Class clsData
         sqlReader.Close()
     End Function
 
+    Public Function EpisodeAutoDownload(ByVal intEpID As Integer) As Boolean
+        Dim sqlCommand As New SQLiteCommand("select autodownload from episodes where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            EpisodeAutoDownload = sqlReader.GetInt32(sqlReader.GetOrdinal("autodownload")) = 1
+        Else
+            EpisodeAutoDownload = Nothing
+        End If
+
+        sqlReader.Close()
+    End Function
+
+    Public Sub SetEpisodeAutoDownload(ByVal intEpID As Integer, ByVal booAutoDownload As Boolean)
+        Dim intAutoDownload As Integer = 0
+
+        If booAutoDownload Then
+            intAutoDownload = 1
+        End If
+
+        Dim sqlCommand As New SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@autodownload", intAutoDownload))
+        sqlCommand.ExecuteNonQuery()
+    End Sub
+
     Public Function EpisodeDetails(ByVal intEpID As Integer) As String
         EpisodeDetails = ""
 
@@ -504,6 +531,7 @@ Public Class clsData
 
             lstAdd.Text = EpisodeDate(intEpID).ToShortDateString
             lstAdd.SubItems.Add(EpisodeName(intEpID))
+            lstAdd.Checked = EpisodeAutoDownload(intEpID)
             lstAdd.Tag = intEpID
 
             lstListview.Items.Add(lstAdd)

@@ -178,6 +178,10 @@ Public Class frmMain
         Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, lstProviders.SelectedItems(0).Tag)
     End Sub
 
+    Private Sub lstEpisodes_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lstEpisodes.ItemCheck
+        clsProgData.SetEpisodeAutoDownload(CInt(lstEpisodes.Items(e.Index).Tag), e.NewValue = CheckState.Checked)
+    End Sub
+
     Private Sub lstEpisodes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
         If lstEpisodes.SelectedItems.Count > 0 Then
             Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
@@ -750,6 +754,7 @@ Public Class frmMain
                 pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(DirectCast(ViewData.ViewData, Guid)))
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
+                RemoveHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
                 clsProgData.ListEpisodes(CInt(ViewData.ViewData), lstEpisodes)
             Case View.Subscriptions
                 lstSubscribed.Visible = True
