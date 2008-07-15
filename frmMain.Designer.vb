@@ -485,6 +485,7 @@
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstEpisodes.CheckBoxes = True
         Me.lstEpisodes.Location = New System.Drawing.Point(187, 231)
         Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
         Me.lstEpisodes.MultiSelect = False

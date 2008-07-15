@@ -109,7 +109,7 @@ Public Class clsData
                                 clsCurDldProgData.StationID = .GetString(.GetOrdinal("Station"))
                                 clsCurDldProgData.ProgramID = .GetString(.GetOrdinal("ID"))
                                 clsCurDldProgData.ProgramDate = GetCustFormatDateTime(sqlReader, "Date")
-                                clsCurDldProgData.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
+                                'clsCurDldProgData.ProgramDuration = ProgramDuration(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
                                 clsCurDldProgData.DownloadUrl = ProgramDldUrl(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date"))
                                 'clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), GetCustFormatDateTime(sqlReader, "Date")), "mp3", GetCustFormatDateTime(sqlReader, "Date"), GetSaveFolder())
                                 clsCurDldProgData.BandwidthLimit = My.Settings.BandwidthLimit
@@ -163,16 +163,6 @@ Public Class clsData
 
         sqlReader.Read()
         DownloadStatus = DirectCast(sqlReader.GetInt32(sqlReader.GetOrdinal("Status")), Statuses)
-
-        sqlReader.Close()
-    End Function
-
-    Public Function ProgramDuration(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
-        Dim sqlCommand As New SQLiteCommand("SELECT duration FROM tblInfo WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" & strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        sqlReader.Read()
-        ProgramDuration = sqlReader.GetInt32(sqlReader.GetOrdinal("Duration"))
 
         sqlReader.Close()
     End Function
@@ -266,6 +256,24 @@ Public Class clsData
         sqlReader.Close()
     End Function
 
+    Public Function EpisodeDescription(ByVal intEpID As Integer) As String
+        Dim sqlCommand As New SQLiteCommand("select description from episodes where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            If sqlReader.IsDBNull(sqlReader.GetOrdinal("description")) Then
+                EpisodeDescription = Nothing
+            Else
+                EpisodeDescription = sqlReader.GetString(sqlReader.GetOrdinal("description"))
+            End If
+        Else
+            EpisodeDescription = Nothing
+        End If
+
+        sqlReader.Close()
+    End Function
+
     Public Function EpisodeDate(ByVal intEpID As Integer) As DateTime
         Dim sqlCommand As New SQLiteCommand("select date from episodes where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
@@ -280,47 +288,76 @@ Public Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function ProgramDetails(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        'ProgramDetails = ProgramDescription(strProgramType, strStationID, strProgramID, dteProgramDate) + vbCrLf + vbCrLf
-        'ProgramDetails += "Date: " + dteProgramDate.ToString("ddd dd/MMM/yy HH:mm") + vbCrLf
-        'ProgramDetails += "Duration: "
-
-        Dim lngDuration As Integer = ProgramDuration(strProgramType, strStationID, strProgramID, dteProgramDate)
-        Dim lngHours As Integer = lngDuration \ 60
-        Dim lngMins As Integer = lngDuration Mod 60
-
-        If lngHours > 0 Then
-            ProgramDetails += CStr(lngHours) + "hr"
-            If lngHours > 1 Then
-                ProgramDetails += "s"
-            End If
-        End If
-        If lngHours > 0 And lngMins > 0 Then
-            ProgramDetails += " "
-        End If
-        If lngMins > 0 Then
-            ProgramDetails += CStr(lngMins) + "min"
-        End If
-    End Function
-
-    Public Function ProgramImage(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Bitmap
-        Dim sqlCommand As New SQLiteCommand("SELECT image FROM tblInfo WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function EpisodeDuration(ByVal intEpID As Integer) As Integer
+        Dim sqlCommand As New SQLiteCommand("select duration from episodes where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
-            Dim objBlob As Object = sqlReader.GetValue(sqlReader.GetOrdinal("image"))
-
-            If IsDBNull(objBlob) = False Then
-                Dim stmStream As New MemoryStream(CType(objBlob, Byte()))
-                ProgramImage = New Bitmap(stmStream)
-            Else
-                ProgramImage = Nothing
-            End If
+            EpisodeDuration = sqlReader.GetInt32(sqlReader.GetOrdinal("duration"))
         Else
-            ProgramImage = Nothing
+            EpisodeDuration = Nothing
         End If
 
         sqlReader.Close()
+    End Function
+
+    Public Function EpisodeImage(ByVal intEpID As Integer) As Bitmap
+        Dim sqlCommand As New SQLiteCommand("select image from episodes where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            Dim intImgID As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("image"))
+
+            If intImgID <> Nothing Then
+                EpisodeImage = RetrieveImage(intImgID)
+            Else
+                EpisodeImage = Nothing
+            End If
+        Else
+            EpisodeImage = Nothing
+        End If
+
+        sqlReader.Close()
+    End Function
+
+    Public Function EpisodeDetails(ByVal intEpID As Integer) As String
+        EpisodeDetails = ""
+
+        Dim strDescription As String = EpisodeDescription(intEpID)
+
+        If strDescription <> Nothing Then
+            EpisodeDetails += strDescription + vbCrLf + vbCrLf
+        End If
+
+        EpisodeDetails += "Date: " + EpisodeDate(intEpID).ToString("ddd dd/MMM/yy HH:mm")
+
+        Dim intDuration As Integer = EpisodeDuration(intEpID)
+
+        If intDuration <> Nothing Then
+            EpisodeDetails += vbCrLf + "Duration: "
+
+            intDuration = intDuration \ 60
+            Dim intHours As Integer = intDuration \ 60
+            Dim intMins As Integer = intDuration Mod 60
+
+            If intHours > 0 Then
+                EpisodeDetails += CStr(intHours) + "hr"
+
+                If intHours > 1 Then
+                    EpisodeDetails += "s"
+                End If
+            End If
+
+            If intHours > 0 And intMins > 0 Then
+                EpisodeDetails += " "
+            End If
+
+            If intMins > 0 Then
+                EpisodeDetails += CStr(intMins) + "min"
+            End If
+        End If
     End Function
 
     Private Function ProgramDldUrl(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
@@ -468,7 +505,6 @@ Public Class clsData
             lstAdd.Text = EpisodeDate(intEpID).ToShortDateString
             lstAdd.SubItems.Add(EpisodeName(intEpID))
             lstAdd.Tag = intEpID
-            lstAdd.ImageKey = "subscribed"
 
             lstListview.Items.Add(lstAdd)
         Next

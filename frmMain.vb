@@ -129,7 +129,6 @@ Public Class frmMain
         Call lstDownloads.Columns.Add("Progress", 100)
 
         lstProviders.LargeImageList = imlProviders
-        lstEpisodes.SmallImageList = imlListIcons
         lstSubscribed.SmallImageList = imlListIcons
         lstDownloads.SmallImageList = imlListIcons
 
@@ -175,29 +174,21 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub lstStations_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
+    Private Sub lstProviders_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
         Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, lstProviders.SelectedItems(0).Tag)
     End Sub
 
-    Private Sub lstStationProgs_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
-        'If lstEpisodes.SelectedItems.Count > 0 Then
-        '    Dim strSplit() As String
-        '    strSplit = Split(lstEpisodes.SelectedItems(0).Tag.ToString, "||")
+    Private Sub lstEpisodes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
+        If lstEpisodes.SelectedItems.Count > 0 Then
+            Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
-        '    With clsProgData
-        '        Call .GetLatest(strSplit(0), strSplit(1), strSplit(2))
-
-        '        If .LatestDate(strSplit(0), strSplit(1), strSplit(2)) = Nothing = False Then
-        '            Call SetSideBar(.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramDetails(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))), .ProgramImage(strSplit(0), strSplit(1), strSplit(2), .LatestDate(strSplit(0), strSplit(1), strSplit(2))))
-        '            Call SetToolbarButtons("Download,Subscribe")
-        '        Else
-        '            Call SetSideBar("Programme Info", "Unfortunately, there was a problem getting information about this programme." + vbCrLf + "The available data could be invalid." + vbCrLf + "You may like to try again later.", Nothing)
-        '            Call SetToolbarButtons("")
-        '        End If
-        '    End With
-        'Else
-        '    Call TabAdjustments() ' Revert back to new items view default page
-        'End If
+            With clsProgData
+                Call SetSideBar(.EpisodeName(intEpID), .EpisodeDetails(intEpID), .EpisodeImage(intEpID))
+                Call SetToolbarButtons("Download,Subscribe")
+            End With
+        Else
+            Call SetViewDefaults() ' Revert back to programme info in sidebar
+        End If
     End Sub
 
     Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
@@ -786,7 +777,7 @@ Public Class frmMain
                 Call SetSideBar(clsProgData.ProviderName(gidProvider), "This view is a list of programmes available from " & clsProgData.ProviderName(gidProvider) & "." + vbCrLf + "Select a programme for more information, and to download or subscribe to it.", Nothing)
             Case View.ProgEpisodes
                 Dim intProgID As Integer = CInt(ViewData.ViewData)
-                Call SetToolbarButtons("")
+                Call SetToolbarButtons("Subscribe")
                 Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
             Case View.Subscriptions
                 Call SetToolbarButtons("")
