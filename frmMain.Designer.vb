@@ -242,6 +242,7 @@
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstSubscribed.FullRowSelect = True
         Me.lstSubscribed.Location = New System.Drawing.Point(187, 321)
         Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
         Me.lstSubscribed.MultiSelect = False
@@ -486,6 +487,7 @@
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstEpisodes.CheckBoxes = True
+        Me.lstEpisodes.FullRowSelect = True
         Me.lstEpisodes.Location = New System.Drawing.Point(187, 231)
         Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
         Me.lstEpisodes.MultiSelect = False
@@ -511,6 +513,7 @@
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstDownloads.FullRowSelect = True
         Me.lstDownloads.Location = New System.Drawing.Point(187, 410)
         Me.lstDownloads.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
         Me.lstDownloads.MultiSelect = False
