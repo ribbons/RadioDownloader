@@ -235,7 +235,25 @@ Public Class clsGeneralPodcasts
                     Return EpisodeInfo
                 End If
 
-                EpisodeInfo.DurationSecs = Nothing
+                Try
+                    Dim xmlDuration As XmlNode = xmlItem.SelectSingleNode("./itunes:duration", xmlNamespaceMgr)
+
+                    If xmlDuration IsNot Nothing Then
+                        Dim strSplitDuration() As String = Split(xmlDuration.InnerText.Replace(".", ":"), ":")
+
+                        If strSplitDuration.GetUpperBound(0) = 0 Then
+                            EpisodeInfo.DurationSecs = CInt(strSplitDuration(0))
+                        ElseIf strSplitDuration.GetUpperBound(0) = 1 Then
+                            EpisodeInfo.DurationSecs = (CInt(strSplitDuration(0)) * 60) + CInt(strSplitDuration(1))
+                        Else
+                            EpisodeInfo.DurationSecs = ((CInt(strSplitDuration(0)) * 60) + CInt(strSplitDuration(1))) * 60 + CInt(strSplitDuration(2))
+                        End If
+                    Else
+                        EpisodeInfo.DurationSecs = Nothing
+                    End If
+                Catch
+                    EpisodeInfo.DurationSecs = Nothing
+                End Try
 
                 If xmlPubDate IsNot Nothing Then
                     Try
