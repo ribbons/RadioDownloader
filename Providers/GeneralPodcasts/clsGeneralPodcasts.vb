@@ -319,27 +319,45 @@ Public Class clsGeneralPodcasts
 
     Private Function RSSNodeImage(ByVal clsCachedHTTP As clsCachedWebClient, ByVal xmlNode As XmlNode, ByVal xmlNamespaceMgr As XmlNamespaceManager) As Bitmap
         Try
-            Dim strImageUrl As String = xmlNode.SelectSingleNode("itunes:image", xmlNamespaceMgr).Attributes("href").Value
-            Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
-            RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
+            Dim xmlImageNode As XmlNode = xmlNode.SelectSingleNode("itunes:image", xmlNamespaceMgr)
+
+            If xmlImageNode IsNot Nothing Then
+                Dim strImageUrl As String = xmlImageNode.Attributes("href").Value
+                Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+                RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
+            Else
+                RSSNodeImage = Nothing
+            End If
         Catch
             RSSNodeImage = Nothing
         End Try
 
         If RSSNodeImage Is Nothing Then
             Try
-                Dim strImageUrl As String = xmlNode.SelectSingleNode("image/url").InnerText
-                Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
-                RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
+                Dim xmlImageUrlNode As XmlNode = xmlNode.SelectSingleNode("image/url")
+
+                If xmlImageUrlNode IsNot Nothing Then
+                    Dim strImageUrl As String = xmlImageUrlNode.InnerText
+                    Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+                    RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
+                Else
+                    RSSNodeImage = Nothing
+                End If
             Catch
                 RSSNodeImage = Nothing
             End Try
 
             If RSSNodeImage Is Nothing Then
                 Try
-                    Dim strImageUrl As String = xmlNode.SelectSingleNode("media:thumbnail", xmlNamespaceMgr).Attributes("url").Value
-                    Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
-                    RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
+                    Dim xmlImageNode As XmlNode = xmlNode.SelectSingleNode("media:thumbnail", xmlNamespaceMgr)
+
+                    If xmlImageNode IsNot Nothing Then
+                        Dim strImageUrl As String = xmlImageNode.Attributes("url").Value
+                        Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+                        RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
+                    Else
+                        RSSNodeImage = Nothing
+                    End If
                 Catch
                     RSSNodeImage = Nothing
                 End Try
