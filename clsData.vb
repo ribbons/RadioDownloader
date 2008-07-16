@@ -19,6 +19,7 @@ Imports System.IO
 Imports System.IO.File
 Imports System.Threading
 Imports System.Data.SQLite
+Imports System.Collections.Generic
 Imports System.Text.RegularExpressions
 
 Public Class clsData
@@ -1336,11 +1337,11 @@ Public Class clsData
                     Dim intEpID As Integer = CInt(sqlGetRowIDCmd.ExecuteScalar)
 
                     If EpisodeInfo.ExtInfo IsNot Nothing Then
-                        For Each strKey As String In EpisodeInfo.ExtInfo.Keys
+                        For Each kvpItem As keyvaluepair(Of String, String) In EpisodeInfo.ExtInfo
                             With sqlAddExtInfoCmd
-                                .Parameters.Add(New SQLiteParameter("@epid", intProgID))
-                                .Parameters.Add(New SQLiteParameter("@name", strEpisodeExtID))
-                                .Parameters.Add(New SQLiteParameter("@value", EpisodeInfo.Name))
+                                .Parameters.Add(New SQLiteParameter("@epid", intEpID))
+                                .Parameters.Add(New SQLiteParameter("@name", kvpItem.Key))
+                                .Parameters.Add(New SQLiteParameter("@value", kvpItem.Value))
                                 .ExecuteNonQuery()
                             End With
                         Next
