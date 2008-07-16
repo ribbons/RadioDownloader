@@ -77,6 +77,7 @@ Public Class clsGeneralPodcasts
 
         Dim strRSS As String
         Dim xmlRSS As New XmlDocument
+        Dim xmlNamespaceMgr As XmlNamespaceManager
 
         Try
             strRSS = clsCachedHTTP.DownloadString(strProgExtID, intCacheHTTPHours)
@@ -88,6 +89,12 @@ Public Class clsGeneralPodcasts
             xmlRSS.LoadXml(strRSS)
         Catch expXML As XmlException
             Return ProgInfo
+        End Try
+
+        Try
+            xmlNamespaceMgr = CreateNamespaceMgr(xmlRSS)
+        Catch
+            xmlNamespaceMgr = Nothing
         End Try
 
         Dim xmlTitle As XmlNode = xmlRSS.SelectSingleNode("./rss/channel/title")
@@ -105,7 +112,7 @@ Public Class clsGeneralPodcasts
             Return ProgInfo
         End If
 
-        ProgInfo.Image = RSSFeedImage(clsCachedHTTP, xmlRSS)
+        ProgInfo.Image = RSSNodeImage(clsCachedHTTP, xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
 
         ProgInfo.Success = True
         Return ProgInfo
@@ -157,6 +164,7 @@ Public Class clsGeneralPodcasts
 
         Dim strRSS As String
         Dim xmlRSS As New XmlDocument
+        Dim xmlNamespaceMgr As XmlNamespaceManager
 
         Try
             strRSS = clsCachedHTTP.DownloadString(strProgExtID, intCacheHTTPHours)
@@ -168,6 +176,12 @@ Public Class clsGeneralPodcasts
             xmlRSS.LoadXml(strRSS)
         Catch expXML As XmlException
             Return EpisodeInfo
+        End Try
+
+        Try
+            xmlNamespaceMgr = CreateNamespaceMgr(xmlRSS)
+        Catch
+            xmlNamespaceMgr = Nothing
         End Try
 
         Dim xmlItems As XmlNodeList
@@ -234,7 +248,12 @@ Public Class clsGeneralPodcasts
                     EpisodeInfo.Date = Now
                 End If
 
-                EpisodeInfo.Image = RSSFeedImage(clsCachedHTTP, xmlRSS)
+                EpisodeInfo.Image = RSSNodeImage(clsCachedHTTP, xmlItem, xmlNamespaceMgr)
+
+                If EpisodeInfo.Image Is Nothing Then
+                    EpisodeInfo.Image = RSSNodeImage(clsCachedHTTP, xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
+                End If
+
                 EpisodeInfo.ExtInfo = dicExtInfo
                 EpisodeInfo.Success = True
 
@@ -280,13 +299,45 @@ Public Class clsGeneralPodcasts
         Return strItemID
     End Function
 
-    Private Function RSSFeedImage(ByVal clsCachedHTTP As clsCachedWebClient, ByVal xmlRSS As XmlDocument) As Bitmap
+    Private Function RSSNodeImage(ByVal clsCachedHTTP As clsCachedWebClient, ByVal xmlNode As XmlNode, ByVal xmlNamespaceMgr As XmlNamespaceManager) As Bitmap
         Try
-            Dim strImageUrl As String = xmlRSS.SelectSingleNode("./rss/channel/image/url").InnerText
+            Dim strImageUrl As String = xmlNode.SelectSingleNode("itunes:image", xmlNamespaceMgr).Attributes("href").Value
             Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
-            Return New Bitmap(New IO.MemoryStream(bteImageData))
+            RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
         Catch
-            Return Nothing
+            RSSNodeImage = Nothing
         End Try
+
+        If RSSNodeImage Is Nothing Then
+            Try
+                Dim strImageUrl As String = xmlNode.SelectSingleNode("image/url").InnerText
+                Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+                RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
+            Catch
+                RSSNodeImage = Nothing
+            End Try
+
+            If RSSNodeImage Is Nothing Then
+                Try
+                    Dim strImageUrl As String = xmlNode.SelectSingleNode("media:thumbnail", xmlNamespaceMgr).Attributes("url").Value
+                    Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+                    RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
+                Catch
+                    RSSNodeImage = Nothing
+                End Try
+            End If
+        End If
+    End Function
+
+    Private Function CreateNamespaceMgr(ByVal xmlDocument As XmlDocument) As XmlNamespaceManager
+        Dim nsManager As New XmlNamespaceManager(xmlDocument.NameTable)
+
+        For Each xmlAttrib As XmlAttribute In xmlDocument.SelectSingleNode("/*").Attributes
+            If xmlAttrib.Prefix = "xmlns" Then
+                nsManager.AddNamespace(xmlAttrib.LocalName, xmlAttrib.Value)
+            End If
+        Next
+
+        Return nsManager
     End Function
 End Class
