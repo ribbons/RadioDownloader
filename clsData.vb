@@ -524,6 +524,7 @@ Public Class clsData
     Public Sub ListEpisodes(ByVal intProgID As Integer, ByRef lstListview As ListView)
         Dim intAvailable As Integer()
         intAvailable = GetAvailableEpisodes(intProgID)
+        Array.Reverse(intAvailable)
 
         lstListview.Items.Clear()
 
@@ -1289,6 +1290,10 @@ Public Class clsData
         Dim EpisodeInfo As IRadioProvider.EpisodeInfo
 
         If strEpisodeExtIDs IsNot Nothing Then
+            ' Reverse the array so that we fetch the oldest episodes first, and the older episodes
+            ' get added to the download list first if we are checking subscriptions
+            Array.Reverse(strEpisodeExtIDs)
+
             Dim sqlFindCmd As New SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", sqlConnection)
             Dim sqlAddEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", sqlConnection)
             Dim sqlGetRowIDCmd As New SQLiteCommand("select last_insert_rowid()", sqlConnection)
@@ -1337,7 +1342,7 @@ Public Class clsData
                     Dim intEpID As Integer = CInt(sqlGetRowIDCmd.ExecuteScalar)
 
                     If EpisodeInfo.ExtInfo IsNot Nothing Then
-                        For Each kvpItem As keyvaluepair(Of String, String) In EpisodeInfo.ExtInfo
+                        For Each kvpItem As KeyValuePair(Of String, String) In EpisodeInfo.ExtInfo
                             With sqlAddExtInfoCmd
                                 .Parameters.Add(New SQLiteParameter("@epid", intEpID))
                                 .Parameters.Add(New SQLiteParameter("@name", kvpItem.Key))
