@@ -21,6 +21,7 @@ Imports System.Net
 Imports System.Drawing
 Imports System.Globalization
 Imports System.Windows.Forms
+Imports System.Text.RegularExpressions
 
 Public Class clsGeneralPodcasts
     Implements IRadioProvider
@@ -229,6 +230,19 @@ Public Class clsGeneralPodcasts
 
                 If xmlDescription IsNot Nothing Then
                     EpisodeInfo.Description = xmlDescription.InnerText
+
+                    ' Replace common block level tags with newlines
+                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("<br", vbCrLf + "<br")
+                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("<p", vbCrLf + "<p")
+                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("<div", vbCrLf + "<div")
+
+                    ' Replace common entities with their character counterparts
+                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("&amp;", vbCrLf + "&")
+                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("&nbsp;", vbCrLf + " ")
+
+                    ' Strip out any HTML tags
+                    Dim RegExpression As New Regex("<(.|\n)+?>")
+                    EpisodeInfo.Description = RegExpression.Replace(EpisodeInfo.Description, "")
                 End If
 
                 If EpisodeInfo.Name = "" Then
@@ -301,12 +315,12 @@ Public Class clsGeneralPodcasts
 
                     ' Strip the day of the week from the beginning of the date string if it is there,
                     ' as it can contradict the date itself.
-                    Dim strDays() As String = {"Mon,", "Tue,", "Wed,", "Thu,", "Fri,", "Sat,", "Sun,"}
+                    Dim strDays() As String = {"mon,", "tue,", "wed,", "thu,", "fri,", "sat,", "sun,"}
 
                     For Each strDay As String In strDays
-                        If strPubDate.StartsWith(strDay) Then
+                        If strPubDate.ToLower.StartsWith(strDay) Then
                             strPubDate = strPubDate.Substring(strDay.Length).Trim
-                            Exit for
+                            Exit For
                         End If
                     Next
 
