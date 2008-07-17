@@ -19,6 +19,7 @@ Imports RadioDld
 Imports System.Xml
 Imports System.Net
 Imports System.Drawing
+Imports System.Globalization
 Imports System.Windows.Forms
 
 Public Class clsGeneralPodcasts
@@ -256,12 +257,67 @@ Public Class clsGeneralPodcasts
                 End Try
 
                 If xmlPubDate IsNot Nothing Then
+                    Dim strPubDate As String = xmlPubDate.InnerText.Trim
+                    Dim intZonePos As Integer = strPubDate.LastIndexOf(" ")
+                    Dim tspOffset As TimeSpan = New TimeSpan(0)
+
+                    If intZonePos > 0 Then
+                        Dim strZone As String = strPubDate.Substring(intZonePos + 1)
+                        Dim strZoneFree As String = strPubDate.Substring(0, intZonePos)
+
+                        Select Case strZone
+                            Case "GMT"
+                                ' No need to do anything
+                            Case "UT"
+                                tspOffset = New TimeSpan(0)
+                                strPubDate = strZoneFree
+                            Case "EDT"
+                                tspOffset = New TimeSpan(-4, 0, 0)
+                                strPubDate = strZoneFree
+                            Case "EST", "CDT"
+                                tspOffset = New TimeSpan(-5, 0, 0)
+                                strPubDate = strZoneFree
+                            Case "CST", "MDT"
+                                tspOffset = New TimeSpan(-6, 0, 0)
+                                strPubDate = strZoneFree
+                            Case "MST", "PDT"
+                                tspOffset = New TimeSpan(-7, 0, 0)
+                                strPubDate = strZoneFree
+                            Case "PST"
+                                tspOffset = New TimeSpan(-8, 0, 0)
+                                strPubDate = strZoneFree
+                            Case Else
+                                If strZone.Length >= 4 And IsNumeric(strZone) Or IsNumeric(strZone.Substring(1)) Then
+                                    Try
+                                        Dim intValue As Integer = Integer.Parse(strZone, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture)
+                                        tspOffset = New TimeSpan(intValue \ 100, intValue Mod 100, 0)
+                                        strPubDate = strZoneFree
+                                    Catch expFormat As FormatException
+                                        ' The last part of the date was not a time offset
+                                    End Try
+                                End If
+                        End Select
+                    End If
+
+                    ' Strip the day of the week from the beginning of the date string if it is there,
+                    ' as it can contradict the date itself.
+                    Dim strDays() As String = {"Mon,", "Tue,", "Wed,", "Thu,", "Fri,", "Sat,", "Sun,"}
+
+                    For Each strDay As String In strDays
+                        If strPubDate.StartsWith(strDay) Then
+                            strPubDate = strPubDate.Substring(strDay.Length).Trim
+                            Exit for
+                        End If
+                    Next
+
                     Try
-                        EpisodeInfo.Date = CDate(xmlPubDate.InnerText)
+                        EpisodeInfo.Date = CDate(strPubDate)
                     Catch expInvalidCast As InvalidCastException
-                        ' Pubdate is incorrectly formatted
                         EpisodeInfo.Date = Now
+                        tspOffset = New TimeSpan(0)
                     End Try
+
+                    EpisodeInfo.Date = EpisodeInfo.Date.Subtract(tspOffset)
                 Else
                     EpisodeInfo.Date = Now
                 End If
