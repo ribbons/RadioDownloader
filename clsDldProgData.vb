@@ -17,85 +17,65 @@ Option Explicit On
 
 Public Class clsDldProgData
     Private gidPluginID As Guid
-    Private strProgID As String
-    Private intDuration As Integer
-    Private dteProgDate As Date
-    Private strProgTitle As String
-    Private strStationID As String
+    Private strProgExtID As String
+    Private strEpisodeExtID As String
+    Private priProgInfo As IRadioProvider.ProgrammeInfo
+    Private epiEpisodeInfo As IRadioProvider.EpisodeInfo
     Private strFinalName As String
-    Private strProgDldUrl As String
     Private intBandwidthLimit As Integer
     Private intAttemptNumber As Integer
 
     Public Property PluginID() As Guid
         Get
-            PluginID = gidPluginID
+            Return gidPluginID
         End Get
         Set(ByVal gidPluginID As Guid)
             Me.gidPluginID = gidPluginID
         End Set
     End Property
 
-    Public Property StationID() As String
+    Public Property ProgExtID() As String
         Get
-            Return strStationID
+            Return strProgExtID
         End Get
-        Set(ByVal strInStationID As String)
-            strStationID = strInStationID
+        Set(ByVal strProgExtID As String)
+            Me.strProgExtID = strProgExtID
         End Set
     End Property
 
-    Public Property ProgramID() As String
+    Public Property EpisodeExtID() As String
         Get
-            ProgramID = strProgID
+            Return strEpisodeExtID
         End Get
-        Set(ByVal strProgramID As String)
-            strProgID = strProgramID
+        Set(ByVal strEpisodeExtID As String)
+            Me.strEpisodeExtID = strEpisodeExtID
         End Set
     End Property
 
-    Public Property ProgramDuration() As Integer
+    Public Property ProgInfo() As IRadioProvider.ProgrammeInfo
         Get
-            Return intDuration
+            Return priProgInfo
         End Get
-        Set(ByVal intInDuration As Integer)
-            intDuration = intInDuration
+        Set(ByVal priProgInfo As IRadioProvider.ProgrammeInfo)
+            Me.priProgInfo = priProgInfo
         End Set
     End Property
 
-    Public Property ProgramDate() As Date
+    Public Property EpisodeInfo() As IRadioProvider.EpisodeInfo
         Get
-            ProgramDate = dteProgDate
+            Return epiEpisodeInfo
         End Get
-        Set(ByVal dteProgramDate As Date)
-            dteProgDate = dteProgramDate
-        End Set
-    End Property
-
-    Public Property ProgramTitle() As String
-        Get
-            Return strProgTitle
-        End Get
-        Set(ByVal strProgramTitle As String)
-            strProgTitle = strProgramTitle
+        Set(ByVal priProgInfo As IRadioProvider.EpisodeInfo)
+            Me.epiEpisodeInfo = epiEpisodeInfo
         End Set
     End Property
 
     Public Property FinalName() As String
         Get
-            FinalName = strFinalName
+            Return strFinalName
         End Get
         Set(ByVal strFinalName As String)
             Me.strFinalName = strFinalName
-        End Set
-    End Property
-
-    Public Property DownloadUrl() As String
-        Get
-            Return strProgDldUrl
-        End Get
-        Set(ByVal strProgDldUrl As String)
-            Me.strProgDldUrl = strProgDldUrl
         End Set
     End Property
 

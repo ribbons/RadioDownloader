@@ -350,7 +350,7 @@ Public Class clsGeneralPodcasts
 
     End Function
 
-    Public Sub DownloadProgram(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal intProgLength As Integer, ByVal strProgDldUrl As String, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttemptNumber As Integer) Implements IRadioProvider.DownloadProgram
+    Public Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
 
     End Sub
 

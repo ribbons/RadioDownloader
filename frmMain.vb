@@ -375,8 +375,8 @@ Public Class frmMain
         If clsProgData.FindAndDownload Then
             Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
-            If tbtDownloads.Checked Then
-                Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+            If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+                Call SetContextForSelectedDownload()
             End If
         End If
 
@@ -624,13 +624,13 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtRetry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtRetry.Click
-        Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+        'Dim strSplit() As String
+        'strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
 
-        Call clsProgData.ResetDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)), False)
-        Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs) ' Update prog info pane
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        tmrStartProcess.Enabled = True
+        'Call clsProgData.ResetDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)), False)
+        'Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs) ' Update prog info pane
+        'Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        'tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub tbtDownload_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownload.Click
