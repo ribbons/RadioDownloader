@@ -491,15 +491,15 @@ Public Class clsData
                 Dim strDynamicTitle As String
                 'strDynamicTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), LatestDate(gidPluginID, .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))))
 
-                If ProviderDynamicSubscriptionName(gidPluginID) Then
-                    lstAdd.Text = strDynamicTitle
-                Else
-                    lstAdd.Text = SubscriptionName(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
+                'If ProviderDynamicSubscriptionName(gidPluginID) Then
+                lstAdd.Text = strDynamicTitle
+                'Else
+                'lstAdd.Text = SubscriptionName(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
 
-                    If lstAdd.Text = "" Then
-                        lstAdd.Text = strDynamicTitle
-                    End If
-                End If
+                'If lstAdd.Text = "" Then
+                'lstAdd.Text = strDynamicTitle
+                'End If
+                'End If
 
                 Dim dteLastDownload As Date = LatestDownloadDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
 
@@ -797,18 +797,6 @@ Public Class clsData
         Return ThisInstance.ProviderName
     End Function
 
-    Public Function ProviderDynamicSubscriptionName(ByVal gidPluginID As Guid) As Boolean
-        If clsPluginsInst.PluginExists(gidPluginID) = False Then
-            ' Just choose an option, as there is no way of finding out when the plugin is not available
-            Return True
-        End If
-
-        Dim ThisInstance As IRadioProvider
-        ThisInstance = clsPluginsInst.GetPluginInstance(gidPluginID)
-
-        Return ThisInstance.DynamicSubscriptionName
-    End Function
-
     Public Sub IncreasePlayCount(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
         Dim sqlCommand As New SQLiteCommand("update tblDownloads set PlayCount=PlayCount+1 where type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
         sqlCommand.ExecuteNonQuery()
@@ -927,29 +915,6 @@ Public Class clsData
 
         sqlReader.Close()
     End Function
-
-    Public Sub SetStationVisibility(ByVal strStationType As String, ByVal strStationID As String, ByVal booVisible As Boolean)
-        Dim sqlCommand As New SQLiteCommand("select Visible from tblStationVisibility where ProviderID=""" + strStationType + """ and StationID=""" + strStationID + """", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        Dim strVisible As String
-        If booVisible Then
-            strVisible = "1"
-        Else
-            strVisible = "0"
-        End If
-
-
-        If sqlReader.Read Then
-            sqlCommand = New SQLiteCommand("update tblStationVisibility set Visible=" + strVisible + " where ProviderID=""" + strStationType + """ and StationID=""" + strStationID + """", sqlConnection)
-            sqlCommand.ExecuteNonQuery()
-        Else
-            sqlCommand = New SQLiteCommand("insert into tblStationVisibility (ProviderID, StationID, Visible) VALUES (""" + strStationType + """, """ + strStationID + """, " + strVisible + ")", sqlConnection)
-            Call sqlCommand.ExecuteNonQuery()
-        End If
-
-        sqlReader.Close()
-    End Sub
 
     Public Sub PerformCleanup()
         Dim sqlCommand As New SQLiteCommand("select type,station,id,date,path from tblDownloads where status=" + CStr(Statuses.Downloaded), sqlConnection)
@@ -1085,8 +1050,10 @@ Public Class clsData
         End If
     End Function
 
-    Private Sub FindNewPluginInst_FoundNew(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String) Handles FindNewPluginInst.FoundNew
+    Private Sub FindNewPluginInst_FoundNew(ByVal strProgExtID As String) Handles FindNewPluginInst.FoundNew
+        Dim gidPluginID As Guid = FindNewPluginInst.ProviderID
         Dim PluginException As Exception = Nothing
+
         If StoreProgrammeInfo(gidPluginID, strProgExtID, PluginException) = False Then
             If PluginException IsNot Nothing Then
                 If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + vbCrLf + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then

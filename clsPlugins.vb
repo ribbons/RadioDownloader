@@ -20,45 +20,6 @@ Imports System.Reflection
 Imports System.Collections.Generic
 
 Public Interface IRadioProvider
-    Class StationTable
-        Inherits Hashtable
-
-        Private SortedList(-1) As StationInfo
-
-        Public Shadows Sub Add(ByVal strStationUniqueID As String, ByVal strStationName As String, ByVal booVisibleByDefault As Boolean, Optional ByVal icoStationIcon As Icon = Nothing)
-            Dim Station As StationInfo
-
-            Station.StationUniqueID = strStationUniqueID
-            Station.StationName = strStationName
-            Station.VisibleByDefault = booVisibleByDefault
-            Station.StationIcon = icoStationIcon
-
-            ReDim Preserve SortedList(SortedList.GetUpperBound(0) + 1)
-            SortedList(SortedList.GetUpperBound(0)) = Station
-
-            Call MyBase.Add(strStationUniqueID, Station)
-        End Sub
-
-        Default Public Shadows ReadOnly Property Item(ByVal strKey As String) As StationInfo
-            Get
-                Return DirectCast(MyBase.Item(strKey), StationInfo)
-            End Get
-        End Property
-
-        Public ReadOnly Property SortedValues() As StationInfo()
-            Get
-                Return SortedList
-            End Get
-        End Property
-    End Class
-
-    Structure StationInfo
-        Dim StationUniqueID As String
-        Dim StationName As String
-        Dim StationIcon As Icon
-        Dim VisibleByDefault As Boolean
-    End Structure
-
     Structure ProgrammeInfo
         Dim Name As String
         Dim Description As String
@@ -76,12 +37,6 @@ Public Interface IRadioProvider
         Dim Success As Boolean
     End Structure
 
-    Structure ProgramListItem
-        Dim ProgramID As String
-        Dim StationID As String
-        Dim ProgramName As String
-    End Structure
-
     Enum ProgressIcon
         Downloading
         Converting
@@ -97,7 +52,6 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderDescription() As String
     ReadOnly Property ProgInfoUpdateFreqDays() As Integer
-    ReadOnly Property DynamicSubscriptionName() As Boolean
 
     Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient) As Panel
     Function GetProgrammeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As ProgrammeInfo
@@ -105,7 +59,7 @@ Public Interface IRadioProvider
     Function GetEpisodeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As EpisodeInfo
     Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean
 
-    Event FoundNew(ByVal gidPluginID As Guid, ByVal strProgExtID As String)
+    Event FoundNew(ByVal strProgExtID As String)
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
     Event Finished()

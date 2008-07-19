@@ -49,7 +49,6 @@
         Me.tmrCheckForUpdates = New System.Windows.Forms.Timer(Me.components)
         Me.tbrToolbar = New System.Windows.Forms.ToolStrip
         Me.tbmMisc = New System.Windows.Forms.ToolStripDropDownButton
-        Me.tbmChooseStations = New System.Windows.Forms.ToolStripMenuItem
         Me.tbmOptions = New System.Windows.Forms.ToolStripMenuItem
         Me.tbmSep1 = New System.Windows.Forms.ToolStripSeparator
         Me.tbmExit = New System.Windows.Forms.ToolStripMenuItem
@@ -226,9 +225,8 @@
         Me.imlListIcons.Images.SetKeyName(2, "converting")
         Me.imlListIcons.Images.SetKeyName(3, "downloaded_new")
         Me.imlListIcons.Images.SetKeyName(4, "downloaded")
-        Me.imlListIcons.Images.SetKeyName(5, "new")
-        Me.imlListIcons.Images.SetKeyName(6, "subscribed")
-        Me.imlListIcons.Images.SetKeyName(7, "error")
+        Me.imlListIcons.Images.SetKeyName(5, "subscribed")
+        Me.imlListIcons.Images.SetKeyName(6, "error")
         '
         'imlProviders
         '
@@ -277,7 +275,7 @@
         '
         'tbmMisc
         '
-        Me.tbmMisc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmChooseStations, Me.tbmOptions, Me.tbmSep1, Me.tbmExit})
+        Me.tbmMisc.DropDownItems.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmOptions, Me.tbmSep1, Me.tbmExit})
         Me.tbmMisc.Image = CType(resources.GetObject("tbmMisc.Image"), System.Drawing.Image)
         Me.tbmMisc.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbmMisc.Margin = New System.Windows.Forms.Padding(0, 1, 2, 2)
@@ -285,27 +283,21 @@
         Me.tbmMisc.Size = New System.Drawing.Size(78, 22)
         Me.tbmMisc.Text = "Options"
         '
-        'tbmChooseStations
-        '
-        Me.tbmChooseStations.Name = "tbmChooseStations"
-        Me.tbmChooseStations.Size = New System.Drawing.Size(196, 22)
-        Me.tbmChooseStations.Text = "Choose &Visible Stations"
-        '
         'tbmOptions
         '
         Me.tbmOptions.Name = "tbmOptions"
-        Me.tbmOptions.Size = New System.Drawing.Size(196, 22)
+        Me.tbmOptions.Size = New System.Drawing.Size(152, 22)
         Me.tbmOptions.Text = "Show &Options"
         '
         'tbmSep1
         '
         Me.tbmSep1.Name = "tbmSep1"
-        Me.tbmSep1.Size = New System.Drawing.Size(193, 6)
+        Me.tbmSep1.Size = New System.Drawing.Size(149, 6)
         '
         'tbmExit
         '
         Me.tbmExit.Name = "tbmExit"
-        Me.tbmExit.Size = New System.Drawing.Size(196, 22)
+        Me.tbmExit.Size = New System.Drawing.Size(152, 22)
         Me.tbmExit.Text = "E&xit"
         '
         'tbtDownload
@@ -599,7 +591,6 @@
     Friend WithEvents tbmAbout As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tbmReportABug As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tbmSep2 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents tbmChooseStations As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tbtReportError As System.Windows.Forms.ToolStripButton
     Friend WithEvents pnlPluginSpace As System.Windows.Forms.Panel
     Friend WithEvents tbtFavourites As System.Windows.Forms.ToolStripButton

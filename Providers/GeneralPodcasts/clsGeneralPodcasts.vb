@@ -26,7 +26,7 @@ Imports System.Text.RegularExpressions
 Public Class clsGeneralPodcasts
     Implements IRadioProvider
 
-    Public Event FoundNew(ByVal gidPluginID As Guid, ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
+    Public Event FoundNew(ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
     Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
     Public Event Finished() Implements IRadioProvider.Finished
@@ -56,12 +56,6 @@ Public Class clsGeneralPodcasts
         Get
             ' Updating the programme info every week should be a reasonable trade-off
             Return 7
-        End Get
-    End Property
-
-    ReadOnly Property DynamicSubscriptionName() As Boolean Implements IRadioProvider.DynamicSubscriptionName
-        Get
-            Return False
         End Get
     End Property
 
@@ -361,7 +355,7 @@ Public Class clsGeneralPodcasts
     End Sub
 
     Friend Sub RaiseFoundNew(ByVal strExtID As String)
-        RaiseEvent FoundNew(Me.ProviderID, strExtID)
+        RaiseEvent FoundNew(strExtID)
     End Sub
 
     Private Function ItemNodeToEpisodeID(ByVal xmlItem As XmlNode) As String

@@ -395,14 +395,6 @@ Public Class frmMain
         Call SetView(MainTab.Downloads, View.Downloads, Nothing)
     End Sub
 
-    'Private Sub clsProgData_AddProgramToList(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strProgramName As String) Handles clsProgData.AddProgramToList
-    '    Dim lstAddItem As New ListViewItem
-    '    lstAddItem.Text = strProgramName
-    '    lstAddItem.ImageKey = "new"
-    '    lstAddItem.Tag = strProgramType + "||" + strStationID + "||" + strProgramID
-    '    Call lstEpisodes.Items.Add(lstAddItem)
-    'End Sub
-
     Private Sub clsProgData_DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsProgData.DldError
         Try
             ' Check if the form exists still before calling delegate
@@ -679,14 +671,6 @@ Public Class frmMain
 
     Private Sub tbmReportABug_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmReportABug.Click
         Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php")
-    End Sub
-
-    Private Sub tbmChooseStations_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmChooseStations.Click
-        Call frmChooseStations.ShowDialog()
-
-        If tbtFindNew.Checked Then
-            Call tbtFindNew_Click(sender, e)
-        End If
     End Sub
 
     Private Sub tbtCleanUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCleanUp.Click
