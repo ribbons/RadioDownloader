@@ -18,6 +18,7 @@ Option Explicit On
 Public Class clsDldProgData
     Private gidPluginID As Guid
     Private strProgExtID As String
+    Private intEpID As Integer
     Private strEpisodeExtID As String
     Private priProgInfo As IRadioProvider.ProgrammeInfo
     Private epiEpisodeInfo As IRadioProvider.EpisodeInfo
@@ -43,6 +44,15 @@ Public Class clsDldProgData
         End Set
     End Property
 
+    Public Property EpID() As Integer
+        Get
+            Return intEpID
+        End Get
+        Set(ByVal intEpID As Integer)
+            Me.intEpID = intEpID
+        End Set
+    End Property
+
     Public Property EpisodeExtID() As String
         Get
             Return strEpisodeExtID
@@ -65,7 +75,7 @@ Public Class clsDldProgData
         Get
             Return epiEpisodeInfo
         End Get
-        Set(ByVal priProgInfo As IRadioProvider.EpisodeInfo)
+        Set(ByVal epiEpisodeInfo As IRadioProvider.EpisodeInfo)
             Me.epiEpisodeInfo = epiEpisodeInfo
         End Set
     End Property

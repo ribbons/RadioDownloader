@@ -16,9 +16,11 @@ Option Strict On
 Option Explicit On
 
 Imports RadioDld
+Imports System.IO
 Imports System.Xml
 Imports System.Net
 Imports System.Drawing
+Imports Microsoft.Win32
 Imports System.Globalization
 Imports System.Windows.Forms
 Imports System.Text.RegularExpressions
@@ -33,6 +35,13 @@ Public Class clsGeneralPodcasts
 
     Friend clsCachedHTTP As RadioDld.clsCachedWebClient
     Friend Const intCacheHTTPHours As Integer = 2
+
+    Private Shared Event PowerModeChanged As PowerModeChangedEventHandler
+    Private WithEvents webDownload As WebClient
+
+    Private strDownloadFileName As String
+    Private strProgDldUrl As String
+    Private strFinalName As String
 
     Public ReadOnly Property ProviderID() As Guid Implements IRadioProvider.ProviderID
         Get
@@ -351,7 +360,24 @@ Public Class clsGeneralPodcasts
     End Function
 
     Public Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
+        strProgDldUrl = EpInfo.ExtInfo("EnclosureURL")
 
+        Dim intFileNamePos As Integer = strFinalName.LastIndexOf("\")
+        Dim intExtensionPos As Integer = strProgDldUrl.LastIndexOf(".")
+
+        Dim strExtension As String = ""
+
+        If intExtensionPos > -1 Then
+            strExtension = strProgDldUrl.Substring(intExtensionPos)
+        End If
+
+        strDownloadFileName = System.IO.Path.GetTempPath + "\RadioDownloader\" + strFinalName.Substring(intFileNamePos + 1) + strExtension
+        Me.strFinalName = strFinalName + strExtension
+
+        AddHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange
+
+        webDownload = New WebClient
+        webDownload.DownloadFileAsync(New Uri(strProgDldUrl), strDownloadFileName)
     End Sub
 
     Friend Sub RaiseFoundNew(ByVal strExtID As String)
@@ -440,4 +466,42 @@ Public Class clsGeneralPodcasts
 
         Return nsManager
     End Function
+
+    Private Sub PowerModeChange(ByVal sender As Object, ByVal e As PowerModeChangedEventArgs)
+        If e.Mode = PowerModes.Resume Then
+            ' Restart the download, as it is quite likely to have hung during the suspend / hibernate
+            If webDownload.IsBusy Then
+                webDownload.CancelAsync()
+
+                ' Pause for 30 seconds to be give the pc a chance to settle down after the suspend. 
+                Threading.Thread.Sleep(30000)
+
+                webDownload.DownloadFileAsync(New Uri(strProgDldUrl), strDownloadFileName)
+            End If
+        End If
+    End Sub
+
+    Private Sub webDownload_DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs) Handles webDownload.DownloadFileCompleted
+        If e.Cancelled = False Then
+            RemoveHandler PowerModeChanged, AddressOf PowerModeChange
+
+            If e.Error IsNot Nothing Then
+                RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.GetType.ToString + ": " + e.Error.Message + vbCrLf + e.Error.StackTrace)
+            Else
+                RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
+                Call File.Move(strDownloadFileName, strFinalName)
+                RaiseEvent Finished()
+            End If
+        End If
+    End Sub
+
+    Private Sub webDownload_DownloadProgressChanged(ByVal sender As Object, ByVal e As System.Net.DownloadProgressChangedEventArgs) Handles webDownload.DownloadProgressChanged
+        Dim intPercent As Integer = e.ProgressPercentage
+
+        If intPercent > 99 Then
+            intPercent = 99
+        End If
+
+        RaiseEvent Progress(intPercent, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
+    End Sub
 End Class

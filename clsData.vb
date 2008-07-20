@@ -81,19 +81,27 @@ Public Class clsData
         MyBase.Finalize()
     End Sub
 
-    Public Sub SetErrored(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=" + CStr(Statuses.Errored) + ", ErrorTime=""" + Now.ToString(strSqlDateFormat) + """, ErrorType=" + CStr(CInt(errType)) + ", ErrorDetails=""" + strErrorDetails.Replace("""", """""") + """ WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub DownloadSetErrored(ByVal intEpID As Integer, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+        Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, errortime=@errortime, errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Errored))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@errortime", Now))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@errortype", errType))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@errordetails", strErrorDetails))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Sub SetDownloaded(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal strDownloadPath As String)
-        Dim sqlCommand As New SQLiteCommand("UPDATE tblDownloads SET Status=""" + CStr(Statuses.Downloaded) + """, Path=""" + strDownloadPath + """ WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub DownloadSetDownloaded(ByVal intEpID As Integer, ByVal strDownloadPath As String)
+        Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@filepath", strDownloadPath))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         sqlCommand.ExecuteNonQuery()
     End Sub
 
     Public Function FindAndDownload() As Boolean
         If thrDownloadThread Is Nothing Then
-            Dim sqlCommand As New SQLiteCommand("select pluginid, programmes.progid, programmes.name, programmes.description, programmes.image, episodes.name, episodes.description, episodes.duration, episodes.date, episodes.image, programmes.extid, episodes.extid, status, episodes.epid, errorcount from downloads, episodes, programmes where downloads.epid=episodes.epid and episodes.progid=programmes.progid and (status=@statuswait or (status=@statuserr and ((errorcount=0 and errortime<@twohoursago) or (errorcount=1 and errortime<@eighthoursago)))) order by date", sqlConnection)
+            Dim sqlCommand As New SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid, dl.errorcount from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and ((dl.errorcount=1 and dl.errortime<@twohoursago) or (dl.errorcount=2 and dl.errortime<@eighthoursago)))) order by ep.date", sqlConnection)
             sqlCommand.Parameters.Add(New SQLiteParameter("@statuswait", Statuses.Waiting))
             sqlCommand.Parameters.Add(New SQLiteParameter("@statuserr", Statuses.Errored))
             sqlCommand.Parameters.Add(New SQLiteParameter("@twohoursago", Now.AddHours(-2)))
@@ -104,25 +112,26 @@ Public Class clsData
             While thrDownloadThread Is Nothing
                 If sqlReader.Read Then
                     Dim gidPluginID As New Guid(sqlReader.GetString(sqlReader.GetOrdinal("pluginid")))
+                    Dim intEpID As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))
 
                     If clsPluginsInst.PluginExists(gidPluginID) Then
                         clsCurDldProgData = New clsDldProgData
 
                         Dim priProgInfo As IRadioProvider.ProgrammeInfo
-                        priProgInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("programmes.name"))
-                        priProgInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("programmes.description"))
-                        priProgInfo.Image = ProgrammeImage(sqlReader.GetInt32(sqlReader.GetOrdinal("programmes.image")))
+                        priProgInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("progname"))
+                        priProgInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("progdesc"))
+                        priProgInfo.Image = RetrieveImage(sqlReader.GetInt32(sqlReader.GetOrdinal("progimg")))
 
                         Dim epiEpInfo As IRadioProvider.EpisodeInfo
-                        epiEpInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("episodes.name"))
-                        epiEpInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("episodes.description"))
-                        epiEpInfo.DurationSecs = sqlReader.GetInt32(sqlReader.GetOrdinal("episodes.duration"))
-                        epiEpInfo.Date = sqlReader.GetDateTime(sqlReader.GetOrdinal("episodes.date"))
-                        epiEpInfo.Image = ProgrammeImage(sqlReader.GetInt32(sqlReader.GetOrdinal("episodes.image")))
+                        epiEpInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("epname"))
+                        epiEpInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("epdesc"))
+                        epiEpInfo.DurationSecs = sqlReader.GetInt32(sqlReader.GetOrdinal("duration"))
+                        epiEpInfo.Date = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
+                        epiEpInfo.Image = RetrieveImage(sqlReader.GetInt32(sqlReader.GetOrdinal("epimg")))
                         epiEpInfo.ExtInfo = New Dictionary(Of String, String)
 
                         Dim sqlExtCommand As New SQLiteCommand("select name, value from episodeext where epid=@epid", sqlConnection)
-                        sqlExtCommand.Parameters.Add(New SQLiteParameter("@epid", sqlReader.GetInt32(sqlReader.GetOrdinal("episodes.epid"))))
+                        sqlExtCommand.Parameters.Add(New SQLiteParameter("@epid", sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))))
                         Dim sqlExtReader As SQLiteDataReader = sqlExtCommand.ExecuteReader
 
                         While sqlExtReader.Read
@@ -131,18 +140,19 @@ Public Class clsData
 
                         With clsCurDldProgData
                             .PluginID = gidPluginID
-                            .ProgExtID = sqlReader.GetString(sqlReader.GetOrdinal("programmes.extid"))
-                            .EpisodeExtID = sqlReader.GetString(sqlReader.GetOrdinal("episodes.extid"))
+                            .ProgExtID = sqlReader.GetString(sqlReader.GetOrdinal("progextid"))
+                            .EpID = intEpID
+                            .EpisodeExtID = sqlReader.GetString(sqlReader.GetOrdinal("epextid"))
                             .ProgInfo = priProgInfo
                             .EpisodeInfo = epiEpInfo
                         End With
 
-                        clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("programmes.name")), sqlReader.GetDateTime(sqlReader.GetOrdinal("episodes.date")), GetSaveFolder())
+                        clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("progname")), sqlReader.GetDateTime(sqlReader.GetOrdinal("date")), GetSaveFolder())
                         clsCurDldProgData.BandwidthLimit = My.Settings.BandwidthLimit
 
                         If sqlReader.GetInt32(sqlReader.GetOrdinal("status")) = Statuses.Errored Then
-                            Call ResetDownload(sqlReader.GetInt32(sqlReader.GetOrdinal("episodes.epid")), True)
-                            clsCurDldProgData.AttemptNumber = sqlReader.GetInt32(sqlReader.GetOrdinal("errorcount")) + 2
+                            Call ResetDownload(intEpID, True)
+                            clsCurDldProgData.AttemptNumber = sqlReader.GetInt32(sqlReader.GetOrdinal("errorcount")) + 1
                         Else
                             clsCurDldProgData.AttemptNumber = 1
                         End If
@@ -362,7 +372,7 @@ Public Class clsData
         sqlReader.Close()
     End Function
 
-    Public Sub SetEpisodeAutoDownload(ByVal intEpID As Integer, ByVal booAutoDownload As Boolean)
+    Public Sub EpisodeSetAutoDownload(ByVal intEpID As Integer, ByVal booAutoDownload As Boolean)
         Dim intAutoDownload As Integer = 0
 
         If booAutoDownload Then
@@ -764,11 +774,7 @@ Public Class clsData
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         sqlCommand.ExecuteNonQuery()
 
-        If booAuto Then
-            sqlCommand = New SQLiteCommand("update downloads set errorcount=errorcount+1 where epid=@epid", sqlConnection)
-            sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-            sqlCommand.ExecuteNonQuery()
-        Else
+        If booAuto = False Then
             sqlCommand = New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", sqlConnection)
             sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
             sqlCommand.ExecuteNonQuery()

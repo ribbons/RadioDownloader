@@ -179,7 +179,7 @@ Public Class frmMain
     End Sub
 
     Private Sub lstEpisodes_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lstEpisodes.ItemCheck
-        clsProgData.SetEpisodeAutoDownload(CInt(lstEpisodes.Items(e.Index).Tag), e.NewValue = CheckState.Checked)
+        clsProgData.EpisodeSetAutoDownload(CInt(lstEpisodes.Items(e.Index).Tag), e.NewValue = CheckState.Checked)
     End Sub
 
     Private Sub lstEpisodes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
@@ -411,16 +411,16 @@ Public Class frmMain
     Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
         ' Handle / report errors here manually?
 
-        'Call clsProgData.SetErrored(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, errType, strErrorDetails)
+        Call clsProgData.DownloadSetErrored(clsCurDldProgData.EpID, errType, strErrorDetails)
 
-        '' If the item that has just errored is selected then update the information.
-        'If tbtDownloads.Checked = True And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
-        '    Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
-        'End If
+        ' If the item that has just errored is selected then update the information.
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
+            Call SetContextForSelectedDownload()
+        End If
 
-        'Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
-        'tmrStartProcess.Enabled = True
+        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
@@ -439,30 +439,32 @@ Public Class frmMain
     Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As clsDldProgData)
         ' Handle / report errors here manually?
 
-        'Call clsProgData.SetDownloaded(clsCurDldProgData.ProgramType, clsCurDldProgData.StationID, clsCurDldProgData.ProgramID, clsCurDldProgData.ProgramDate, clsCurDldProgData.FinalName)
+        Call clsProgData.DownloadSetDownloaded(clsCurDldProgData.EpID, clsCurDldProgData.FinalName)
 
-        'If tbtDownloads.Checked And lstDownloads.Items(clsCurDldProgData.ProgramDate.ToString + "||" + clsCurDldProgData.ProgramID + "||" + clsCurDldProgData.StationID + "||" + clsCurDldProgData.ProgramType).Selected Then
-        '    ' The item that has just finished downloading is selected, so update it.
-        '    Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
-        'ElseIf tbtSubscriptions.Checked Then
-        '    ' Return to the tab information for subscriptions, as the selection will be lost when we update
-        '    ' the subscription list.
-        '    Call TabAdjustments()
-        'End If
+        Dim viwCurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
 
-        'Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        'Call clsProgData.UpdateSubscrList(lstSubscribed)
+        If viwCurrentView = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
+            ' The item that has just finished downloading is selected, so update it.
+            Call SetContextForSelectedDownload()
+        ElseIf viwCurrentView = View.Subscriptions Then
+            ' Return to the tab information for subscriptions, as the selection will be lost when we update 
+            ' the subscription list.
+            Call SetViewDefaults()
+        End If
 
-        'If My.Settings.RunAfterCommand <> "" Then
-        '    Try
-        '        ' Environ("comspec") will give the path to cmd.exe or command.com
-        '        Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
-        '    Catch ex As Exception
-        '        ' Just ignore the error, as it just means that something has gone wrong with the run after command.
-        '    End Try
-        'End If
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        'tmrStartProcess.Enabled = True
+        If My.Settings.RunAfterCommand <> "" Then
+            Try
+                ' Environ("comspec") will give the path to cmd.exe or command.com
+                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
+            Catch
+                ' Just ignore the error, as it just means that something has gone wrong with the run after command.
+            End Try
+        End If
+
+        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub clsProgData_FoundNew(ByVal intProgID As Integer) Handles clsProgData.FoundNew
@@ -495,9 +497,7 @@ Public Class frmMain
         intLastNum = intPercent
 
         With clsCurDldProgData
-            Dim lstItem As ListViewItem
-            'lstItem = lstDownloads.Items(.ProgramDate.ToString + "||" + .ProgramID + "||" + .StationID + "||" + .PluginID)
-
+            Dim lstItem As ListViewItem = lstDownloads.Items(CStr(.EpID))
             lstItem.SubItems(2).Text = strStatusText
             prgDldProg.Value = intPercent
 
