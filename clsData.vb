@@ -554,23 +554,6 @@ Public Class clsData
         Next
     End Sub
 
-    Private Function SubscriptionName(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT SubscriptionName FROM tblSubscribed WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        If sqlReader.Read Then
-            If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("SubscriptionName"))) Then
-                SubscriptionName = ""
-            Else
-                SubscriptionName = sqlReader.GetString(sqlReader.GetOrdinal("SubscriptionName"))
-            End If
-        Else
-            SubscriptionName = ""
-        End If
-
-        sqlReader.Close()
-    End Function
-
     Public Sub CheckSubscriptions(ByRef lstList As ExtListView, ByRef prgDldProg As ProgressBar)
         Dim sqlCommand As New SQLiteCommand("select progid from subscriptions", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
@@ -643,12 +626,6 @@ Public Class clsData
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Sub GetLatest(ByVal gidPluginID As Guid, ByVal strStationID As String, ByVal strProgramID As String)
-        If HaveLatest(gidPluginID, strStationID, strProgramID) = False Then
-            Call StoreLatestInfo(gidPluginID, strStationID, strProgramID)
-        End If
-    End Sub
-
     Private Function GetCustFormatDateTime(ByVal sqlReader As SQLiteDataReader, ByVal strColumn As String) As Date
         Try
             GetCustFormatDateTime = DateTime.ParseExact(sqlReader.GetString(sqlReader.GetOrdinal(strColumn)), strSqlDateFormat, Nothing)
@@ -691,87 +668,6 @@ Public Class clsData
 
         sqlReader.Close()
     End Function
-
-    Private Function HaveLatest(ByVal gidProviderID As Guid, ByVal strStationID As String, ByVal strProgramID As String) As Boolean
-        Dim dteLatest As Date
-        dteLatest = LatestDate(gidProviderID, strStationID, strProgramID)
-
-        If dteLatest = Nothing Then
-            Return False
-        End If
-
-        'If clsPluginsInst.PluginExists(gidProviderID) Then
-        '    Dim ThisInstance As IRadioProvider
-        '    ThisInstance = clsPluginsInst.GetPluginInstance(gidProviderID)
-        '    Return ThisInstance.CouldBeNewEpisode(strStationID, strProgramID, dteLatest) = False
-        'Else
-        '    ' As we can't check if we have the latest, just assume that we do for the moment
-        Return True
-        'End If
-    End Function
-
-    Private Sub StoreLatestInfo(ByVal gidPluginID As Guid, ByVal strStationID As String, ByRef strProgramID As String)
-        If clsPluginsInst.PluginExists(gidPluginID) = False Then
-            ' The plugin type for this program is unavailable, so no point trying to call it
-            Exit Sub
-        End If
-
-        Dim sqlCommand As SQLiteCommand
-        Dim sqlReader As SQLiteDataReader
-        Dim dteLastAttempt As Date = Nothing
-        Dim ThisInstance As IRadioProvider
-
-        ThisInstance = clsPluginsInst.GetPluginInstance(gidPluginID)
-
-        sqlCommand = New SQLiteCommand("SELECT LastTry FROM tblLastFetch WHERE type=""" + gidPluginID.ToString + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """", sqlConnection)
-        sqlReader = sqlCommand.ExecuteReader
-
-        If sqlReader.Read Then
-            dteLastAttempt = GetCustFormatDateTime(sqlReader, "LastTry")
-        End If
-
-        'Dim ProgInfo As IRadioProvider.ProgramInfo
-        'ProgInfo = ThisInstance.GetLatestProgramInfo(strStationID, strProgramID, LatestDate(gidPluginID, strStationID, strProgramID), dteLastAttempt)
-
-        'If ProgInfo.Result = IRadioProvider.ProgInfoResult.Success Then
-        '    sqlCommand = New SQLiteCommand("SELECT id FROM tblInfo WHERE type=""" + gidPluginID.ToString + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """ AND Date=""" + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
-        '    sqlReader = sqlCommand.ExecuteReader
-
-        '    If sqlReader.Read = False Then
-        '        sqlCommand = New SQLiteCommand("INSERT INTO tblInfo (Type, Station, ID, Date, Name, Description, DownloadUrl, Image, Duration) VALUES (""" + gidPluginID.ToString + """, """ + strStationID + """, """ + strProgramID + """, """ + ProgInfo.ProgramDate.ToString(strSqlDateFormat) + """, """ + ProgInfo.ProgramName.Replace("""", """""") + """, """ + ProgInfo.ProgramDescription.Replace("""", """""") + """, """ + ProgInfo.ProgramDldUrl.Replace("""", """""") + """, @image, " + CStr(ProgInfo.ProgramDuration) + ")", sqlConnection)
-        '        Dim sqlImage As SQLiteParameter
-
-        '        If ProgInfo.Image IsNot Nothing Then
-        '            ' Convert the image into a byte array
-        '            Dim mstImage As New MemoryStream()
-        '            ProgInfo.Image.Save(mstImage, Imaging.ImageFormat.Bmp)
-        '            Dim bteImage(CInt(mstImage.Length - 1)) As Byte
-        '            mstImage.Position = 0
-        '            mstImage.Read(bteImage, 0, CInt(mstImage.Length))
-
-        '            ' Add the image as a parameter
-        '            sqlImage = New SQLiteParameter("@image", bteImage)
-        '        Else
-        '            sqlImage = New SQLiteParameter("@image", Nothing)
-        '        End If
-
-        '        sqlCommand.Parameters.Add(sqlImage)
-        '        sqlCommand.ExecuteNonQuery()
-        '    End If
-
-        '    sqlReader.Close()
-        'End If
-
-        'If ProgInfo.Result <> IRadioProvider.ProgInfoResult.Skipped And ProgInfo.Result <> IRadioProvider.ProgInfoResult.TempError Then
-        '    ' Remove the previous record of when we tried to download info about this program (if it exists)
-        '    sqlCommand = New SQLiteCommand("DELETE FROM tblLastFetch WHERE type=""" + gidPluginID.ToString + """ and Station=""" + strStationID + """ and ID=""" & strProgramID & """", sqlConnection)
-        '    Call sqlCommand.ExecuteNonQuery()
-
-        '    ' Record when we tried to get information about this program
-        '    sqlCommand = New SQLiteCommand("INSERT INTO tblLastFetch (Type, Station, ID, LastTry) VALUES (""" + gidPluginID.ToString + """, """ + strStationID + """, """ & strProgramID & """, """ + Now.ToString(strSqlDateFormat) + """)", sqlConnection)
-        '    Call sqlCommand.ExecuteNonQuery()
-        'End If
-    End Sub
 
     Public Sub ResetDownload(ByVal intEpID As Integer, ByVal booAuto As Boolean)
         Dim sqlCommand As New SQLiteCommand("update downloads set status=@status where epid=@epid", sqlConnection)
@@ -910,27 +806,6 @@ Public Class clsData
             lstProviders.Items.Add(lstAdd)
         Next
     End Sub
-
-    Private Function IsStationVisible(ByVal strPluginID As String, ByVal strStationID As String, ByVal booDefault As Boolean) As Boolean
-        Dim sqlCommand As New SQLiteCommand("select Visible from tblStationVisibility where ProviderID=""" + strPluginID + """ and StationID=""" + strStationID + """", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        If sqlReader.Read Then
-            If sqlReader.GetBoolean(sqlReader.GetOrdinal("Visible")) Then
-                IsStationVisible = True
-            Else
-                IsStationVisible = False
-            End If
-        Else
-            If booDefault Then
-                IsStationVisible = True
-            Else
-                IsStationVisible = False
-            End If
-        End If
-
-        sqlReader.Close()
-    End Function
 
     Public Sub PerformCleanup()
         Dim sqlCommand As New SQLiteCommand("select epid, filepath from downloads where status=@status", sqlConnection)
