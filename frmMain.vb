@@ -221,35 +221,34 @@ Public Class frmMain
 
     Private Sub SetContextForSelectedDownload()
         If lstDownloads.SelectedItems.Count > 0 Then
-            Dim strSplit() As String
-            strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
-
+            Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
+            
             With clsProgData
-                Dim staDownloadStatus As clsData.Statuses
+                Dim staDownloadStatus As clsData.Statuses = .DownloadStatus(intEpID)
                 Dim strInfoBox As String = ""
                 Dim strActionString As String
 
-                staDownloadStatus = .DownloadStatus(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
-
                 If staDownloadStatus = clsData.Statuses.Downloaded Then
-                    If Exists(.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
+                    If Exists(.DownloadPath(intEpID)) Then
                         strActionString = "Play,Delete"
                     Else
                         strActionString = "Delete"
                     End If
 
-                    strInfoBox = vbCrLf + vbCrLf + "Play count: " + CStr(.PlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+                    strInfoBox = vbCrLf + vbCrLf + "Play count: " + CStr(.DownloadPlayCount(intEpID))
                 ElseIf staDownloadStatus = clsData.Statuses.Errored Then
                     Dim strErrorName As String = ""
-                    Dim strErrorDetails As String = .ErrorDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+                    Dim strErrorDetails As String = .DownloadErrorDetails(intEpID)
 
                     strActionString = "Retry,Cancel"
 
-                    Select Case .ErrorType(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+                    Select Case .DownloadErrorType(intEpID)
                         Case IRadioProvider.ErrorType.MissingDependency
                             strErrorName = "Missing Dependency"
                         Case IRadioProvider.ErrorType.ShorterThanExpected
                             strErrorName = "Shorter Than Expected"
+                        Case IRadioProvider.ErrorType.NoLongerAvailable
+                            strErrorName = "No Longer Available"
                         Case IRadioProvider.ErrorType.UnknownError
                             strErrorName = "Unknown Error"
                             strErrorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
@@ -264,7 +263,7 @@ Public Class frmMain
                     strActionString = "Cancel"
                 End If
 
-                'Call SetSideBar(.ProgramTitle(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))), .ProgramDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))) + strInfoBox, .ProgramImage(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+                Call SetSideBar(.EpisodeName(intEpID), .EpisodeDetails(intEpID) + strInfoBox, .EpisodeImage(intEpID))
                 Call SetToolbarButtons(strActionString)
             End With
         Else
@@ -571,55 +570,67 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCancel.Click
-        'Dim strSplit() As String
-        'If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-        '    strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        '    Dim clsCurrentProgInfo As clsDldProgData
-        '    clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
+        If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            Dim clsCurrentProgInfo As clsDldProgData
+            clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
 
-        '    If clsCurrentProgInfo IsNot Nothing Then
-        '        If clsCurrentProgInfo.ProgramType = strSplit(3) And clsCurrentProgInfo.StationID = strSplit(2) And clsCurrentProgInfo.ProgramID = strSplit(1) And clsCurrentProgInfo.ProgramDate = CDate(strSplit(0)) Then
-        '            ' The program is currently being downloaded
-        '            clsProgData.AbortDownloadThread()
-        '            tmrStartProcess.Enabled = True
-        '        End If
-        '    End If
+            If clsCurrentProgInfo IsNot Nothing Then
+                If clsCurrentProgInfo.EpID = intEpID Then
+                    ' The program is currently being downloaded
+                    clsProgData.AbortDownloadThread()
+                    tmrStartProcess.Enabled = True
+                End If
+            End If
 
-        '    Call clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
-        '    Call TabAdjustments() ' Revert back to tab info so prog info goes
-        '    Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        'End If
+            clsProgData.RemoveDownload(intEpID)
+            clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+
+            ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
+            ' it doesn't just download it all over again
+            Call clsProgData.EpisodeSetAutoDownload(intEpID, False)
+        End If
     End Sub
 
     Private Sub tbtPlay_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtPlay.Click
-        Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        If clsProgData.DownloadStatus(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))) = clsData.Statuses.Downloaded Then
-            If Exists(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
-                Process.Start(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+        If clsProgData.DownloadStatus(intEpID) = clsData.Statuses.Downloaded Then
+            If Exists(clsProgData.DownloadPath(intEpID)) Then
+                Process.Start(clsProgData.DownloadPath(intEpID))
 
                 ' Bump the play count of this item up by one, and update the list so that the icon changes colour
-                clsProgData.IncreasePlayCount(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+                clsProgData.DownloadBumpPlayCount(intEpID)
                 clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
                 ' Update the prog info pane to show the updated play count
-                Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+                Call SetContextForSelectedDownload()
             End If
         End If
     End Sub
 
     Private Sub tbtDelete_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDelete.Click
-        Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
+        Dim strDownloadPath As String = clsProgData.DownloadPath(intEpID)
+        Dim booExists As Boolean = Exists(strDownloadPath)
+        Dim strDelQuestion As String = "Are you sure that you would like to delete this episode"
 
-        If MsgBox("Are you sure that you would like to delete this program and the associated audio file?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            If Exists(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))) Then
-                Delete(clsProgData.GetDownloadPath(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+        If booExists Then
+            strDelQuestion += " and the associated audio file"
+        End If
+
+        If MsgBox(strDelQuestion + "?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            If booExists Then
+                Delete(strDownloadPath)
             End If
-            clsProgData.RemoveDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)))
+
+            clsProgData.RemoveDownload(intEpID)
             clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+
+            ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
+            ' it doesn't just download it all over again
+            Call clsProgData.EpisodeSetAutoDownload(intEpID, False)
         End If
     End Sub
 
@@ -646,10 +657,9 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtReportError_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtReportError.Click
-        Dim strSplit() As String
-        strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        Dim clsReport As New clsErrorReporting("Download Error: " + clsProgData.ErrorType(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))).ToString, clsProgData.ErrorDetails(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0))))
+        Dim clsReport As New clsErrorReporting("Download Error: " + clsProgData.DownloadErrorType(intEpID).ToString, clsProgData.DownloadErrorDetails(intEpID))
         clsReport.SendReport(My.Settings.ErrorReportURL)
     End Sub
 

@@ -183,22 +183,30 @@ Public Class clsData
         End Try
     End Sub
 
-    Public Function GetDownloadPath(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT path FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function DownloadPath(ByVal intEpID As Integer) As String
+        Dim sqlCommand As New SQLiteCommand("select filepath from downloads where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-        GetDownloadPath = sqlReader.GetString(sqlReader.GetOrdinal("Path"))
+        If sqlReader.Read Then
+            DownloadPath = sqlReader.GetString(sqlReader.GetOrdinal("filepath"))
+        Else
+            DownloadPath = Nothing
+        End If
 
         sqlReader.Close()
     End Function
 
-    Public Function DownloadStatus(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Statuses
-        Dim sqlCommand As New SQLiteCommand("SELECT status FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" + strProgramID + """ AND date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function DownloadStatus(ByVal intEpID As Integer) As Statuses
+        Dim sqlCommand As New SQLiteCommand("select status from downloads where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        sqlReader.Read()
-        DownloadStatus = DirectCast(sqlReader.GetInt32(sqlReader.GetOrdinal("Status")), Statuses)
+        If sqlReader.Read Then
+            DownloadStatus = DirectCast(sqlReader.GetInt32(sqlReader.GetOrdinal("status")), Statuses)
+        Else
+            DownloadStatus = Nothing
+        End If
 
         sqlReader.Close()
     End Function
@@ -781,8 +789,9 @@ Public Class clsData
         End If
     End Sub
 
-    Public Sub RemoveDownload(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
-        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ AND ID=""" + strProgramID + """ AND Date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub RemoveDownload(ByVal intEpID As Integer)
+        Dim sqlCommand As New SQLiteCommand("delete from downloads where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
@@ -797,53 +806,61 @@ Public Class clsData
         Return ThisInstance.ProviderName
     End Function
 
-    Public Sub IncreasePlayCount(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date)
-        Dim sqlCommand As New SQLiteCommand("update tblDownloads set PlayCount=PlayCount+1 where type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Sub DownloadBumpPlayCount(ByVal intEpID As Integer)
+        Dim sqlCommand As New SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Function PlayCount(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Integer
-        Dim sqlCommand As New SQLiteCommand("SELECT PlayCount FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        With sqlReader
-            If .Read Then
-                PlayCount = .GetInt32(.GetOrdinal("PlayCount"))
-            End If
-        End With
-
-        sqlReader.Close()
-    End Function
-
-    Public Function ErrorType(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As IRadioProvider.ErrorType
-        Dim sqlCommand As New SQLiteCommand("SELECT ErrorType FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function DownloadPlayCount(ByVal intEpID As Integer) As Integer
+        Dim sqlCommand As New SQLiteCommand("select playcount from downloads where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
-            If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("ErrorType"))) Then
-                ErrorType = IRadioProvider.ErrorType.UnknownError
-            Else
-                ErrorType = CType(sqlReader.GetInt32(sqlReader.GetOrdinal("ErrorType")), IRadioProvider.ErrorType)
-            End If
+            DownloadPlayCount = sqlReader.GetInt32(sqlReader.GetOrdinal("playcount"))
         Else
-            ErrorType = IRadioProvider.ErrorType.UnknownError
+            DownloadPlayCount = Nothing
         End If
 
         sqlReader.Close()
     End Function
 
-    Public Function ErrorDetails(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As String
-        Dim sqlCommand As New SQLiteCommand("SELECT ErrorDetails FROM tblDownloads WHERE type=""" + strProgramType + """ and Station=""" + strStationID + """ and id=""" + strProgramID + """ and date=""" + dteProgramDate.ToString(strSqlDateFormat) + """", sqlConnection)
+    Public Function DownloadErrorType(ByVal intEpID As Integer) As IRadioProvider.ErrorType
+        Dim sqlCommand As New SQLiteCommand("select errortype from downloads where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
-            If IsDBNull(sqlReader.GetValue(sqlReader.GetOrdinal("ErrorDetails"))) Then
-                ErrorDetails = ""
+            Dim intErrorType As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("ErrorType"))
+
+            If intErrorType <> Nothing Then
+                DownloadErrorType = CType(intErrorType, IRadioProvider.ErrorType)
             Else
-                ErrorDetails = sqlReader.GetString(sqlReader.GetOrdinal("ErrorDetails"))
+                DownloadErrorType = IRadioProvider.ErrorType.UnknownError
             End If
         Else
-            ErrorDetails = ""
+            DownloadErrorType = IRadioProvider.ErrorType.UnknownError
+        End If
+
+        sqlReader.Close()
+    End Function
+
+    Public Function DownloadErrorDetails(ByVal intEpID As Integer) As String
+        Dim sqlCommand As New SQLiteCommand("select errordetails from downloads where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            Dim strErrorDetails As String = sqlReader.GetString(sqlReader.GetOrdinal("errordetails"))
+
+            If strErrorDetails IsNot Nothing Then
+                DownloadErrorDetails = strErrorDetails
+            Else
+                DownloadErrorDetails = ""
+            End If
+        Else
+            DownloadErrorDetails = ""
         End If
 
         sqlReader.Close()
@@ -917,14 +934,22 @@ Public Class clsData
     End Function
 
     Public Sub PerformCleanup()
-        Dim sqlCommand As New SQLiteCommand("select type,station,id,date,path from tblDownloads where status=" + CStr(Statuses.Downloaded), sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select epid, path from downloads where status=@status", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
 
         With sqlReader
             Do While .Read
                 ' Remove programmes for which the associated audio file no longer exists
                 If Exists(.GetString(.GetOrdinal("path"))) = False Then
-                    RemoveDownload(.GetString(.GetOrdinal("type")), .GetString(.GetOrdinal("station")), .GetString(.GetOrdinal("id")), GetCustFormatDateTime(sqlReader, "date"))
+                    Dim intEpID As Integer = .GetInt32(.GetOrdinal("epid"))
+
+                    ' Take the download out of the list
+                    RemoveDownload(intEpID)
+
+                    ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
+                    ' it doesn't just download it all over again
+                    Call EpisodeSetAutoDownload(intEpID, False)
                 End If
             Loop
         End With
