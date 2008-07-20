@@ -631,13 +631,12 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtRetry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtRetry.Click
-        'Dim strSplit() As String
-        'strSplit = Split(lstDownloads.SelectedItems(0).Name.ToString, "||")
+        Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
-        'Call clsProgData.ResetDownload(strSplit(3), strSplit(2), strSplit(1), CDate(strSplit(0)), False)
-        'Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs) ' Update prog info pane
-        'Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        'tmrStartProcess.Enabled = True
+        Call clsProgData.ResetDownload(intEpID, False)
+        Call SetContextForSelectedDownload() ' Update prog info pane
+        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub tbtDownload_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownload.Click
