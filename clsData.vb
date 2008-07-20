@@ -572,28 +572,32 @@ Public Class clsData
     End Function
 
     Public Sub CheckSubscriptions(ByRef lstList As ExtListView, ByRef prgDldProg As ProgressBar)
-        'Dim sqlCommand As New SQLiteCommand("select type, station, id from tblSubscribed", sqlConnection)
-        'Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+        Dim sqlCommand As New SQLiteCommand("select progid from subscriptions", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        'With sqlReader
-        '    Do While .Read()
-        '        Dim gidPluginID As New Guid(.GetString(.GetOrdinal("Type")))
+        With sqlReader
+            Do While .Read()
+                Dim intAvailableEps() As Integer
+                intAvailableEps = GetAvailableEpisodes(.GetInt32(.GetOrdinal("progid")))
 
-        '        Call GetLatest(gidPluginID, .GetString(sqlReader.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
+                For Each intEpID As Integer In intAvailableEps
+                    If EpisodeAutoDownload(intEpID) Then
+                        Dim sqlCheckCmd As New SQLiteCommand("select epid from downloads where epid=@epid", sqlConnection)
+                        sqlCheckCmd.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+                        Dim sqlCheckRdr As SQLiteDataReader = sqlCheckCmd.ExecuteReader
 
-        '        Dim sqlComCheckDld As New SQLiteCommand("select id from tblDownloads where type=""" + .GetString(.GetOrdinal("Type")) + """ and Station=""" + .GetString(.GetOrdinal("Station")) + """ and ID=""" + .GetString(.GetOrdinal("ID")) + """ and Date=""" + LatestDate(gidPluginID, .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))).ToString(strSqlDateFormat) + """", sqlConnection)
-        '        Dim sqlRdrCheckDld As SQLiteDataReader = sqlComCheckDld.ExecuteReader
+                        If sqlCheckRdr.Read = False Then
+                            Call AddDownload(intEpID)
+                            Call UpdateDlList(lstList, prgDldProg)
+                        End If
 
-        '        If sqlRdrCheckDld.Read() = False Then
-        '            Call AddDownload(gidPluginID, .GetString(sqlReader.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
-        '            Call UpdateDlList(lstList, prgDldProg)
-        '        End If
+                        sqlCheckRdr.Close()
+                    End If
+                Next
+            Loop
+        End With
 
-        '        sqlRdrCheckDld.Close()
-        '    Loop
-        'End With
-
-        'sqlReader.Close()
+        sqlReader.Close()
     End Sub
 
     Public Function AddDownload(ByVal intEpID As Integer) As Boolean
