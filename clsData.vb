@@ -872,7 +872,9 @@ Public Class clsData
         clsCurDldProgData = Nothing
     End Sub
 
-    Private Sub DownloadPluginInst_Finished() Handles DownloadPluginInst.Finished
+    Private Sub DownloadPluginInst_Finished(ByVal strFileExtension As String) Handles DownloadPluginInst.Finished
+        clsCurDldProgData.FinalName += "." + strFileExtension
+
         RaiseEvent Finished(clsCurDldProgData)
         thrDownloadThread = Nothing
         clsCurDldProgData = Nothing
@@ -934,14 +936,14 @@ Public Class clsData
     End Function
 
     Public Sub PerformCleanup()
-        Dim sqlCommand As New SQLiteCommand("select epid, path from downloads where status=@status", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select epid, filepath from downloads where status=@status", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
 
         With sqlReader
             Do While .Read
                 ' Remove programmes for which the associated audio file no longer exists
-                If Exists(.GetString(.GetOrdinal("path"))) = False Then
+                If Exists(.GetString(.GetOrdinal("filepath"))) = False Then
                     Dim intEpID As Integer = .GetInt32(.GetOrdinal("epid"))
 
                     ' Take the download out of the list

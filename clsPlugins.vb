@@ -62,7 +62,7 @@ Public Interface IRadioProvider
     Event FoundNew(ByVal strProgExtID As String)
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
-    Event Finished()
+    Event Finished(ByVal strFileExtension As String)
 
     Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As ProgrammeInfo, ByVal EpInfo As EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer)
 End Interface

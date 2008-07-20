@@ -31,7 +31,7 @@ Public Class clsGeneralPodcasts
     Public Event FoundNew(ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
     Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
-    Public Event Finished() Implements IRadioProvider.Finished
+    Public Event Finished(ByVal strFileExtension As String) Implements IRadioProvider.Finished
 
     Friend clsCachedHTTP As RadioDld.clsCachedWebClient
     Friend Const intCacheHTTPHours As Integer = 2
@@ -42,6 +42,7 @@ Public Class clsGeneralPodcasts
     Private strDownloadFileName As String
     Private strProgDldUrl As String
     Private strFinalName As String
+    Private strExtension As String = ""
 
     Public ReadOnly Property ProviderID() As Guid Implements IRadioProvider.ProviderID
         Get
@@ -361,14 +362,12 @@ Public Class clsGeneralPodcasts
         Dim intFileNamePos As Integer = strFinalName.LastIndexOf("\")
         Dim intExtensionPos As Integer = strProgDldUrl.LastIndexOf(".")
 
-        Dim strExtension As String = ""
-
         If intExtensionPos > -1 Then
-            strExtension = strProgDldUrl.Substring(intExtensionPos)
+            strExtension = strProgDldUrl.Substring(intExtensionPos + 1)
         End If
 
-        strDownloadFileName = System.IO.Path.GetTempPath + "\RadioDownloader\" + strFinalName.Substring(intFileNamePos + 1) + strExtension
-        Me.strFinalName = strFinalName + strExtension
+        strDownloadFileName = System.IO.Path.GetTempPath + "\RadioDownloader\" + strFinalName.Substring(intFileNamePos + 1) + "." + strExtension
+        Me.strFinalName = strFinalName + "." + strExtension
 
         AddHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange
 
@@ -499,7 +498,7 @@ Public Class clsGeneralPodcasts
             Else
                 RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
                 Call File.Move(strDownloadFileName, strFinalName)
-                RaiseEvent Finished()
+                RaiseEvent Finished(strExtension)
             End If
         End If
     End Sub
