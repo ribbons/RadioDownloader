@@ -786,24 +786,6 @@ Public Class clsData
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Function IsProgramStillAvailable(ByVal gidPluginID As Guid, ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date) As Boolean
-        Dim booIsLatestProg As Boolean
-
-        Call GetLatest(gidPluginID, strStationID, strProgramID)
-        booIsLatestProg = (dteProgramDate = LatestDate(gidPluginID, strStationID, strProgramID))
-
-        If clsPluginsInst.PluginExists(gidPluginID) = False Then
-            ' Guess that the program is still available, as otherwise if the plugin is unavailable for a 
-            ' short time, downloads will be deleted that should be downloaded when it becomes available again.
-            Return True
-        End If
-
-        Dim ThisInstance As IRadioProvider
-        ThisInstance = clsPluginsInst.GetPluginInstance(gidPluginID)
-
-        Return ThisInstance.IsStillAvailable(strStationID, strProgramID, dteProgramDate, booIsLatestProg)
-    End Function
-
     Public Function ProviderName(ByVal gidPluginID As Guid) As String
         If clsPluginsInst.PluginExists(gidPluginID) = False Then
             Return ""

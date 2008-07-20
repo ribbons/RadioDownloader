@@ -355,10 +355,6 @@ Public Class clsGeneralPodcasts
         Return EpisodeInfo
     End Function
 
-    Public Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean Implements IRadioProvider.IsStillAvailable
-
-    End Function
-
     Public Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
         strProgDldUrl = EpInfo.ExtInfo("EnclosureURL")
 
@@ -486,6 +482,19 @@ Public Class clsGeneralPodcasts
             RemoveHandler PowerModeChanged, AddressOf PowerModeChange
 
             If e.Error IsNot Nothing Then
+                If TypeOf e.Error Is WebException Then
+                    Dim expWeb As WebException = CType(e.Error, WebException)
+
+                    If TypeOf expWeb.Response Is HttpWebResponse Then
+                        Dim webErrorResponse As HttpWebResponse = CType(expWeb.Response, HttpWebResponse)
+
+                        If webErrorResponse.StatusCode = HttpStatusCode.NotFound Then
+                            RaiseEvent DldError(IRadioProvider.ErrorType.NoLongerAvailable, "")
+                            Exit Sub
+                        End If
+                    End If
+                End If
+
                 RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.GetType.ToString + ": " + e.Error.Message + vbCrLf + e.Error.StackTrace)
             Else
                 RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)

@@ -46,6 +46,7 @@ Public Interface IRadioProvider
         UnknownError
         MissingDependency
         ShorterThanExpected
+        NoLongerAvailable
     End Enum
 
     ReadOnly Property ProviderID() As Guid
@@ -57,7 +58,6 @@ Public Interface IRadioProvider
     Function GetProgrammeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As ProgrammeInfo
     Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As String()
     Function GetEpisodeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As EpisodeInfo
-    Function IsStillAvailable(ByVal strStationID As String, ByVal strProgramID As String, ByVal dteProgramDate As Date, ByVal booIsLatestProg As Boolean) As Boolean
 
     Event FoundNew(ByVal strProgExtID As String)
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
