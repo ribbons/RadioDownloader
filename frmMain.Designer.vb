@@ -246,7 +246,6 @@
         Me.lstSubscribed.MultiSelect = False
         Me.lstSubscribed.Name = "lstSubscribed"
         Me.lstSubscribed.Size = New System.Drawing.Size(570, 62)
-        Me.lstSubscribed.Sorting = System.Windows.Forms.SortOrder.Ascending
         Me.lstSubscribed.TabIndex = 14
         Me.lstSubscribed.UseCompatibleStateImageBehavior = False
         Me.lstSubscribed.View = System.Windows.Forms.View.Details
@@ -286,18 +285,18 @@
         'tbmOptions
         '
         Me.tbmOptions.Name = "tbmOptions"
-        Me.tbmOptions.Size = New System.Drawing.Size(152, 22)
+        Me.tbmOptions.Size = New System.Drawing.Size(148, 22)
         Me.tbmOptions.Text = "Show &Options"
         '
         'tbmSep1
         '
         Me.tbmSep1.Name = "tbmSep1"
-        Me.tbmSep1.Size = New System.Drawing.Size(149, 6)
+        Me.tbmSep1.Size = New System.Drawing.Size(145, 6)
         '
         'tbmExit
         '
         Me.tbmExit.Name = "tbmExit"
-        Me.tbmExit.Size = New System.Drawing.Size(152, 22)
+        Me.tbmExit.Size = New System.Drawing.Size(148, 22)
         Me.tbmExit.Text = "E&xit"
         '
         'tbtDownload

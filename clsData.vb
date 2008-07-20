@@ -504,30 +504,19 @@ Public Class clsData
     Public Sub UpdateSubscrList(ByRef lstListview As ListView)
         Dim lstAdd As ListViewItem
 
-        Dim sqlCommand As New SQLiteCommand("select progid from subscriptions", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select pluginid, name, subscriptions.progid from subscriptions, programmes where subscriptions.progid=programmes.progid order by name", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         lstListview.Items.Clear()
 
         With sqlReader
             Do While .Read()
-                Dim gidPluginID As New Guid(.GetString(.GetOrdinal("Type")))
+                Dim gidPluginID As New Guid(.GetString(.GetOrdinal("pluginid")))
                 lstAdd = New ListViewItem
 
-                Dim strDynamicTitle As String
-                'strDynamicTitle = ProgramTitle(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")), LatestDate(gidPluginID, .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID"))))
+                lstAdd.Text = .GetString(.GetOrdinal("name"))
 
-                'If ProviderDynamicSubscriptionName(gidPluginID) Then
-                lstAdd.Text = strDynamicTitle
-                'Else
-                'lstAdd.Text = SubscriptionName(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
-
-                'If lstAdd.Text = "" Then
-                'lstAdd.Text = strDynamicTitle
-                'End If
-                'End If
-
-                Dim dteLastDownload As Date = LatestDownloadDate(.GetString(.GetOrdinal("Type")), .GetString(.GetOrdinal("Station")), .GetString(.GetOrdinal("ID")))
+                Dim dteLastDownload As Date = LatestDownloadDate(.GetInt32(.GetOrdinal("progid")))
 
                 If dteLastDownload = Nothing Then
                     lstAdd.SubItems.Add("Never")
@@ -535,9 +524,8 @@ Public Class clsData
                     lstAdd.SubItems.Add(dteLastDownload.ToShortDateString)
                 End If
 
-                'lstAdd.SubItems.Add(StationName(gidPluginID, .GetString(.GetOrdinal("Station"))))
                 lstAdd.SubItems.Add(ProviderName(gidPluginID))
-                lstAdd.Tag = .GetString(.GetOrdinal("Type")) + "||" + .GetString(.GetOrdinal("Station")) + "||" + .GetString(.GetOrdinal("ID"))
+                lstAdd.Tag = .GetInt32(.GetOrdinal("progid"))
                 lstAdd.ImageKey = "subscribed"
 
                 lstListview.Items.Add(lstAdd)
@@ -627,21 +615,27 @@ Public Class clsData
         Return True
     End Function
 
-    Public Function AddSubscription(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String, ByVal strSubscriptionName As String) As Boolean
-        Dim sqlCommand As New SQLiteCommand("INSERT INTO tblSubscribed (Type, Station, ID, SubscriptionName) VALUES (""" + strProgramType + """, """ + strStationID + """, """ + strProgramID + """, """ + strSubscriptionName.Replace("""", """""") + """)", sqlConnection)
+    Public Function AddSubscription(ByVal intProgID As Integer) As Boolean
+        Dim sqlCommand As New SQLiteCommand("select progid from subscriptions where progid=@progid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        Try
-            Call sqlCommand.ExecuteNonQuery()
-        Catch e As SQLiteException
-            ' Probably trying to create duplicate in database, ie trying to subscribe twice!
+        If sqlReader.Read Then
             Return False
-        End Try
+        End If
+
+        sqlReader.Close()
+
+        sqlCommand = New SQLiteCommand("insert into subscriptions (progid) values (@progid)", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
+        Call sqlCommand.ExecuteNonQuery()
 
         Return True
     End Function
 
-    Public Sub RemoveSubscription(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String)
-        Dim sqlCommand As New SQLiteCommand("DELETE FROM tblSubscribed WHERE type=""" & strProgramType & """ and Station=""" + strStationID + """ AND ID=""" & strProgramID & """", sqlConnection)
+    Public Sub RemoveSubscription(ByVal intProgID As Integer)
+        Dim sqlCommand As New SQLiteCommand("delete from subscriptions where progid=@progid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
@@ -679,18 +673,17 @@ Public Class clsData
         sqlReader.Close()
     End Function
 
-    Public Function LatestDownloadDate(ByVal strProgramType As String, ByVal strStationID As String, ByVal strProgramID As String) As DateTime
-        Dim sqlCommand As New SQLiteCommand("select date from tblDownloads where type=""" + strProgramType + """  and station=""" + strStationID + """ and id=""" + strProgramID + """ order by date desc", sqlConnection)
+    Public Function LatestDownloadDate(ByVal intProgID As Integer) As DateTime
+        Dim sqlCommand As New SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        With sqlReader
-            If .Read = False Then
-                ' No downloads of this program, return nothing
-                LatestDownloadDate = Nothing
-            Else
-                LatestDownloadDate = GetCustFormatDateTime(sqlReader, "date")
-            End If
-        End With
+        If sqlReader.Read = False Then
+            ' No downloads of this program, return nothing
+            LatestDownloadDate = Nothing
+        Else
+            LatestDownloadDate = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
+        End If
 
         sqlReader.Close()
     End Function

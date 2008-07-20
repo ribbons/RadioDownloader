@@ -119,10 +119,9 @@ Public Class frmMain
 
         Call lstEpisodes.Columns.Add("Date", 100)
         Call lstEpisodes.Columns.Add("Episode Name", 440)
-        Call lstSubscribed.Columns.Add("Programme Name", 225)
-        Call lstSubscribed.Columns.Add("Last Download", 85)
-        Call lstSubscribed.Columns.Add("Station", 115)
-        Call lstSubscribed.Columns.Add("Provider", 115)
+        Call lstSubscribed.Columns.Add("Programme Name", 270)
+        Call lstSubscribed.Columns.Add("Last Download", 100)
+        Call lstSubscribed.Columns.Add("Provider", 170)
         Call lstDownloads.Columns.Add("Name", 225)
         Call lstDownloads.Columns.Add("Date", 85)
         Call lstDownloads.Columns.Add("Status", 130)
@@ -201,10 +200,9 @@ Public Class frmMain
 
     Private Sub SetContextForSelectedSubscription()
         If lstSubscribed.SelectedItems.Count > 0 Then
-            Dim strSplit() As String
-            strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
+            Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
 
-            'Call SetSideBar(clsProgData.ProgramTitle(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramDetails(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))), clsProgData.ProgramImage(strSplit(0), strSplit(1), strSplit(2), clsProgData.LatestDate(strSplit(0), strSplit(1), strSplit(2))))
+            Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
             Call SetToolbarButtons("Unsubscribe")
         Else
             Call SetViewDefaults() ' Revert back to subscribed items view default sidebar and toolbar
@@ -547,23 +545,21 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtSubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscribe.Click
-        Dim strSplit() As String
-        strSplit = Split(lstEpisodes.SelectedItems(0).Tag.ToString, "||")
+        Dim intProgID As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
 
-        If clsProgData.AddSubscription(strSplit(0), strSplit(1), strSplit(2), lstEpisodes.SelectedItems(0).Text) = False Then
-            Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation, "Radio Downloader")
+        If clsProgData.AddSubscription(intProgID) = False Then
+            Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation)
         Else
-            Call tbtSubscriptions_Click(New Object, New EventArgs)
+            Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
             Call clsProgData.UpdateSubscrList(lstSubscribed)
         End If
     End Sub
 
     Private Sub tbtUnsubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUnsubscribe.Click
-        Dim strSplit() As String
-        strSplit = Split(lstSubscribed.SelectedItems(0).Tag.ToString, "||")
+        Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
 
-        If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo, "Radio Downloader") = MsgBoxResult.Yes Then
-            Call clsProgData.RemoveSubscription(strSplit(0), strSplit(1), strSplit(2))
+        If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            Call clsProgData.RemoveSubscription(intProgID)
             Call SetViewDefaults() ' Revert back to the subscriptions default sidebar and toolbar
             Call clsProgData.UpdateSubscrList(lstSubscribed)
         End If
