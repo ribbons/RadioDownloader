@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>GeneralPodcasts</RootNamespace>
-    <AssemblyName>GeneralPodcasts</AssemblyName>
+    <RootNamespace>PodcastProvider</RootNamespace>
+    <AssemblyName>PodcastProvider</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
@@ -23,7 +23,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\bin\</OutputPath>
-    <DocumentationFile>GeneralPodcasts.xml</DocumentationFile>
+    <DocumentationFile>PodcastProvider.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,7 +32,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\..\bin\</OutputPath>
-    <DocumentationFile>GeneralPodcasts.xml</DocumentationFile>
+    <DocumentationFile>PodcastProvider.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <ItemGroup>
