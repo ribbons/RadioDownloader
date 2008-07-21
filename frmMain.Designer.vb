@@ -105,7 +105,8 @@
         Me.tbtBack.Image = CType(resources.GetObject("tbtBack.Image"), System.Drawing.Image)
         Me.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtBack.Name = "tbtBack"
-        Me.tbtBack.Size = New System.Drawing.Size(28, 28)
+        Me.tbtBack.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtBack.Size = New System.Drawing.Size(32, 28)
         Me.tbtBack.Text = "Back"
         '
         'tbtForward
@@ -114,7 +115,8 @@
         Me.tbtForward.Image = CType(resources.GetObject("tbtForward.Image"), System.Drawing.Image)
         Me.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtForward.Name = "tbtForward"
-        Me.tbtForward.Size = New System.Drawing.Size(28, 28)
+        Me.tbtForward.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtForward.Size = New System.Drawing.Size(32, 28)
         Me.tbtForward.Text = "Forward"
         '
         'ToolStripSeparator1
@@ -129,7 +131,8 @@
         Me.tbtFindNew.Image = CType(resources.GetObject("tbtFindNew.Image"), System.Drawing.Image)
         Me.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtFindNew.Name = "tbtFindNew"
-        Me.tbtFindNew.Size = New System.Drawing.Size(124, 28)
+        Me.tbtFindNew.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtFindNew.Size = New System.Drawing.Size(128, 28)
         Me.tbtFindNew.Text = "Find Programme"
         '
         'tbtFavourites
@@ -137,7 +140,8 @@
         Me.tbtFavourites.Image = CType(resources.GetObject("tbtFavourites.Image"), System.Drawing.Image)
         Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtFavourites.Name = "tbtFavourites"
-        Me.tbtFavourites.Size = New System.Drawing.Size(89, 28)
+        Me.tbtFavourites.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtFavourites.Size = New System.Drawing.Size(93, 28)
         Me.tbtFavourites.Text = "Favourites"
         Me.tbtFavourites.Visible = False
         '
@@ -146,7 +150,8 @@
         Me.tbtSubscriptions.Image = CType(resources.GetObject("tbtSubscriptions.Image"), System.Drawing.Image)
         Me.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtSubscriptions.Name = "tbtSubscriptions"
-        Me.tbtSubscriptions.Size = New System.Drawing.Size(106, 28)
+        Me.tbtSubscriptions.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtSubscriptions.Size = New System.Drawing.Size(110, 28)
         Me.tbtSubscriptions.Text = "Subscriptions"
         '
         'tbtDownloads
@@ -154,7 +159,8 @@
         Me.tbtDownloads.Image = CType(resources.GetObject("tbtDownloads.Image"), System.Drawing.Image)
         Me.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtDownloads.Name = "tbtDownloads"
-        Me.tbtDownloads.Size = New System.Drawing.Size(94, 28)
+        Me.tbtDownloads.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtDownloads.Size = New System.Drawing.Size(98, 28)
         Me.tbtDownloads.Text = "Downloads"
         '
         'ttxSearch
