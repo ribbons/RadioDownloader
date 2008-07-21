@@ -8,10 +8,10 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("General Podcasts Plugin")> 
-<Assembly: AssemblyDescription("Plugin to support downloading general podcasts within Radio Downloader.")> 
+<Assembly: AssemblyTitle("Podcast Plugin")> 
+<Assembly: AssemblyDescription("Plugin to support downloading podcasts within Radio Downloader.")> 
 <Assembly: AssemblyCompany("")> 
-<Assembly: AssemblyProduct("General Podcasts Plugin")> 
+<Assembly: AssemblyProduct("Podcast Plugin")> 
 <Assembly: AssemblyCopyright("Copyright © 2008")> 
 <Assembly: AssemblyTrademark("")> 
 
