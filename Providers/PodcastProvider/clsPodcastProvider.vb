@@ -25,7 +25,7 @@ Imports System.Globalization
 Imports System.Windows.Forms
 Imports System.Text.RegularExpressions
 
-Public Class clsGeneralPodcasts
+Public Class clsPodcastProvider
     Implements IRadioProvider
 
     Public Event FoundNew(ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
@@ -52,7 +52,7 @@ Public Class clsGeneralPodcasts
 
     Public ReadOnly Property ProviderName() As String Implements IRadioProvider.ProviderName
         Get
-            Return "General Podcasts"
+            Return "Podcast"
         End Get
     End Property
 

@@ -20,7 +20,7 @@ Imports System.Net
 Imports System.Windows.Forms
 
 Public Class frmFindNew
-    Friend clsPluginInst As clsGeneralPodcasts
+    Friend clsPluginInst As clsPodcastProvider
 
     Private Sub cmdViewEps_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdViewEps.Click
         cmdViewEps.Enabled = False
@@ -35,7 +35,7 @@ Public Class frmFindNew
 
         ' First test that we can load something from the specified URL
         Try
-            strRSS = clsPluginInst.clsCachedHTTP.DownloadString(strURL, clsGeneralPodcasts.intCacheHTTPHours)
+            strRSS = clsPluginInst.clsCachedHTTP.DownloadString(strURL, clsPodcastProvider.intCacheHTTPHours)
         Catch expArgument As ArgumentException
             lblResult.Text = "The specified URL was not valid."
             lblResult.ForeColor = Drawing.Color.Red

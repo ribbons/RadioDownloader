@@ -49,7 +49,7 @@
     <Import Include="System.Diagnostics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="clsGeneralPodcasts.vb" />
+    <Compile Include="clsPodcastProvider.vb" />
     <Compile Include="frmFindNew.Designer.vb">
       <DependentUpon>frmFindNew.vb</DependentUpon>
     </Compile>
