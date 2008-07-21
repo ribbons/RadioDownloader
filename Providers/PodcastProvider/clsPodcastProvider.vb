@@ -19,6 +19,7 @@ Imports RadioDld
 Imports System.IO
 Imports System.Xml
 Imports System.Net
+Imports System.Web
 Imports System.Drawing
 Imports Microsoft.Win32
 Imports System.Globalization
@@ -240,9 +241,8 @@ Public Class clsPodcastProvider
                     EpisodeInfo.Description = EpisodeInfo.Description.Replace("<p", vbCrLf + "<p")
                     EpisodeInfo.Description = EpisodeInfo.Description.Replace("<div", vbCrLf + "<div")
 
-                    ' Replace common entities with their character counterparts
-                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("&amp;", vbCrLf + "&")
-                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("&nbsp;", vbCrLf + " ")
+                    ' Replace HTML entities with their character counterparts
+                    EpisodeInfo.Description = HttpUtility.HtmlDecode(EpisodeInfo.Description)
 
                     ' Strip out any HTML tags
                     Dim RegExpression As New Regex("<(.|\n)+?>")
