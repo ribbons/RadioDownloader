@@ -80,7 +80,49 @@ Public Class clsData
     End Sub
 
     Private Sub UpgradeDBv1to2()
+        Dim sqlCommand As New SQLiteCommand("select inf.name, inf.description, inf.duration, inf.image, dld.date as dlddate, dld.path, dld.playcount from tblDownloads as dld, tblInfo as inf where dld.type=inf.type and dld.id=inf.id and inf.date=dld.date and inf.station=dld.station and status=1", sqlConnection)
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
+        Dim bmpImage As Bitmap
+        Dim intEpID As Integer
+        Dim intDataLength As Integer
+
+        Dim sqlMigrateInf As New SQLiteCommand("insert into episodes (name, description, duration, date, image) values (@name, @description, @duration, @date, @image)", sqlConnection)
+        Dim sqlGetRowIDCmd As New SQLiteCommand("select last_insert_rowid()", sqlConnection)
+        Dim sqlMigrateDld As New SQLiteCommand("insert into downloads (epid, status, filepath, playcount) values (@epid, @status, @filepath, @playcount)", sqlConnection)
+
+        With sqlReader
+            While .Read
+                If sqlReader.IsDBNull(sqlReader.GetOrdinal("image")) Then
+                    bmpImage = Nothing
+                Else
+                    ' Get the image as a bitmap
+                    intDataLength = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, Nothing, 0, 0))
+                    Dim bteContent(intDataLength - 1) As Byte
+                    sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, bteContent, 0, intDataLength)
+                    bmpImage = New Bitmap(New MemoryStream(bteContent))
+                End If
+
+                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@name", .GetString(.GetOrdinal("name"))))
+                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@description", .GetString(.GetOrdinal("description"))))
+                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@duration", .GetInt32(.GetOrdinal("duration")) * 60))
+                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@date", UpgradeDBv1to2CustDateFmt(sqlReader, "dlddate")))
+                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@image", StoreImage(bmpImage)))
+                sqlMigrateInf.ExecuteNonQuery()
+
+                intEpID = CInt(sqlGetRowIDCmd.ExecuteScalar)
+
+                sqlMigrateDld.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+                sqlMigrateDld.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
+                sqlMigrateDld.Parameters.Add(New SQLiteParameter("@filepath", .GetString(.GetOrdinal("path"))))
+                sqlMigrateDld.Parameters.Add(New SQLiteParameter("@playcount", .GetString(.GetOrdinal("playcount"))))
+                sqlMigrateDld.ExecuteNonQuery()
+            End While
+        End With
+
+        ' Delete all of the images stored in the info table, so the old data doesn't take up loads of space.
+        Dim sqlReduceClutter As New SQLiteCommand("update tblInfo set image=null", sqlConnection)
+        sqlReduceClutter.ExecuteNonQuery()
     End Sub
 
     Private Function UpgradeDBv1to2CustDateFmt(ByVal sqlReader As SQLiteDataReader, ByVal strColumn As String) As Date
@@ -848,14 +890,14 @@ Public Class clsData
     End Function
 
     Private Sub VacuumDatabase()
-        ' Vacuum the database every couple of months - vacuums are spaced like this as they take ages to run
+        ' Vacuum the database every few months - vacuums are spaced like this as they take ages to run
         Dim booRunVacuum As Boolean
         Dim objLastVacuum As Object = GetDBSetting("lastvacuum")
 
         If objLastVacuum Is Nothing Then
             booRunVacuum = True
         Else
-            booRunVacuum = CDate(objLastVacuum).AddMonths(2) < Now
+            booRunVacuum = DateTime.ParseExact(CStr(objLastVacuum), "O", Nothing).AddMonths(3) < Now
         End If
 
         If booRunVacuum Then
@@ -863,7 +905,7 @@ Public Class clsData
             Dim sqlCommand As New SQLiteCommand("vacuum", sqlConnection)
             sqlCommand.ExecuteNonQuery()
 
-            SetDBSetting("lastvacuum", Now)
+            SetDBSetting("lastvacuum", Now.ToString("O"))
         End If
     End Sub
 
