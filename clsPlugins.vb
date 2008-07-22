@@ -64,7 +64,7 @@ Public Interface IRadioProvider
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
     Event Finished(ByVal strFileExtension As String)
 
-    Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As ProgrammeInfo, ByVal EpInfo As EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer)
+    Sub DownloadProgramme(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As ProgrammeInfo, ByVal EpInfo As EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer)
 End Interface
 
 Public Class clsPlugins

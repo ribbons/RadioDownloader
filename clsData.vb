@@ -176,7 +176,7 @@ Public Class clsData
 
         Try
             With clsCurDldProgData
-                DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .BandwidthLimit, .AttemptNumber)
+                DownloadPluginInst.DownloadProgramme(New clsCachedWebClient(Me), .ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .BandwidthLimit, .AttemptNumber)
             End With
         Catch expUnknown As Exception
             Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, expUnknown.GetType.ToString + ": " + expUnknown.Message + vbCrLf + expUnknown.StackTrace)
