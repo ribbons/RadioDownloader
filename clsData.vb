@@ -1156,6 +1156,18 @@ Public Class clsData
         Dim EpisodeInfo As IRadioProvider.EpisodeInfo
 
         If strEpisodeExtIDs IsNot Nothing Then
+            ' Remove any duplicates, so that episodes don't get listed twice
+            Dim arlExtIDs As New ArrayList()
+
+            For intRemoveDups As Integer = 0 To strEpisodeExtIDs.Length - 1
+                If arlExtIDs.Contains(strEpisodeExtIDs(intRemoveDups)) = False Then
+                    arlExtIDs.Add(strEpisodeExtIDs(intRemoveDups))
+                End If
+            Next
+
+            strEpisodeExtIDs = New String(arlExtIDs.Count - 1) {}
+            arlExtIDs.CopyTo(strEpisodeExtIDs)
+
             ' Reverse the array so that we fetch the oldest episodes first, and the older episodes
             ' get added to the download list first if we are checking subscriptions
             Array.Reverse(strEpisodeExtIDs)
