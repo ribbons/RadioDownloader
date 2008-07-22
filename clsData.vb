@@ -29,8 +29,6 @@ Public Class clsData
         Errored
     End Enum
 
-    Private Const strSqlDateFormat As String = "yyyy-MM-dd HH:mm"
-
     Private sqlConnection As SQLiteConnection
     Private clsPluginsInst As clsPlugins
 
@@ -53,20 +51,26 @@ Public Class clsData
         ' Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
         Call VacuumDatabase()
 
+        ' NB: Remember to change default version in the database if this next line is changed!
+        Const intDBVersion As Integer = 2
+        Dim intCurrentVer As Integer
+
         ' Perform any database changes required:
         If GetDBSetting("databaseversion") Is Nothing Then
-            ' Nothing to do, as this should be the most up to date version of the database
+            intCurrentVer = 1
         Else
-            Dim intCurrentVersion As Integer = Convert.ToInt32(GetDBSetting("databaseversion"))
-
-            ' Logic for database updates can go here when there is some
+            intCurrentVer = CInt(GetDBSetting("databaseversion"))
         End If
 
-        ' Now set the current database version
-        SetDBSetting("databaseversion", "1")
+        Select Case intCurrentVer
+            Case 1
+                Call UpgradeDBv1to2()
+            Case 2
+                ' Nothing to do, this is the current version.
+        End Select
 
-        ' Thin out the records in the info table if required
-        Call PruneInfoTable()
+        ' Now set the current database version
+        SetDBSetting("databaseversion", intDBVersion)
 
         ' Create the temp table for caching HTTP requests
         Dim sqlCommand As New SQLiteCommand("create temporary table httpcache (uri varchar (1000), lastfetch datetime, data blob)", sqlConnection)
@@ -74,6 +78,22 @@ Public Class clsData
 
         clsPluginsInst = New clsPlugins(My.Application.Info.DirectoryPath)
     End Sub
+
+    Private Sub UpgradeDBv1to2()
+
+    End Sub
+
+    Private Function UpgradeDBv1to2CustDateFmt(ByVal sqlReader As SQLiteDataReader, ByVal strColumn As String) As Date
+        Try
+            Return DateTime.ParseExact(sqlReader.GetString(sqlReader.GetOrdinal(strColumn)), "yyyy-MM-dd HH:mm", Nothing)
+        Catch expException As InvalidCastException
+            ' Somehow we have a value which can't be cast as a date, return nothing
+            Return Nothing
+        Catch expException As FormatException
+            ' Somehow we have a valid date string of the wrong format, return nothing
+            Return Nothing
+        End Try
+    End Function
 
     Protected Overrides Sub Finalize()
         sqlConnection.Close()
@@ -626,34 +646,6 @@ Public Class clsData
         Call sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Private Function GetCustFormatDateTime(ByVal sqlReader As SQLiteDataReader, ByVal strColumn As String) As Date
-        Try
-            GetCustFormatDateTime = DateTime.ParseExact(sqlReader.GetString(sqlReader.GetOrdinal(strColumn)), strSqlDateFormat, Nothing)
-        Catch expException As InvalidCastException
-            ' Somehow we have a value which can't be cast as a date, return nothing
-            GetCustFormatDateTime = Nothing
-        Catch expException As FormatException
-            ' Somehow we have a valid date string of the wrong format, return nothing
-            GetCustFormatDateTime = Nothing
-        End Try
-    End Function
-
-    Public Function LatestDate(ByVal gidProviderID As Guid, ByVal strStationID As String, ByVal strProgramID As String) As DateTime
-        Dim sqlCommand As New SQLiteCommand("SELECT date FROM tblInfo WHERE type=""" + gidProviderID.ToString + """  and Station=""" + strStationID + """ and ID=""" & strProgramID & """ ORDER BY Date DESC", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        With sqlReader
-            If .Read = False Then
-                ' No programs of this type in the database, return nothing
-                LatestDate = Nothing
-            Else
-                LatestDate = GetCustFormatDateTime(sqlReader, "Date")
-            End If
-        End With
-
-        sqlReader.Close()
-    End Function
-
     Public Function LatestDownloadDate(ByVal intProgID As Integer) As DateTime
         Dim sqlCommand As New SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
@@ -831,104 +823,39 @@ Public Class clsData
         sqlReader.Close()
     End Sub
 
-    Private Sub SetDBSetting(ByVal strPropertyName As String, ByVal strValue As String)
-        Dim sqlCommand As New SQLiteCommand("select value from tblSettings where property=""" + strPropertyName + """", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
+    Private Sub SetDBSetting(ByVal strPropertyName As String, ByVal objValue As Object)
+        Dim sqlCommand As New SQLiteCommand("delete from settings where property=@property", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@property", strPropertyName))
+        sqlCommand.ExecuteNonQuery()
 
-        If sqlReader.Read Then
-            sqlCommand = New SQLiteCommand("update tblSettings set value=""" + strValue.Replace("""", """""") + """ where property=""" + strPropertyName + """", sqlConnection)
-            sqlCommand.ExecuteNonQuery()
-        Else
-            sqlCommand = New SQLiteCommand("insert into tblSettings (property, value) VALUES (""" + strPropertyName + """, """ + strValue.Replace("""", """""") + """)", sqlConnection)
-            Call sqlCommand.ExecuteNonQuery()
-        End If
-
-        sqlCommand.Cancel()
+        sqlCommand = New SQLiteCommand("insert into settings (property, value) VALUES (@property, @value)", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@property", strPropertyName))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@value", objValue))
+        sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Private Function GetDBSetting(ByVal strPropertyName As String) As String
-        Dim sqlCommand As New SQLiteCommand("select value from tblSettings where property=""" + strPropertyName + """", sqlConnection)
+    Private Function GetDBSetting(ByVal strPropertyName As String) As Object
+        Dim sqlCommand As New SQLiteCommand("select value from settings where property=@property", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@property", strPropertyName))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
 
         If sqlReader.Read = False Then
             Return Nothing
         End If
 
-        Dim strValue As String = sqlReader.GetString(sqlReader.GetOrdinal("value"))
-
+        GetDBSetting = sqlReader.GetValue(sqlReader.GetOrdinal("value"))
         sqlReader.Close()
-
-        Return strValue
     End Function
-
-    Private Sub PruneInfoTable()
-        ' Only prune the info table once a month, so that we don't slow down every startup
-        Dim booRunPrune As Boolean
-        Dim strLastPrune As String = GetDBSetting("lastinfoprune")
-
-        If strLastPrune Is Nothing Then
-            booRunPrune = True
-        Else
-            booRunPrune = DateTime.ParseExact(strLastPrune, strSqlDateFormat, Nothing).AddMonths(1) < Now
-        End If
-
-        If booRunPrune Then
-            Dim booDoDelete As Boolean
-            Dim sqlCheckCmd As SQLiteCommand
-            Dim sqlCheckRdr As SQLiteDataReader
-            Dim sqlRemoveCmd As SQLiteCommand
-
-            Dim sqlCommand As New SQLiteCommand("select type, station, id, date from tblInfo", sqlConnection)
-            Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-            With sqlReader
-                While .Read
-                    booDoDelete = False
-
-                    sqlCheckCmd = New SQLiteCommand("select count(*) from tblDownloads where type=""" + .GetString(.GetOrdinal("type")) + """ and station=""" + .GetString(.GetOrdinal("station")) + """ and id=""" + .GetString(.GetOrdinal("id")) + """ and date=""" + GetCustFormatDateTime(sqlReader, "date").ToString(strSqlDateFormat) + """", sqlConnection)
-                    sqlCheckRdr = sqlCheckCmd.ExecuteReader
-                    sqlCheckRdr.Read()
-
-                    If sqlCheckRdr.GetInt32(sqlCheckRdr.GetOrdinal("count(*)")) = 0 Then
-                        If LatestDate(New Guid(.GetString(.GetOrdinal("type"))), .GetString(.GetOrdinal("station")), .GetString(.GetOrdinal("id"))) <> GetCustFormatDateTime(sqlReader, "date") Then
-                            ' Can be deleted, as it is not the latest info and doesn't relate to a downloaded programme
-                            booDoDelete = True
-                        Else
-                            If GetCustFormatDateTime(sqlReader, "date").AddMonths(3) < Now Then
-                                sqlCheckCmd = New SQLiteCommand("select count(*) from tblSubscribed where type=""" + .GetString(.GetOrdinal("type")) + """ and station=""" + .GetString(.GetOrdinal("station")) + """ and id=""" + .GetString(.GetOrdinal("id")) + """", sqlConnection)
-                                sqlCheckRdr = sqlCheckCmd.ExecuteReader
-                                sqlCheckRdr.Read()
-
-                                If sqlCheckRdr.GetInt32(sqlCheckRdr.GetOrdinal("count(*)")) = 0 Then
-                                    ' Can be deleted, as is older than 3 months and doesn't relate to a download or subscription
-                                    booDoDelete = True
-                                End If
-                            End If
-                        End If
-                    End If
-
-                    If booDoDelete Then
-                        sqlRemoveCmd = New SQLiteCommand("delete from tblInfo where type=""" + .GetString(.GetOrdinal("type")) + """ and station=""" + .GetString(.GetOrdinal("station")) + """ and id=""" + .GetString(.GetOrdinal("id")) + """ and date=""" + GetCustFormatDateTime(sqlReader, "date").ToString(strSqlDateFormat) + """", sqlConnection)
-                        sqlRemoveCmd.ExecuteNonQuery()
-                    End If
-                End While
-
-                .Close()
-            End With
-
-            SetDBSetting("lastinfoprune", Now.ToString(strSqlDateFormat))
-        End If
-    End Sub
 
     Private Sub VacuumDatabase()
         ' Vacuum the database every couple of months - vacuums are spaced like this as they take ages to run
         Dim booRunVacuum As Boolean
-        Dim strLastVacuum As String = GetDBSetting("lastvacuum")
+        Dim objLastVacuum As Object = GetDBSetting("lastvacuum")
 
-        If strLastVacuum Is Nothing Then
+        If objLastVacuum Is Nothing Then
             booRunVacuum = True
         Else
-            booRunVacuum = DateTime.ParseExact(strLastVacuum, strSqlDateFormat, Nothing).AddMonths(2) < Now
+            booRunVacuum = CDate(objLastVacuum).AddMonths(2) < Now
         End If
 
         If booRunVacuum Then
@@ -936,7 +863,7 @@ Public Class clsData
             Dim sqlCommand As New SQLiteCommand("vacuum", sqlConnection)
             sqlCommand.ExecuteNonQuery()
 
-            SetDBSetting("lastvacuum", Now.ToString(strSqlDateFormat))
+            SetDBSetting("lastvacuum", Now)
         End If
     End Sub
 
