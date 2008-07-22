@@ -631,7 +631,7 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtRetry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtRetry.Click
-        Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
+        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
         Call clsProgData.ResetDownload(intEpID, False)
         Call SetContextForSelectedDownload() ' Update prog info pane
