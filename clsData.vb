@@ -408,6 +408,13 @@ Public Class clsData
         sqlReader.Close()
     End Function
 
+    Public Function EpisodeExists(ByVal intEpID As Integer) As Boolean
+        Dim sqlCommand As New SQLiteCommand("select count(*) from episodes where epid=@epid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+
+        Return CInt(sqlCommand.ExecuteScalar) > 0
+    End Function
+
     Public Function EpisodeName(ByVal intEpID As Integer) As String
         Dim sqlCommand As New SQLiteCommand("select name from episodes where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))

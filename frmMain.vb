@@ -402,11 +402,15 @@ Public Class frmMain
 
     Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
         Try
-            Call clsProgData.DownloadSetErrored(clsCurDldProgData.EpID, errType, strErrorDetails)
+            If clsProgData.EpisodeExists(clsCurDldProgData.EpID) Then
+                Call clsProgData.DownloadSetErrored(clsCurDldProgData.EpID, errType, strErrorDetails)
 
-            ' If the item that has just errored is selected then update the information.
-            If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
-                Call SetContextForSelectedDownload()
+                ' If the item that has just errored is selected then update the information
+                If lstDownloads.Items.ContainsKey(CStr(clsCurDldProgData.EpID)) Then
+                    If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
+                        Call SetContextForSelectedDownload()
+                    End If
+                End If
             End If
 
             Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
@@ -414,9 +418,11 @@ Public Class frmMain
             tmrStartProcess.Enabled = True
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
-            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
-            frmError.AssignReport(clsReport)
-            frmError.ShowDialog()
+            If frmError.Visible = False Then
+                Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                frmError.AssignReport(clsReport)
+                frmError.ShowDialog()
+            End If
         End Try
     End Sub
 
@@ -458,9 +464,11 @@ Public Class frmMain
             tmrStartProcess.Enabled = True
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
-            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
-            frmError.AssignReport(clsReport)
-            frmError.ShowDialog()
+            If frmError.Visible = False Then
+                Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                frmError.AssignReport(clsReport)
+                frmError.ShowDialog()
+            End If
         End Try
     End Sub
 
@@ -487,29 +495,36 @@ Public Class frmMain
 
             intLastNum = intPercent
 
-            With clsCurDldProgData
-                Dim lstItem As ListViewItem = lstDownloads.Items(CStr(.EpID))
-                lstItem.SubItems(2).Text = strStatusText
-                prgDldProg.Value = intPercent
+            If clsCurDldProgData IsNot Nothing Then
+                With clsCurDldProgData
+                    Dim lstItem As ListViewItem = lstDownloads.Items(CStr(.EpID))
 
-                If lstDownloads.Controls.Count = 0 Then
-                    lstDownloads.AddProgressBar(prgDldProg, lstItem, 3)
-                End If
+                    If lstItem IsNot Nothing Then
+                        lstItem.SubItems(2).Text = strStatusText
+                        prgDldProg.Value = intPercent
 
-                Select Case Icon
-                    Case IRadioProvider.ProgressIcon.Downloading
-                        lstItem.ImageKey = "downloading"
-                    Case IRadioProvider.ProgressIcon.Converting
-                        lstItem.ImageKey = "converting"
-                End Select
-            End With
+                        If lstDownloads.Controls.Count = 0 Then
+                            lstDownloads.AddProgressBar(prgDldProg, lstItem, 3)
+                        End If
+
+                        Select Case Icon
+                            Case IRadioProvider.ProgressIcon.Downloading
+                                lstItem.ImageKey = "downloading"
+                            Case IRadioProvider.ProgressIcon.Converting
+                                lstItem.ImageKey = "converting"
+                        End Select
+                    End If
+                End With
+            End If
 
             Call SetTrayStatus(True)
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
-            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
-            frmError.AssignReport(clsReport)
-            frmError.ShowDialog()
+            If frmError.Visible = False Then
+                Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                frmError.AssignReport(clsReport)
+                frmError.ShowDialog()
+            End If
         End Try
     End Sub
 
