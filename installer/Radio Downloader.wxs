@@ -1013,9 +1013,9 @@
           <Component Id="GplTxt" Guid="66264481-3504-4FFD-B8EC-AA10DC2250C5" DiskId="1">
             <File Id="GplTxt" Name="GPL.txt" Source="..\GPL.txt" Vital="yes" />
           </Component>
-          <Component Id="PodcastProviderDll" Guid="7940A9D6-B5FB-46AE-9687-03F2BEA70D6E" DiskId="1">
-            <File Id="PodcastProvider.dll" LongName="PodcastProvider.dll" Name="PODCAST.DLL" Source="..\bin\PodcastProvider.dll" Vital="no" />
-            <File Id="PodcastProvider.pdb" LongName="PodcastProvider.pdb" Name="PODCAST.PDB" Source="..\bin\PodcastProvider.pdb" Vital="no" />
+          <Component Id="PodcastProviderDll" Guid="4B6DBD87-EB57-4E5F-A87A-CF6A21BC4C02" DiskId="1">
+            <File Id="PodcastProvider.dll" LongName="PodcastProvider.dll" Name="PODCAST.DLL" Source="..\bin\PodcastProvider.dll" />
+            <File Id="PodcastProvider.pdb" LongName="PodcastProvider.pdb" Name="PODCAST.PDB" Source="..\bin\PodcastProvider.pdb" />
           </Component>
         </Directory>
       </Directory>
