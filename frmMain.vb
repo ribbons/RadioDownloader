@@ -779,11 +779,11 @@ Public Class frmMain
         Select Case ViewData.View
             Case View.FindNewChooseProvider
                 Call SetToolbarButtons("")
-                Call SetSideBar("Find New", "This view allows you to browse all of the programmes that are available for you to download or subscribe to." + vbCrLf + "Select a station icon to show the programmes available from it.", Nothing)
+                Call SetSideBar("Find New", "This view allows you to select programmes to download or subscribe to." + vbCrLf + "Select a type of programme to begin.", Nothing)
             Case View.FindNewProviderForm
                 Dim gidProvider As Guid = DirectCast(ViewData.ViewData, Guid)
                 Call SetToolbarButtons("")
-                Call SetSideBar(clsProgData.ProviderName(gidProvider), "This view is a list of programmes available from " & clsProgData.ProviderName(gidProvider) & "." + vbCrLf + "Select a programme for more information, and to download or subscribe to it.", Nothing)
+                Call SetSideBar(clsProgData.ProviderName(gidProvider), "This view allows you to select a " & clsProgData.ProviderName(gidProvider) & " programme to view.", Nothing)
             Case View.ProgEpisodes
                 Dim intProgID As Integer = CInt(ViewData.ViewData)
                 Call SetToolbarButtons("Subscribe")
