@@ -51,16 +51,19 @@ Public Class clsData
         ' Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
         Call VacuumDatabase()
 
-        ' NB: Remember to change default version in the database if this next line is changed!
-        Const intDBVersion As Integer = 2
         Dim intCurrentVer As Integer
 
-        ' Perform any database changes required:
+        ' Fetch the version of the database
         If GetDBSetting("databaseversion") Is Nothing Then
             intCurrentVer = 1
         Else
             intCurrentVer = CInt(GetDBSetting("databaseversion"))
         End If
+
+        ' Set the current database version.  This is done before the upgrades are attempted so that
+        ' if the upgrade throws an exception this can be reported, but the programme will run next time.
+        ' NB: Remember to change default version in the database if this next line is changed!
+        SetDBSetting("databaseversion", 2)
 
         Select Case intCurrentVer
             Case 1
@@ -68,9 +71,6 @@ Public Class clsData
             Case 2
                 ' Nothing to do, this is the current version.
         End Select
-
-        ' Now set the current database version
-        SetDBSetting("databaseversion", intDBVersion)
 
         ' Create the temp table for caching HTTP requests
         Dim sqlCommand As New SQLiteCommand("create temporary table httpcache (uri varchar (1000), lastfetch datetime, data blob)", sqlConnection)
