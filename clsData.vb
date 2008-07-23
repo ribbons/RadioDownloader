@@ -83,40 +83,58 @@ Public Class clsData
         Dim sqlCommand As New SQLiteCommand("select inf.name, inf.description, inf.duration, inf.image, dld.date as dlddate, dld.path, dld.playcount from tblDownloads as dld, tblInfo as inf where dld.type=inf.type and dld.id=inf.id and inf.date=dld.date and inf.station=dld.station and status=1", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        Dim bmpImage As Bitmap
+        Dim intImage As Integer
         Dim intEpID As Integer
         Dim intDataLength As Integer
 
+        Dim sqlCheckEpisode As New SQLiteCommand("select epid from episodes where name=@name and description=@description and duration=@duration and date=@date", sqlConnection)
+        Dim sqlCheckEpRdr As SQLiteDataReader
         Dim sqlMigrateInf As New SQLiteCommand("insert into episodes (name, description, duration, date, image) values (@name, @description, @duration, @date, @image)", sqlConnection)
         Dim sqlGetRowIDCmd As New SQLiteCommand("select last_insert_rowid()", sqlConnection)
+        Dim sqlCheckDld As New SQLiteCommand("select count(*) from downloads where epid=@epid", sqlConnection)
         Dim sqlMigrateDld As New SQLiteCommand("insert into downloads (epid, status, filepath, playcount) values (@epid, @status, @filepath, @playcount)", sqlConnection)
 
         With sqlReader
             While .Read
                 If sqlReader.IsDBNull(sqlReader.GetOrdinal("image")) Then
-                    bmpImage = Nothing
+                    intImage = Nothing
                 Else
                     ' Get the image as a bitmap
                     intDataLength = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, Nothing, 0, 0))
                     Dim bteContent(intDataLength - 1) As Byte
                     sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, bteContent, 0, intDataLength)
-                    bmpImage = New Bitmap(New MemoryStream(bteContent))
+                    intImage = StoreImage(New Bitmap(New MemoryStream(bteContent)))
                 End If
 
-                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@name", .GetString(.GetOrdinal("name"))))
-                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@description", .GetString(.GetOrdinal("description"))))
-                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@duration", .GetInt32(.GetOrdinal("duration")) * 60))
-                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@date", UpgradeDBv1to2CustDateFmt(sqlReader, "dlddate")))
-                sqlMigrateInf.Parameters.Add(New SQLiteParameter("@image", StoreImage(bmpImage)))
-                sqlMigrateInf.ExecuteNonQuery()
+                sqlCheckEpisode.Parameters.Add(New SQLiteParameter("@name", .GetString(.GetOrdinal("name"))))
+                sqlCheckEpisode.Parameters.Add(New SQLiteParameter("@description", .GetString(.GetOrdinal("description"))))
+                sqlCheckEpisode.Parameters.Add(New SQLiteParameter("@duration", .GetInt32(.GetOrdinal("duration")) * 60))
+                sqlCheckEpisode.Parameters.Add(New SQLiteParameter("@date", UpgradeDBv1to2CustDateFmt(sqlReader, "dlddate")))
+                sqlCheckEpRdr = sqlCheckEpisode.ExecuteReader
 
-                intEpID = CInt(sqlGetRowIDCmd.ExecuteScalar)
+                If sqlCheckEpRdr.Read = False Then
+                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@name", .GetString(.GetOrdinal("name"))))
+                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@description", .GetString(.GetOrdinal("description"))))
+                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@duration", .GetInt32(.GetOrdinal("duration")) * 60))
+                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@date", UpgradeDBv1to2CustDateFmt(sqlReader, "dlddate")))
+                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@image", intImage))
+                    sqlMigrateInf.ExecuteNonQuery()
 
-                sqlMigrateDld.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-                sqlMigrateDld.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
-                sqlMigrateDld.Parameters.Add(New SQLiteParameter("@filepath", .GetString(.GetOrdinal("path"))))
-                sqlMigrateDld.Parameters.Add(New SQLiteParameter("@playcount", .GetString(.GetOrdinal("playcount"))))
-                sqlMigrateDld.ExecuteNonQuery()
+                    intEpID = CInt(sqlGetRowIDCmd.ExecuteScalar)
+                Else
+                    intEpID = sqlCheckEpRdr.GetInt32(sqlCheckEpRdr.GetOrdinal("epid"))
+                End If
+
+                sqlCheckEpRdr.Close()
+
+                sqlCheckDld.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+                If CInt(sqlCheckDld.ExecuteScalar) = 0 Then
+                    sqlMigrateDld.Parameters.Add(New SQLiteParameter("@epid", intEpID))
+                    sqlMigrateDld.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
+                    sqlMigrateDld.Parameters.Add(New SQLiteParameter("@filepath", .GetString(.GetOrdinal("path"))))
+                    sqlMigrateDld.Parameters.Add(New SQLiteParameter("@playcount", .GetInt32(.GetOrdinal("playcount"))))
+                    sqlMigrateDld.ExecuteNonQuery()
+                End If
             End While
         End With
 
