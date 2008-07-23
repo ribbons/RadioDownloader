@@ -154,8 +154,9 @@ Public Class frmMain
         lstSubscribed.Dock = DockStyle.Fill
         lstDownloads.Dock = DockStyle.Fill
 
-        tbtCleanUp.Visible = False
         ttxSearch.Visible = False
+
+        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub frmMain_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing

@@ -86,7 +86,6 @@
         '
         'tmrStartProcess
         '
-        Me.tmrStartProcess.Enabled = True
         Me.tmrStartProcess.Interval = 2000
         '
         'tbrView

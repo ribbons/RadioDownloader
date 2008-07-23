@@ -82,8 +82,19 @@ Public Class clsData
     End Sub
 
     Private Sub UpgradeDBv1to2()
+        Dim sqlCommand As New SQLiteCommand("select count(*) from tblDownloads", sqlConnection)
+        Dim intCount As Integer = 0
+        Dim intTotal As Integer = CInt(sqlCommand.ExecuteScalar)
+
+        frmStatus.lblStatus.Text = "Migrating downloads..."
+        frmStatus.prgProgress.Visible = True
+        frmStatus.prgProgress.Maximum = intTotal
+        frmStatus.prgProgress.Value = 0
+        frmStatus.Visible = True
+        Application.DoEvents()
+
         ' Migrate the downloads
-        Dim sqlCommand As New SQLiteCommand("select inf.name, inf.description, inf.duration, inf.image, dld.date as dlddate, dld.path, dld.playcount from tblDownloads as dld, tblInfo as inf where dld.type=inf.type and dld.id=inf.id and inf.date=dld.date and inf.station=dld.station and status=1", sqlConnection)
+        sqlCommand = New SQLiteCommand("select inf.name, inf.description, inf.duration, inf.image, dld.date as dlddate, dld.path, dld.playcount from tblDownloads as dld, tblInfo as inf where dld.type=inf.type and dld.id=inf.id and inf.date=dld.date and inf.station=dld.station and status=1", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         Dim intImage As Integer
@@ -99,6 +110,10 @@ Public Class clsData
 
         With sqlReader
             While .Read
+                frmStatus.lblStatus.Text = "Migrating download " + CStr(intCount) + " of " + CStr(intTotal) + "..."
+                frmStatus.prgProgress.Value = intCount
+                Application.DoEvents()
+
                 If sqlReader.IsDBNull(sqlReader.GetOrdinal("image")) Then
                     intImage = Nothing
                 Else
@@ -138,14 +153,33 @@ Public Class clsData
                     sqlMigrateDld.Parameters.Add(New SQLiteParameter("@playcount", .GetInt32(.GetOrdinal("playcount"))))
                     sqlMigrateDld.ExecuteNonQuery()
                 End If
+
+                intCount += 1
             End While
 
             .Close()
         End With
 
+        frmStatus.lblStatus.Text = "Performing cleanup.."
+        frmStatus.prgProgress.Visible = False
+        Application.DoEvents()
+
         ' Delete all of the images stored in the info table, so the old data doesn't take up loads of space.
         Dim sqlReduceClutter As New SQLiteCommand("update tblInfo set image=null", sqlConnection)
         sqlReduceClutter.ExecuteNonQuery()
+
+        frmStatus.prgProgress.Value = 1
+        Application.DoEvents()
+
+        sqlCommand = New SQLiteCommand("select count(*) from tblSubscribed", sqlConnection)
+        intCount = -1
+        intTotal = CInt(sqlCommand.ExecuteScalar)
+
+        frmStatus.lblStatus.Text = "Attempting to migrate subscriptions..."
+        frmStatus.prgProgress.Visible = True
+        frmStatus.prgProgress.Maximum = intTotal
+        frmStatus.prgProgress.Value = 0
+        Application.DoEvents()
 
         ' Then migrate the subscriptions
         sqlCommand = New SQLiteCommand("select type, id from tblSubscribed", sqlConnection)
@@ -153,6 +187,11 @@ Public Class clsData
 
         With sqlReader
             While .Read
+                intCount += 1
+                frmStatus.lblStatus.Text = "Attempting to migrate subscription " + CStr(intCount) + " of " + CStr(intTotal) + "..."
+                frmStatus.prgProgress.Value = intCount
+                Application.DoEvents()
+
                 Select Case .GetString(.GetOrdinal("type"))
                     Case "BBCPODCAST"
                         Dim gidPluginID As New Guid("3cfbe63e-95b8-4f80-8570-4ace909e0921")
@@ -170,6 +209,9 @@ Public Class clsData
 
             .Close()
         End With
+
+        frmStatus.Visible = False
+        Application.DoEvents()
     End Sub
 
     Private Function UpgradeDBv1to2CustDateFmt(ByVal sqlReader As SQLiteDataReader, ByVal strColumn As String) As Date
@@ -972,11 +1014,22 @@ Public Class clsData
         End If
 
         If booRunVacuum Then
+            frmStatus.lblStatus.Text = "Compacting Database..."
+            frmStatus.prgProgress.Visible = False
+            frmStatus.Visible = True
+            Application.DoEvents()
+
             ' Make SQLite recreate the database to reduce the size on disk and remove fragmentation
             Dim sqlCommand As New SQLiteCommand("vacuum", sqlConnection)
             sqlCommand.ExecuteNonQuery()
 
             SetDBSetting("lastvacuum", Now.ToString("O"))
+
+            frmStatus.prgProgress.Value = 1
+            Application.DoEvents()
+
+            frmStatus.Visible = False
+            Application.DoEvents()
         End If
     End Sub
 
