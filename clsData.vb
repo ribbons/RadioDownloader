@@ -51,9 +51,17 @@ Public Class clsData
         ' Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
         Call VacuumDatabase()
 
-        Dim intCurrentVer As Integer
+        ' Create the temp table for caching HTTP requests
+        Dim sqlCommand As New SQLiteCommand("create temporary table httpcache (uri varchar (1000), lastfetch datetime, data blob)", sqlConnection)
+        sqlCommand.ExecuteNonQuery()
+
+        ' Setup an instance of the plugins class
+        clsPluginsInst = New clsPlugins(My.Application.Info.DirectoryPath)
+
 
         ' Fetch the version of the database
+        Dim intCurrentVer As Integer
+
         If GetDBSetting("databaseversion") Is Nothing Then
             intCurrentVer = 1
         Else
@@ -71,15 +79,10 @@ Public Class clsData
             Case 2
                 ' Nothing to do, this is the current version.
         End Select
-
-        ' Create the temp table for caching HTTP requests
-        Dim sqlCommand As New SQLiteCommand("create temporary table httpcache (uri varchar (1000), lastfetch datetime, data blob)", sqlConnection)
-        sqlCommand.ExecuteNonQuery()
-
-        clsPluginsInst = New clsPlugins(My.Application.Info.DirectoryPath)
     End Sub
 
     Private Sub UpgradeDBv1to2()
+        ' Migrate the downloads
         Dim sqlCommand As New SQLiteCommand("select inf.name, inf.description, inf.duration, inf.image, dld.date as dlddate, dld.path, dld.playcount from tblDownloads as dld, tblInfo as inf where dld.type=inf.type and dld.id=inf.id and inf.date=dld.date and inf.station=dld.station and status=1", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
@@ -136,11 +139,37 @@ Public Class clsData
                     sqlMigrateDld.ExecuteNonQuery()
                 End If
             End While
+
+            .Close()
         End With
 
         ' Delete all of the images stored in the info table, so the old data doesn't take up loads of space.
         Dim sqlReduceClutter As New SQLiteCommand("update tblInfo set image=null", sqlConnection)
         sqlReduceClutter.ExecuteNonQuery()
+
+        ' Then migrate the subscriptions
+        sqlCommand = New SQLiteCommand("select type, id from tblSubscribed", sqlConnection)
+        sqlReader = sqlCommand.ExecuteReader
+
+        With sqlReader
+            While .Read
+                Select Case .GetString(.GetOrdinal("type"))
+                    Case "BBCPODCAST"
+                        Dim gidPluginID As New Guid("3cfbe63e-95b8-4f80-8570-4ace909e0921")
+                        Dim strExtID As String = "http://downloads.bbc.co.uk/podcasts/" + .GetString(.GetOrdinal("id")) + "/rss.xml"
+
+                        If StoreProgrammeInfo(gidPluginID, strExtID, New Exception) Then
+                            Dim intProgID As Integer = ExtIDToProgID(gidPluginID, strExtID)
+
+                            If intProgID <> Nothing Then
+                                AddSubscription(intProgID)
+                            End If
+                        End If
+                End Select
+            End While
+
+            .Close()
+        End With
     End Sub
 
     Private Function UpgradeDBv1to2CustDateFmt(ByVal sqlReader As SQLiteDataReader, ByVal strColumn As String) As Date
