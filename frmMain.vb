@@ -141,7 +141,7 @@ Public Class frmMain
         nicTrayIcon.Text = Me.Text
         nicTrayIcon.Visible = True
 
-        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt", "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vomus")
+        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString, "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vomus")
         If My.Settings.UpdateDownloaded Then
             Call InstallUpdate()
         End If
