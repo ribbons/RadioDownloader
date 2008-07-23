@@ -88,9 +88,9 @@ Public Class frmMain
 
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' Add a handler to catch otherwise unhandled exceptions
-        'AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
+        AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
         ' Add a handler for thread exceptions
-        'AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
+        AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
         ' Add a handler for when a second instance is loaded
         AddHandler My.Application.StartupNextInstance, AddressOf StartupNextInstanceHandler
 
@@ -393,75 +393,75 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsProgData.DldError
-        Try
-            ' Check if the form exists still before calling delegate
-            If Me.IsHandleCreated And Me.IsDisposed = False Then
-                Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
-                Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, errType, strErrorDetails})
-            End If
-        Catch expDisposed As ObjectDisposedException
-            ' Edge case: it seems that form can be disposed between the if statement and the delegate call.
-            ' As the form isn't there, we just need to ignore the error.
-        End Try
+        ' Check if the form exists still before calling delegate
+        If Me.IsHandleCreated And Me.IsDisposed = False Then
+            Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, errType, strErrorDetails})
+        End If
     End Sub
 
     Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-        ' Handle / report errors here manually?
-
-        Call clsProgData.DownloadSetErrored(clsCurDldProgData.EpID, errType, strErrorDetails)
-
-        ' If the item that has just errored is selected then update the information.
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
-            Call SetContextForSelectedDownload()
-        End If
-
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-
-        tmrStartProcess.Enabled = True
-    End Sub
-
-    Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
         Try
-            ' Check if the form exists still before calling delegate
-            If Me.IsHandleCreated And Me.IsDisposed = False Then
-                Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
-                Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData})
+            Call clsProgData.DownloadSetErrored(clsCurDldProgData.EpID, errType, strErrorDetails)
+
+            ' If the item that has just errored is selected then update the information.
+            If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
+                Call SetContextForSelectedDownload()
             End If
-        Catch expDisposed As ObjectDisposedException
-            ' Edge case: it seems that form can be disposed between the if statement and the delegate call.
-            ' As the form isn't there, we just need to ignore the error.
+
+            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+
+            tmrStartProcess.Enabled = True
+        Catch expException As Exception
+            ' Errors in a sub called via a delegate are not caught in the right place
+            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+            frmError.AssignReport(clsReport)
+            frmError.ShowDialog()
         End Try
     End Sub
 
+    Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
+        ' Check if the form exists still before calling delegate
+        If Me.IsHandleCreated And Me.IsDisposed = False Then
+            Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData})
+        End If
+    End Sub
+
     Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As clsDldProgData)
-        ' Handle / report errors here manually?
+        Try
+            Call clsProgData.DownloadSetDownloaded(clsCurDldProgData.EpID, clsCurDldProgData.FinalName)
 
-        Call clsProgData.DownloadSetDownloaded(clsCurDldProgData.EpID, clsCurDldProgData.FinalName)
+            Dim viwCurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
 
-        Dim viwCurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
+            If viwCurrentView = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
+                ' The item that has just finished downloading is selected, so update it.
+                Call SetContextForSelectedDownload()
+            ElseIf viwCurrentView = View.Subscriptions Then
+                ' Return to the tab information for subscriptions, as the selection will be lost when we update 
+                ' the subscription list.
+                Call SetViewDefaults()
+            End If
 
-        If viwCurrentView = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
-            ' The item that has just finished downloading is selected, so update it.
-            Call SetContextForSelectedDownload()
-        ElseIf viwCurrentView = View.Subscriptions Then
-            ' Return to the tab information for subscriptions, as the selection will be lost when we update 
-            ' the subscription list.
-            Call SetViewDefaults()
-        End If
+            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
-        Call clsProgData.UpdateSubscrList(lstSubscribed)
+            If My.Settings.RunAfterCommand <> "" Then
+                Try
+                    ' Environ("comspec") will give the path to cmd.exe or command.com
+                    Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
+                Catch
+                    ' Just ignore the error, as it just means that something has gone wrong with the run after command.
+                End Try
+            End If
 
-        If My.Settings.RunAfterCommand <> "" Then
-            Try
-                ' Environ("comspec") will give the path to cmd.exe or command.com
-                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
-            Catch
-                ' Just ignore the error, as it just means that something has gone wrong with the run after command.
-            End Try
-        End If
-
-        tmrStartProcess.Enabled = True
+            tmrStartProcess.Enabled = True
+        Catch expException As Exception
+            ' Errors in a sub called via a delegate are not caught in the right place
+            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+            frmError.AssignReport(clsReport)
+            frmError.ShowDialog()
+        End Try
     End Sub
 
     Private Sub clsProgData_FoundNew(ByVal intProgID As Integer) Handles clsProgData.FoundNew
@@ -469,48 +469,48 @@ Public Class frmMain
     End Sub
 
     Private Sub clsProgData_Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
-        Try
-            ' Check if the form exists still before calling delegate
-            If Me.IsHandleCreated And Me.IsDisposed = False Then
-                Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
-                Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, intPercent, strStatusText, Icon})
-            End If
-        Catch expDisposed As ObjectDisposedException
-            ' Edge case: it seems that form can be disposed between the if statement and the delegate call.
-            ' As the form isn't there, we just need to ignore the error.
-        End Try
+        ' Check if the form exists still before calling delegate
+        If Me.IsHandleCreated And Me.IsDisposed = False Then
+            Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
+            Call Me.Invoke(DelegateInst, New Object() {clsCurDldProgData, intPercent, strStatusText, Icon})
+        End If
     End Sub
 
     Private Sub clsProgData_Progress_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-        ' Handle / report errors here manually?
+        Try
+            Static intLastNum As Integer
 
-        Static intLastNum As Integer
+            If intLastNum = Nothing Then intLastNum = -1
+            If intLastNum = intPercent Then Exit Sub
+            If intPercent < 0 Then Exit Sub
+            If intPercent > 100 Then Exit Sub
 
-        If intLastNum = Nothing Then intLastNum = -1
-        If intLastNum = intPercent Then Exit Sub
-        If intPercent < 0 Then Exit Sub
-        If intPercent > 100 Then Exit Sub
+            intLastNum = intPercent
 
-        intLastNum = intPercent
+            With clsCurDldProgData
+                Dim lstItem As ListViewItem = lstDownloads.Items(CStr(.EpID))
+                lstItem.SubItems(2).Text = strStatusText
+                prgDldProg.Value = intPercent
 
-        With clsCurDldProgData
-            Dim lstItem As ListViewItem = lstDownloads.Items(CStr(.EpID))
-            lstItem.SubItems(2).Text = strStatusText
-            prgDldProg.Value = intPercent
+                If lstDownloads.Controls.Count = 0 Then
+                    lstDownloads.AddProgressBar(prgDldProg, lstItem, 3)
+                End If
 
-            If lstDownloads.Controls.Count = 0 Then
-                lstDownloads.AddProgressBar(prgDldProg, lstItem, 3)
-            End If
+                Select Case Icon
+                    Case IRadioProvider.ProgressIcon.Downloading
+                        lstItem.ImageKey = "downloading"
+                    Case IRadioProvider.ProgressIcon.Converting
+                        lstItem.ImageKey = "converting"
+                End Select
+            End With
 
-            Select Case Icon
-                Case IRadioProvider.ProgressIcon.Downloading
-                    lstItem.ImageKey = "downloading"
-                Case IRadioProvider.ProgressIcon.Converting
-                    lstItem.ImageKey = "converting"
-            End Select
-        End With
-
-        Call SetTrayStatus(True)
+            Call SetTrayStatus(True)
+        Catch expException As Exception
+            ' Errors in a sub called via a delegate are not caught in the right place
+            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+            frmError.AssignReport(clsReport)
+            frmError.ShowDialog()
+        End Try
     End Sub
 
     Private Sub frmMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
