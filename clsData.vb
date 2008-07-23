@@ -383,6 +383,19 @@ Public Class clsData
         If sqlReader.Read Then
             Dim intImgID As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("image"))
 
+            If intImgID = Nothing Then
+                ' Find the id of the latest episode's image
+                Dim sqlLatestCmd As New SQLiteCommand("select image from episodes where progid=@progid and image notnull order by date desc limit 1", sqlConnection)
+                sqlLatestCmd.Parameters.Add(New SQLiteParameter("@progid", intProgID))
+                Dim sqlLatestRdr As SQLiteDataReader = sqlLatestCmd.ExecuteReader
+
+                If sqlLatestRdr.Read Then
+                    intImgID = sqlLatestRdr.GetInt32(sqlReader.GetOrdinal("image"))
+                End If
+
+                sqlLatestRdr.Close()
+            End If
+
             If intImgID <> Nothing Then
                 ProgrammeImage = RetrieveImage(intImgID)
             Else

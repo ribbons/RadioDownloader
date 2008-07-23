@@ -341,11 +341,6 @@ Public Class clsPodcastProvider
                 End If
 
                 EpisodeInfo.Image = RSSNodeImage(clsCachedHTTP, xmlItem, xmlNamespaceMgr)
-
-                If EpisodeInfo.Image Is Nothing Then
-                    EpisodeInfo.Image = RSSNodeImage(clsCachedHTTP, xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
-                End If
-
                 EpisodeInfo.ExtInfo = dicExtInfo
                 EpisodeInfo.Success = True
 
