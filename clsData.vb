@@ -476,7 +476,7 @@ Public Class clsData
     End Function
 
     Public Function EpisodeImage(ByVal intEpID As Integer) As Bitmap
-        Dim sqlCommand As New SQLiteCommand("select image from episodes where epid=@epid", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select image, progid from episodes where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
@@ -487,6 +487,10 @@ Public Class clsData
                 EpisodeImage = RetrieveImage(intImgID)
             Else
                 EpisodeImage = Nothing
+            End If
+
+            If EpisodeImage Is Nothing Then
+                EpisodeImage = ProgrammeImage(sqlReader.GetInt32(sqlReader.GetOrdinal("progid")))
             End If
         Else
             EpisodeImage = Nothing
