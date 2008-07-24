@@ -5,11 +5,13 @@ Release process
  2. Run publish.bat to compile Core Application & Plugins
  3. Update version number in installer
  4. Build installer
- 5. Test installer
- 6. Commit version changes.
- 7. Create tag for release number in form radio_downloader/tags/x.x.x
- 8. Run zipped source creator batch file
- 9. Copy Source and Installer to local nerdoftheherd folder.
-10. Update local latestversion.txt with latest version number.
-11. Add new version number & new target milestone into the Radio Downloader product in Bugzilla.
-12. Upload to website, and write news item.
+ 5. Test installer - update: msiexec /i "Radio Downloader.msi" REINSTALL=ALL REINSTALLMODE=vamus
+ 6. Test installer - clean install
+ 7. Commit version changes.
+ 8. Create tag for release number in form radio_downloader/tags/x.x.x
+ 9. Run zipped source creator batch file
+10. Copy Source and Installer to local nerdoftheherd folder.
+11. Update local latestversion.txt with latest version number.
+12. Add new version number & new target milestone into the Radio Downloader product in Bugzilla.
+13. Upload to website, and write news item.
+
