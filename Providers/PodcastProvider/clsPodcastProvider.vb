@@ -329,8 +329,8 @@ Public Class clsPodcastProvider
                     Next
 
                     Try
-                        EpisodeInfo.Date = CDate(strPubDate)
-                    Catch expInvalidCast As InvalidCastException
+                        EpisodeInfo.Date = Date.Parse(strPubDate, Nothing, DateTimeStyles.AssumeUniversal)
+                    Catch expFormat As FormatException
                         EpisodeInfo.Date = Now
                         tspOffset = New TimeSpan(0)
                     End Try
