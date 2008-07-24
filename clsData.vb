@@ -269,16 +269,55 @@ Public Class clsData
                         clsCurDldProgData = New clsDldProgData
 
                         Dim priProgInfo As IRadioProvider.ProgrammeInfo
-                        priProgInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("progname"))
-                        priProgInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("progdesc"))
-                        priProgInfo.Image = RetrieveImage(sqlReader.GetInt32(sqlReader.GetOrdinal("progimg")))
+                        If sqlReader.IsDBNull(sqlReader.GetOrdinal("progname")) Then
+                            priProgInfo.Name = Nothing
+                        Else
+                            priProgInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("progname"))
+                        End If
+
+                        If sqlReader.IsDBNull(sqlReader.GetOrdinal("progdesc")) Then
+                            priProgInfo.Description = Nothing
+                        Else
+                            priProgInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("progdesc"))
+                        End If
+
+                        If sqlReader.IsDBNull(sqlReader.GetOrdinal("progimg")) Then
+                            priProgInfo.Image = Nothing
+                        Else
+                            priProgInfo.Image = RetrieveImage(sqlReader.GetInt32(sqlReader.GetOrdinal("progimg")))
+                        End If
 
                         Dim epiEpInfo As IRadioProvider.EpisodeInfo
-                        epiEpInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("epname"))
-                        epiEpInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("epdesc"))
-                        epiEpInfo.DurationSecs = sqlReader.GetInt32(sqlReader.GetOrdinal("duration"))
-                        epiEpInfo.Date = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
-                        epiEpInfo.Image = RetrieveImage(sqlReader.GetInt32(sqlReader.GetOrdinal("epimg")))
+                        If sqlReader.IsDBNull(sqlReader.GetOrdinal("epname")) Then
+                            epiEpInfo.Name = Nothing
+                        Else
+                            epiEpInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("epname"))
+                        End If
+
+                        If sqlReader.IsDBNull(sqlReader.GetOrdinal("epdesc")) Then
+                            epiEpInfo.Description = Nothing
+                        Else
+                            epiEpInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("epdesc"))
+                        End If
+
+                        If sqlReader.IsDBNull(sqlReader.GetOrdinal("duration")) Then
+                            epiEpInfo.DurationSecs = Nothing
+                        Else
+                            epiEpInfo.DurationSecs = sqlReader.GetInt32(sqlReader.GetOrdinal("duration"))
+                        End If
+
+                        If sqlReader.IsDBNull(sqlReader.GetOrdinal("date")) Then
+                            epiEpInfo.Date = Nothing
+                        Else
+                            epiEpInfo.Date = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
+                        End If
+
+                        If sqlReader.IsDBNull(sqlReader.GetOrdinal("epimg")) Then
+                            epiEpInfo.Image = Nothing
+                        Else
+                            epiEpInfo.Image = RetrieveImage(sqlReader.GetInt32(sqlReader.GetOrdinal("epimg")))
+                        End If
+
                         epiEpInfo.ExtInfo = New Dictionary(Of String, String)
 
                         Dim sqlExtCommand As New SQLiteCommand("select name, value from episodeext where epid=@epid", sqlConnection)
@@ -313,9 +352,9 @@ Public Class clsData
 
                         FindAndDownload = True
                     End If
-                Else
-                    Exit While
-                End If
+                    Else
+                        Exit While
+                    End If
             End While
 
             sqlReader.Close()
