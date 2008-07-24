@@ -532,7 +532,9 @@ Public Class clsData
             End If
 
             If EpisodeImage Is Nothing Then
-                EpisodeImage = ProgrammeImage(sqlReader.GetInt32(sqlReader.GetOrdinal("progid")))
+                If sqlReader.IsDBNull(sqlReader.GetOrdinal("progid")) = False Then
+                    EpisodeImage = ProgrammeImage(sqlReader.GetInt32(sqlReader.GetOrdinal("progid")))
+                End If
             End If
         Else
             EpisodeImage = Nothing
