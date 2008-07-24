@@ -488,7 +488,7 @@ Public Class clsPodcastProvider
                         Dim webErrorResponse As HttpWebResponse = CType(expWeb.Response, HttpWebResponse)
 
                         If webErrorResponse.StatusCode = HttpStatusCode.NotFound Then
-                            RaiseEvent DldError(IRadioProvider.ErrorType.NoLongerAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.")
+                            RaiseEvent DldError(IRadioProvider.ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.")
                             Exit Sub
                         End If
                     End If

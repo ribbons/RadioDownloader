@@ -46,7 +46,7 @@ Public Interface IRadioProvider
         UnknownError
         MissingDependency
         ShorterThanExpected
-        NoLongerAvailable
+        NotAvailable
     End Enum
 
     ReadOnly Property ProviderID() As Guid

@@ -246,8 +246,8 @@ Public Class frmMain
                             strErrorName = "Missing Dependency"
                         Case IRadioProvider.ErrorType.ShorterThanExpected
                             strErrorName = "Shorter Than Expected"
-                        Case IRadioProvider.ErrorType.NoLongerAvailable
-                            strErrorName = "No Longer Available"
+                        Case IRadioProvider.ErrorType.NotAvailable
+                            strErrorName = "Not Available"
                         Case IRadioProvider.ErrorType.UnknownError
                             strErrorName = "Unknown Error"
                             strErrorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
