@@ -276,14 +276,25 @@ Public Class frmMain
 
         If bmpPicture IsNot Nothing Then
             If bmpPicture.Width > picSidebarImg.MaximumSize.Width Or bmpPicture.Height > picSidebarImg.MaximumSize.Height Then
+                Dim intNewWidth As Integer
+                Dim intNewHeight As Integer
+
+                If bmpPicture.Width > bmpPicture.Height Then
+                    intNewWidth = picSidebarImg.MaximumSize.Width
+                    intNewHeight = CInt((intNewWidth / bmpPicture.Width) * bmpPicture.Height)
+                Else
+                    intNewHeight = picSidebarImg.MaximumSize.Height
+                    intNewWidth = CInt((intNewHeight / bmpPicture.Height) * bmpPicture.Width)
+                End If
+
                 Dim bmpOrigImg As Bitmap = bmpPicture
-                bmpPicture = New Bitmap(picSidebarImg.MaximumSize.Width, picSidebarImg.MaximumSize.Height)
+                bmpPicture = New Bitmap(intNewWidth, intNewHeight)
                 Dim graGraphics As Graphics
 
                 graGraphics = Graphics.FromImage(bmpPicture)
                 graGraphics.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
 
-                graGraphics.DrawImage(bmpOrigImg, 0, 0, picSidebarImg.MaximumSize.Width, picSidebarImg.MaximumSize.Height)
+                graGraphics.DrawImage(bmpOrigImg, 0, 0, intNewWidth, intNewHeight)
 
                 bmpOrigImg.Dispose()
             End If
