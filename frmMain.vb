@@ -122,7 +122,7 @@ Public Class frmMain
         Call lstSubscribed.Columns.Add("Programme Name", 270)
         Call lstSubscribed.Columns.Add("Last Download", 100)
         Call lstSubscribed.Columns.Add("Provider", 170)
-        Call lstDownloads.Columns.Add("Name", 225)
+        Call lstDownloads.Columns.Add("Episode Name", 225)
         Call lstDownloads.Columns.Add("Date", 85)
         Call lstDownloads.Columns.Add("Status", 130)
         Call lstDownloads.Columns.Add("Progress", 100)
