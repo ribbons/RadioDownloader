@@ -767,8 +767,7 @@ Public Class frmMain
                 pnlPluginSpace.Visible = True
                 pnlPluginSpace.Controls.Clear()
                 pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(DirectCast(ViewData.ViewData, Guid)))
-                pnlPluginSpace.Controls(0).Width = pnlPluginSpace.Width
-                pnlPluginSpace.Controls(0).Height = pnlPluginSpace.Height
+                pnlPluginSpace.Controls(0).Dock = DockStyle.Fill
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
                 RemoveHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
