@@ -37,6 +37,7 @@ Public Class clsData
     Private WithEvents DownloadPluginInst As IRadioProvider
     Private WithEvents FindNewPluginInst As IRadioProvider
 
+    Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
     Public Event Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Public Event DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
@@ -1074,14 +1075,18 @@ Public Class clsData
         End If
     End Sub
 
-    Public Function GetFindNewPanel(ByVal gidPluginID As Guid) As Panel
+    Public Function GetFindNewPanel(ByVal gidPluginID As Guid, ByVal objView As Object) As Panel
         If clsPluginsInst.PluginExists(gidPluginID) Then
             FindNewPluginInst = clsPluginsInst.GetPluginInstance(gidPluginID)
-            Return FindNewPluginInst.GetFindNewPanel(New clsCachedWebClient(Me))
+            Return FindNewPluginInst.GetFindNewPanel(New clsCachedWebClient(Me), objView)
         Else
             Return New Panel
         End If
     End Function
+
+    Private Sub FindNewPluginInst_FindNewViewChange(ByVal objView As Object) Handles FindNewPluginInst.FindNewViewChange
+        RaiseEvent FindNewViewChange(objView)
+    End Sub
 
     Private Sub FindNewPluginInst_FoundNew(ByVal strProgExtID As String) Handles FindNewPluginInst.FoundNew
         Dim gidPluginID As Guid = FindNewPluginInst.ProviderID

@@ -52,6 +52,11 @@ Public Class frmMain
         Dim ViewData As Object
     End Structure
 
+    Private Structure FindNewViewData
+        Dim ProviderID As Guid
+        Dim View As Object
+    End Structure
+
     Private viwBackData(-1) As ViewStore
     Private viwFwdData(-1) As ViewStore
 
@@ -175,7 +180,11 @@ Public Class frmMain
     End Sub
 
     Private Sub lstProviders_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
-        Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, lstProviders.SelectedItems(0).Tag)
+        Dim ViewData As FindNewViewData
+        ViewData.ProviderID = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
+        ViewData.View = Nothing
+
+        Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, ViewData)
     End Sub
 
     Private Sub lstEpisodes_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lstEpisodes.ItemCheck
@@ -436,6 +445,17 @@ Public Class frmMain
                 frmError.ShowDialog()
             End If
         End Try
+    End Sub
+
+    Private Sub clsProgData_FindNewViewChange(ByVal objView As Object) Handles clsProgData.FindNewViewChange
+        Dim ChangedView As ViewStore = viwBackData(viwBackData.GetUpperBound(0))
+        Dim FindViewData As FindNewViewData = DirectCast(ChangedView.ViewData, FindNewViewData)
+
+        FindViewData.View = objView
+        ChangedView.ViewData = FindViewData
+
+        Call StoreView(ChangedView)
+        Call UpdateNavCtrlState()
     End Sub
 
     Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
@@ -715,6 +735,15 @@ Public Class frmMain
         End If
     End Sub
 
+    Private Sub StoreView(ByVal ViewData As ViewStore)
+        ReDim Preserve viwBackData(viwBackData.GetUpperBound(0) + 1)
+        viwBackData(viwBackData.GetUpperBound(0)) = ViewData
+
+        If viwFwdData.GetUpperBound(0) > -1 Then
+            ReDim viwFwdData(-1)
+        End If
+    End Sub
+
     Private Sub SetView(ByVal Tab As MainTab, ByVal View As View, ByVal ViewData As Object)
         Dim ViewDataStore As ViewStore
 
@@ -722,19 +751,17 @@ Public Class frmMain
         ViewDataStore.View = View
         ViewDataStore.ViewData = ViewData
 
-        ReDim Preserve viwBackData(viwBackData.GetUpperBound(0) + 1)
-        viwBackData(viwBackData.GetUpperBound(0)) = ViewDataStore
-
-        If viwFwdData.GetUpperBound(0) > -1 Then
-            ReDim viwFwdData(-1)
-        End If
-
+        Call StoreView(ViewDataStore)
         Call PerformViewChanges(ViewDataStore)
     End Sub
 
-    Private Sub PerformViewChanges(ByVal ViewData As ViewStore)
+    Private Sub UpdateNavCtrlState()
         tbtBack.Enabled = viwBackData.GetUpperBound(0) > 0
         tbtForward.Enabled = viwFwdData.GetUpperBound(0) > -1
+    End Sub
+
+    Private Sub PerformViewChanges(ByVal ViewData As ViewStore)
+        Call UpdateNavCtrlState()
 
         tbtFindNew.Checked = False
         tbtFavourites.Checked = False
@@ -764,9 +791,11 @@ Public Class frmMain
             Case View.FindNewChooseProvider
                 lstProviders.Visible = True
             Case View.FindNewProviderForm
+                Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
+
                 pnlPluginSpace.Visible = True
                 pnlPluginSpace.Controls.Clear()
-                pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(DirectCast(ViewData.ViewData, Guid)))
+                pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View))
                 pnlPluginSpace.Controls(0).Dock = DockStyle.Fill
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
@@ -793,9 +822,9 @@ Public Class frmMain
                 Call SetToolbarButtons("")
                 Call SetSideBar("Find New", "This view allows you to select programmes to download or subscribe to." + vbCrLf + "Select a type of programme to begin.", Nothing)
             Case View.FindNewProviderForm
-                Dim gidProvider As Guid = DirectCast(ViewData.ViewData, Guid)
+                Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
                 Call SetToolbarButtons("")
-                Call SetSideBar(clsProgData.ProviderName(gidProvider), "This view allows you to select a " & clsProgData.ProviderName(gidProvider) & " programme to view.", Nothing)
+                Call SetSideBar(clsProgData.ProviderName(FindViewData.ProviderID), "This view allows you to select a " & clsProgData.ProviderName(FindViewData.ProviderID) & " programme to view.", Nothing)
             Case View.ProgEpisodes
                 Dim intProgID As Integer = CInt(ViewData.ViewData)
                 Call SetToolbarButtons("Subscribe")

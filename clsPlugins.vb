@@ -54,11 +54,12 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderDescription() As String
     ReadOnly Property ProgInfoUpdateFreqDays() As Integer
 
-    Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient) As Panel
+    Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient, ByVal objView As Object) As Panel
     Function GetProgrammeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As ProgrammeInfo
     Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As String()
     Function GetEpisodeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As EpisodeInfo
 
+    Event FindNewViewChange(ByVal objView As Object)
     Event FoundNew(ByVal strProgExtID As String)
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)

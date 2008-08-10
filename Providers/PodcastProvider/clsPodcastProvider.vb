@@ -29,6 +29,7 @@ Imports System.Text.RegularExpressions
 Public Class clsPodcastProvider
     Implements IRadioProvider
 
+    Public Event FindNewViewChange(ByVal objView As Object) Implements IRadioProvider.FindNewViewChange
     Public Event FoundNew(ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
     Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
@@ -70,7 +71,7 @@ Public Class clsPodcastProvider
         End Get
     End Property
 
-    Public Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient) As Panel Implements IRadioProvider.GetFindNewPanel
+    Public Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient, ByVal objView As Object) As Panel Implements IRadioProvider.GetFindNewPanel
         Me.clsCachedHTTP = clsCachedHTTP
 
         Dim frmFindNewInst As New frmFindNew
