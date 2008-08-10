@@ -30,6 +30,7 @@ Public Class clsPodcastProvider
     Implements IRadioProvider
 
     Public Event FindNewViewChange(ByVal objView As Object) Implements IRadioProvider.FindNewViewChange
+    Public Event FindNewException(ByVal expException As Exception) Implements IRadioProvider.FindNewException
     Public Event FoundNew(ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
     Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
@@ -374,6 +375,10 @@ Public Class clsPodcastProvider
 
         webDownload = New WebClient
         webDownload.DownloadFileAsync(New Uri(strProgDldUrl), strDownloadFileName)
+    End Sub
+
+    Friend Sub RaiseFindNewException(ByVal expException As Exception)
+        RaiseEvent FindNewException(expException)
     End Sub
 
     Friend Sub RaiseFoundNew(ByVal strExtID As String)

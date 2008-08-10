@@ -60,6 +60,7 @@ Public Interface IRadioProvider
     Function GetEpisodeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As EpisodeInfo
 
     Event FindNewViewChange(ByVal objView As Object)
+    Event FindNewException(ByVal expException As Exception)
     Event FoundNew(ByVal strProgExtID As String)
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)

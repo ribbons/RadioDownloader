@@ -1084,6 +1084,14 @@ Public Class clsData
         End If
     End Function
 
+    Private Sub FindNewPluginInst_FindNewException(ByVal expException As System.Exception) Handles FindNewPluginInst.FindNewException
+        If frmError.Visible = False Then
+            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+            frmError.AssignReport(clsReport)
+            frmError.ShowDialog()
+        End If
+    End Sub
+
     Private Sub FindNewPluginInst_FindNewViewChange(ByVal objView As Object) Handles FindNewPluginInst.FindNewViewChange
         RaiseEvent FindNewViewChange(objView)
     End Sub
