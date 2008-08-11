@@ -51,6 +51,7 @@ Public Interface IRadioProvider
 
     ReadOnly Property ProviderID() As Guid
     ReadOnly Property ProviderName() As String
+    ReadOnly Property ProviderIcon() As Bitmap
     ReadOnly Property ProviderDescription() As String
     ReadOnly Property ProgInfoUpdateFreqDays() As Integer
 

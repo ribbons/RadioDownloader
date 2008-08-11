@@ -977,7 +977,7 @@ Public Class clsData
         Return clsCurDldProgData
     End Function
 
-    Public Sub UpdateProviderList(ByVal lstProviders As ListView)
+    Public Sub UpdateProviderList(ByVal lstProviders As ListView, ByVal imlProviders As ImageList)
         Dim gidPluginIDs() As Guid
         gidPluginIDs = clsPluginsInst.GetPluginIdList
 
@@ -989,8 +989,16 @@ Public Class clsData
 
             lstAdd = New ListViewItem
             lstAdd.Text = ThisInstance.ProviderName
-            lstAdd.Tag = ThisInstance.ProviderID
-            lstAdd.ImageKey = "default" 'ThisInstance.ProviderID.ToString
+            lstAdd.Tag = gidPluginID
+
+            Dim bmpIcon As Bitmap = ThisInstance.ProviderIcon
+
+            If bmpIcon IsNot Nothing Then
+                imlProviders.Images.Add(gidPluginID.ToString, bmpIcon)
+                lstAdd.ImageKey = gidPluginID.ToString
+            Else
+                lstAdd.ImageKey = "default"
+            End If
 
             lstProviders.Items.Add(lstAdd)
         Next

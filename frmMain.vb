@@ -137,11 +137,12 @@ Public Class frmMain
         lstDownloads.SmallImageList = imlListIcons
 
         clsProgData = New clsData()
+        Call clsProgData.UpdateProviderList(lstProviders, imlProviders)
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-        clsProgData.UpdateProviderList(lstProviders)
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
+
         nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
         nicTrayIcon.Text = Me.Text
         nicTrayIcon.Visible = True

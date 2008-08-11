@@ -59,6 +59,12 @@ Public Class clsPodcastProvider
         End Get
     End Property
 
+    Public ReadOnly Property ProviderIcon() As Bitmap Implements IRadioProvider.ProviderIcon
+        Get
+            Return My.Resources.provider_icon
+        End Get
+    End Property
+
     Public ReadOnly Property ProviderDescription() As String Implements IRadioProvider.ProviderDescription
         Get
             Return "Allows you to download programmes made available as Podcasts."
