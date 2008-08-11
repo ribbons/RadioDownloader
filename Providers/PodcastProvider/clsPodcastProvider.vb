@@ -67,7 +67,7 @@ Public Class clsPodcastProvider
 
     Public ReadOnly Property ProviderDescription() As String Implements IRadioProvider.ProviderDescription
         Get
-            Return "Allows you to download programmes made available as Podcasts."
+            Return "Audio files made available as enclosures on an RSS feed."
         End Get
     End Property
 

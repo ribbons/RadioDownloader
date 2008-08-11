@@ -888,6 +888,17 @@ Public Class clsData
         Return ThisInstance.ProviderName
     End Function
 
+    Public Function ProviderDescription(ByVal gidPluginID As Guid) As String
+        If clsPluginsInst.PluginExists(gidPluginID) = False Then
+            Return ""
+        End If
+
+        Dim ThisInstance As IRadioProvider
+        ThisInstance = clsPluginsInst.GetPluginInstance(gidPluginID)
+
+        Return ThisInstance.ProviderDescription
+    End Function
+
     Public Sub DownloadBumpPlayCount(ByVal intEpID As Integer)
         Dim sqlCommand As New SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))

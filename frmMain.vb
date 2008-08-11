@@ -180,6 +180,16 @@ Public Class frmMain
         End If
     End Sub
 
+    Private Sub lstProviders_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstProviders.SelectedIndexChanged
+        If lstProviders.SelectedItems.Count > 0 Then
+            Dim gidPluginID As Guid = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
+
+            Call SetSideBar(clsProgData.ProviderName(gidPluginID), clsProgData.ProviderDescription(gidPluginID), Nothing)
+        Else
+            Call SetViewDefaults()
+        End If
+    End Sub
+
     Private Sub lstProviders_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
         Dim ViewData As FindNewViewData
         ViewData.ProviderID = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
