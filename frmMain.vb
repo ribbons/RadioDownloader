@@ -203,12 +203,22 @@ Public Class frmMain
     End Sub
 
     Private Sub lstEpisodes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
+        Call SetContextForSelectedEpisode()
+    End Sub
+
+    Private Sub SetContextForSelectedEpisode()
         If lstEpisodes.SelectedItems.Count > 0 Then
+            Dim intProgID As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
             Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
             With clsProgData
                 Call SetSideBar(.EpisodeName(intEpID), .EpisodeDetails(intEpID), .EpisodeImage(intEpID))
-                Call SetToolbarButtons("Download,Subscribe")
+
+                If .IsSubscribed(intProgID) Then
+                    Call SetToolbarButtons("Download,Unsubscribe")
+                Else
+                    Call SetToolbarButtons("Download,Subscribe")
+                End If
             End With
         Else
             Call SetViewDefaults() ' Revert back to programme info in sidebar
@@ -224,7 +234,7 @@ Public Class frmMain
             Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
 
             Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
-            Call SetToolbarButtons("Unsubscribe")
+            Call SetToolbarButtons("Unsubscribe,CurrentEps")
         Else
             Call SetViewDefaults() ' Revert back to subscribed items view default sidebar and toolbar
         End If
@@ -332,6 +342,7 @@ Public Class frmMain
         tbtDownload.Visible = False
         tbtSubscribe.Visible = False
         tbtUnsubscribe.Visible = False
+        tbtCurrentEps.Visible = False
         tbtPlay.Visible = False
         tbtCancel.Visible = False
         tbtDelete.Visible = False
@@ -347,6 +358,8 @@ Public Class frmMain
                     tbtSubscribe.Visible = True
                 Case "Unsubscribe"
                     tbtUnsubscribe.Visible = True
+                Case "CurrentEps"
+                    tbtCurrentEps.Visible = True
                 Case "Play"
                     tbtPlay.Visible = True
                 Case "Delete"
@@ -605,21 +618,36 @@ Public Class frmMain
     Private Sub tbtSubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscribe.Click
         Dim intProgID As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
 
-        If clsProgData.AddSubscription(intProgID) = False Then
+        If clsProgData.IsSubscribed(intProgID) Then
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation)
         Else
-            Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
+            clsProgData.AddSubscription(intProgID)
             Call clsProgData.UpdateSubscrList(lstSubscribed)
+            Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
         End If
     End Sub
 
     Private Sub tbtUnsubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUnsubscribe.Click
-        Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
+        Dim CurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
+        Dim intProgID As Integer
+
+        Select Case CurrentView
+            Case View.ProgEpisodes
+                intProgID = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
+            Case View.Subscriptions
+                intProgID = CInt(lstSubscribed.SelectedItems(0).Tag)
+        End Select
 
         If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
             Call clsProgData.RemoveSubscription(intProgID)
-            Call SetViewDefaults() ' Revert back to the subscriptions default sidebar and toolbar
             Call clsProgData.UpdateSubscrList(lstSubscribed)
+
+            Select Case CurrentView
+                Case View.ProgEpisodes
+                    Call SetContextForSelectedEpisode()
+                Case View.Subscriptions
+                    Call SetViewDefaults()
+            End Select
         End If
     End Sub
 
@@ -707,6 +735,11 @@ Public Class frmMain
         Else
             Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
         End If
+    End Sub
+
+    Private Sub tbtCurrentEps_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCurrentEps.Click
+        Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
+        Call SetView(MainTab.Subscriptions, View.ProgEpisodes, intProgID)
     End Sub
 
     Private Sub tbtReportError_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtReportError.Click
@@ -838,7 +871,13 @@ Public Class frmMain
                 Call SetSideBar(clsProgData.ProviderName(FindViewData.ProviderID), "This view allows you to select a " & clsProgData.ProviderName(FindViewData.ProviderID) & " programme to view.", Nothing)
             Case View.ProgEpisodes
                 Dim intProgID As Integer = CInt(ViewData.ViewData)
-                Call SetToolbarButtons("Subscribe")
+
+                If clsProgData.IsSubscribed(intProgID) Then
+                    Call SetToolbarButtons("Unsubscribe")
+                Else
+                    Call SetToolbarButtons("Subscribe")
+                End If
+
                 Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
             Case View.Subscriptions
                 Call SetToolbarButtons("")

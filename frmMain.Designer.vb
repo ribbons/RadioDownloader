@@ -71,6 +71,7 @@
         Me.lblSideDescript = New System.Windows.Forms.Label
         Me.lstEpisodes = New System.Windows.Forms.ListView
         Me.pnlPluginSpace = New System.Windows.Forms.Panel
+        Me.tbtCurrentEps = New System.Windows.Forms.ToolStripButton
         Me.lstDownloads = New RadioDld.ExtListView
         Me.tbrView.SuspendLayout()
         Me.mnuTray.SuspendLayout()
@@ -270,7 +271,7 @@
         '
         'tbrToolbar
         '
-        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmMisc, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp, Me.tbmHelp})
+        Me.tbrToolbar.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbmMisc, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp, Me.tbmHelp})
         Me.tbrToolbar.Location = New System.Drawing.Point(0, 31)
         Me.tbrToolbar.Name = "tbrToolbar"
         Me.tbrToolbar.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
@@ -372,7 +373,7 @@
         Me.tbtReportError.Image = CType(resources.GetObject("tbtReportError.Image"), System.Drawing.Image)
         Me.tbtReportError.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtReportError.Name = "tbtReportError"
-        Me.tbtReportError.Size = New System.Drawing.Size(90, 22)
+        Me.tbtReportError.Size = New System.Drawing.Size(90, 20)
         Me.tbtReportError.Text = "Report Error"
         '
         'tbmHelp
@@ -503,6 +504,14 @@
         Me.pnlPluginSpace.Size = New System.Drawing.Size(570, 62)
         Me.pnlPluginSpace.TabIndex = 20
         '
+        'tbtCurrentEps
+        '
+        Me.tbtCurrentEps.Image = CType(resources.GetObject("tbtCurrentEps.Image"), System.Drawing.Image)
+        Me.tbtCurrentEps.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtCurrentEps.Name = "tbtCurrentEps"
+        Me.tbtCurrentEps.Size = New System.Drawing.Size(116, 22)
+        Me.tbtCurrentEps.Text = "Current Episodes"
+        '
         'lstDownloads
         '
         Me.lstDownloads.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
@@ -601,5 +610,6 @@
     Friend WithEvents tbtBack As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtForward As System.Windows.Forms.ToolStripButton
     Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
+    Friend WithEvents tbtCurrentEps As System.Windows.Forms.ToolStripButton
 #End Region
 End Class

@@ -819,23 +819,23 @@ Public Class clsData
         Return True
     End Function
 
-    Public Function AddSubscription(ByVal intProgID As Integer) As Boolean
+    Public Function IsSubscribed(ByVal intProgID As Integer) As Boolean
         Dim sqlCommand As New SQLiteCommand("select progid from subscriptions where progid=@progid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
-        If sqlReader.Read Then
-            Return False
+        Return sqlReader.Read
+    End Function
+
+    Public Sub AddSubscription(ByVal intProgID As Integer)
+        If IsSubscribed(intProgID) Then
+            Return
         End If
 
-        sqlReader.Close()
-
-        sqlCommand = New SQLiteCommand("insert into subscriptions (progid) values (@progid)", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("insert into subscriptions (progid) values (@progid)", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         Call sqlCommand.ExecuteNonQuery()
-
-        Return True
-    End Function
+    End Sub
 
     Public Sub RemoveSubscription(ByVal intProgID As Integer)
         Dim sqlCommand As New SQLiteCommand("delete from subscriptions where progid=@progid", sqlConnection)
