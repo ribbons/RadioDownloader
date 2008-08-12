@@ -66,12 +66,12 @@ Module modMain
         Return My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData.Substring(0, lngLastSlash)
     End Function
 
-    Public Function FindFreeSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal dteSaveDate As Date, ByVal strSavePath As String) As String
+    Public Function FindFreeSaveFileName(ByVal strFormatString As String, ByVal strProgrammeName As String, ByVal strEpisodeName As String, ByVal dteEpisodeDate As Date, ByVal strSavePath As String) As String
         If strSavePath <> "" Then
             strSavePath += "\"
         End If
 
-        Dim strSaveName As String = CreateSaveFileName(strFormatString, strProgTitle, dteSaveDate)
+        Dim strSaveName As String = CreateSaveFileName(strFormatString, strProgrammeName, strEpisodeName, dteEpisodeDate)
         Dim intDiffNum As Integer = 1
 
         If strSavePath = "" Then
@@ -80,23 +80,28 @@ Module modMain
         End If
 
         While Directory.GetFiles(strSavePath, strSaveName + ".*").Length > 0
-            strSaveName = CreateSaveFileName(strFormatString + " (" + CStr(intDiffNum) + ")", strProgTitle, dteSaveDate)
+            strSaveName = CreateSaveFileName(strFormatString + " (" + CStr(intDiffNum) + ")", strProgrammeName, strEpisodeName, dteEpisodeDate)
             intDiffNum += 1
         End While
 
         Return strSavePath + strSaveName
     End Function
 
-    Private Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgTitle As String, ByVal dteSaveDate As Date) As String
+    Private Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgrammeName As String, ByVal strEpisodeName As String, ByVal dteEpisodeDate As Date) As String
         Dim strName As String = strFormatString
 
-        strName = strName.Replace("%title%", strProgTitle)
-        strName = strName.Replace("%day%", dteSaveDate.ToString("dd"))
-        strName = strName.Replace("%month%", dteSaveDate.ToString("MM"))
-        strName = strName.Replace("%shortmonthname%", dteSaveDate.ToString("MMM"))
-        strName = strName.Replace("%monthname%", dteSaveDate.ToString("MMMM"))
-        strName = strName.Replace("%year%", dteSaveDate.ToString("yy"))
-        strName = strName.Replace("%longyear%", dteSaveDate.ToString("yyyy"))
+        ' Convert %title% -> %epname% for backwards compatability
+        strName = strName.Replace("%title%", "%epname%")
+
+        ' Make variable substitutions
+        strName = strName.Replace("%progname%", strProgrammeName)
+        strName = strName.Replace("%epname%", strEpisodeName)
+        strName = strName.Replace("%day%", dteEpisodeDate.ToString("dd"))
+        strName = strName.Replace("%month%", dteEpisodeDate.ToString("MM"))
+        strName = strName.Replace("%shortmonthname%", dteEpisodeDate.ToString("MMM"))
+        strName = strName.Replace("%monthname%", dteEpisodeDate.ToString("MMMM"))
+        strName = strName.Replace("%year%", dteEpisodeDate.ToString("yy"))
+        strName = strName.Replace("%longyear%", dteEpisodeDate.ToString("yyyy"))
 
         Dim strCleanedName As String
         Dim strTrimmedName As String = ""

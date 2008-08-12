@@ -338,7 +338,7 @@ Public Class clsData
                             .EpisodeInfo = epiEpInfo
                         End With
 
-                        clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("progname")), sqlReader.GetDateTime(sqlReader.GetOrdinal("date")), GetSaveFolder())
+                        clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("progname")), sqlReader.GetString(sqlReader.GetOrdinal("epname")), sqlReader.GetDateTime(sqlReader.GetOrdinal("date")), GetSaveFolder())
                         clsCurDldProgData.BandwidthLimit = My.Settings.BandwidthLimit
 
                         If sqlReader.GetInt32(sqlReader.GetOrdinal("status")) = Statuses.Errored Then

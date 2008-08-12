@@ -68,7 +68,7 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("%title% %day%-%month%-%year%")>  _
+         Global.System.Configuration.DefaultSettingValueAttribute("%epname% %day%-%month%-%year%")>  _
         Public Property FileNameFormat() As String
             Get
                 Return CType(Me("FileNameFormat"),String)
