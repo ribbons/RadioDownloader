@@ -338,7 +338,7 @@ Public Class clsData
                             .EpisodeInfo = epiEpInfo
                         End With
 
-                        clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("progname")), sqlReader.GetString(sqlReader.GetOrdinal("epname")), sqlReader.GetDateTime(sqlReader.GetOrdinal("date")), GetSaveFolder())
+                        clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("progname")), EpisodeName(intEpID), sqlReader.GetDateTime(sqlReader.GetOrdinal("date")), GetSaveFolder())
                         clsCurDldProgData.BandwidthLimit = My.Settings.BandwidthLimit
 
                         If sqlReader.GetInt32(sqlReader.GetOrdinal("status")) = Statuses.Errored Then
@@ -498,21 +498,28 @@ Public Class clsData
     End Function
 
     Public Function EpisodeName(ByVal intEpID As Integer) As String
-        Dim sqlCommand As New SQLiteCommand("select name,date from episodes where epid=@epid", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select name, date from episodes where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
-            Dim dteEpisodeDate As Date = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
-            EpisodeName = sqlReader.GetString(sqlReader.GetOrdinal("name"))
+            If sqlReader.IsDBNull(sqlReader.GetOrdinal("name")) Then
+                EpisodeName = Nothing
+            Else
+                EpisodeName = sqlReader.GetString(sqlReader.GetOrdinal("name"))
 
-            ' Use regex to remove a number of different date formats from programme titles.
-            ' Will only remove dates with the same month & year as the programme itself, but any day of the month
-            ' as there is sometimes a mismatch of a day or two between the date in a title and the publish date.
-            Dim regStripDate As New Regex("\A(" + dteEpisodeDate.ToString("yyyy") + "/" + dteEpisodeDate.ToString("MM") + "/\d{2} ?-? )?(?<name>.*?)( ?:? (\d{2}/" + dteEpisodeDate.ToString("MM") + "/" + dteEpisodeDate.ToString("yyyy") + "|((Mon|Tue|Wed|Thu|Fri) )?(\d{1,2}(st|nd|rd|th)? )?(" + dteEpisodeDate.ToString("MMMM") + "|" + dteEpisodeDate.ToString("MMM") + ")( \d{1,2}(st|nd|rd|th)?| (" + dteEpisodeDate.ToString("yy") + "|" + dteEpisodeDate.ToString("yyyy") + "))?))?\Z")
+                If sqlReader.IsDBNull(sqlReader.GetOrdinal("date")) = False Then
+                    Dim dteEpisodeDate As Date = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
 
-            If regStripDate.IsMatch(EpisodeName) Then
-                EpisodeName = regStripDate.Match(EpisodeName).Groups("name").ToString
+                    ' Use regex to remove a number of different date formats from programme titles.
+                    ' Will only remove dates with the same month & year as the programme itself, but any day of the month
+                    ' as there is sometimes a mismatch of a day or two between the date in a title and the publish date.
+                    Dim regStripDate As New Regex("\A(" + dteEpisodeDate.ToString("yyyy") + "/" + dteEpisodeDate.ToString("MM") + "/\d{2} ?-? )?(?<name>.*?)( ?:? (\d{2}/" + dteEpisodeDate.ToString("MM") + "/" + dteEpisodeDate.ToString("yyyy") + "|((Mon|Tue|Wed|Thu|Fri) )?(\d{1,2}(st|nd|rd|th)? )?(" + dteEpisodeDate.ToString("MMMM") + "|" + dteEpisodeDate.ToString("MMM") + ")( \d{1,2}(st|nd|rd|th)?| (" + dteEpisodeDate.ToString("yy") + "|" + dteEpisodeDate.ToString("yyyy") + "))?))?\Z")
+
+                    If regStripDate.IsMatch(EpisodeName) Then
+                        EpisodeName = regStripDate.Match(EpisodeName).Groups("name").ToString
+                    End If
+                End If
             End If
         Else
             EpisodeName = Nothing
