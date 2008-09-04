@@ -15,18 +15,31 @@
 Option Strict On
 Option Explicit On
 
-' Code in this class is based on c# code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
+Imports System.Collections.Generic
+
+' Parts of the code in this class are based on c# code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
 
 Public Class ExtListView : Inherits ListView
+    ' Window Messages
+    Private Const WM_CREATE As Integer = &H1
+    Private Const WM_SETFOCUS As Integer = &H7
+    Private Const WM_PAINT As Integer = &HF
+    Private Const WM_CHANGEUISTATE As Integer = &H127
+
+    ' WM_CHANGEUISTATE Parameters
+    Protected Const UIS_INITIALIZE As Integer = &H3
+    Protected Const UISF_HIDEFOCUS As Integer = &H1
+
     ' ListView messages
     Private Const LVM_FIRST As Integer = &H1000
-    Private Const LVM_GETCOLUMNORDERARRAY As Integer = (LVM_FIRST + 59)
+    Private Const LVM_SETEXTENDEDLISTVIEWSTYLE As Integer = (LVM_FIRST + 54)
 
-    ' Window Messages
-    Private Const WM_PAINT As Integer = &HF
+    ' Extended ListView Styles
+    Private Const LVS_EX_DOUBLEBUFFER As Integer = &H10000
 
-    ' ArrayList to store the EmbedControl structures in
-    Private embeddedControls As New ArrayList()
+    ' API Declarations
+    Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
+    Private Declare Unicode Function SetWindowTheme Lib "uxtheme" (ByVal hWnd As IntPtr, ByVal pszSubAppName As String, ByVal pszSubIdList As String) As Integer
 
     ' Data structure to store information about the controls
     Private Structure EmbeddedProgress
@@ -36,7 +49,10 @@ Public Class ExtListView : Inherits ListView
         Dim lstItem As ListViewItem
     End Structure
 
-    Protected Function GetColumnOrder() As Integer()
+    ' List to store the EmbeddedProgress structures
+    Private embeddedControls As New List(Of EmbeddedProgress)
+
+    Private Function GetColumnOrder() As Integer()
         Dim intOrder(Me.Columns.Count) As Integer
 
         For intLoop As Integer = 0 To Me.Columns.Count - 1
@@ -46,7 +62,7 @@ Public Class ExtListView : Inherits ListView
         Return intOrder
     End Function
 
-    Protected Function GetSubItemBounds(ByVal lstListItem As ListViewItem, ByVal intSubItem As Integer) As Rectangle
+    Private Function GetSubItemBounds(ByVal lstListItem As ListViewItem, ByVal intSubItem As Integer) As Rectangle
         Dim subItemRect As Rectangle = Rectangle.Empty
 
         If lstListItem Is Nothing Then
@@ -124,9 +140,7 @@ Public Class ExtListView : Inherits ListView
         End If
 
         For intLoop As Integer = 0 To embeddedControls.Count - 1
-            Dim emcControl As EmbeddedProgress = DirectCast(embeddedControls(intLoop), EmbeddedProgress)
-
-            If emcControl.prgProgress.Equals(prgProgress) Then
+            If embeddedControls(intLoop).prgProgress.Equals(prgProgress) Then
                 RemoveHandler prgProgress.Click, AddressOf embeddedControl_Click
                 Me.Controls.Remove(prgProgress)
                 embeddedControls.RemoveAt(intLoop)
@@ -137,7 +151,7 @@ Public Class ExtListView : Inherits ListView
         Throw New Exception("Control not found!")
     End Sub
 
-    Public Function GetEmbeddedControl(ByVal lstParentItem As ListViewItem, ByVal intCol As Integer) As Control
+    Public Function GetProgressBar(ByVal lstParentItem As ListViewItem, ByVal intCol As Integer) As ProgressBar
         For Each emcControl As EmbeddedProgress In embeddedControls
             If emcControl.lstItem.Equals(lstParentItem) And emcControl.intColumn = intCol Then
                 Return emcControl.prgProgress
@@ -149,7 +163,7 @@ Public Class ExtListView : Inherits ListView
 
     Public Sub RemoveAllControls()
         For intLoop As Integer = 0 To embeddedControls.Count - 1
-            Dim emcControl As EmbeddedProgress = DirectCast(embeddedControls(intLoop), EmbeddedProgress)
+            Dim emcControl As EmbeddedProgress = embeddedControls(intLoop)
 
             emcControl.prgProgress.Visible = False
             RemoveHandler emcControl.prgProgress.Click, AddressOf embeddedControl_Click
@@ -161,6 +175,29 @@ Public Class ExtListView : Inherits ListView
 
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
+            Case WM_CREATE
+                If IsXpOrLater() Then
+                    ' Set the theme of the control to "explorer", to give the 
+                    ' correct styling under Vista.  This has no effect under XP.
+                    SetWindowTheme(Me.Handle, "explorer", Nothing)
+                End If
+
+                ' Remove the focus rectangle from the control (and as a side effect, all other controls on the
+                ' form) if the last input event came from the mouse, or add them if it came from the keyboard.
+                SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), 0)
+            Case LVM_SETEXTENDEDLISTVIEWSTYLE
+                If IsXpOrLater() Then
+                    Dim intStyles As Integer = CInt(m.LParam)
+
+                    If (intStyles And LVS_EX_DOUBLEBUFFER) <> LVS_EX_DOUBLEBUFFER Then
+                        intStyles = intStyles Or LVS_EX_DOUBLEBUFFER
+                        m.LParam = CType(intStyles, IntPtr)
+                    End If
+                End If
+            Case WM_SETFOCUS
+                ' Remove the focus rectangle from the control (and as a side effect, all other controls on the
+                ' form) if the last input event came from the mouse, or add them if it came from the keyboard.
+                SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), 0)
             Case WM_PAINT
                 If View <> View.Details Then
                     Exit Select
@@ -203,12 +240,29 @@ Public Class ExtListView : Inherits ListView
     End Sub
 
     Private Sub embeddedControl_Click(ByVal sender As Object, ByVal e As EventArgs)
-        ' When a control is clicked the ListViewItem holding it is selected
+        ' When a progress bar is clicked the ListViewItem holding it is selected
         For Each emcControl As EmbeddedProgress In embeddedControls
-            If emcControl.prgProgress.Equals(DirectCast(sender, Control)) Then
+            If emcControl.prgProgress.Equals(DirectCast(sender, ProgressBar)) Then
                 Me.SelectedItems.Clear()
                 emcControl.lstItem.Selected = True
             End If
         Next
     End Sub
+
+    Private Function IsXpOrLater() As Boolean
+        Dim os As OperatingSystem = System.Environment.OSVersion
+
+        If os.Platform = PlatformID.Win32NT And (((os.Version.Major = 5) And (os.Version.Minor >= 1)) Or (os.Version.Major > 5)) Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
+    Private Function MakeLParam(ByVal LoWord As Integer, ByVal HiWord As Integer) As Integer
+        Dim IntPtrHiWord As New IntPtr(HiWord << 16)
+        Dim IntPtrLoWord As New IntPtr(LoWord And &HFFFF)
+
+        Return New IntPtr(IntPtrHiWord.ToInt32() Or IntPtrLoWord.ToInt32()).ToInt32
+    End Function
 End Class

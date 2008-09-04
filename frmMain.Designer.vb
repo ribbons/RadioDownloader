@@ -41,10 +41,8 @@
         Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
         Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
         Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
-        Me.lstProviders = New System.Windows.Forms.ListView
         Me.imlListIcons = New System.Windows.Forms.ImageList(Me.components)
         Me.imlProviders = New System.Windows.Forms.ImageList(Me.components)
-        Me.lstSubscribed = New System.Windows.Forms.ListView
         Me.prgDldProg = New System.Windows.Forms.ProgressBar
         Me.tmrCheckForUpdates = New System.Windows.Forms.Timer(Me.components)
         Me.tbrToolbar = New System.Windows.Forms.ToolStrip
@@ -55,6 +53,7 @@
         Me.tbtDownload = New System.Windows.Forms.ToolStripButton
         Me.tbtSubscribe = New System.Windows.Forms.ToolStripButton
         Me.tbtUnsubscribe = New System.Windows.Forms.ToolStripButton
+        Me.tbtCurrentEps = New System.Windows.Forms.ToolStripButton
         Me.tbtCancel = New System.Windows.Forms.ToolStripButton
         Me.tbtPlay = New System.Windows.Forms.ToolStripButton
         Me.tbtDelete = New System.Windows.Forms.ToolStripButton
@@ -69,10 +68,11 @@
         Me.lblSideMainTitle = New System.Windows.Forms.Label
         Me.picSidebarImg = New System.Windows.Forms.PictureBox
         Me.lblSideDescript = New System.Windows.Forms.Label
-        Me.lstEpisodes = New System.Windows.Forms.ListView
         Me.pnlPluginSpace = New System.Windows.Forms.Panel
-        Me.tbtCurrentEps = New System.Windows.Forms.ToolStripButton
         Me.lstDownloads = New RadioDld.ExtListView
+        Me.lstSubscribed = New RadioDld.ExtListView
+        Me.lstEpisodes = New RadioDld.ExtListView
+        Me.lstProviders = New RadioDld.ExtListView
         Me.tbrView.SuspendLayout()
         Me.mnuTray.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
@@ -208,20 +208,6 @@
         Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
         Me.mnuTrayExit.Text = "E&xit"
         '
-        'lstProviders
-        '
-        Me.lstProviders.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lstProviders.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstProviders.Location = New System.Drawing.Point(187, 56)
-        Me.lstProviders.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
-        Me.lstProviders.MultiSelect = False
-        Me.lstProviders.Name = "lstProviders"
-        Me.lstProviders.Size = New System.Drawing.Size(570, 62)
-        Me.lstProviders.TabIndex = 12
-        Me.lstProviders.UseCompatibleStateImageBehavior = False
-        '
         'imlListIcons
         '
         Me.imlListIcons.ImageStream = CType(resources.GetObject("imlListIcons.ImageStream"), System.Windows.Forms.ImageListStreamer)
@@ -239,22 +225,6 @@
         Me.imlProviders.ImageStream = CType(resources.GetObject("imlProviders.ImageStream"), System.Windows.Forms.ImageListStreamer)
         Me.imlProviders.TransparentColor = System.Drawing.Color.Transparent
         Me.imlProviders.Images.SetKeyName(0, "default")
-        '
-        'lstSubscribed
-        '
-        Me.lstSubscribed.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstSubscribed.FullRowSelect = True
-        Me.lstSubscribed.Location = New System.Drawing.Point(187, 321)
-        Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
-        Me.lstSubscribed.MultiSelect = False
-        Me.lstSubscribed.Name = "lstSubscribed"
-        Me.lstSubscribed.Size = New System.Drawing.Size(570, 62)
-        Me.lstSubscribed.TabIndex = 14
-        Me.lstSubscribed.UseCompatibleStateImageBehavior = False
-        Me.lstSubscribed.View = System.Windows.Forms.View.Details
         '
         'prgDldProg
         '
@@ -331,6 +301,14 @@
         Me.tbtUnsubscribe.Name = "tbtUnsubscribe"
         Me.tbtUnsubscribe.Size = New System.Drawing.Size(92, 22)
         Me.tbtUnsubscribe.Text = "Unsubscribe"
+        '
+        'tbtCurrentEps
+        '
+        Me.tbtCurrentEps.Image = CType(resources.GetObject("tbtCurrentEps.Image"), System.Drawing.Image)
+        Me.tbtCurrentEps.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtCurrentEps.Name = "tbtCurrentEps"
+        Me.tbtCurrentEps.Size = New System.Drawing.Size(116, 22)
+        Me.tbtCurrentEps.Text = "Current Episodes"
         '
         'tbtCancel
         '
@@ -477,23 +455,6 @@
         Me.lblSideDescript.Text = "Description"
         Me.lblSideDescript.UseMnemonic = False
         '
-        'lstEpisodes
-        '
-        Me.lstEpisodes.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstEpisodes.CheckBoxes = True
-        Me.lstEpisodes.FullRowSelect = True
-        Me.lstEpisodes.Location = New System.Drawing.Point(187, 231)
-        Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
-        Me.lstEpisodes.MultiSelect = False
-        Me.lstEpisodes.Name = "lstEpisodes"
-        Me.lstEpisodes.Size = New System.Drawing.Size(570, 62)
-        Me.lstEpisodes.TabIndex = 19
-        Me.lstEpisodes.UseCompatibleStateImageBehavior = False
-        Me.lstEpisodes.View = System.Windows.Forms.View.Details
-        '
         'pnlPluginSpace
         '
         Me.pnlPluginSpace.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
@@ -504,21 +465,11 @@
         Me.pnlPluginSpace.Size = New System.Drawing.Size(570, 62)
         Me.pnlPluginSpace.TabIndex = 20
         '
-        'tbtCurrentEps
-        '
-        Me.tbtCurrentEps.Image = CType(resources.GetObject("tbtCurrentEps.Image"), System.Drawing.Image)
-        Me.tbtCurrentEps.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtCurrentEps.Name = "tbtCurrentEps"
-        Me.tbtCurrentEps.Size = New System.Drawing.Size(116, 22)
-        Me.tbtCurrentEps.Text = "Current Episodes"
-        '
         'lstDownloads
         '
-        Me.lstDownloads.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left) _
-                    Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstDownloads.FullRowSelect = True
+        Me.lstDownloads.HideSelection = False
         Me.lstDownloads.Location = New System.Drawing.Point(187, 410)
         Me.lstDownloads.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
         Me.lstDownloads.MultiSelect = False
@@ -528,11 +479,51 @@
         Me.lstDownloads.UseCompatibleStateImageBehavior = False
         Me.lstDownloads.View = System.Windows.Forms.View.Details
         '
+        'lstSubscribed
+        '
+        Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstSubscribed.FullRowSelect = True
+        Me.lstSubscribed.HideSelection = False
+        Me.lstSubscribed.Location = New System.Drawing.Point(187, 321)
+        Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
+        Me.lstSubscribed.MultiSelect = False
+        Me.lstSubscribed.Name = "lstSubscribed"
+        Me.lstSubscribed.Size = New System.Drawing.Size(570, 62)
+        Me.lstSubscribed.TabIndex = 14
+        Me.lstSubscribed.UseCompatibleStateImageBehavior = False
+        Me.lstSubscribed.View = System.Windows.Forms.View.Details
+        '
+        'lstEpisodes
+        '
+        Me.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstEpisodes.CheckBoxes = True
+        Me.lstEpisodes.FullRowSelect = True
+        Me.lstEpisodes.HideSelection = False
+        Me.lstEpisodes.Location = New System.Drawing.Point(187, 231)
+        Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstEpisodes.MultiSelect = False
+        Me.lstEpisodes.Name = "lstEpisodes"
+        Me.lstEpisodes.Size = New System.Drawing.Size(570, 62)
+        Me.lstEpisodes.TabIndex = 19
+        Me.lstEpisodes.UseCompatibleStateImageBehavior = False
+        Me.lstEpisodes.View = System.Windows.Forms.View.Details
+        '
+        'lstProviders
+        '
+        Me.lstProviders.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstProviders.HideSelection = False
+        Me.lstProviders.Location = New System.Drawing.Point(187, 56)
+        Me.lstProviders.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstProviders.MultiSelect = False
+        Me.lstProviders.Name = "lstProviders"
+        Me.lstProviders.Size = New System.Drawing.Size(570, 62)
+        Me.lstProviders.TabIndex = 12
+        Me.lstProviders.UseCompatibleStateImageBehavior = False
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.BackColor = System.Drawing.SystemColors.Control
         Me.ClientSize = New System.Drawing.Size(757, 471)
         Me.Controls.Add(Me.prgDldProg)
         Me.Controls.Add(Me.pnlPluginSpace)
@@ -543,13 +534,11 @@
         Me.Controls.Add(Me.tblInfo)
         Me.Controls.Add(Me.tbrToolbar)
         Me.Controls.Add(Me.tbrView)
-        Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Location = New System.Drawing.Point(11, 37)
         Me.MinimumSize = New System.Drawing.Size(400, 300)
         Me.Name = "frmMain"
-        Me.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
         Me.tbrView.ResumeLayout(False)
@@ -575,10 +564,10 @@
     Friend WithEvents ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents ttxSearch As System.Windows.Forms.ToolStripTextBox
-    Friend WithEvents lstProviders As System.Windows.Forms.ListView
+    Friend WithEvents lstProviders As RadioDld.ExtListView
     Friend WithEvents imlListIcons As System.Windows.Forms.ImageList
     Friend WithEvents imlProviders As System.Windows.Forms.ImageList
-    Friend WithEvents lstSubscribed As System.Windows.Forms.ListView
+    Friend WithEvents lstSubscribed As RadioDld.ExtListView
     Friend WithEvents prgDldProg As System.Windows.Forms.ProgressBar
     Friend WithEvents lstDownloads As RadioDld.ExtListView
     Friend WithEvents tmrCheckForUpdates As System.Windows.Forms.Timer
@@ -595,7 +584,7 @@
     Friend WithEvents tbtDelete As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtRetry As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbmHelp As System.Windows.Forms.ToolStripDropDownButton
-    Friend WithEvents lstEpisodes As System.Windows.Forms.ListView
+    Friend WithEvents lstEpisodes As RadioDld.ExtListView
     Friend WithEvents tbmMisc As System.Windows.Forms.ToolStripDropDownButton
     Friend WithEvents tbmOptions As System.Windows.Forms.ToolStripMenuItem
     Friend WithEvents tbmSep1 As System.Windows.Forms.ToolStripSeparator

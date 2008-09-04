@@ -735,7 +735,7 @@ Public Class clsData
         sqlReader.Close()
     End Sub
 
-    Public Sub UpdateSubscrList(ByRef lstListview As ListView)
+    Public Sub UpdateSubscrList(ByRef lstListview As ExtListView)
         Dim lstAdd As ListViewItem
 
         Dim sqlCommand As New SQLiteCommand("select pluginid, name, subscriptions.progid from subscriptions, programmes where subscriptions.progid=programmes.progid order by name", sqlConnection)
@@ -769,7 +769,7 @@ Public Class clsData
         sqlReader.Close()
     End Sub
 
-    Public Sub ListEpisodes(ByVal intProgID As Integer, ByRef lstListview As ListView)
+    Public Sub ListEpisodes(ByVal intProgID As Integer, ByRef lstListview As ExtListView)
         Dim intAvailable As Integer()
         intAvailable = GetAvailableEpisodes(intProgID)
         Array.Reverse(intAvailable)
