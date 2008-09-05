@@ -41,6 +41,7 @@ Partial Class frmError
         'cmdSend
         '
         Me.cmdSend.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cmdSend.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdSend.Location = New System.Drawing.Point(277, 188)
         Me.cmdSend.Margin = New System.Windows.Forms.Padding(4)
         Me.cmdSend.Name = "cmdSend"
@@ -52,6 +53,7 @@ Partial Class frmError
         '
         Me.cmdDontSend.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdDontSend.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.cmdDontSend.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdDontSend.Location = New System.Drawing.Point(397, 188)
         Me.cmdDontSend.Name = "cmdDontSend"
         Me.cmdDontSend.Size = New System.Drawing.Size(84, 26)

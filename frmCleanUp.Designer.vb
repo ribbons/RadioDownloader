@@ -35,7 +35,7 @@
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdOK.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdOK.Location = New System.Drawing.Point(154, 101)
+        Me.cmdOK.Location = New System.Drawing.Point(187, 109)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdOK.Size = New System.Drawing.Size(77, 25)
@@ -50,7 +50,7 @@
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdCancel.Location = New System.Drawing.Point(237, 101)
+        Me.cmdCancel.Location = New System.Drawing.Point(270, 109)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdCancel.Size = New System.Drawing.Size(77, 25)
@@ -65,10 +65,10 @@
         Me.lblExplainOrphan.BackColor = System.Drawing.SystemColors.Control
         Me.lblExplainOrphan.Cursor = System.Windows.Forms.Cursors.Default
         Me.lblExplainOrphan.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.lblExplainOrphan.Location = New System.Drawing.Point(28, 35)
+        Me.lblExplainOrphan.Location = New System.Drawing.Point(36, 36)
         Me.lblExplainOrphan.Name = "lblExplainOrphan"
         Me.lblExplainOrphan.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.lblExplainOrphan.Size = New System.Drawing.Size(286, 44)
+        Me.lblExplainOrphan.Size = New System.Drawing.Size(311, 44)
         Me.lblExplainOrphan.TabIndex = 0
         Me.lblExplainOrphan.Text = "This will remove the programmes in your download list for which the audio file ha" & _
             "s been moved or deleted."
@@ -77,9 +77,10 @@
         '
         Me.radType.AutoSize = True
         Me.radType.Checked = True
+        Me.radType.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.radType.Location = New System.Drawing.Point(12, 15)
         Me.radType.Name = "radType"
-        Me.radType.Size = New System.Drawing.Size(137, 17)
+        Me.radType.Size = New System.Drawing.Size(143, 18)
         Me.radType.TabIndex = 10
         Me.radType.TabStop = True
         Me.radType.Text = "Remove orphan entries"
@@ -90,7 +91,7 @@
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(326, 138)
+        Me.ClientSize = New System.Drawing.Size(359, 146)
         Me.Controls.Add(Me.radType)
         Me.Controls.Add(Me.cmdCancel)
         Me.Controls.Add(Me.cmdOK)

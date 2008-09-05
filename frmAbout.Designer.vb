@@ -98,6 +98,7 @@ Partial Class frmAbout
         'ButtonOK
         '
         Me.ButtonOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ButtonOK.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.ButtonOK.Location = New System.Drawing.Point(419, 254)
         Me.ButtonOK.Name = "ButtonOK"
         Me.ButtonOK.Size = New System.Drawing.Size(82, 26)
