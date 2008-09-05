@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
-  <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="www.nerdoftheherd.com" Name="Radio Downloader" Version="0.5.1" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
+  <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="www.nerdoftheherd.com" Name="Radio Downloader" Version="0.5.2" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
     <Package Id="????????-????-????-????-????????????" Compressed="yes" />
     <UI>
       <Property Id="ErrorDialog"><![CDATA[ErrorDlg]]></Property>
