@@ -27,6 +27,8 @@ Public NotInheritable Class frmAbout
             ApplicationTitle = System.IO.Path.GetFileNameWithoutExtension(My.Application.Info.AssemblyName)
         End If
 
+        Me.Font = SystemFonts.MessageBoxFont
+
         Me.Text = String.Format("About {0}", ApplicationTitle)
         Me.LabelNameAndVer.Text = String.Format("{0} {1}", My.Application.Info.ProductName, My.Application.Info.Version.ToString)
         Me.LabelCopyright.Text = My.Application.Info.Copyright

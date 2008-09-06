@@ -33,13 +33,14 @@
         Me.cmdOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdOK.BackColor = System.Drawing.SystemColors.Control
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
+        Me.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdOK.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdOK.Location = New System.Drawing.Point(187, 109)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdOK.Size = New System.Drawing.Size(77, 25)
-        Me.cmdOK.TabIndex = 2
+        Me.cmdOK.TabIndex = 0
         Me.cmdOK.Text = "OK"
         Me.cmdOK.UseVisualStyleBackColor = False
         '
@@ -48,13 +49,14 @@
         Me.cmdCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdCancel.BackColor = System.Drawing.SystemColors.Control
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
+        Me.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdCancel.Location = New System.Drawing.Point(270, 109)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdCancel.Size = New System.Drawing.Size(77, 25)
-        Me.cmdCancel.TabIndex = 9
+        Me.cmdCancel.TabIndex = 1
         Me.cmdCancel.Text = "Cancel"
         Me.cmdCancel.UseVisualStyleBackColor = False
         '
@@ -81,16 +83,18 @@
         Me.radType.Location = New System.Drawing.Point(12, 15)
         Me.radType.Name = "radType"
         Me.radType.Size = New System.Drawing.Size(143, 18)
-        Me.radType.TabIndex = 10
+        Me.radType.TabIndex = 2
         Me.radType.TabStop = True
         Me.radType.Text = "Remove orphan entries"
         Me.radType.UseVisualStyleBackColor = True
         '
         'frmCleanUp
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AcceptButton = Me.cmdOK
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.Control
+        Me.CancelButton = Me.cmdCancel
         Me.ClientSize = New System.Drawing.Size(359, 146)
         Me.Controls.Add(Me.radType)
         Me.Controls.Add(Me.cmdCancel)

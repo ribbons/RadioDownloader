@@ -162,6 +162,9 @@ Public Class frmMain
 
         ttxSearch.Visible = False
 
+        Me.Font = SystemFonts.MessageBoxFont
+        lblSideMainTitle.Font = New Font(Me.Font.FontFamily, CSng(Me.Font.SizeInPoints * 1.33), Me.Font.Style, GraphicsUnit.Point)
+
         tmrStartProcess.Enabled = True
     End Sub
 

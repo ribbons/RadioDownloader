@@ -49,13 +49,14 @@
         Me.cmdCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdCancel.BackColor = System.Drawing.SystemColors.Control
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
+        Me.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdCancel.Location = New System.Drawing.Point(266, 267)
+        Me.cmdCancel.Location = New System.Drawing.Point(297, 287)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdCancel.Size = New System.Drawing.Size(77, 25)
-        Me.cmdCancel.TabIndex = 2
+        Me.cmdCancel.TabIndex = 6
         Me.cmdCancel.Text = "Cancel"
         Me.cmdCancel.UseVisualStyleBackColor = False
         '
@@ -64,13 +65,14 @@
         Me.cmdOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdOK.BackColor = System.Drawing.SystemColors.Control
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
+        Me.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdOK.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdOK.Location = New System.Drawing.Point(183, 267)
+        Me.cmdOK.Location = New System.Drawing.Point(214, 287)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdOK.Size = New System.Drawing.Size(77, 25)
-        Me.cmdOK.TabIndex = 1
+        Me.cmdOK.TabIndex = 0
         Me.cmdOK.Text = "OK"
         Me.cmdOK.UseVisualStyleBackColor = False
         '
@@ -81,11 +83,11 @@
         Me.cmdChangeFolder.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdChangeFolder.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdChangeFolder.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdChangeFolder.Location = New System.Drawing.Point(353, 28)
+        Me.cmdChangeFolder.Location = New System.Drawing.Point(384, 33)
         Me.cmdChangeFolder.Name = "cmdChangeFolder"
         Me.cmdChangeFolder.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdChangeFolder.Size = New System.Drawing.Size(73, 25)
-        Me.cmdChangeFolder.TabIndex = 4
+        Me.cmdChangeFolder.TabIndex = 2
         Me.cmdChangeFolder.Text = "Change"
         Me.cmdChangeFolder.UseVisualStyleBackColor = False
         '
@@ -94,16 +96,16 @@
         Me.txtSaveIn.AcceptsReturn = True
         Me.txtSaveIn.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtSaveIn.BackColor = System.Drawing.SystemColors.Window
         Me.txtSaveIn.Cursor = System.Windows.Forms.Cursors.IBeam
         Me.txtSaveIn.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtSaveIn.Location = New System.Drawing.Point(37, 31)
+        Me.txtSaveIn.Location = New System.Drawing.Point(37, 36)
+        Me.txtSaveIn.Margin = New System.Windows.Forms.Padding(3, 3, 3, 20)
         Me.txtSaveIn.MaxLength = 0
         Me.txtSaveIn.Name = "txtSaveIn"
         Me.txtSaveIn.ReadOnly = True
         Me.txtSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.txtSaveIn.Size = New System.Drawing.Size(310, 21)
-        Me.txtSaveIn.TabIndex = 3
+        Me.txtSaveIn.Size = New System.Drawing.Size(341, 21)
+        Me.txtSaveIn.TabIndex = 1
         '
         'lblSaveIn
         '
@@ -112,6 +114,7 @@
         Me.lblSaveIn.Cursor = System.Windows.Forms.Cursors.Default
         Me.lblSaveIn.ForeColor = System.Drawing.SystemColors.ControlText
         Me.lblSaveIn.Location = New System.Drawing.Point(12, 15)
+        Me.lblSaveIn.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblSaveIn.Name = "lblSaveIn"
         Me.lblSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.lblSaveIn.Size = New System.Drawing.Size(169, 13)
@@ -121,7 +124,8 @@
         'lblFileNameFormat
         '
         Me.lblFileNameFormat.AutoSize = True
-        Me.lblFileNameFormat.Location = New System.Drawing.Point(12, 69)
+        Me.lblFileNameFormat.Location = New System.Drawing.Point(12, 72)
+        Me.lblFileNameFormat.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblFileNameFormat.Name = "lblFileNameFormat"
         Me.lblFileNameFormat.Size = New System.Drawing.Size(208, 13)
         Me.lblFileNameFormat.TabIndex = 5
@@ -131,15 +135,16 @@
         '
         Me.txtFileNameFormat.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtFileNameFormat.Location = New System.Drawing.Point(37, 85)
+        Me.txtFileNameFormat.Location = New System.Drawing.Point(37, 93)
         Me.txtFileNameFormat.Name = "txtFileNameFormat"
-        Me.txtFileNameFormat.Size = New System.Drawing.Size(389, 21)
-        Me.txtFileNameFormat.TabIndex = 6
+        Me.txtFileNameFormat.Size = New System.Drawing.Size(420, 21)
+        Me.txtFileNameFormat.TabIndex = 3
         '
         'lblFilenameFormatResult
         '
         Me.lblFilenameFormatResult.AutoSize = True
-        Me.lblFilenameFormatResult.Location = New System.Drawing.Point(34, 109)
+        Me.lblFilenameFormatResult.Location = New System.Drawing.Point(34, 120)
+        Me.lblFilenameFormatResult.Margin = New System.Windows.Forms.Padding(3, 3, 3, 17)
         Me.lblFilenameFormatResult.Name = "lblFilenameFormatResult"
         Me.lblFilenameFormatResult.Size = New System.Drawing.Size(41, 13)
         Me.lblFilenameFormatResult.TabIndex = 7
@@ -152,18 +157,19 @@
         Me.cmdReset.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdReset.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdReset.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdReset.Location = New System.Drawing.Point(349, 267)
+        Me.cmdReset.Location = New System.Drawing.Point(380, 287)
         Me.cmdReset.Name = "cmdReset"
         Me.cmdReset.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdReset.Size = New System.Drawing.Size(77, 25)
-        Me.cmdReset.TabIndex = 9
+        Me.cmdReset.TabIndex = 7
         Me.cmdReset.Text = "Reset"
         Me.cmdReset.UseVisualStyleBackColor = False
         '
         'lblRunAfter
         '
         Me.lblRunAfter.AutoSize = True
-        Me.lblRunAfter.Location = New System.Drawing.Point(12, 139)
+        Me.lblRunAfter.Location = New System.Drawing.Point(12, 150)
+        Me.lblRunAfter.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblRunAfter.Name = "lblRunAfter"
         Me.lblRunAfter.Size = New System.Drawing.Size(234, 13)
         Me.lblRunAfter.TabIndex = 10
@@ -173,15 +179,16 @@
         '
         Me.txtRunAfter.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtRunAfter.Location = New System.Drawing.Point(37, 155)
+        Me.txtRunAfter.Location = New System.Drawing.Point(37, 171)
         Me.txtRunAfter.Name = "txtRunAfter"
-        Me.txtRunAfter.Size = New System.Drawing.Size(389, 21)
-        Me.txtRunAfter.TabIndex = 11
+        Me.txtRunAfter.Size = New System.Drawing.Size(420, 21)
+        Me.txtRunAfter.TabIndex = 4
         '
         'lblRunAfterFileDef
         '
         Me.lblRunAfterFileDef.AutoSize = True
-        Me.lblRunAfterFileDef.Location = New System.Drawing.Point(34, 179)
+        Me.lblRunAfterFileDef.Location = New System.Drawing.Point(34, 198)
+        Me.lblRunAfterFileDef.Margin = New System.Windows.Forms.Padding(3, 3, 3, 17)
         Me.lblRunAfterFileDef.Name = "lblRunAfterFileDef"
         Me.lblRunAfterFileDef.Size = New System.Drawing.Size(206, 13)
         Me.lblRunAfterFileDef.TabIndex = 12
@@ -190,7 +197,8 @@
         'lblBandwidthLimit
         '
         Me.lblBandwidthLimit.AutoSize = True
-        Me.lblBandwidthLimit.Location = New System.Drawing.Point(12, 209)
+        Me.lblBandwidthLimit.Location = New System.Drawing.Point(12, 228)
+        Me.lblBandwidthLimit.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblBandwidthLimit.Name = "lblBandwidthLimit"
         Me.lblBandwidthLimit.Size = New System.Drawing.Size(193, 13)
         Me.lblBandwidthLimit.TabIndex = 13
@@ -198,16 +206,17 @@
         '
         'updBandwidthLimit
         '
-        Me.updBandwidthLimit.Location = New System.Drawing.Point(37, 225)
+        Me.updBandwidthLimit.Location = New System.Drawing.Point(37, 249)
+        Me.updBandwidthLimit.Margin = New System.Windows.Forms.Padding(3, 3, 3, 20)
         Me.updBandwidthLimit.Maximum = New Decimal(New Integer() {268435, 0, 0, 0})
         Me.updBandwidthLimit.Name = "updBandwidthLimit"
         Me.updBandwidthLimit.Size = New System.Drawing.Size(56, 21)
-        Me.updBandwidthLimit.TabIndex = 15
+        Me.updBandwidthLimit.TabIndex = 5
         '
         'lblKB
         '
         Me.lblKB.AutoSize = True
-        Me.lblKB.Location = New System.Drawing.Point(99, 229)
+        Me.lblKB.Location = New System.Drawing.Point(99, 253)
         Me.lblKB.Name = "lblKB"
         Me.lblKB.Size = New System.Drawing.Size(27, 13)
         Me.lblKB.TabIndex = 16
@@ -215,10 +224,12 @@
         '
         'frmPreferences
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AcceptButton = Me.cmdOK
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.Control
-        Me.ClientSize = New System.Drawing.Size(438, 304)
+        Me.CancelButton = Me.cmdCancel
+        Me.ClientSize = New System.Drawing.Size(469, 324)
         Me.Controls.Add(Me.lblKB)
         Me.Controls.Add(Me.updBandwidthLimit)
         Me.Controls.Add(Me.lblBandwidthLimit)

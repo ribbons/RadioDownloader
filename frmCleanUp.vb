@@ -22,6 +22,8 @@ Friend Class frmCleanUp
 
     Private Sub frmCleanUp_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         clsProgData = New clsData()
+
+        Me.Font = SystemFonts.MessageBoxFont
     End Sub
 
     Private Sub cmdCancel_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdCancel.Click

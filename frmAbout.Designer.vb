@@ -63,7 +63,7 @@ Partial Class frmAbout
         Me.TextboxLicense.ReadOnly = True
         Me.TextboxLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.TextboxLicense.Size = New System.Drawing.Size(489, 140)
-        Me.TextboxLicense.TabIndex = 5
+        Me.TextboxLicense.TabIndex = 2
         Me.TextboxLicense.Text = resources.GetString("TextboxLicense.Text")
         '
         'LabelCopyright
@@ -81,7 +81,7 @@ Partial Class frmAbout
         Me.HomepageLink.Location = New System.Drawing.Point(82, 56)
         Me.HomepageLink.Name = "HomepageLink"
         Me.HomepageLink.Size = New System.Drawing.Size(228, 13)
-        Me.HomepageLink.TabIndex = 3
+        Me.HomepageLink.TabIndex = 1
         Me.HomepageLink.TabStop = True
         Me.HomepageLink.Text = "http://www.nerdoftheherd.com/tools/radiodld/"
         '
@@ -98,6 +98,7 @@ Partial Class frmAbout
         'ButtonOK
         '
         Me.ButtonOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.ButtonOK.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.ButtonOK.Location = New System.Drawing.Point(419, 254)
         Me.ButtonOK.Name = "ButtonOK"
@@ -108,8 +109,9 @@ Partial Class frmAbout
         '
         'frmAbout
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AcceptButton = Me.ButtonOK
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(513, 292)
         Me.Controls.Add(Me.ButtonOK)
         Me.Controls.Add(Me.LabelLicense)

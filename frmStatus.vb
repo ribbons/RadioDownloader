@@ -19,4 +19,8 @@ Public Class frmStatus
     Private Sub frmStatus_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         e.Cancel = True
     End Sub
+
+    Private Sub frmStatus_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        Me.Font = SystemFonts.MessageBoxFont
+    End Sub
 End Class

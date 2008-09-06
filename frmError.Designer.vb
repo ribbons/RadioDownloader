@@ -41,6 +41,7 @@ Partial Class frmError
         'cmdSend
         '
         Me.cmdSend.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.cmdSend.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.cmdSend.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdSend.Location = New System.Drawing.Point(277, 188)
         Me.cmdSend.Margin = New System.Windows.Forms.Padding(4)
@@ -167,8 +168,10 @@ Partial Class frmError
         '
         'frmError
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
-        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.AcceptButton = Me.cmdSend
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
+        Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
+        Me.CancelButton = Me.cmdDontSend
         Me.ClientSize = New System.Drawing.Size(493, 226)
         Me.Controls.Add(Me.lnkWhatData)
         Me.Controls.Add(Me.lblWeWill)

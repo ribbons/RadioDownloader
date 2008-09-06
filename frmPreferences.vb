@@ -43,6 +43,8 @@ Friend Class frmPreferences
     End Sub
 
     Private Sub frmPreferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
+        Me.Font = SystemFonts.MessageBoxFont
+
         txtSaveIn.Text = GetSaveFolder()
         txtFileNameFormat.Text = My.Settings.FileNameFormat
         txtRunAfter.Text = My.Settings.RunAfterCommand
