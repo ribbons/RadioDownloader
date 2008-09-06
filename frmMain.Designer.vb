@@ -37,10 +37,10 @@
         Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
         Me.tbtCleanUp = New System.Windows.Forms.ToolStripButton
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
-        Me.mnuTray = New System.Windows.Forms.ContextMenuStrip(Me.components)
-        Me.mnuTrayShow = New System.Windows.Forms.ToolStripMenuItem
-        Me.ToolStripSeparator3 = New System.Windows.Forms.ToolStripSeparator
-        Me.mnuTrayExit = New System.Windows.Forms.ToolStripMenuItem
+        Me.mnuTray = New System.Windows.Forms.ContextMenu
+        Me.mnuTrayShow = New System.Windows.Forms.MenuItem
+        Me.mnuTraySep = New System.Windows.Forms.MenuItem
+        Me.mnuTrayExit = New System.Windows.Forms.MenuItem
         Me.imlListIcons = New System.Windows.Forms.ImageList(Me.components)
         Me.imlProviders = New System.Windows.Forms.ImageList(Me.components)
         Me.prgDldProg = New System.Windows.Forms.ProgressBar
@@ -74,7 +74,6 @@
         Me.lstEpisodes = New RadioDld.ExtListView
         Me.lstProviders = New RadioDld.ExtListView
         Me.tbrView.SuspendLayout()
-        Me.mnuTray.SuspendLayout()
         Me.tbrToolbar.SuspendLayout()
         Me.tblInfo.SuspendLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -181,31 +180,26 @@
         '
         'nicTrayIcon
         '
-        Me.nicTrayIcon.ContextMenuStrip = Me.mnuTray
+        Me.nicTrayIcon.ContextMenu = Me.mnuTray
         Me.nicTrayIcon.Visible = True
         '
         'mnuTray
         '
-        Me.mnuTray.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.mnuTrayShow, Me.ToolStripSeparator3, Me.mnuTrayExit})
-        Me.mnuTray.Name = "ContextMenuStrip1"
-        Me.mnuTray.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
-        Me.mnuTray.Size = New System.Drawing.Size(204, 54)
+        Me.mnuTray.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.mnuTrayShow, Me.mnuTraySep, Me.mnuTrayExit})
         '
         'mnuTrayShow
         '
-        Me.mnuTrayShow.Name = "mnuTrayShow"
-        Me.mnuTrayShow.Size = New System.Drawing.Size(203, 22)
+        Me.mnuTrayShow.Index = 0
         Me.mnuTrayShow.Text = "&Show Radio Downloader"
         '
-        'ToolStripSeparator3
+        'mnuTraySep
         '
-        Me.ToolStripSeparator3.Name = "ToolStripSeparator3"
-        Me.ToolStripSeparator3.Size = New System.Drawing.Size(200, 6)
+        Me.mnuTraySep.Index = 1
+        Me.mnuTraySep.Text = "-"
         '
         'mnuTrayExit
         '
-        Me.mnuTrayExit.Name = "mnuTrayExit"
-        Me.mnuTrayExit.Size = New System.Drawing.Size(203, 22)
+        Me.mnuTrayExit.Index = 2
         Me.mnuTrayExit.Text = "E&xit"
         '
         'imlListIcons
@@ -543,7 +537,6 @@
         Me.Text = "Radio Downloader"
         Me.tbrView.ResumeLayout(False)
         Me.tbrView.PerformLayout()
-        Me.mnuTray.ResumeLayout(False)
         Me.tbrToolbar.ResumeLayout(False)
         Me.tbrToolbar.PerformLayout()
         Me.tblInfo.ResumeLayout(False)
@@ -559,10 +552,10 @@
     Friend WithEvents tbtDownloads As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtCleanUp As System.Windows.Forms.ToolStripButton
     Friend WithEvents nicTrayIcon As System.Windows.Forms.NotifyIcon
-    Friend WithEvents mnuTray As System.Windows.Forms.ContextMenuStrip
-    Friend WithEvents mnuTrayShow As System.Windows.Forms.ToolStripMenuItem
-    Friend WithEvents ToolStripSeparator3 As System.Windows.Forms.ToolStripSeparator
-    Friend WithEvents mnuTrayExit As System.Windows.Forms.ToolStripMenuItem
+    Friend WithEvents mnuTray As System.Windows.Forms.ContextMenu
+    Friend WithEvents mnuTrayShow As System.Windows.Forms.MenuItem
+    Friend WithEvents mnuTraySep As System.Windows.Forms.MenuItem
+    Friend WithEvents mnuTrayExit As System.Windows.Forms.MenuItem
     Friend WithEvents ttxSearch As System.Windows.Forms.ToolStripTextBox
     Friend WithEvents lstProviders As RadioDld.ExtListView
     Friend WithEvents imlListIcons As System.Windows.Forms.ImageList
