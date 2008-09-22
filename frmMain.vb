@@ -165,6 +165,9 @@ Public Class frmMain
         Me.Font = SystemFonts.MessageBoxFont
         lblSideMainTitle.Font = New Font(Me.Font.FontFamily, CSng(Me.Font.SizeInPoints * 1.33), Me.Font.Style, GraphicsUnit.Point)
 
+        tbrToolbar.SetWholeDropDown(tbtOptionsMenu)
+        tbrToolbar.SetWholeDropDown(tbtHelpMenu)
+
         tmrStartProcess.Enabled = True
     End Sub
 
@@ -244,7 +247,7 @@ Public Class frmMain
     End Sub
 
     Private Sub lstDownloads_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstDownloads.ItemActivate
-        Call tbtPlay_Click(sender, e)
+        Call tbtPlay_Click()
     End Sub
 
     Private Sub lstDownloads_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstDownloads.SelectedIndexChanged
@@ -618,7 +621,7 @@ Public Class frmMain
         Call mnuTrayExit_Click(mnuTrayExit, New EventArgs)
     End Sub
 
-    Private Sub tbtSubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscribe.Click
+    Private Sub tbtSubscribe_Click()
         Dim intProgID As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
 
         If clsProgData.IsSubscribed(intProgID) Then
@@ -630,7 +633,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub tbtUnsubscribe_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtUnsubscribe.Click
+    Private Sub tbtUnsubscribe_Click()
         Dim CurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
         Dim intProgID As Integer
 
@@ -654,7 +657,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub tbtCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCancel.Click
+    Private Sub tbtCancel_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
@@ -678,7 +681,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub tbtPlay_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtPlay.Click
+    Private Sub tbtPlay_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
         If clsProgData.DownloadStatus(intEpID) = clsData.Statuses.Downloaded Then
@@ -695,7 +698,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub tbtDelete_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDelete.Click
+    Private Sub tbtDelete_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
         Dim strDownloadPath As String = clsProgData.DownloadPath(intEpID)
         Dim booExists As Boolean = Exists(strDownloadPath)
@@ -719,7 +722,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub tbtRetry_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtRetry.Click
+    Private Sub tbtRetry_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
         Call clsProgData.ResetDownload(intEpID, False)
@@ -728,7 +731,7 @@ Public Class frmMain
         tmrStartProcess.Enabled = True
     End Sub
 
-    Private Sub tbtDownload_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownload.Click
+    Private Sub tbtDownload_Click()
         Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
         If clsProgData.AddDownload(intEpID) Then
@@ -740,39 +743,39 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub tbtCurrentEps_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCurrentEps.Click
+    Private Sub tbtCurrentEps_Click()
         Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
         Call SetView(MainTab.Subscriptions, View.ProgEpisodes, intProgID)
     End Sub
 
-    Private Sub tbtReportError_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtReportError.Click
+    Private Sub tbtReportError_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
         Dim clsReport As New clsErrorReporting("Download Error: " + clsProgData.DownloadErrorType(intEpID).ToString, clsProgData.DownloadErrorDetails(intEpID))
         clsReport.SendReport(My.Settings.ErrorReportURL)
     End Sub
 
-    Private Sub tbmOptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmOptions.Click
+    Private Sub tbmOptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsShowOpts.Click
         Call frmPreferences.ShowDialog()
     End Sub
 
-    Private Sub tbmExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmExit.Click
+    Private Sub tbmExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsExit.Click
         Call mnuTrayExit_Click(mnuTrayExit, e)
     End Sub
 
-    Private Sub tbmAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmAbout.Click
+    Private Sub tbmAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpAbout.Click
         Call frmAbout.ShowDialog()
     End Sub
 
-    Private Sub tbmShowHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmShowHelp.Click
+    Private Sub tbmShowHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpShowHelp.Click
         Start("http://www.nerdoftheherd.com/tools/radiodld/help/")
     End Sub
 
-    Private Sub tbmReportABug_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbmReportABug.Click
+    Private Sub tbmReportABug_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpReportBug.Click
         Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php")
     End Sub
 
-    Private Sub tbtCleanUp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtCleanUp.Click
+    Private Sub tbtCleanUp_Click()
         Call frmCleanUp.ShowDialog()
 
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
@@ -905,5 +908,30 @@ Public Class frmMain
         ReDim Preserve viwFwdData(viwFwdData.GetUpperBound(0) - 1)
 
         Call PerformViewChanges(viwBackData(viwBackData.GetUpperBound(0)))
+    End Sub
+
+    Private Sub tbrToolbar_ButtonClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ToolBarButtonClickEventArgs) Handles tbrToolbar.ButtonClick
+        Select Case e.Button.Name
+            Case "tbtDownload"
+                Call tbtDownload_Click()
+            Case "tbtSubscribe"
+                Call tbtSubscribe_Click()
+            Case "tbtUnsubscribe"
+                Call tbtUnsubscribe_Click()
+            Case "tbtCurrentEps"
+                Call tbtCurrentEps_Click()
+            Case "tbtCancel"
+                Call tbtCancel_Click()
+            Case "tbtPlay"
+                Call tbtPlay_Click()
+            Case "tbtDelete"
+                Call tbtDelete_Click()
+            Case "tbtRetry"
+                Call tbtRetry_Click()
+            Case "tbtReportError"
+                Call tbtReportError_Click()
+            Case "tbtCleanUp"
+                Call tbtCleanUp_Click()
+        End Select
     End Sub
 End Class

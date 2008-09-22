@@ -104,6 +104,9 @@
     <Compile Include="clsErrorReporting.vb" />
     <Compile Include="clsPlugins.vb" />
     <Compile Include="clsUpdateDB.vb" />
+    <Compile Include="ExtToolBar.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="frmCleanUp.Designer.vb">
       <DependentUpon>frmCleanUp.vb</DependentUpon>
     </Compile>
