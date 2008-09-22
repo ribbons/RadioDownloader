@@ -16,6 +16,7 @@ Option Strict On
 Option Explicit On
 
 Imports System.Collections.Generic
+Imports System.Runtime.InteropServices
 
 ' Parts of the code in this class are based on c# code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
 
@@ -38,8 +39,8 @@ Public Class ExtListView : Inherits ListView
     Private Const LVS_EX_DOUBLEBUFFER As Integer = &H10000
 
     ' API Declarations
-    Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As Integer
-    Private Declare Unicode Function SetWindowTheme Lib "uxtheme" (ByVal hWnd As IntPtr, ByVal pszSubAppName As String, ByVal pszSubIdList As String) As Integer
+    Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
+    Private Declare Unicode Function SetWindowTheme Lib "uxtheme" (ByVal hWnd As IntPtr, ByVal pszSubAppName As String, ByVal pszSubIdList As String) As IntPtr
 
     ' Data structure to store information about the controls
     Private Structure EmbeddedProgress
@@ -184,7 +185,7 @@ Public Class ExtListView : Inherits ListView
 
                 ' Remove the focus rectangle from the control (and as a side effect, all other controls on the
                 ' form) if the last input event came from the mouse, or add them if it came from the keyboard.
-                SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), 0)
+                SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), New IntPtr(0))
             Case LVM_SETEXTENDEDLISTVIEWSTYLE
                 If IsXpOrLater() Then
                     Dim intStyles As Integer = CInt(m.LParam)
@@ -197,7 +198,7 @@ Public Class ExtListView : Inherits ListView
             Case WM_SETFOCUS
                 ' Remove the focus rectangle from the control (and as a side effect, all other controls on the
                 ' form) if the last input event came from the mouse, or add them if it came from the keyboard.
-                SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), 0)
+                SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), New IntPtr(0))
             Case WM_PAINT
                 If View <> View.Details Then
                     Exit Select
@@ -259,10 +260,10 @@ Public Class ExtListView : Inherits ListView
         End If
     End Function
 
-    Private Function MakeLParam(ByVal LoWord As Integer, ByVal HiWord As Integer) As Integer
+    Private Function MakeLParam(ByVal LoWord As Integer, ByVal HiWord As Integer) As IntPtr
         Dim IntPtrHiWord As New IntPtr(HiWord << 16)
         Dim IntPtrLoWord As New IntPtr(LoWord And &HFFFF)
 
-        Return New IntPtr(IntPtrHiWord.ToInt32() Or IntPtrLoWord.ToInt32()).ToInt32
+        Return New IntPtr(IntPtrHiWord.ToInt32() Or IntPtrLoWord.ToInt32())
     End Function
 End Class
