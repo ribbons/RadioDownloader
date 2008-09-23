@@ -280,15 +280,16 @@
         Me.imlToolbar.ImageStream = CType(resources.GetObject("imlToolbar.ImageStream"), System.Windows.Forms.ImageListStreamer)
         Me.imlToolbar.TransparentColor = System.Drawing.Color.Transparent
         Me.imlToolbar.Images.SetKeyName(0, "clean_up")
-        Me.imlToolbar.Images.SetKeyName(1, "download")
+        Me.imlToolbar.Images.SetKeyName(1, "current episodes")
         Me.imlToolbar.Images.SetKeyName(2, "delete")
-        Me.imlToolbar.Images.SetKeyName(3, "help")
-        Me.imlToolbar.Images.SetKeyName(4, "options")
-        Me.imlToolbar.Images.SetKeyName(5, "play")
-        Me.imlToolbar.Images.SetKeyName(6, "report_error")
-        Me.imlToolbar.Images.SetKeyName(7, "retry")
-        Me.imlToolbar.Images.SetKeyName(8, "subscribe")
-        Me.imlToolbar.Images.SetKeyName(9, "unsubscribe")
+        Me.imlToolbar.Images.SetKeyName(3, "download")
+        Me.imlToolbar.Images.SetKeyName(4, "help")
+        Me.imlToolbar.Images.SetKeyName(5, "options")
+        Me.imlToolbar.Images.SetKeyName(6, "play")
+        Me.imlToolbar.Images.SetKeyName(7, "report_error")
+        Me.imlToolbar.Images.SetKeyName(8, "retry")
+        Me.imlToolbar.Images.SetKeyName(9, "subscribe")
+        Me.imlToolbar.Images.SetKeyName(10, "unsubscribe")
         '
         'tblInfo
         '
@@ -479,7 +480,7 @@
         '
         'tbtCurrentEps
         '
-        Me.tbtCurrentEps.ImageKey = "download"
+        Me.tbtCurrentEps.ImageKey = "current episodes"
         Me.tbtCurrentEps.Name = "tbtCurrentEps"
         Me.tbtCurrentEps.Text = "Current Episodes"
         '
