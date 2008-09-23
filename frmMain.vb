@@ -94,9 +94,9 @@ Public Class frmMain
 
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' Add a handler to catch otherwise unhandled exceptions
-        'AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
+        AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
         ' Add a handler for thread exceptions
-        'AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
+        AddHandler Application.ThreadException, AddressOf ThreadExceptionHandler
         ' Add a handler for when a second instance is loaded
         AddHandler My.Application.StartupNextInstance, AddressOf StartupNextInstanceHandler
 
@@ -913,27 +913,6 @@ Public Class frmMain
         Call PerformViewChanges(viwBackData(viwBackData.GetUpperBound(0)))
     End Sub
 
-    'Private Sub PictureBox1_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles PictureBox1.Paint
-    '    SetWindowTheme(PictureBox1.Handle, "media", Nothing)
-
-    '    Dim strThemes() As String = {"Rebar", "BrowserTabBar::Rebar", "AlternateRebar::Rebar", "ITBarBase::Rebar", "Communications::Rebar", "Media::Rebar", "Default::Rebar", "ExplorerBar::Rebar", "Help::Rebar", "NavbarBase::Rebar", "Navbar::Rebar", "NavbarComposited::Rebar", "InactiveNavbar::Rebar", "InactiveNavbarComposited::Rebar", "MaxInactiveNavbar::Rebar", "MaxInactiveNavbarComposited::Rebar", "MaxNavbar::Rebar", "MaxNavbarComposited::Rebar", "NavbarNonTopmost::Rebar", "Media::Toolbar"}
-
-    '    Dim intCount As Integer = 0
-
-    '    For Each strTheme As String In strThemes
-    '        For inta As Integer = 0 To 0
-    '            Try
-    '                Dim render As New VisualStyleRenderer(strTheme, 0, inta)
-    '                render.DrawBackground(e.Graphics, New Rectangle(intCount, 0, 10, PictureBox1.Height))
-
-    '                intCount += 10
-    '            Catch arg As ArgumentException
-    '                Exit For
-    '            End Try
-    '        Next
-    '    Next
-    'End Sub
-
     Private Sub tbrToolbar_ButtonClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ToolBarButtonClickEventArgs) Handles tbrToolbar.ButtonClick
         Select Case e.Button.Name
             Case "tbtDownload"
@@ -962,5 +941,20 @@ Public Class frmMain
     Private Sub tblToolbars_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles tblToolbars.Resize
         tblToolbars.ColumnStyles(0) = New ColumnStyle(SizeType.Absolute, tblToolbars.Width - tbtHelpMenu.Rectangle.Width)
         tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width)
+
+        If VisualStyleRenderer.IsSupported Then
+            ' Visual styles are enabled, so draw the correct background behind the toolbars
+
+            Dim bmpBackground As New Bitmap(tblToolbars.Width, tblToolbars.Height)
+            Dim graGraphics As Graphics = Graphics.FromImage(bmpBackground)
+
+            Try
+                Dim vsrRebar As New VisualStyleRenderer("Rebar", 0, 0)
+                vsrRebar.DrawBackground(graGraphics, New Rectangle(0, 0, tblToolbars.Width, tblToolbars.Height))
+                tblToolbars.BackgroundImage = bmpBackground
+            Catch expArgument As ArgumentException
+                ' The 'Rebar' background image style did not exist, so don't try to draw it.
+            End Try
+        End If
     End Sub
 End Class
