@@ -49,6 +49,10 @@ Public Class ExtToolBar : Inherits ToolBar
     Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As TBBUTTONINFO) As IntPtr
 
     Public Sub SetWholeDropDown(ByVal tbrButton As ToolBarButton)
+        If tbrButton Is Nothing Then
+            Throw New ArgumentNullException("tbrButton")
+        End If
+
         Dim tbrInfo As TBBUTTONINFO
 
         With tbrInfo
@@ -73,7 +77,8 @@ Public Class ExtToolBar : Inherits ToolBar
 
                 If (tbrInfo.dwMask And TBIF_STYLE) = TBIF_STYLE Then
                     If (tbrInfo.fsStyle And BTNS_AUTOSIZE) <> BTNS_AUTOSIZE Then
-                        ' Make sure that the autosize style isn't unset by the .net wrapper
+                        ' Make sure that the autosize style is set for all buttons, and doesn't
+                        ' get inadvertantly unset at any point by the .net wrapper
                         tbrInfo.fsStyle = CByte(tbrInfo.fsStyle Or BTNS_AUTOSIZE)
                     End If
                 End If
