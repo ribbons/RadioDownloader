@@ -59,6 +59,7 @@
         Me.picSidebarImg = New System.Windows.Forms.PictureBox
         Me.lblSideDescript = New System.Windows.Forms.Label
         Me.pnlPluginSpace = New System.Windows.Forms.Panel
+        Me.tblToolbars = New System.Windows.Forms.TableLayoutPanel
         Me.lstDownloads = New RadioDld.ExtListView
         Me.lstSubscribed = New RadioDld.ExtListView
         Me.lstEpisodes = New RadioDld.ExtListView
@@ -75,10 +76,12 @@
         Me.tbtRetry = New System.Windows.Forms.ToolBarButton
         Me.tbtReportError = New System.Windows.Forms.ToolBarButton
         Me.tbtCleanUp = New System.Windows.Forms.ToolBarButton
+        Me.tbrHelp = New RadioDld.ExtToolBar
         Me.tbtHelpMenu = New System.Windows.Forms.ToolBarButton
         Me.tbrView.SuspendLayout()
         Me.tblInfo.SuspendLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.tblToolbars.SuspendLayout()
         Me.SuspendLayout()
         '
         'tmrCheckSub
@@ -92,10 +95,12 @@
         '
         'tbrView
         '
+        Me.tbrView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
         Me.tbrView.ImageScalingSize = New System.Drawing.Size(24, 24)
         Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtBack, Me.tbtForward, Me.ToolStripSeparator1, Me.tbtFindNew, Me.tbtFavourites, Me.tbtSubscriptions, Me.tbtDownloads, Me.ttxSearch})
         Me.tbrView.Location = New System.Drawing.Point(0, 0)
         Me.tbrView.Name = "tbrView"
+        Me.tbrView.Padding = New System.Windows.Forms.Padding(3, 0, 1, 0)
         Me.tbrView.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
         Me.tbrView.Size = New System.Drawing.Size(757, 31)
         Me.tbrView.TabIndex = 11
@@ -297,7 +302,7 @@
         Me.tblInfo.Controls.Add(Me.lblSideMainTitle, 0, 0)
         Me.tblInfo.Controls.Add(Me.picSidebarImg, 0, 1)
         Me.tblInfo.Controls.Add(Me.lblSideDescript, 0, 2)
-        Me.tblInfo.Location = New System.Drawing.Point(0, 82)
+        Me.tblInfo.Location = New System.Drawing.Point(0, 63)
         Me.tblInfo.Margin = New System.Windows.Forms.Padding(3, 0, 0, 0)
         Me.tblInfo.Name = "tblInfo"
         Me.tblInfo.RowCount = 4
@@ -305,7 +310,7 @@
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle)
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle)
-        Me.tblInfo.Size = New System.Drawing.Size(187, 389)
+        Me.tblInfo.Size = New System.Drawing.Size(187, 408)
         Me.tblInfo.TabIndex = 18
         '
         'lblSideMainTitle
@@ -346,7 +351,7 @@
         Me.lblSideDescript.Location = New System.Drawing.Point(8, 120)
         Me.lblSideDescript.Margin = New System.Windows.Forms.Padding(8, 5, 8, 6)
         Me.lblSideDescript.Name = "lblSideDescript"
-        Me.lblSideDescript.Size = New System.Drawing.Size(171, 263)
+        Me.lblSideDescript.Size = New System.Drawing.Size(171, 282)
         Me.lblSideDescript.TabIndex = 2
         Me.lblSideDescript.Text = "Description"
         Me.lblSideDescript.UseMnemonic = False
@@ -356,10 +361,25 @@
         Me.pnlPluginSpace.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.pnlPluginSpace.Location = New System.Drawing.Point(187, 173)
+        Me.pnlPluginSpace.Location = New System.Drawing.Point(187, 148)
         Me.pnlPluginSpace.Name = "pnlPluginSpace"
         Me.pnlPluginSpace.Size = New System.Drawing.Size(570, 62)
         Me.pnlPluginSpace.TabIndex = 20
+        '
+        'tblToolbars
+        '
+        Me.tblToolbars.ColumnCount = 2
+        Me.tblToolbars.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 90.0!))
+        Me.tblToolbars.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10.0!))
+        Me.tblToolbars.Controls.Add(Me.tbrToolbar, 0, 0)
+        Me.tblToolbars.Controls.Add(Me.tbrHelp, 1, 0)
+        Me.tblToolbars.Dock = System.Windows.Forms.DockStyle.Top
+        Me.tblToolbars.Location = New System.Drawing.Point(0, 31)
+        Me.tblToolbars.Name = "tblToolbars"
+        Me.tblToolbars.RowCount = 1
+        Me.tblToolbars.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.tblToolbars.Size = New System.Drawing.Size(757, 34)
+        Me.tblToolbars.TabIndex = 21
         '
         'lstDownloads
         '
@@ -395,7 +415,7 @@
         Me.lstEpisodes.CheckBoxes = True
         Me.lstEpisodes.FullRowSelect = True
         Me.lstEpisodes.HideSelection = False
-        Me.lstEpisodes.Location = New System.Drawing.Point(187, 266)
+        Me.lstEpisodes.Location = New System.Drawing.Point(187, 247)
         Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
         Me.lstEpisodes.MultiSelect = False
         Me.lstEpisodes.Name = "lstEpisodes"
@@ -408,7 +428,7 @@
         '
         Me.lstProviders.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstProviders.HideSelection = False
-        Me.lstProviders.Location = New System.Drawing.Point(187, 82)
+        Me.lstProviders.Location = New System.Drawing.Point(187, 63)
         Me.lstProviders.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
         Me.lstProviders.MultiSelect = False
         Me.lstProviders.Name = "lstProviders"
@@ -419,22 +439,24 @@
         'tbrToolbar
         '
         Me.tbrToolbar.Appearance = System.Windows.Forms.ToolBarAppearance.Flat
-        Me.tbrToolbar.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtOptionsMenu, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp, Me.tbtHelpMenu})
+        Me.tbrToolbar.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtOptionsMenu, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp})
         Me.tbrToolbar.Divider = False
         Me.tbrToolbar.DropDownArrows = True
         Me.tbrToolbar.ImageList = Me.imlToolbar
-        Me.tbrToolbar.Location = New System.Drawing.Point(0, 31)
+        Me.tbrToolbar.Location = New System.Drawing.Point(3, 2)
+        Me.tbrToolbar.Margin = New System.Windows.Forms.Padding(3, 2, 0, 0)
         Me.tbrToolbar.Name = "tbrToolbar"
         Me.tbrToolbar.ShowToolTips = True
-        Me.tbrToolbar.Size = New System.Drawing.Size(757, 48)
+        Me.tbrToolbar.Size = New System.Drawing.Size(678, 26)
         Me.tbrToolbar.TabIndex = 17
         Me.tbrToolbar.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
+        Me.tbrToolbar.Wrappable = False
         '
         'tbtOptionsMenu
         '
         Me.tbtOptionsMenu.DropDownMenu = Me.mnuOptions
         Me.tbtOptionsMenu.ImageKey = "options"
-        Me.tbtOptionsMenu.Name = "tbmMisc"
+        Me.tbtOptionsMenu.Name = "tbtOptionsMenu"
         Me.tbtOptionsMenu.Text = "Options"
         '
         'tbtDownload
@@ -497,11 +519,29 @@
         Me.tbtCleanUp.Name = "tbtCleanUp"
         Me.tbtCleanUp.Text = "Clean Up"
         '
+        'tbrHelp
+        '
+        Me.tbrHelp.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.tbrHelp.Appearance = System.Windows.Forms.ToolBarAppearance.Flat
+        Me.tbrHelp.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtHelpMenu})
+        Me.tbrHelp.Divider = False
+        Me.tbrHelp.Dock = System.Windows.Forms.DockStyle.None
+        Me.tbrHelp.DropDownArrows = True
+        Me.tbrHelp.ImageList = Me.imlToolbar
+        Me.tbrHelp.Location = New System.Drawing.Point(730, 2)
+        Me.tbrHelp.Margin = New System.Windows.Forms.Padding(0, 2, 3, 0)
+        Me.tbrHelp.Name = "tbrHelp"
+        Me.tbrHelp.ShowToolTips = True
+        Me.tbrHelp.Size = New System.Drawing.Size(24, 26)
+        Me.tbrHelp.TabIndex = 0
+        Me.tbrHelp.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
+        Me.tbrHelp.Wrappable = False
+        '
         'tbtHelpMenu
         '
         Me.tbtHelpMenu.DropDownMenu = Me.mnuHelp
         Me.tbtHelpMenu.ImageKey = "help"
-        Me.tbtHelpMenu.Name = "tbmHelp"
+        Me.tbtHelpMenu.Name = "tbtHelpMenu"
         Me.tbtHelpMenu.ToolTipText = "Help"
         '
         'frmMain
@@ -516,12 +556,12 @@
         Me.Controls.Add(Me.lstEpisodes)
         Me.Controls.Add(Me.lstProviders)
         Me.Controls.Add(Me.tblInfo)
-        Me.Controls.Add(Me.tbrToolbar)
+        Me.Controls.Add(Me.tblToolbars)
         Me.Controls.Add(Me.tbrView)
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
         Me.Location = New System.Drawing.Point(11, 37)
-        Me.MinimumSize = New System.Drawing.Size(400, 300)
+        Me.MinimumSize = New System.Drawing.Size(500, 300)
         Me.Name = "frmMain"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
@@ -530,6 +570,8 @@
         Me.tblInfo.ResumeLayout(False)
         Me.tblInfo.PerformLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.tblToolbars.ResumeLayout(False)
+        Me.tblToolbars.PerformLayout()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -564,7 +606,6 @@
     Friend WithEvents tbtDownload As System.Windows.Forms.ToolBarButton
     Friend WithEvents tbtDelete As System.Windows.Forms.ToolBarButton
     Friend WithEvents tbtRetry As System.Windows.Forms.ToolBarButton
-    Friend WithEvents tbtHelp As System.Windows.Forms.ToolBarButton
     Friend WithEvents lstEpisodes As RadioDld.ExtListView
     Friend WithEvents tbtMisc As System.Windows.Forms.ToolBarButton
     Friend WithEvents mnuOptionsShowOpts As System.Windows.Forms.MenuItem
@@ -586,5 +627,7 @@
     Friend WithEvents mnuHelp As System.Windows.Forms.ContextMenu
     Friend WithEvents tbtOptionsMenu As System.Windows.Forms.ToolBarButton
     Friend WithEvents tbtHelpMenu As System.Windows.Forms.ToolBarButton
+    Friend WithEvents tblToolbars As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents tbrHelp As ExtToolBar
 #End Region
 End Class
