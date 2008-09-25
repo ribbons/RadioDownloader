@@ -169,9 +169,6 @@ Public Class clsData
         Dim sqlReduceClutter As New SQLiteCommand("update tblInfo set image=null", sqlConnection)
         sqlReduceClutter.ExecuteNonQuery()
 
-        frmStatus.prgProgress.Value = 1
-        Application.DoEvents()
-
         sqlCommand = New SQLiteCommand("select count(*) from tblSubscribed", sqlConnection)
         intCount = -1
         intTotal = CInt(sqlCommand.ExecuteScalar)
