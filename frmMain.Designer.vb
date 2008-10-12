@@ -55,15 +55,11 @@
         Me.mnuHelpAbout = New System.Windows.Forms.MenuItem
         Me.imlToolbar = New System.Windows.Forms.ImageList(Me.components)
         Me.tblInfo = New System.Windows.Forms.TableLayoutPanel
+        Me.txtSideDescript = New System.Windows.Forms.TextBox
         Me.lblSideMainTitle = New System.Windows.Forms.Label
         Me.picSidebarImg = New System.Windows.Forms.PictureBox
-        Me.lblSideDescript = New System.Windows.Forms.Label
         Me.pnlPluginSpace = New System.Windows.Forms.Panel
         Me.tblToolbars = New System.Windows.Forms.TableLayoutPanel
-        Me.lstDownloads = New RadioDld.ExtListView
-        Me.lstSubscribed = New RadioDld.ExtListView
-        Me.lstEpisodes = New RadioDld.ExtListView
-        Me.lstProviders = New RadioDld.ExtListView
         Me.tbrToolbar = New RadioDld.ExtToolBar
         Me.tbtOptionsMenu = New System.Windows.Forms.ToolBarButton
         Me.tbtDownload = New System.Windows.Forms.ToolBarButton
@@ -78,10 +74,16 @@
         Me.tbtCleanUp = New System.Windows.Forms.ToolBarButton
         Me.tbrHelp = New RadioDld.ExtToolBar
         Me.tbtHelpMenu = New System.Windows.Forms.ToolBarButton
+        Me.picSideBarBorder = New System.Windows.Forms.PictureBox
+        Me.lstDownloads = New RadioDld.ExtListView
+        Me.lstSubscribed = New RadioDld.ExtListView
+        Me.lstEpisodes = New RadioDld.ExtListView
+        Me.lstProviders = New RadioDld.ExtListView
         Me.tbrView.SuspendLayout()
         Me.tblInfo.SuspendLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.tblToolbars.SuspendLayout()
+        CType(Me.picSideBarBorder, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'tmrCheckSub
@@ -293,17 +295,14 @@
         '
         'tblInfo
         '
-        Me.tblInfo.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
-                    Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
-        Me.tblInfo.BackColor = System.Drawing.Color.Transparent
-        Me.tblInfo.BackgroundImage = CType(resources.GetObject("tblInfo.BackgroundImage"), System.Drawing.Image)
-        Me.tblInfo.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch
+        Me.tblInfo.BackColor = System.Drawing.SystemColors.Window
         Me.tblInfo.ColumnCount = 1
         Me.tblInfo.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
+        Me.tblInfo.Controls.Add(Me.txtSideDescript, 0, 2)
         Me.tblInfo.Controls.Add(Me.lblSideMainTitle, 0, 0)
         Me.tblInfo.Controls.Add(Me.picSidebarImg, 0, 1)
-        Me.tblInfo.Controls.Add(Me.lblSideDescript, 0, 2)
-        Me.tblInfo.Location = New System.Drawing.Point(0, 63)
+        Me.tblInfo.Dock = System.Windows.Forms.DockStyle.Left
+        Me.tblInfo.Location = New System.Drawing.Point(0, 65)
         Me.tblInfo.Margin = New System.Windows.Forms.Padding(3, 0, 0, 0)
         Me.tblInfo.Name = "tblInfo"
         Me.tblInfo.RowCount = 4
@@ -311,8 +310,25 @@
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle)
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle)
-        Me.tblInfo.Size = New System.Drawing.Size(187, 408)
+        Me.tblInfo.Size = New System.Drawing.Size(187, 406)
         Me.tblInfo.TabIndex = 18
+        '
+        'txtSideDescript
+        '
+        Me.txtSideDescript.BackColor = System.Drawing.SystemColors.Window
+        Me.txtSideDescript.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.txtSideDescript.Cursor = System.Windows.Forms.Cursors.Default
+        Me.txtSideDescript.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.txtSideDescript.Location = New System.Drawing.Point(8, 120)
+        Me.txtSideDescript.Margin = New System.Windows.Forms.Padding(8, 5, 8, 6)
+        Me.txtSideDescript.Multiline = True
+        Me.txtSideDescript.Name = "txtSideDescript"
+        Me.txtSideDescript.ReadOnly = True
+        Me.txtSideDescript.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.txtSideDescript.ShortcutsEnabled = False
+        Me.txtSideDescript.Size = New System.Drawing.Size(171, 280)
+        Me.txtSideDescript.TabIndex = 2
+        Me.txtSideDescript.Text = "Description"
         '
         'lblSideMainTitle
         '
@@ -320,7 +336,7 @@
         Me.lblSideMainTitle.BackColor = System.Drawing.Color.Transparent
         Me.lblSideMainTitle.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblSideMainTitle.Font = New System.Drawing.Font("Tahoma", 12.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblSideMainTitle.ForeColor = System.Drawing.Color.White
+        Me.lblSideMainTitle.ForeColor = System.Drawing.SystemColors.WindowText
         Me.lblSideMainTitle.Location = New System.Drawing.Point(8, 10)
         Me.lblSideMainTitle.Margin = New System.Windows.Forms.Padding(8, 10, 8, 8)
         Me.lblSideMainTitle.Name = "lblSideMainTitle"
@@ -336,35 +352,21 @@
         Me.picSidebarImg.InitialImage = Nothing
         Me.picSidebarImg.Location = New System.Drawing.Point(12, 40)
         Me.picSidebarImg.Margin = New System.Windows.Forms.Padding(12, 3, 12, 5)
-        Me.picSidebarImg.MaximumSize = New System.Drawing.Size(100, 100)
+        Me.picSidebarImg.MaximumSize = New System.Drawing.Size(160, 100)
         Me.picSidebarImg.Name = "picSidebarImg"
         Me.picSidebarImg.Size = New System.Drawing.Size(70, 70)
         Me.picSidebarImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize
         Me.picSidebarImg.TabIndex = 1
         Me.picSidebarImg.TabStop = False
         '
-        'lblSideDescript
-        '
-        Me.lblSideDescript.AutoSize = True
-        Me.lblSideDescript.BackColor = System.Drawing.Color.Transparent
-        Me.lblSideDescript.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblSideDescript.ForeColor = System.Drawing.Color.White
-        Me.lblSideDescript.Location = New System.Drawing.Point(8, 120)
-        Me.lblSideDescript.Margin = New System.Windows.Forms.Padding(8, 5, 8, 6)
-        Me.lblSideDescript.Name = "lblSideDescript"
-        Me.lblSideDescript.Size = New System.Drawing.Size(171, 282)
-        Me.lblSideDescript.TabIndex = 2
-        Me.lblSideDescript.Text = "Description"
-        Me.lblSideDescript.UseMnemonic = False
-        '
         'pnlPluginSpace
         '
         Me.pnlPluginSpace.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.pnlPluginSpace.Location = New System.Drawing.Point(187, 148)
+        Me.pnlPluginSpace.Location = New System.Drawing.Point(197, 149)
         Me.pnlPluginSpace.Name = "pnlPluginSpace"
-        Me.pnlPluginSpace.Size = New System.Drawing.Size(570, 62)
+        Me.pnlPluginSpace.Size = New System.Drawing.Size(560, 62)
         Me.pnlPluginSpace.TabIndex = 20
         '
         'tblToolbars
@@ -381,61 +383,6 @@
         Me.tblToolbars.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.tblToolbars.Size = New System.Drawing.Size(757, 34)
         Me.tblToolbars.TabIndex = 21
-        '
-        'lstDownloads
-        '
-        Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstDownloads.FullRowSelect = True
-        Me.lstDownloads.HideSelection = False
-        Me.lstDownloads.Location = New System.Drawing.Point(187, 418)
-        Me.lstDownloads.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
-        Me.lstDownloads.MultiSelect = False
-        Me.lstDownloads.Name = "lstDownloads"
-        Me.lstDownloads.Size = New System.Drawing.Size(570, 54)
-        Me.lstDownloads.TabIndex = 15
-        Me.lstDownloads.UseCompatibleStateImageBehavior = False
-        Me.lstDownloads.View = System.Windows.Forms.View.Details
-        '
-        'lstSubscribed
-        '
-        Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstSubscribed.FullRowSelect = True
-        Me.lstSubscribed.HideSelection = False
-        Me.lstSubscribed.Location = New System.Drawing.Point(187, 348)
-        Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
-        Me.lstSubscribed.MultiSelect = False
-        Me.lstSubscribed.Name = "lstSubscribed"
-        Me.lstSubscribed.Size = New System.Drawing.Size(570, 49)
-        Me.lstSubscribed.TabIndex = 14
-        Me.lstSubscribed.UseCompatibleStateImageBehavior = False
-        Me.lstSubscribed.View = System.Windows.Forms.View.Details
-        '
-        'lstEpisodes
-        '
-        Me.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstEpisodes.CheckBoxes = True
-        Me.lstEpisodes.FullRowSelect = True
-        Me.lstEpisodes.HideSelection = False
-        Me.lstEpisodes.Location = New System.Drawing.Point(187, 247)
-        Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
-        Me.lstEpisodes.MultiSelect = False
-        Me.lstEpisodes.Name = "lstEpisodes"
-        Me.lstEpisodes.Size = New System.Drawing.Size(570, 50)
-        Me.lstEpisodes.TabIndex = 19
-        Me.lstEpisodes.UseCompatibleStateImageBehavior = False
-        Me.lstEpisodes.View = System.Windows.Forms.View.Details
-        '
-        'lstProviders
-        '
-        Me.lstProviders.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstProviders.HideSelection = False
-        Me.lstProviders.Location = New System.Drawing.Point(187, 63)
-        Me.lstProviders.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
-        Me.lstProviders.MultiSelect = False
-        Me.lstProviders.Name = "lstProviders"
-        Me.lstProviders.Size = New System.Drawing.Size(570, 62)
-        Me.lstProviders.TabIndex = 12
-        Me.lstProviders.UseCompatibleStateImageBehavior = False
         '
         'tbrToolbar
         '
@@ -545,17 +492,84 @@
         Me.tbtHelpMenu.Name = "tbtHelpMenu"
         Me.tbtHelpMenu.ToolTipText = "Help"
         '
+        'picSideBarBorder
+        '
+        Me.picSideBarBorder.BackColor = System.Drawing.SystemColors.Window
+        Me.picSideBarBorder.Dock = System.Windows.Forms.DockStyle.Left
+        Me.picSideBarBorder.Location = New System.Drawing.Point(187, 65)
+        Me.picSideBarBorder.Margin = New System.Windows.Forms.Padding(0)
+        Me.picSideBarBorder.Name = "picSideBarBorder"
+        Me.picSideBarBorder.Size = New System.Drawing.Size(10, 406)
+        Me.picSideBarBorder.TabIndex = 22
+        Me.picSideBarBorder.TabStop = False
+        '
+        'lstDownloads
+        '
+        Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstDownloads.FullRowSelect = True
+        Me.lstDownloads.HideSelection = False
+        Me.lstDownloads.Location = New System.Drawing.Point(197, 418)
+        Me.lstDownloads.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
+        Me.lstDownloads.MultiSelect = False
+        Me.lstDownloads.Name = "lstDownloads"
+        Me.lstDownloads.Size = New System.Drawing.Size(560, 54)
+        Me.lstDownloads.TabIndex = 15
+        Me.lstDownloads.UseCompatibleStateImageBehavior = False
+        Me.lstDownloads.View = System.Windows.Forms.View.Details
+        '
+        'lstSubscribed
+        '
+        Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstSubscribed.FullRowSelect = True
+        Me.lstSubscribed.HideSelection = False
+        Me.lstSubscribed.Location = New System.Drawing.Point(197, 348)
+        Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
+        Me.lstSubscribed.MultiSelect = False
+        Me.lstSubscribed.Name = "lstSubscribed"
+        Me.lstSubscribed.Size = New System.Drawing.Size(560, 49)
+        Me.lstSubscribed.TabIndex = 14
+        Me.lstSubscribed.UseCompatibleStateImageBehavior = False
+        Me.lstSubscribed.View = System.Windows.Forms.View.Details
+        '
+        'lstEpisodes
+        '
+        Me.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstEpisodes.CheckBoxes = True
+        Me.lstEpisodes.FullRowSelect = True
+        Me.lstEpisodes.HideSelection = False
+        Me.lstEpisodes.Location = New System.Drawing.Point(197, 247)
+        Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstEpisodes.MultiSelect = False
+        Me.lstEpisodes.Name = "lstEpisodes"
+        Me.lstEpisodes.Size = New System.Drawing.Size(560, 50)
+        Me.lstEpisodes.TabIndex = 19
+        Me.lstEpisodes.UseCompatibleStateImageBehavior = False
+        Me.lstEpisodes.View = System.Windows.Forms.View.Details
+        '
+        'lstProviders
+        '
+        Me.lstProviders.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstProviders.HideSelection = False
+        Me.lstProviders.Location = New System.Drawing.Point(197, 63)
+        Me.lstProviders.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstProviders.MultiSelect = False
+        Me.lstProviders.Name = "lstProviders"
+        Me.lstProviders.Size = New System.Drawing.Size(560, 62)
+        Me.lstProviders.TabIndex = 12
+        Me.lstProviders.UseCompatibleStateImageBehavior = False
+        '
         'frmMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(757, 471)
-        Me.Controls.Add(Me.prgDldProg)
-        Me.Controls.Add(Me.pnlPluginSpace)
         Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.lstEpisodes)
+        Me.Controls.Add(Me.pnlPluginSpace)
         Me.Controls.Add(Me.lstProviders)
+        Me.Controls.Add(Me.picSideBarBorder)
+        Me.Controls.Add(Me.prgDldProg)
         Me.Controls.Add(Me.tblInfo)
         Me.Controls.Add(Me.tblToolbars)
         Me.Controls.Add(Me.tbrView)
@@ -573,6 +587,7 @@
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).EndInit()
         Me.tblToolbars.ResumeLayout(False)
         Me.tblToolbars.PerformLayout()
+        CType(Me.picSideBarBorder, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -597,9 +612,7 @@
     Friend WithEvents tmrCheckForUpdates As System.Windows.Forms.Timer
     Friend WithEvents tbrToolbar As ExtToolBar
     Friend WithEvents tblInfo As System.Windows.Forms.TableLayoutPanel
-    Friend WithEvents lblSideMainTitle As System.Windows.Forms.Label
     Friend WithEvents picSidebarImg As System.Windows.Forms.PictureBox
-    Friend WithEvents lblSideDescript As System.Windows.Forms.Label
     Friend WithEvents tbtPlay As System.Windows.Forms.ToolBarButton
     Friend WithEvents tbtCancel As System.Windows.Forms.ToolBarButton
     Friend WithEvents tbtSubscribe As System.Windows.Forms.ToolBarButton
@@ -630,5 +643,8 @@
     Friend WithEvents tbtHelpMenu As System.Windows.Forms.ToolBarButton
     Friend WithEvents tblToolbars As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents tbrHelp As ExtToolBar
+    Friend WithEvents lblSideMainTitle As System.Windows.Forms.Label
+    Friend WithEvents txtSideDescript As System.Windows.Forms.TextBox
+    Friend WithEvents picSideBarBorder As System.Windows.Forms.PictureBox
 #End Region
 End Class

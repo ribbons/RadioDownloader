@@ -153,7 +153,7 @@ Public Class frmMain
             Call InstallUpdate()
         End If
 
-        tblInfo.Dock = DockStyle.Left
+        picSideBarBorder.Width = 2
 
         lstProviders.Dock = DockStyle.Fill
         pnlPluginSpace.Dock = DockStyle.Fill
@@ -164,7 +164,7 @@ Public Class frmMain
         ttxSearch.Visible = False
 
         Me.Font = SystemFonts.MessageBoxFont
-        lblSideMainTitle.Font = New Font(Me.Font.FontFamily, CSng(Me.Font.SizeInPoints * 1.33), Me.Font.Style, GraphicsUnit.Point)
+        lblSideMainTitle.Font = New Font(Me.Font.FontFamily, CSng(Me.Font.SizeInPoints * 1.16), Me.Font.Style, GraphicsUnit.Point)
 
         tblToolbars.Height = tbrToolbar.Height
         tbrToolbar.SetWholeDropDown(tbtOptionsMenu)
@@ -311,7 +311,9 @@ Public Class frmMain
 
     Private Sub SetSideBar(ByVal strTitle As String, ByVal strDescription As String, ByVal bmpPicture As Bitmap)
         lblSideMainTitle.Text = strTitle
-        lblSideDescript.Text = strDescription
+
+        txtSideDescript.Text = strDescription
+        TextBoxAutoScrollbars(txtSideDescript)
 
         If bmpPicture IsNot Nothing Then
             If bmpPicture.Width > picSidebarImg.MaximumSize.Width Or bmpPicture.Height > picSidebarImg.MaximumSize.Height Then
@@ -956,5 +958,40 @@ Public Class frmMain
                 ' The 'Rebar' background image style did not exist, so don't try to draw it.
             End Try
         End If
+    End Sub
+
+    Private Sub TextBoxAutoScrollbars(ByVal txtTextBox As TextBox)
+        Static booPreventNest As Boolean = False
+        If booPreventNest Then Exit Sub
+        booPreventNest = True
+
+        Dim sizTextSize As Size = TextRenderer.MeasureText(txtTextBox.Text, txtTextBox.Font, txtTextBox.Size, TextFormatFlags.TextBoxControl Or TextFormatFlags.WordBreak)
+
+        Dim booHScroll As Boolean = txtTextBox.ClientSize.Width < sizTextSize.Width
+        Dim booVScroll As Boolean = txtTextBox.ClientSize.Height < sizTextSize.Height
+
+        If Not booHScroll And Not booVScroll Then
+            txtTextBox.ScrollBars = ScrollBars.None
+        ElseIf booHScroll And booVScroll Then
+            txtTextBox.ScrollBars = ScrollBars.Both
+        ElseIf booVScroll Then
+            txtTextBox.ScrollBars = ScrollBars.Vertical
+        Else
+            txtTextBox.ScrollBars = ScrollBars.Horizontal
+        End If
+
+        booPreventNest = False
+    End Sub
+
+    Private Sub txtSideDescript_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtSideDescript.GotFocus
+        lblSideMainTitle.Focus()
+    End Sub
+
+    Private Sub txtSideDescript_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtSideDescript.Resize
+        TextBoxAutoScrollbars(txtSideDescript)
+    End Sub
+
+    Private Sub picSideBarBorder_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles picSideBarBorder.Paint
+        e.Graphics.DrawLine(New Pen(Color.FromArgb(255, 167, 186, 197)), 0, 0, 0, picSideBarBorder.Height)
     End Sub
 End Class
