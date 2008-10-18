@@ -259,8 +259,7 @@
         'mnuHelpShowHelp
         '
         Me.mnuHelpShowHelp.Index = 0
-        Me.mnuHelpShowHelp.Text = "&Help"
-        Me.mnuHelpShowHelp.Visible = False
+        Me.mnuHelpShowHelp.Text = "&Help Contents"
         '
         'mnuHelpReportBug
         '
@@ -476,11 +475,11 @@
         Me.tbrHelp.Dock = System.Windows.Forms.DockStyle.None
         Me.tbrHelp.DropDownArrows = True
         Me.tbrHelp.ImageList = Me.imlToolbar
-        Me.tbrHelp.Location = New System.Drawing.Point(730, 2)
+        Me.tbrHelp.Location = New System.Drawing.Point(681, 2)
         Me.tbrHelp.Margin = New System.Windows.Forms.Padding(0, 2, 3, 0)
         Me.tbrHelp.Name = "tbrHelp"
         Me.tbrHelp.ShowToolTips = True
-        Me.tbrHelp.Size = New System.Drawing.Size(24, 26)
+        Me.tbrHelp.Size = New System.Drawing.Size(73, 26)
         Me.tbrHelp.TabIndex = 0
         Me.tbrHelp.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
         Me.tbrHelp.Wrappable = False
@@ -490,7 +489,7 @@
         Me.tbtHelpMenu.DropDownMenu = Me.mnuHelp
         Me.tbtHelpMenu.ImageKey = "help"
         Me.tbtHelpMenu.Name = "tbtHelpMenu"
-        Me.tbtHelpMenu.ToolTipText = "Help"
+        Me.tbtHelpMenu.Text = "Help"
         '
         'picSideBarBorder
         '
@@ -575,6 +574,7 @@
         Me.Controls.Add(Me.tbrView)
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.KeyPreview = True
         Me.Location = New System.Drawing.Point(11, 37)
         Me.MinimumSize = New System.Drawing.Size(500, 300)
         Me.Name = "frmMain"

@@ -92,6 +92,13 @@ Public Class frmMain
         End If
     End Sub
 
+    Private Sub frmMain_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+        If e.KeyCode = Keys.F1 Then
+            e.Handled = True
+            Call mnuHelpShowHelp_Click(sender, e)
+        End If
+    End Sub
+
     Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' Add a handler to catch otherwise unhandled exceptions
         AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
@@ -170,6 +177,8 @@ Public Class frmMain
         tbrToolbar.SetWholeDropDown(tbtOptionsMenu)
         tbrHelp.SetWholeDropDown(tbtHelpMenu)
         tbrHelp.Width = tbtHelpMenu.Rectangle.Width
+        tblToolbars.ColumnStyles(0) = New ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right))
+        tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right)
 
         tmrStartProcess.Enabled = True
     End Sub
@@ -760,23 +769,23 @@ Public Class frmMain
         clsReport.SendReport(My.Settings.ErrorReportURL)
     End Sub
 
-    Private Sub tbmOptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsShowOpts.Click
+    Private Sub mnuOptionsShowOpts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsShowOpts.Click
         Call frmPreferences.ShowDialog()
     End Sub
 
-    Private Sub tbmExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsExit.Click
+    Private Sub mnuOptionsExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsExit.Click
         Call mnuTrayExit_Click(mnuTrayExit, e)
     End Sub
 
-    Private Sub tbmAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpAbout.Click
+    Private Sub mnuHelpAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpAbout.Click
         Call frmAbout.ShowDialog()
     End Sub
 
-    Private Sub tbmShowHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpShowHelp.Click
+    Private Sub mnuHelpShowHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpShowHelp.Click
         Start("http://www.nerdoftheherd.com/tools/radiodld/help/")
     End Sub
 
-    Private Sub tbmReportABug_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpReportBug.Click
+    Private Sub mnuHelpReportBug_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpReportBug.Click
         Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php")
     End Sub
 
