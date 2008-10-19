@@ -798,7 +798,7 @@ Public Class frmMain
 
         Call clsProgData.UpdateDlList(lstDownloads)
 
-        If tbtDownloads.Checked Then
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
             Call SetContextForSelectedDownload()
         End If
     End Sub
