@@ -673,7 +673,7 @@ Public Class clsData
         Return CInt(sqlCommand.ExecuteScalar())
     End Function
 
-    Public Sub UpdateDlList(ByRef lstListview As ExtListView, ByRef prgProgressBar As ProgressBar)
+    Public Sub UpdateDlList(ByRef lstListview As ExtListView)
         Dim comCommand As New SQLiteCommand("select episodes.epid, name, date, status, playcount from episodes, downloads where episodes.epid=downloads.epid order by date desc", sqlConnection)
         Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()
 
@@ -796,7 +796,7 @@ Public Class clsData
         Next
     End Sub
 
-    Public Sub CheckSubscriptions(ByRef lstList As ExtListView, ByRef prgDldProg As ProgressBar)
+    Public Sub CheckSubscriptions(ByRef lstList As ExtListView)
         Dim sqlCommand As New SQLiteCommand("select progid from subscriptions", sqlConnection)
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
@@ -813,7 +813,7 @@ Public Class clsData
 
                         If sqlCheckRdr.Read = False Then
                             Call AddDownload(intEpID)
-                            Call UpdateDlList(lstList, prgDldProg)
+                            Call UpdateDlList(lstList)
                         End If
 
                         sqlCheckRdr.Close()

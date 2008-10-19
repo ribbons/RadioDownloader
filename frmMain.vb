@@ -146,7 +146,7 @@ Public Class frmMain
 
         clsProgData = New clsData()
         Call clsProgData.UpdateProviderList(lstProviders, imlProviders)
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        Call clsProgData.UpdateDlList(lstDownloads)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
@@ -433,13 +433,13 @@ Public Class frmMain
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        Call clsProgData.CheckSubscriptions(lstDownloads, prgDldProg)
+        Call clsProgData.CheckSubscriptions(lstDownloads)
         tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
         If clsProgData.FindAndDownload Then
-            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            Call clsProgData.UpdateDlList(lstDownloads)
 
             If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
                 Call SetContextForSelectedDownload()
@@ -482,7 +482,7 @@ Public Class frmMain
                 End If
             End If
 
-            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            Call clsProgData.UpdateDlList(lstDownloads)
 
             tmrStartProcess.Enabled = True
         Catch expException As Exception
@@ -529,7 +529,7 @@ Public Class frmMain
                 Call SetViewDefaults()
             End If
 
-            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            Call clsProgData.UpdateDlList(lstDownloads)
             Call clsProgData.UpdateSubscrList(lstSubscribed)
 
             If My.Settings.RunAfterCommand <> "" Then
@@ -691,7 +691,7 @@ Public Class frmMain
             End If
 
             clsProgData.RemoveDownload(intEpID)
-            clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            clsProgData.UpdateDlList(lstDownloads)
 
             ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
             ' it doesn't just download it all over again
@@ -708,7 +708,7 @@ Public Class frmMain
 
                 ' Bump the play count of this item up by one, and update the list so that the icon changes colour
                 clsProgData.DownloadBumpPlayCount(intEpID)
-                clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+                clsProgData.UpdateDlList(lstDownloads)
 
                 ' Update the prog info pane to show the updated play count
                 Call SetContextForSelectedDownload()
@@ -732,7 +732,7 @@ Public Class frmMain
             End If
 
             clsProgData.RemoveDownload(intEpID)
-            clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            clsProgData.UpdateDlList(lstDownloads)
 
             ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
             ' it doesn't just download it all over again
@@ -745,7 +745,7 @@ Public Class frmMain
 
         Call clsProgData.ResetDownload(intEpID, False)
         Call SetContextForSelectedDownload() ' Update prog info pane
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        Call clsProgData.UpdateDlList(lstDownloads)
         tmrStartProcess.Enabled = True
     End Sub
 
@@ -753,7 +753,7 @@ Public Class frmMain
         Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
         If clsProgData.AddDownload(intEpID) Then
-            Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            Call clsProgData.UpdateDlList(lstDownloads)
             Call SetView(MainTab.Downloads, View.Downloads, Nothing)
             tmrStartProcess.Enabled = True
         Else
@@ -796,7 +796,7 @@ Public Class frmMain
     Private Sub tbtCleanUp_Click()
         Call frmCleanUp.ShowDialog()
 
-        Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+        Call clsProgData.UpdateDlList(lstDownloads)
 
         If tbtDownloads.Checked Then
             Call SetContextForSelectedDownload()
