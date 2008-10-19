@@ -662,6 +662,17 @@ Public Class clsData
         End If
     End Function
 
+    Public Function CountDownloadsNew() As Integer
+        Dim sqlCommand As New SQLiteCommand("select count(epid) from downloads where playcount=0", sqlConnection)
+        Return CInt(sqlCommand.ExecuteScalar())
+    End Function
+
+    Public Function CountDownloadsErrored() As Integer
+        Dim sqlCommand As New SQLiteCommand("select count(epid) from downloads where status=@status", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Errored))
+        Return CInt(sqlCommand.ExecuteScalar())
+    End Function
+
     Public Sub UpdateDlList(ByRef lstListview As ExtListView, ByRef prgProgressBar As ProgressBar)
         Dim comCommand As New SQLiteCommand("select episodes.epid, name, date, status, playcount from episodes, downloads where episodes.epid=downloads.epid order by date desc", sqlConnection)
         Dim sqlReader As SQLiteDataReader = comCommand.ExecuteReader()

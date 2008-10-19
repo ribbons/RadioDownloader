@@ -199,6 +199,10 @@ Public Class frmMain
     End Sub
 
     Private Sub lstProviders_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstProviders.SelectedIndexChanged
+        Call SetContextForSelectedProvider()
+    End Sub
+
+    Private Sub SetContextForSelectedProvider()
         If lstProviders.SelectedItems.Count > 0 Then
             Dim gidPluginID As Guid = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
 
@@ -282,7 +286,7 @@ Public Class frmMain
                         strActionString = "Delete"
                     End If
 
-                    strInfoBox = vbCrLf + vbCrLf + "Play count: " + CStr(.DownloadPlayCount(intEpID))
+                    strInfoBox = vbCrLf + "Play count: " + CStr(.DownloadPlayCount(intEpID))
                 ElseIf staDownloadStatus = clsData.Statuses.Errored Then
                     Dim strErrorName As String = ""
                     Dim strErrorDetails As String = .DownloadErrorDetails(intEpID)
@@ -749,8 +753,8 @@ Public Class frmMain
         Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
         If clsProgData.AddDownload(intEpID) Then
-            Call SetView(MainTab.Downloads, View.Downloads, Nothing)
             Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
+            Call SetView(MainTab.Downloads, View.Downloads, Nothing)
             tmrStartProcess.Enabled = True
         Else
             Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
@@ -795,7 +799,7 @@ Public Class frmMain
         Call clsProgData.UpdateDlList(lstDownloads, prgDldProg)
 
         If tbtDownloads.Checked Then
-            Call lstDownloads_SelectedIndexChanged(New Object, New System.EventArgs)
+            Call SetContextForSelectedDownload()
         End If
     End Sub
 
@@ -854,6 +858,8 @@ Public Class frmMain
         Select Case ViewData.View
             Case View.FindNewChooseProvider
                 lstProviders.Visible = True
+                Call SetContextForSelectedProvider()
+                lstProviders.Focus()
             Case View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
 
@@ -884,11 +890,11 @@ Public Class frmMain
         Select Case ViewData.View
             Case View.FindNewChooseProvider
                 Call SetToolbarButtons("")
-                Call SetSideBar("Find New", "This view allows you to select programmes to download or subscribe to." + vbCrLf + "Select a type of programme to begin.", Nothing)
+                Call SetSideBar(CStr(lstProviders.Items.Count) + " provider" + Plural(lstProviders.Items.Count), "", Nothing)
             Case View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
                 Call SetToolbarButtons("")
-                Call SetSideBar(clsProgData.ProviderName(FindViewData.ProviderID), "This view allows you to select a " & clsProgData.ProviderName(FindViewData.ProviderID) & " programme to view.", Nothing)
+                Call SetSideBar(clsProgData.ProviderName(FindViewData.ProviderID), clsProgData.ProviderDescription(FindViewData.ProviderID), Nothing)
             Case View.ProgEpisodes
                 Dim intProgID As Integer = CInt(ViewData.ViewData)
 
@@ -901,12 +907,33 @@ Public Class frmMain
                 Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
             Case View.Subscriptions
                 Call SetToolbarButtons("")
-                Call SetSideBar("Subscriptions", "This view shows you the programmes that you are currently subscribed to." + vbCrLf + "To subscribe to a new programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it.", Nothing)
+                Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + Plural(lstSubscribed.Items.Count), "", Nothing)
             Case View.Downloads
                 Call SetToolbarButtons("CleanUp")
-                Call SetSideBar("Downloads", "Here you can see programmes that are being downloaded, or have been downloaded already." + vbCrLf + "To download a programme, start by choosing the 'Find New' button on the toolbar." + vbCrLf + "Select a programme in the list to get more information about it, or for completed downloads, play it.", Nothing)
+
+                Dim strDescription As String = ""
+                Dim intNew As Integer = clsProgData.CountDownloadsNew
+                Dim intErrored As Integer = clsProgData.CountDownloadsErrored
+
+                If intNew > 0 Then
+                    strDescription += "Newly downloaded: " + CStr(intNew) + vbCrLf
+                End If
+
+                If intErrored > 0 Then
+                    strDescription += "Errored: " + CStr(intErrored)
+                End If
+
+                Call SetSideBar(CStr(lstDownloads.Items.Count) + " download" + Plural(lstDownloads.Items.Count), strDescription, Nothing)
         End Select
     End Sub
+
+    Private Function Plural(ByVal intNumber As Integer) As String
+        If intNumber = 1 Then
+            Return ""
+        Else
+            Return "s"
+        End If
+    End Function
 
     Private Sub tbtBack_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtBack.Click
         ReDim Preserve viwFwdData(viwFwdData.GetUpperBound(0) + 1)
