@@ -180,6 +180,7 @@ Public Class frmMain
         tblToolbars.ColumnStyles(0) = New ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right))
         tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right)
 
+        tmrCheckSub.Enabled = True
         tmrStartProcess.Enabled = True
     End Sub
 

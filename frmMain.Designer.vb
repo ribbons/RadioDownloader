@@ -88,7 +88,6 @@
         '
         'tmrCheckSub
         '
-        Me.tmrCheckSub.Enabled = True
         Me.tmrCheckSub.Interval = 60000
         '
         'tmrStartProcess
