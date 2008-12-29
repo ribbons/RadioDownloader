@@ -29,6 +29,8 @@ Public Class clsData
         Errored
     End Enum
 
+    Private Shared clsDataInstance As clsData
+
     Private sqlConnection As SQLiteConnection
     Private clsPluginsInst As clsPlugins
 
@@ -43,7 +45,15 @@ Public Class clsData
     Public Event DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
     Public Event Finished(ByVal clsCurDldProgData As clsDldProgData)
 
-    Public Sub New()
+    Public Shared Function GetInstance() As clsData
+        If clsDataInstance Is Nothing Then
+            clsDataInstance = New clsData
+        End If
+
+        Return clsDataInstance
+    End Function
+
+    Private Sub New()
         MyBase.New()
 
         sqlConnection = New SQLiteConnection("Data Source=" + GetAppDataFolder() + "\store.db;Version=3;New=False")

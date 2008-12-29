@@ -144,7 +144,7 @@ Public Class frmMain
         lstSubscribed.SmallImageList = imlListIcons
         lstDownloads.SmallImageList = imlListIcons
 
-        clsProgData = New clsData()
+        clsProgData = clsData.GetInstance
         Call clsProgData.UpdateProviderList(lstProviders, imlProviders)
         Call clsProgData.UpdateDlList(lstDownloads)
         Call clsProgData.UpdateSubscrList(lstSubscribed)

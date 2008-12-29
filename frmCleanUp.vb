@@ -18,11 +18,10 @@ Option Explicit On
 Friend Class frmCleanUp 
     Inherits System.Windows.Forms.Form
 
-    Private WithEvents clsProgData As clsData
+    Private clsProgData As clsData
 
     Private Sub frmCleanUp_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        clsProgData = New clsData()
-
+        clsProgData = clsData.GetInstance
         Me.Font = SystemFonts.MessageBoxFont
     End Sub
 
