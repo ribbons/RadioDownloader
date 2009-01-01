@@ -980,21 +980,6 @@ Public Class frmMain
     Private Sub tblToolbars_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles tblToolbars.Resize
         tblToolbars.ColumnStyles(0) = New ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right))
         tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right)
-
-        If VisualStyleRenderer.IsSupported Then
-            ' Visual styles are enabled, so draw the correct background behind the toolbars
-
-            Dim bmpBackground As New Bitmap(tblToolbars.Width, tblToolbars.Height)
-            Dim graGraphics As Graphics = Graphics.FromImage(bmpBackground)
-
-            Try
-                Dim vsrRebar As New VisualStyleRenderer("Rebar", 0, 0)
-                vsrRebar.DrawBackground(graGraphics, New Rectangle(0, 0, tblToolbars.Width, tblToolbars.Height))
-                tblToolbars.BackgroundImage = bmpBackground
-            Catch expArgument As ArgumentException
-                ' The 'Rebar' background image style did not exist, so don't try to draw it.
-            End Try
-        End If
     End Sub
 
     Private Sub TextBoxAutoScrollbars(ByVal txtTextBox As TextBox)
