@@ -673,7 +673,8 @@ Public Class clsData
     End Function
 
     Public Function CountDownloadsNew() As Integer
-        Dim sqlCommand As New SQLiteCommand("select count(epid) from downloads where playcount=0", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
         Return CInt(sqlCommand.ExecuteScalar())
     End Function
 

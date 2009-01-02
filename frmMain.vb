@@ -499,10 +499,15 @@ Public Class frmMain
             If clsProgData.EpisodeExists(clsCurDldProgData.EpID) Then
                 Call clsProgData.DownloadSetErrored(clsCurDldProgData.EpID, errType, strErrorDetails)
 
-                ' If the item that has just errored is selected then update the information
                 If lstDownloads.Items.ContainsKey(CStr(clsCurDldProgData.EpID)) Then
-                    If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
-                        Call SetContextForSelectedDownload()
+                    If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+                        If lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
+                            ' The item that has just errored is selected, so update the information
+                            Call SetContextForSelectedDownload()
+                        ElseIf lstDownloads.SelectedItems.Count = 0 Then
+                            ' No items are selected, so update the statistics
+                            Call SetViewDefaults()
+                        End If
                     End If
                 End If
             End If
@@ -545,9 +550,14 @@ Public Class frmMain
 
             Dim viwCurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
 
-            If viwCurrentView = View.Downloads And lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
-                ' The item that has just finished downloading is selected, so update it.
-                Call SetContextForSelectedDownload()
+            If viwCurrentView = View.Downloads Then
+                If lstDownloads.Items(CStr(clsCurDldProgData.EpID)).Selected Then
+                    ' The item that has just finished downloading is selected, so update it.
+                    Call SetContextForSelectedDownload()
+                ElseIf lstDownloads.SelectedItems.Count = 0 Then
+                    ' No items are selected, so update the statistics
+                    Call SetViewDefaults()
+                End If
             ElseIf viwCurrentView = View.Subscriptions Then
                 ' Return to the tab information for subscriptions, as the selection will be lost when we update 
                 ' the subscription list.
