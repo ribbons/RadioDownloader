@@ -121,7 +121,7 @@ Partial Class frmAbout
         Me.Controls.Add(Me.LabelNameAndVer)
         Me.Controls.Add(Me.LogoPictureBox)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmAbout"

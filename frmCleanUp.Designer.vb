@@ -21,7 +21,6 @@
     'It can be modified using the Windows Form Designer.
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmCleanUp))
         Me.cmdOK = New System.Windows.Forms.Button
         Me.cmdCancel = New System.Windows.Forms.Button
         Me.lblExplainOrphan = New System.Windows.Forms.Label
@@ -103,7 +102,7 @@
         Me.Cursor = System.Windows.Forms.Cursors.Default
         Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.Location = New System.Drawing.Point(3, 29)
         Me.MaximizeBox = False
         Me.MinimizeBox = False

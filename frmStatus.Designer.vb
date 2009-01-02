@@ -22,7 +22,6 @@ Partial Class frmStatus
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmStatus))
         Me.lblStatus = New System.Windows.Forms.Label
         Me.prgProgress = New System.Windows.Forms.ProgressBar
         Me.SuspendLayout()
@@ -53,7 +52,7 @@ Partial Class frmStatus
         Me.Controls.Add(Me.prgProgress)
         Me.Controls.Add(Me.lblStatus)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
-        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmStatus"

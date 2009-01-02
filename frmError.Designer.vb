@@ -22,7 +22,6 @@ Partial Class frmError
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmError))
         Me.cmdSend = New System.Windows.Forms.Button
         Me.cmdDontSend = New System.Windows.Forms.Button
         Me.lblWhiteBar = New System.Windows.Forms.Label
@@ -186,7 +185,7 @@ Partial Class frmError
         Me.Controls.Add(Me.lblTopMessage)
         Me.Controls.Add(Me.lblWhiteBar)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
-        Me.Icon = CType(resources.GetObject("$this.Icon"), System.Drawing.Icon)
+        Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "frmError"
