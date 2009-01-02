@@ -36,7 +36,7 @@ Partial Class frmAbout
         '
         'LogoPictureBox
         '
-        Me.LogoPictureBox.Image = CType(resources.GetObject("LogoPictureBox.Image"), System.Drawing.Image)
+        Me.LogoPictureBox.Image = Global.RadioDld.My.Resources.Resources.icon_main_img64
         Me.LogoPictureBox.Location = New System.Drawing.Point(12, 12)
         Me.LogoPictureBox.Name = "LogoPictureBox"
         Me.LogoPictureBox.Size = New System.Drawing.Size(64, 64)

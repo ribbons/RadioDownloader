@@ -74,6 +74,20 @@ Namespace My.Resources
             End Get
         End Property
         
+        Friend ReadOnly Property icon_main_img32() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("icon_main_img32", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        Friend ReadOnly Property icon_main_img64() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("icon_main_img64", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
         Friend ReadOnly Property icon_working() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("icon_working", resourceCulture)
