@@ -27,13 +27,7 @@
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.tbrView = New System.Windows.Forms.ToolStrip
-        Me.tbtBack = New System.Windows.Forms.ToolStripButton
-        Me.tbtForward = New System.Windows.Forms.ToolStripButton
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
-        Me.tbtFindNew = New System.Windows.Forms.ToolStripButton
-        Me.tbtFavourites = New System.Windows.Forms.ToolStripButton
-        Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton
-        Me.tbtDownloads = New System.Windows.Forms.ToolStripButton
         Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.mnuTray = New System.Windows.Forms.ContextMenu
@@ -60,6 +54,10 @@
         Me.picSidebarImg = New System.Windows.Forms.PictureBox
         Me.pnlPluginSpace = New System.Windows.Forms.Panel
         Me.tblToolbars = New System.Windows.Forms.TableLayoutPanel
+        Me.lstDownloads = New RadioDld.ExtListView
+        Me.lstSubscribed = New RadioDld.ExtListView
+        Me.lstEpisodes = New RadioDld.ExtListView
+        Me.lstProviders = New RadioDld.ExtListView
         Me.tbrToolbar = New RadioDld.ExtToolBar
         Me.tbtOptionsMenu = New System.Windows.Forms.ToolBarButton
         Me.tbtDownload = New System.Windows.Forms.ToolBarButton
@@ -75,10 +73,12 @@
         Me.tbrHelp = New RadioDld.ExtToolBar
         Me.tbtHelpMenu = New System.Windows.Forms.ToolBarButton
         Me.picSideBarBorder = New System.Windows.Forms.PictureBox
-        Me.lstDownloads = New RadioDld.ExtListView
-        Me.lstSubscribed = New RadioDld.ExtListView
-        Me.lstEpisodes = New RadioDld.ExtListView
-        Me.lstProviders = New RadioDld.ExtListView
+        Me.tbtBack = New System.Windows.Forms.ToolStripButton
+        Me.tbtForward = New System.Windows.Forms.ToolStripButton
+        Me.tbtFindNew = New System.Windows.Forms.ToolStripButton
+        Me.tbtFavourites = New System.Windows.Forms.ToolStripButton
+        Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton
+        Me.tbtDownloads = New System.Windows.Forms.ToolStripButton
         Me.tbrView.SuspendLayout()
         Me.tblInfo.SuspendLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -106,69 +106,10 @@
         Me.tbrView.Size = New System.Drawing.Size(757, 31)
         Me.tbrView.TabIndex = 11
         '
-        'tbtBack
-        '
-        Me.tbtBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.tbtBack.Image = CType(resources.GetObject("tbtBack.Image"), System.Drawing.Image)
-        Me.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtBack.Name = "tbtBack"
-        Me.tbtBack.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtBack.Size = New System.Drawing.Size(32, 28)
-        Me.tbtBack.Text = "Back"
-        '
-        'tbtForward
-        '
-        Me.tbtForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.tbtForward.Image = CType(resources.GetObject("tbtForward.Image"), System.Drawing.Image)
-        Me.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtForward.Name = "tbtForward"
-        Me.tbtForward.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtForward.Size = New System.Drawing.Size(32, 28)
-        Me.tbtForward.Text = "Forward"
-        '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
         Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 31)
-        '
-        'tbtFindNew
-        '
-        Me.tbtFindNew.Checked = True
-        Me.tbtFindNew.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.tbtFindNew.Image = CType(resources.GetObject("tbtFindNew.Image"), System.Drawing.Image)
-        Me.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtFindNew.Name = "tbtFindNew"
-        Me.tbtFindNew.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtFindNew.Size = New System.Drawing.Size(128, 28)
-        Me.tbtFindNew.Text = "Find Programme"
-        '
-        'tbtFavourites
-        '
-        Me.tbtFavourites.Image = CType(resources.GetObject("tbtFavourites.Image"), System.Drawing.Image)
-        Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtFavourites.Name = "tbtFavourites"
-        Me.tbtFavourites.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtFavourites.Size = New System.Drawing.Size(93, 28)
-        Me.tbtFavourites.Text = "Favourites"
-        Me.tbtFavourites.Visible = False
-        '
-        'tbtSubscriptions
-        '
-        Me.tbtSubscriptions.Image = CType(resources.GetObject("tbtSubscriptions.Image"), System.Drawing.Image)
-        Me.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtSubscriptions.Name = "tbtSubscriptions"
-        Me.tbtSubscriptions.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtSubscriptions.Size = New System.Drawing.Size(110, 28)
-        Me.tbtSubscriptions.Text = "Subscriptions"
-        '
-        'tbtDownloads
-        '
-        Me.tbtDownloads.Image = CType(resources.GetObject("tbtDownloads.Image"), System.Drawing.Image)
-        Me.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtDownloads.Name = "tbtDownloads"
-        Me.tbtDownloads.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtDownloads.Size = New System.Drawing.Size(98, 28)
-        Me.tbtDownloads.Text = "Downloads"
         '
         'ttxSearch
         '
@@ -203,21 +144,15 @@
         '
         'imlListIcons
         '
-        Me.imlListIcons.ImageStream = CType(resources.GetObject("imlListIcons.ImageStream"), System.Windows.Forms.ImageListStreamer)
+        Me.imlListIcons.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
+        Me.imlListIcons.ImageSize = New System.Drawing.Size(16, 16)
         Me.imlListIcons.TransparentColor = System.Drawing.Color.Transparent
-        Me.imlListIcons.Images.SetKeyName(0, "downloading")
-        Me.imlListIcons.Images.SetKeyName(1, "waiting")
-        Me.imlListIcons.Images.SetKeyName(2, "converting")
-        Me.imlListIcons.Images.SetKeyName(3, "downloaded_new")
-        Me.imlListIcons.Images.SetKeyName(4, "downloaded")
-        Me.imlListIcons.Images.SetKeyName(5, "subscribed")
-        Me.imlListIcons.Images.SetKeyName(6, "error")
         '
         'imlProviders
         '
-        Me.imlProviders.ImageStream = CType(resources.GetObject("imlProviders.ImageStream"), System.Windows.Forms.ImageListStreamer)
+        Me.imlProviders.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
+        Me.imlProviders.ImageSize = New System.Drawing.Size(64, 64)
         Me.imlProviders.TransparentColor = System.Drawing.Color.Transparent
-        Me.imlProviders.Images.SetKeyName(0, "default")
         '
         'prgDldProg
         '
@@ -277,19 +212,9 @@
         '
         'imlToolbar
         '
-        Me.imlToolbar.ImageStream = CType(resources.GetObject("imlToolbar.ImageStream"), System.Windows.Forms.ImageListStreamer)
+        Me.imlToolbar.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit
+        Me.imlToolbar.ImageSize = New System.Drawing.Size(16, 16)
         Me.imlToolbar.TransparentColor = System.Drawing.Color.Transparent
-        Me.imlToolbar.Images.SetKeyName(0, "clean_up")
-        Me.imlToolbar.Images.SetKeyName(1, "current episodes")
-        Me.imlToolbar.Images.SetKeyName(2, "delete")
-        Me.imlToolbar.Images.SetKeyName(3, "download")
-        Me.imlToolbar.Images.SetKeyName(4, "help")
-        Me.imlToolbar.Images.SetKeyName(5, "options")
-        Me.imlToolbar.Images.SetKeyName(6, "play")
-        Me.imlToolbar.Images.SetKeyName(7, "report_error")
-        Me.imlToolbar.Images.SetKeyName(8, "retry")
-        Me.imlToolbar.Images.SetKeyName(9, "subscribe")
-        Me.imlToolbar.Images.SetKeyName(10, "unsubscribe")
         '
         'tblInfo
         '
@@ -382,125 +307,6 @@
         Me.tblToolbars.Size = New System.Drawing.Size(757, 34)
         Me.tblToolbars.TabIndex = 21
         '
-        'tbrToolbar
-        '
-        Me.tbrToolbar.Appearance = System.Windows.Forms.ToolBarAppearance.Flat
-        Me.tbrToolbar.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtOptionsMenu, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp})
-        Me.tbrToolbar.Divider = False
-        Me.tbrToolbar.DropDownArrows = True
-        Me.tbrToolbar.ImageList = Me.imlToolbar
-        Me.tbrToolbar.Location = New System.Drawing.Point(3, 2)
-        Me.tbrToolbar.Margin = New System.Windows.Forms.Padding(3, 2, 0, 0)
-        Me.tbrToolbar.Name = "tbrToolbar"
-        Me.tbrToolbar.ShowToolTips = True
-        Me.tbrToolbar.Size = New System.Drawing.Size(678, 26)
-        Me.tbrToolbar.TabIndex = 17
-        Me.tbrToolbar.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
-        Me.tbrToolbar.Wrappable = False
-        '
-        'tbtOptionsMenu
-        '
-        Me.tbtOptionsMenu.DropDownMenu = Me.mnuOptions
-        Me.tbtOptionsMenu.ImageKey = "options"
-        Me.tbtOptionsMenu.Name = "tbtOptionsMenu"
-        Me.tbtOptionsMenu.Text = "Options"
-        '
-        'tbtDownload
-        '
-        Me.tbtDownload.ImageKey = "download"
-        Me.tbtDownload.Name = "tbtDownload"
-        Me.tbtDownload.Text = "Download"
-        '
-        'tbtSubscribe
-        '
-        Me.tbtSubscribe.ImageKey = "subscribe"
-        Me.tbtSubscribe.Name = "tbtSubscribe"
-        Me.tbtSubscribe.Text = "Subscribe"
-        '
-        'tbtUnsubscribe
-        '
-        Me.tbtUnsubscribe.ImageKey = "unsubscribe"
-        Me.tbtUnsubscribe.Name = "tbtUnsubscribe"
-        Me.tbtUnsubscribe.Text = "Unsubscribe"
-        '
-        'tbtCurrentEps
-        '
-        Me.tbtCurrentEps.ImageKey = "current episodes"
-        Me.tbtCurrentEps.Name = "tbtCurrentEps"
-        Me.tbtCurrentEps.Text = "Current Episodes"
-        '
-        'tbtCancel
-        '
-        Me.tbtCancel.ImageKey = "delete"
-        Me.tbtCancel.Name = "tbtCancel"
-        Me.tbtCancel.Text = "Cancel"
-        '
-        'tbtPlay
-        '
-        Me.tbtPlay.ImageKey = "play"
-        Me.tbtPlay.Name = "tbtPlay"
-        Me.tbtPlay.Text = "Play"
-        '
-        'tbtDelete
-        '
-        Me.tbtDelete.ImageKey = "delete"
-        Me.tbtDelete.Name = "tbtDelete"
-        Me.tbtDelete.Text = "Delete"
-        '
-        'tbtRetry
-        '
-        Me.tbtRetry.ImageKey = "retry"
-        Me.tbtRetry.Name = "tbtRetry"
-        Me.tbtRetry.Text = "Retry"
-        '
-        'tbtReportError
-        '
-        Me.tbtReportError.ImageKey = "report_error"
-        Me.tbtReportError.Name = "tbtReportError"
-        Me.tbtReportError.Text = "Report Error"
-        '
-        'tbtCleanUp
-        '
-        Me.tbtCleanUp.ImageKey = "clean_up"
-        Me.tbtCleanUp.Name = "tbtCleanUp"
-        Me.tbtCleanUp.Text = "Clean Up"
-        '
-        'tbrHelp
-        '
-        Me.tbrHelp.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.tbrHelp.Appearance = System.Windows.Forms.ToolBarAppearance.Flat
-        Me.tbrHelp.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtHelpMenu})
-        Me.tbrHelp.Divider = False
-        Me.tbrHelp.Dock = System.Windows.Forms.DockStyle.None
-        Me.tbrHelp.DropDownArrows = True
-        Me.tbrHelp.ImageList = Me.imlToolbar
-        Me.tbrHelp.Location = New System.Drawing.Point(681, 2)
-        Me.tbrHelp.Margin = New System.Windows.Forms.Padding(0, 2, 3, 0)
-        Me.tbrHelp.Name = "tbrHelp"
-        Me.tbrHelp.ShowToolTips = True
-        Me.tbrHelp.Size = New System.Drawing.Size(73, 26)
-        Me.tbrHelp.TabIndex = 0
-        Me.tbrHelp.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
-        Me.tbrHelp.Wrappable = False
-        '
-        'tbtHelpMenu
-        '
-        Me.tbtHelpMenu.DropDownMenu = Me.mnuHelp
-        Me.tbtHelpMenu.ImageKey = "help"
-        Me.tbtHelpMenu.Name = "tbtHelpMenu"
-        Me.tbtHelpMenu.Text = "Help"
-        '
-        'picSideBarBorder
-        '
-        Me.picSideBarBorder.BackColor = System.Drawing.SystemColors.Window
-        Me.picSideBarBorder.Dock = System.Windows.Forms.DockStyle.Left
-        Me.picSideBarBorder.Location = New System.Drawing.Point(187, 65)
-        Me.picSideBarBorder.Margin = New System.Windows.Forms.Padding(0)
-        Me.picSideBarBorder.Name = "picSideBarBorder"
-        Me.picSideBarBorder.Size = New System.Drawing.Size(10, 406)
-        Me.picSideBarBorder.TabIndex = 22
-        Me.picSideBarBorder.TabStop = False
-        '
         'lstDownloads
         '
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
@@ -555,6 +361,182 @@
         Me.lstProviders.Size = New System.Drawing.Size(560, 62)
         Me.lstProviders.TabIndex = 12
         Me.lstProviders.UseCompatibleStateImageBehavior = False
+        '
+        'tbrToolbar
+        '
+        Me.tbrToolbar.Appearance = System.Windows.Forms.ToolBarAppearance.Flat
+        Me.tbrToolbar.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtOptionsMenu, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp})
+        Me.tbrToolbar.Divider = False
+        Me.tbrToolbar.DropDownArrows = True
+        Me.tbrToolbar.Location = New System.Drawing.Point(3, 2)
+        Me.tbrToolbar.Margin = New System.Windows.Forms.Padding(3, 2, 0, 0)
+        Me.tbrToolbar.Name = "tbrToolbar"
+        Me.tbrToolbar.ShowToolTips = True
+        Me.tbrToolbar.Size = New System.Drawing.Size(678, 26)
+        Me.tbrToolbar.TabIndex = 17
+        Me.tbrToolbar.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
+        Me.tbrToolbar.Wrappable = False
+        '
+        'tbtOptionsMenu
+        '
+        Me.tbtOptionsMenu.DropDownMenu = Me.mnuOptions
+        Me.tbtOptionsMenu.ImageKey = "options"
+        Me.tbtOptionsMenu.Name = "tbtOptionsMenu"
+        Me.tbtOptionsMenu.Text = "Options"
+        '
+        'tbtDownload
+        '
+        Me.tbtDownload.ImageKey = "download"
+        Me.tbtDownload.Name = "tbtDownload"
+        Me.tbtDownload.Text = "Download"
+        '
+        'tbtSubscribe
+        '
+        Me.tbtSubscribe.ImageKey = "subscribe"
+        Me.tbtSubscribe.Name = "tbtSubscribe"
+        Me.tbtSubscribe.Text = "Subscribe"
+        '
+        'tbtUnsubscribe
+        '
+        Me.tbtUnsubscribe.ImageKey = "unsubscribe"
+        Me.tbtUnsubscribe.Name = "tbtUnsubscribe"
+        Me.tbtUnsubscribe.Text = "Unsubscribe"
+        '
+        'tbtCurrentEps
+        '
+        Me.tbtCurrentEps.ImageKey = "current_episodes"
+        Me.tbtCurrentEps.Name = "tbtCurrentEps"
+        Me.tbtCurrentEps.Text = "Current Episodes"
+        '
+        'tbtCancel
+        '
+        Me.tbtCancel.ImageKey = "delete"
+        Me.tbtCancel.Name = "tbtCancel"
+        Me.tbtCancel.Text = "Cancel"
+        '
+        'tbtPlay
+        '
+        Me.tbtPlay.ImageKey = "play"
+        Me.tbtPlay.Name = "tbtPlay"
+        Me.tbtPlay.Text = "Play"
+        '
+        'tbtDelete
+        '
+        Me.tbtDelete.ImageKey = "delete"
+        Me.tbtDelete.Name = "tbtDelete"
+        Me.tbtDelete.Text = "Delete"
+        '
+        'tbtRetry
+        '
+        Me.tbtRetry.ImageKey = "retry"
+        Me.tbtRetry.Name = "tbtRetry"
+        Me.tbtRetry.Text = "Retry"
+        '
+        'tbtReportError
+        '
+        Me.tbtReportError.ImageKey = "report_error"
+        Me.tbtReportError.Name = "tbtReportError"
+        Me.tbtReportError.Text = "Report Error"
+        '
+        'tbtCleanUp
+        '
+        Me.tbtCleanUp.ImageKey = "clean_up"
+        Me.tbtCleanUp.Name = "tbtCleanUp"
+        Me.tbtCleanUp.Text = "Clean Up"
+        '
+        'tbrHelp
+        '
+        Me.tbrHelp.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
+        Me.tbrHelp.Appearance = System.Windows.Forms.ToolBarAppearance.Flat
+        Me.tbrHelp.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtHelpMenu})
+        Me.tbrHelp.Divider = False
+        Me.tbrHelp.Dock = System.Windows.Forms.DockStyle.None
+        Me.tbrHelp.DropDownArrows = True
+        Me.tbrHelp.Location = New System.Drawing.Point(681, 2)
+        Me.tbrHelp.Margin = New System.Windows.Forms.Padding(0, 2, 3, 0)
+        Me.tbrHelp.Name = "tbrHelp"
+        Me.tbrHelp.ShowToolTips = True
+        Me.tbrHelp.Size = New System.Drawing.Size(73, 26)
+        Me.tbrHelp.TabIndex = 0
+        Me.tbrHelp.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
+        Me.tbrHelp.Wrappable = False
+        '
+        'tbtHelpMenu
+        '
+        Me.tbtHelpMenu.DropDownMenu = Me.mnuHelp
+        Me.tbtHelpMenu.ImageKey = "help"
+        Me.tbtHelpMenu.Name = "tbtHelpMenu"
+        Me.tbtHelpMenu.Text = "Help"
+        '
+        'picSideBarBorder
+        '
+        Me.picSideBarBorder.BackColor = System.Drawing.SystemColors.Window
+        Me.picSideBarBorder.Dock = System.Windows.Forms.DockStyle.Left
+        Me.picSideBarBorder.Location = New System.Drawing.Point(187, 65)
+        Me.picSideBarBorder.Margin = New System.Windows.Forms.Padding(0)
+        Me.picSideBarBorder.Name = "picSideBarBorder"
+        Me.picSideBarBorder.Size = New System.Drawing.Size(10, 406)
+        Me.picSideBarBorder.TabIndex = 22
+        Me.picSideBarBorder.TabStop = False
+        '
+        'tbtBack
+        '
+        Me.tbtBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tbtBack.Image = Global.RadioDld.My.Resources.Resources.views_back
+        Me.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtBack.Name = "tbtBack"
+        Me.tbtBack.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtBack.Size = New System.Drawing.Size(32, 28)
+        Me.tbtBack.Text = "Back"
+        '
+        'tbtForward
+        '
+        Me.tbtForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tbtForward.Image = Global.RadioDld.My.Resources.Resources.views_forward
+        Me.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtForward.Name = "tbtForward"
+        Me.tbtForward.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtForward.Size = New System.Drawing.Size(32, 28)
+        Me.tbtForward.Text = "Forward"
+        '
+        'tbtFindNew
+        '
+        Me.tbtFindNew.Checked = True
+        Me.tbtFindNew.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.tbtFindNew.Image = Global.RadioDld.My.Resources.Resources.views_find_new
+        Me.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtFindNew.Name = "tbtFindNew"
+        Me.tbtFindNew.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtFindNew.Size = New System.Drawing.Size(128, 28)
+        Me.tbtFindNew.Text = "Find Programme"
+        '
+        'tbtFavourites
+        '
+        Me.tbtFavourites.Image = CType(resources.GetObject("tbtFavourites.Image"), System.Drawing.Image)
+        Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtFavourites.Name = "tbtFavourites"
+        Me.tbtFavourites.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtFavourites.Size = New System.Drawing.Size(93, 28)
+        Me.tbtFavourites.Text = "Favourites"
+        Me.tbtFavourites.Visible = False
+        '
+        'tbtSubscriptions
+        '
+        Me.tbtSubscriptions.Image = Global.RadioDld.My.Resources.Resources.views_subscriptions
+        Me.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtSubscriptions.Name = "tbtSubscriptions"
+        Me.tbtSubscriptions.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtSubscriptions.Size = New System.Drawing.Size(110, 28)
+        Me.tbtSubscriptions.Text = "Subscriptions"
+        '
+        'tbtDownloads
+        '
+        Me.tbtDownloads.Image = Global.RadioDld.My.Resources.Resources.views_downloads
+        Me.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtDownloads.Name = "tbtDownloads"
+        Me.tbtDownloads.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtDownloads.Size = New System.Drawing.Size(98, 28)
+        Me.tbtDownloads.Text = "Downloads"
         '
         'frmMain
         '

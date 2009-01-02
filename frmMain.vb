@@ -130,6 +130,34 @@ Public Class frmMain
             Call clsDoDBUpdate.UpdateStructure()
         End If
 
+        imlListIcons.Images.Add("downloading", My.Resources.list_downloading)
+        imlListIcons.Images.Add("waiting", My.Resources.list_waiting)
+        imlListIcons.Images.Add("converting", My.Resources.list_converting)
+        imlListIcons.Images.Add("downloaded_new", My.Resources.list_downloaded_new)
+        imlListIcons.Images.Add("downloaded", My.Resources.list_downloaded)
+        imlListIcons.Images.Add("subscribed", My.Resources.list_subscribed)
+        imlListIcons.Images.Add("error", My.Resources.list_error)
+
+        imlProviders.Images.Add("default", My.Resources.provider_default)
+
+        imlToolbar.Images.Add("clean_up", My.Resources.toolbar_clean_up)
+        imlToolbar.Images.Add("current_episodes", My.Resources.toolbar_current_episodes)
+        imlToolbar.Images.Add("delete", My.Resources.toolbar_delete)
+        imlToolbar.Images.Add("download", My.Resources.toolbar_download)
+        imlToolbar.Images.Add("help", My.Resources.toolbar_help)
+        imlToolbar.Images.Add("options", My.Resources.toolbar_options)
+        imlToolbar.Images.Add("play", My.Resources.toolbar_play)
+        imlToolbar.Images.Add("report_error", My.Resources.toolbar_report_error)
+        imlToolbar.Images.Add("retry", My.Resources.toolbar_retry)
+        imlToolbar.Images.Add("subscribe", My.Resources.toolbar_subscribe)
+        imlToolbar.Images.Add("unsubscribe", My.Resources.toolbar_unsubscribe)
+
+        tbrToolbar.ImageList = imlToolbar
+        tbrHelp.ImageList = imlToolbar
+        lstProviders.LargeImageList = imlProviders
+        lstSubscribed.SmallImageList = imlListIcons
+        lstDownloads.SmallImageList = imlListIcons
+
         Call lstEpisodes.Columns.Add("Date", 100)
         Call lstEpisodes.Columns.Add("Episode Name", 440)
         Call lstSubscribed.Columns.Add("Programme Name", 270)
@@ -139,10 +167,6 @@ Public Class frmMain
         Call lstDownloads.Columns.Add("Date", 85)
         Call lstDownloads.Columns.Add("Status", 130)
         Call lstDownloads.Columns.Add("Progress", 100)
-
-        lstProviders.LargeImageList = imlProviders
-        lstSubscribed.SmallImageList = imlListIcons
-        lstDownloads.SmallImageList = imlListIcons
 
         clsProgData = clsData.GetInstance
         Call clsProgData.UpdateProviderList(lstProviders, imlProviders)
