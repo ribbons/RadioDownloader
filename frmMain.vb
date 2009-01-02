@@ -79,14 +79,14 @@ Public Class frmMain
         End If
 
         If booErrorStatus = True Then
-            nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Error.ico"))
+            nicTrayIcon.Icon = My.Resources.icon_error
             nicTrayIcon.Text = Me.Text + ": Error"
         Else
             If booActive = True Then
-                nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Working.ico"))
+                nicTrayIcon.Icon = My.Resources.icon_working
                 nicTrayIcon.Text = Me.Text + ": Downloading"
             Else
-                nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
+                nicTrayIcon.Icon = My.Resources.icon_main
                 nicTrayIcon.Text = Me.Text
             End If
         End If
@@ -175,8 +175,8 @@ Public Class frmMain
 
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
 
-        nicTrayIcon.Icon = New Icon([Assembly].GetExecutingAssembly().GetManifestResourceStream("RadioDld.Icon.ico"))
-        nicTrayIcon.Text = Me.Text
+        ' Set up and then show the system tray icon
+        Call SetTrayStatus(False)
         nicTrayIcon.Visible = True
 
         clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString, "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vamus")

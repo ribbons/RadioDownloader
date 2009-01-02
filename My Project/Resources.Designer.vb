@@ -60,6 +60,27 @@ Namespace My.Resources
             End Set
         End Property
         
+        Friend ReadOnly Property icon_error() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("icon_error", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        Friend ReadOnly Property icon_main() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("icon_main", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        Friend ReadOnly Property icon_working() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("icon_working", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
         Friend ReadOnly Property list_converting() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("list_converting", resourceCulture)

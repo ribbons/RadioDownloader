@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <MyType>WindowsForms</MyType>
@@ -20,7 +20,7 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OptionStrict>On</OptionStrict>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\icons\Icon.ico</ApplicationIcon>
     <OldToolsVersion>2.0</OldToolsVersion>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
@@ -202,12 +202,13 @@
       <DependentUpon>frmStatus.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Icon.ico" />
-    <EmbeddedResource Include="Error.ico" />
     <Content Include="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </Content>
+    <None Include="Resources\icons\Working.ico" />
+    <None Include="Resources\icons\Icon.ico" />
+    <None Include="Resources\icons\Error.ico" />
     <None Include="Resources\provider_default_64.png" />
     <None Include="Resources\list icons\subscribed_16.png" />
     <None Include="Resources\list icons\waiting_16.png" />
@@ -232,7 +233,6 @@
     <None Include="Resources\toolbar\current episodes_16.png" />
     <None Include="Resources\toolbar\clean up_16.png" />
     <None Include="Resources\toolbar\back_24.png" />
-    <EmbeddedResource Include="Working.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
