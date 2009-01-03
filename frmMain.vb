@@ -173,15 +173,15 @@ Public Class frmMain
         lstSubscribed.SmallImageList = imlListIcons
         lstDownloads.SmallImageList = imlListIcons
 
-        Call lstEpisodes.Columns.Add("Date", 100)
-        Call lstEpisodes.Columns.Add("Episode Name", 440)
-        Call lstSubscribed.Columns.Add("Programme Name", 270)
-        Call lstSubscribed.Columns.Add("Last Download", 100)
-        Call lstSubscribed.Columns.Add("Provider", 170)
-        Call lstDownloads.Columns.Add("Episode Name", 225)
-        Call lstDownloads.Columns.Add("Date", 85)
-        Call lstDownloads.Columns.Add("Status", 130)
-        Call lstDownloads.Columns.Add("Progress", 100)
+        Call lstEpisodes.Columns.Add("Date", CInt(0.179 * lstEpisodes.Width))
+        Call lstEpisodes.Columns.Add("Episode Name", CInt(0.786 * lstEpisodes.Width))
+        Call lstSubscribed.Columns.Add("Programme Name", CInt(0.482 * lstSubscribed.Width))
+        Call lstSubscribed.Columns.Add("Last Download", CInt(0.179 * lstSubscribed.Width))
+        Call lstSubscribed.Columns.Add("Provider", CInt(0.304 * lstSubscribed.Width))
+        Call lstDownloads.Columns.Add("Episode Name", CInt(0.426 * lstDownloads.Width))
+        Call lstDownloads.Columns.Add("Date", CInt(0.14 * lstDownloads.Width))
+        Call lstDownloads.Columns.Add("Status", CInt(0.22 * lstDownloads.Width))
+        Call lstDownloads.Columns.Add("Progress", CInt(0.179 * lstDownloads.Width))
 
         clsProgData = clsData.GetInstance
         Call clsProgData.UpdateProviderList(lstProviders, imlProviders)
