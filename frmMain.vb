@@ -119,12 +119,27 @@ Public Class frmMain
 
         ' Make sure that the database exists.  If not, then copy across the empty database from the program's folder.
         Dim fileExits As New IO.FileInfo(GetAppDataFolder() + "\store.db")
+
         If fileExits.Exists = False Then
-            IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\store.db")
+            Try
+                IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\store.db")
+            Catch expFileNotFound As FileNotFoundException
+                Call MsgBox("The Radio Downloader template database was not found at '" + My.Application.Info.DirectoryPath + "\store.db'." + vbCrLf + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical)
+                Me.Close()
+                Me.Dispose()
+                Exit Sub
+            End Try
         Else
             ' As the database already exists, copy the specimen database across from the program folder
             ' and then make sure that the current db's structure matches it.
-            IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\spec-store.db", True)
+            Try
+                IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\spec-store.db", True)
+            Catch expFileNotFound As FileNotFoundException
+                Call MsgBox("The Radio Downloader template database was not found at '" + My.Application.Info.DirectoryPath + "\store.db'." + vbCrLf + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical)
+                Me.Close()
+                Me.Dispose()
+                Exit Sub
+            End Try
 
             clsDoDBUpdate = New clsUpdateDB(GetAppDataFolder() + "\spec-store.db", GetAppDataFolder() + "\store.db")
             Call clsDoDBUpdate.UpdateStructure()
