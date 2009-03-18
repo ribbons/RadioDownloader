@@ -212,6 +212,10 @@ Public Class frmMain
         Me.Font = SystemFonts.MessageBoxFont
         lblSideMainTitle.Font = New Font(Me.Font.FontFamily, CSng(Me.Font.SizeInPoints * 1.16), Me.Font.Style, GraphicsUnit.Point)
 
+        ' Scale the max size of the sidebar image for values other than 96 dpi, as it is specified in pixels
+        Dim graphicsForDpi As Graphics = Me.CreateGraphics()
+        picSidebarImg.MaximumSize = New Size(CInt(picSidebarImg.MaximumSize.Width * (graphicsForDpi.DpiX / 96)), CInt(picSidebarImg.MaximumSize.Height * (graphicsForDpi.DpiY / 96)))
+
         tblToolbars.Height = tbrToolbar.Height
         tbrToolbar.SetWholeDropDown(tbtOptionsMenu)
         tbrHelp.SetWholeDropDown(tbtHelpMenu)
