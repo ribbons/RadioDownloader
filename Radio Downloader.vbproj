@@ -98,59 +98,59 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="clsAutoUpdate.vb" />
-    <Compile Include="clsCachedWebClient.vb" />
-    <Compile Include="clsDldProgData.vb" />
-    <Compile Include="clsErrorReporting.vb" />
-    <Compile Include="clsPlugins.vb" />
-    <Compile Include="clsUpdateDB.vb" />
-    <Compile Include="ExtToolBar.vb">
+    <Compile Include="Classes\AutoUpdate.vb" />
+    <Compile Include="Classes\CachedWebClient.vb" />
+    <Compile Include="Classes\DldProgData.vb" />
+    <Compile Include="Classes\ErrorReporting.vb" />
+    <Compile Include="Classes\Plugins.vb" />
+    <Compile Include="Classes\UpdateDB.vb" />
+    <Compile Include="Controls\ExtToolBar.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="frmCleanUp.Designer.vb">
-      <DependentUpon>frmCleanUp.vb</DependentUpon>
+    <Compile Include="Forms\CleanUp.Designer.vb">
+      <DependentUpon>CleanUp.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmCleanUp.vb">
+    <Compile Include="Forms\CleanUp.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmError.Designer.vb">
-      <DependentUpon>frmError.vb</DependentUpon>
+    <Compile Include="Forms\ReportError.Designer.vb">
+      <DependentUpon>ReportError.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmError.vb">
+    <Compile Include="Forms\ReportError.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmStatus.Designer.vb">
-      <DependentUpon>frmStatus.vb</DependentUpon>
+    <Compile Include="Forms\Status.Designer.vb">
+      <DependentUpon>Status.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmStatus.vb">
+    <Compile Include="Forms\Status.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="My Project\ApplicationEvents.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
-    <Compile Include="clsData.vb">
+    <Compile Include="Classes\Data.vb">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ExtListView.vb">
+    <Compile Include="Controls\ExtListView.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="frmAbout.Designer.vb">
-      <DependentUpon>frmAbout.vb</DependentUpon>
+    <Compile Include="Forms\About.Designer.vb">
+      <DependentUpon>About.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmAbout.vb">
+    <Compile Include="Forms\About.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmMain.Designer.vb">
+    <Compile Include="Forms\Main.Designer.vb">
       <SubType>Code</SubType>
-      <DependentUpon>frmMain.vb</DependentUpon>
+      <DependentUpon>Main.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmMain.vb">
+    <Compile Include="Forms\Main.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmPreferences.Designer.vb">
+    <Compile Include="Forms\Preferences.Designer.vb">
       <SubType>Code</SubType>
-      <DependentUpon>frmPreferences.vb</DependentUpon>
+      <DependentUpon>Preferences.vb</DependentUpon>
     </Compile>
-    <Compile Include="frmPreferences.vb">
+    <Compile Include="Forms\Preferences.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="modMain.vb">
@@ -170,20 +170,20 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="frmError.resx">
+    <EmbeddedResource Include="Forms\ReportError.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmError.vb</DependentUpon>
+      <DependentUpon>ReportError.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmAbout.resx">
+    <EmbeddedResource Include="Forms\About.resx">
       <SubType>Designer</SubType>
-      <DependentUpon>frmAbout.vb</DependentUpon>
+      <DependentUpon>About.vb</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmMain.resX">
-      <DependentUpon>frmMain.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\Main.resX">
+      <DependentUpon>Main.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmPreferences.resX">
-      <DependentUpon>frmPreferences.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\Preferences.resX">
+      <DependentUpon>Preferences.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
@@ -194,12 +194,12 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="frmCleanUp.resX">
-      <DependentUpon>frmCleanUp.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\CleanUp.resX">
+      <DependentUpon>CleanUp.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmStatus.resx">
-      <DependentUpon>frmStatus.vb</DependentUpon>
+    <EmbeddedResource Include="Forms\Status.resx">
+      <DependentUpon>Status.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Content Include="My Project\Application.myapp">

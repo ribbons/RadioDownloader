@@ -169,23 +169,23 @@ Module modMain
         Dim expException As Exception
         expException = DirectCast(e.ExceptionObject, Exception)
 
-        If frmError.Visible = False Then
-            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
-            frmError.AssignReport(clsReport)
-            frmError.ShowDialog()
+        If ReportError.Visible = False Then
+            Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+            ReportError.AssignReport(clsReport)
+            ReportError.ShowDialog()
         End If
     End Sub
 
     Public Sub ThreadExceptionHandler(ByVal sender As Object, ByVal e As Threading.ThreadExceptionEventArgs)
-        If frmError.Visible = False Then
-            Dim clsReport As New clsErrorReporting(e.Exception.GetType.ToString + ": " + e.Exception.Message, e.Exception.GetType.ToString + vbCrLf + e.Exception.StackTrace)
-            frmError.AssignReport(clsReport)
-            frmError.ShowDialog()
+        If ReportError.Visible = False Then
+            Dim clsReport As New ErrorReporting(e.Exception.GetType.ToString + ": " + e.Exception.Message, e.Exception.GetType.ToString + vbCrLf + e.Exception.StackTrace)
+            ReportError.AssignReport(clsReport)
+            ReportError.ShowDialog()
         End If
     End Sub
 
     Public Sub StartupNextInstanceHandler(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs)
         ' This is called when another instance is started, so do the same as a double click on the tray icon
-        Call frmMain.mnuTrayShow_Click(New Object, New System.EventArgs)
+        Call Main.mnuTrayShow_Click(New Object, New System.EventArgs)
     End Sub
 End Module

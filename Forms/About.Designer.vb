@@ -1,5 +1,5 @@
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmAbout
+Partial Class About
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -23,7 +23,7 @@ Partial Class frmAbout
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmAbout))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(About))
         Me.LogoPictureBox = New System.Windows.Forms.PictureBox
         Me.LabelNameAndVer = New System.Windows.Forms.Label
         Me.TextboxLicense = New System.Windows.Forms.TextBox
@@ -107,7 +107,7 @@ Partial Class frmAbout
         Me.ButtonOK.Text = "OK"
         Me.ButtonOK.UseVisualStyleBackColor = True
         '
-        'frmAbout
+        'About
         '
         Me.AcceptButton = Me.ButtonOK
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -124,7 +124,7 @@ Partial Class frmAbout
         Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.Name = "frmAbout"
+        Me.Name = "About"
         Me.Padding = New System.Windows.Forms.Padding(9)
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent

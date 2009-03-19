@@ -1,4 +1,4 @@
-﻿' Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
+' Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
 ' Copyright © 2008  www.nerdoftheherd.com
 '
 ' This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,10 +18,10 @@ Option Explicit On
 Imports System.Net
 Imports System.Text
 
-Public Class clsCachedWebClient
-    Private clsDataInst As clsData
+Public Class CachedWebClient
+    Private clsDataInst As Data
 
-    Public Sub New(ByVal clsDataInst As clsData)
+    Public Sub New(ByVal clsDataInst As Data)
         Me.clsDataInst = clsDataInst
     End Sub
 

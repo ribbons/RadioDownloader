@@ -21,7 +21,7 @@ Imports System.Reflection
 Imports System.Text.Encoding
 Imports System.Diagnostics.Process
 
-Public Class clsErrorReporting
+Public Class ErrorReporting
     Dim htbFields As New Hashtable
 
     Public Sub New(ByVal strError As String, ByVal strDetails As String)

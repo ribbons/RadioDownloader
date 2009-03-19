@@ -1,4 +1,4 @@
-<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> Partial Class frmPreferences
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> Partial Class Preferences
 #Region "Windows Form Designer generated code "
 	<System.Diagnostics.DebuggerNonUserCode()> Public Sub New()
 		MyBase.New()
@@ -221,7 +221,7 @@
         Me.lblKB.TabIndex = 16
         Me.lblKB.Text = "kB/s"
         '
-        'frmPreferences
+        'Preferences
         '
         Me.AcceptButton = Me.cmdOK
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -251,7 +251,7 @@
         Me.Location = New System.Drawing.Point(3, 29)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.Name = "frmPreferences"
+        Me.Name = "Preferences"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent

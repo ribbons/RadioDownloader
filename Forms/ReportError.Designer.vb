@@ -1,5 +1,5 @@
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmError
+Partial Class ReportError
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -165,7 +165,7 @@ Partial Class frmError
         Me.lnkWhatData.TabStop = True
         Me.lnkWhatData.Text = "What data does this error report contain?"
         '
-        'frmError
+        'Error
         '
         Me.AcceptButton = Me.cmdSend
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -188,7 +188,7 @@ Partial Class frmError
         Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.Name = "frmError"
+        Me.Name = "Error"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"

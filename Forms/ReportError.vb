@@ -17,10 +17,10 @@ Option Explicit On
 
 Imports System.Windows.Forms
 
-Public Class frmError
-    Private clsReport As clsErrorReporting
+Public Class ReportError
+    Private clsReport As ErrorReporting
 
-    Public Sub AssignReport(ByVal clsReport As clsErrorReporting)
+    Public Sub AssignReport(ByVal clsReport As ErrorReporting)
         Me.clsReport = clsReport
     End Sub
 
@@ -43,7 +43,7 @@ Public Class frmError
         Me.Close()
     End Sub
 
-    Private Sub frmError_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+    Private Sub Error_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         ' As there has been an error, call 'end' to blow away the rest of the app reasonably tidily
         End
     End Sub

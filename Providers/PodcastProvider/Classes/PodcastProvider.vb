@@ -1,4 +1,4 @@
-﻿' Plugin for Radio Downloader to download general podcasts.
+' Plugin for Radio Downloader to download general podcasts.
 ' Copyright © 2008  www.nerdoftheherd.com
 '
 ' This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,7 +26,7 @@ Imports System.Globalization
 Imports System.Windows.Forms
 Imports System.Text.RegularExpressions
 
-Public Class clsPodcastProvider
+Public Class PodcastProvider
     Implements IRadioProvider
 
     Public Event FindNewViewChange(ByVal objView As Object) Implements IRadioProvider.FindNewViewChange
@@ -36,7 +36,7 @@ Public Class clsPodcastProvider
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
     Public Event Finished(ByVal strFileExtension As String) Implements IRadioProvider.Finished
 
-    Friend clsCachedHTTP As RadioDld.clsCachedWebClient
+    Friend clsCachedHTTP As RadioDld.CachedWebClient
     Friend Const intCacheHTTPHours As Integer = 2
 
     Private Shared Event PowerModeChanged As PowerModeChangedEventHandler
@@ -78,15 +78,15 @@ Public Class clsPodcastProvider
         End Get
     End Property
 
-    Public Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient, ByVal objView As Object) As Panel Implements IRadioProvider.GetFindNewPanel
+    Public Function GetFindNewPanel(ByVal clsCachedHTTP As CachedWebClient, ByVal objView As Object) As Panel Implements IRadioProvider.GetFindNewPanel
         Me.clsCachedHTTP = clsCachedHTTP
 
-        Dim frmFindNewInst As New frmFindNew
-        frmFindNewInst.clsPluginInst = Me
-        Return frmFindNewInst.pnlFindNew
+        Dim FindNewInst As New FindNew
+        FindNewInst.clsPluginInst = Me
+        Return FindNewInst.pnlFindNew
     End Function
 
-    Public Function GetProgrammeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As IRadioProvider.ProgrammeInfo Implements IRadioProvider.GetProgrammeInfo
+    Public Function GetProgrammeInfo(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String) As IRadioProvider.ProgrammeInfo Implements IRadioProvider.GetProgrammeInfo
         Dim ProgInfo As New IRadioProvider.ProgrammeInfo
         ProgInfo.Success = False
 
@@ -133,7 +133,7 @@ Public Class clsPodcastProvider
         Return ProgInfo
     End Function
 
-    Public Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
+    Public Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
         Dim strEpisodeIDs(-1) As String
         GetAvailableEpisodeIDs = strEpisodeIDs
 
@@ -173,7 +173,7 @@ Public Class clsPodcastProvider
         Return strEpisodeIDs
     End Function
 
-    Function GetEpisodeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As IRadioProvider.EpisodeInfo Implements IRadioProvider.GetEpisodeInfo
+    Function GetEpisodeInfo(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As IRadioProvider.EpisodeInfo Implements IRadioProvider.GetEpisodeInfo
         Dim EpisodeInfo As New IRadioProvider.EpisodeInfo
         EpisodeInfo.Success = False
 
@@ -364,7 +364,7 @@ Public Class clsPodcastProvider
         Return EpisodeInfo
     End Function
 
-    Public Sub DownloadProgramme(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
+    Public Sub DownloadProgramme(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
         strProgDldUrl = EpInfo.ExtInfo("EnclosureURL")
 
         Dim intFileNamePos As Integer = strFinalName.LastIndexOf("\")
@@ -414,7 +414,7 @@ Public Class clsPodcastProvider
         Return strItemID
     End Function
 
-    Private Function RSSNodeImage(ByVal clsCachedHTTP As clsCachedWebClient, ByVal xmlNode As XmlNode, ByVal xmlNamespaceMgr As XmlNamespaceManager) As Bitmap
+    Private Function RSSNodeImage(ByVal clsCachedHTTP As CachedWebClient, ByVal xmlNode As XmlNode, ByVal xmlNamespaceMgr As XmlNamespaceManager) As Bitmap
         Try
             Dim xmlImageNode As XmlNode = xmlNode.SelectSingleNode("itunes:image", xmlNamespaceMgr)
 

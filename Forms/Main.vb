@@ -22,7 +22,7 @@ Imports System.Text.ASCIIEncoding
 Imports System.Diagnostics.Process
 Imports System.Windows.Forms.VisualStyles
 
-Public Class frmMain
+Public Class Main
     Inherits System.Windows.Forms.Form
 
     Public Enum ErrorStatus
@@ -61,20 +61,20 @@ Public Class frmMain
     Private viwBackData(-1) As ViewStore
     Private viwFwdData(-1) As ViewStore
 
-    Private WithEvents clsProgData As clsData
-    Private clsDoDBUpdate As clsUpdateDB
-    Private clsUpdate As clsAutoUpdate
+    Private WithEvents clsProgData As Data
+    Private clsDoDBUpdate As UpdateDB
+    Private clsUpdate As AutoUpdate
 
-    Private Delegate Sub clsProgData_Progress_Delegate(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Private Delegate Sub clsProgData_DldError_Delegate(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-    Private Delegate Sub clsProgData_Finished_Delegate(ByVal clsCurDldProgData As clsDldProgData)
+    Private Delegate Sub clsProgData_Progress_Delegate(ByVal clsCurDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    Private Delegate Sub clsProgData_DldError_Delegate(ByVal clsCurDldProgData As DldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+    Private Delegate Sub clsProgData_Finished_Delegate(ByVal clsCurDldProgData As DldProgData)
 
     Public Sub SetTrayStatus(ByVal booActive As Boolean, Optional ByVal ErrorStatus As ErrorStatus = ErrorStatus.NoChange)
         Dim booErrorStatus As Boolean
 
-        If ErrorStatus = frmMain.ErrorStatus.Error Then
+        If ErrorStatus = Main.ErrorStatus.Error Then
             booErrorStatus = True
-        ElseIf ErrorStatus = frmMain.ErrorStatus.Normal Then
+        ElseIf ErrorStatus = Main.ErrorStatus.Normal Then
             booErrorStatus = False
         End If
 
@@ -92,14 +92,14 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub frmMain_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+    Private Sub Main_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
         If e.KeyCode = Keys.F1 Then
             e.Handled = True
             Call mnuHelpShowHelp_Click(sender, e)
         End If
     End Sub
 
-    Private Sub frmMain_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
+    Private Sub Main_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' Add a handler to catch otherwise unhandled exceptions
         AddHandler AppDomain.CurrentDomain.UnhandledException, AddressOf ExceptionHandler
         ' Add a handler for thread exceptions
@@ -141,7 +141,7 @@ Public Class frmMain
                 Exit Sub
             End Try
 
-            clsDoDBUpdate = New clsUpdateDB(GetAppDataFolder() + "\spec-store.db", GetAppDataFolder() + "\store.db")
+            clsDoDBUpdate = New UpdateDB(GetAppDataFolder() + "\spec-store.db", GetAppDataFolder() + "\store.db")
             Call clsDoDBUpdate.UpdateStructure()
         End If
 
@@ -183,7 +183,7 @@ Public Class frmMain
         Call lstDownloads.Columns.Add("Status", CInt(0.22 * lstDownloads.Width))
         Call lstDownloads.Columns.Add("Progress", CInt(0.179 * lstDownloads.Width))
 
-        clsProgData = clsData.GetInstance
+        clsProgData = Data.GetInstance
         Call clsProgData.UpdateProviderList(lstProviders, imlProviders)
         Call clsProgData.UpdateDlList(lstDownloads)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
@@ -194,7 +194,7 @@ Public Class frmMain
         Call SetTrayStatus(False)
         nicTrayIcon.Visible = True
 
-        clsUpdate = New clsAutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString, "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vamus")
+        clsUpdate = New AutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString, "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vamus")
         If My.Settings.UpdateDownloaded Then
             Call InstallUpdate()
         End If
@@ -227,7 +227,7 @@ Public Class frmMain
         tmrStartProcess.Enabled = True
     End Sub
 
-    Private Sub frmMain_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+    Private Sub Main_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         If eventArgs.CloseReason = CloseReason.UserClosing Then
             Call TrayAnimate(Me, True)
             Me.Visible = False
@@ -319,11 +319,11 @@ Public Class frmMain
             Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
             
             With clsProgData
-                Dim staDownloadStatus As clsData.Statuses = .DownloadStatus(intEpID)
+                Dim staDownloadStatus As Data.Statuses = .DownloadStatus(intEpID)
                 Dim strInfoBox As String = ""
                 Dim strActionString As String
 
-                If staDownloadStatus = clsData.Statuses.Downloaded Then
+                If staDownloadStatus = Data.Statuses.Downloaded Then
                     If Exists(.DownloadPath(intEpID)) Then
                         strActionString = "Play,Delete"
                     Else
@@ -331,7 +331,7 @@ Public Class frmMain
                     End If
 
                     strInfoBox = vbCrLf + "Play count: " + CStr(.DownloadPlayCount(intEpID))
-                ElseIf staDownloadStatus = clsData.Statuses.Errored Then
+                ElseIf staDownloadStatus = Data.Statuses.Errored Then
                     Dim strErrorName As String = ""
                     Dim strErrorDetails As String = .DownloadErrorDetails(intEpID)
 
@@ -505,7 +505,7 @@ Public Class frmMain
         Call SetView(MainTab.Downloads, View.Downloads, Nothing)
     End Sub
 
-    Private Sub clsProgData_DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsProgData.DldError
+    Private Sub clsProgData_DldError(ByVal clsCurDldProgData As DldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles clsProgData.DldError
         ' Check if the form exists still before calling delegate
         If Me.IsHandleCreated And Me.IsDisposed = False Then
             Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
@@ -513,7 +513,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+    Private Sub clsProgData_DldError_FormThread(ByVal clsCurDldProgData As DldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
         Try
             If clsProgData.EpisodeExists(clsCurDldProgData.EpID) Then
                 Call clsProgData.DownloadSetErrored(clsCurDldProgData.EpID, errType, strErrorDetails)
@@ -536,10 +536,10 @@ Public Class frmMain
             tmrStartProcess.Enabled = True
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
-            If frmError.Visible = False Then
-                Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
-                frmError.AssignReport(clsReport)
-                frmError.ShowDialog()
+            If ReportError.Visible = False Then
+                Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                ReportError.AssignReport(clsReport)
+                ReportError.ShowDialog()
             End If
         End Try
     End Sub
@@ -555,7 +555,7 @@ Public Class frmMain
         Call UpdateNavCtrlState()
     End Sub
 
-    Private Sub clsProgData_Finished(ByVal clsCurDldProgData As clsDldProgData) Handles clsProgData.Finished
+    Private Sub clsProgData_Finished(ByVal clsCurDldProgData As DldProgData) Handles clsProgData.Finished
         ' Check if the form exists still before calling delegate
         If Me.IsHandleCreated And Me.IsDisposed = False Then
             Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
@@ -563,7 +563,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As clsDldProgData)
+    Private Sub clsProgData_Finished_FormThread(ByVal clsCurDldProgData As DldProgData)
         Try
             Call clsProgData.DownloadSetDownloaded(clsCurDldProgData.EpID, clsCurDldProgData.FinalName)
 
@@ -598,10 +598,10 @@ Public Class frmMain
             tmrStartProcess.Enabled = True
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
-            If frmError.Visible = False Then
-                Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
-                frmError.AssignReport(clsReport)
-                frmError.ShowDialog()
+            If ReportError.Visible = False Then
+                Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                ReportError.AssignReport(clsReport)
+                ReportError.ShowDialog()
             End If
         End Try
     End Sub
@@ -610,7 +610,7 @@ Public Class frmMain
         Call SetView(MainTab.FindProgramme, View.ProgEpisodes, intProgID)
     End Sub
 
-    Private Sub clsProgData_Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
+    Private Sub clsProgData_Progress(ByVal clsCurDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
         ' Check if the form exists still before calling delegate
         If Me.IsHandleCreated And Me.IsDisposed = False Then
             Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
@@ -618,7 +618,7 @@ Public Class frmMain
         End If
     End Sub
 
-    Private Sub clsProgData_Progress_FormThread(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    Private Sub clsProgData_Progress_FormThread(ByVal clsCurDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
         Try
             Static intLastNum As Integer
 
@@ -654,15 +654,15 @@ Public Class frmMain
             Call SetTrayStatus(True)
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
-            If frmError.Visible = False Then
-                Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
-                frmError.AssignReport(clsReport)
-                frmError.ShowDialog()
+            If ReportError.Visible = False Then
+                Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                ReportError.AssignReport(clsReport)
+                ReportError.ShowDialog()
             End If
         End Try
     End Sub
 
-    Private Sub frmMain_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+    Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         For Each strCommand As String In Environment.GetCommandLineArgs()
             If strCommand = "-starttray" Then
                 Call TrayAnimate(Me, True)
@@ -733,7 +733,7 @@ Public Class frmMain
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-            Dim clsCurrentProgInfo As clsDldProgData
+            Dim clsCurrentProgInfo As DldProgData
             clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
 
             If clsCurrentProgInfo IsNot Nothing Then
@@ -756,7 +756,7 @@ Public Class frmMain
     Private Sub tbtPlay_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        If clsProgData.DownloadStatus(intEpID) = clsData.Statuses.Downloaded Then
+        If clsProgData.DownloadStatus(intEpID) = Data.Statuses.Downloaded Then
             If Exists(clsProgData.DownloadPath(intEpID)) Then
                 Process.Start(clsProgData.DownloadPath(intEpID))
 
@@ -823,12 +823,12 @@ Public Class frmMain
     Private Sub tbtReportError_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        Dim clsReport As New clsErrorReporting("Download Error: " + clsProgData.DownloadErrorType(intEpID).ToString, clsProgData.DownloadErrorDetails(intEpID))
+        Dim clsReport As New ErrorReporting("Download Error: " + clsProgData.DownloadErrorType(intEpID).ToString, clsProgData.DownloadErrorDetails(intEpID))
         clsReport.SendReport(My.Settings.ErrorReportURL)
     End Sub
 
     Private Sub mnuOptionsShowOpts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsShowOpts.Click
-        Call frmPreferences.ShowDialog()
+        Call Preferences.ShowDialog()
     End Sub
 
     Private Sub mnuOptionsExit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsExit.Click
@@ -836,7 +836,7 @@ Public Class frmMain
     End Sub
 
     Private Sub mnuHelpAbout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpAbout.Click
-        Call frmAbout.ShowDialog()
+        Call About.ShowDialog()
     End Sub
 
     Private Sub mnuHelpShowHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpShowHelp.Click
@@ -848,7 +848,7 @@ Public Class frmMain
     End Sub
 
     Private Sub tbtCleanUp_Click()
-        Call frmCleanUp.ShowDialog()
+        Call CleanUp.ShowDialog()
 
         Call clsProgData.UpdateDlList(lstDownloads)
 

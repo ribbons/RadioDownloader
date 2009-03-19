@@ -1,5 +1,5 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmFindNew
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+Partial Class FindNew
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -79,13 +79,13 @@ Partial Class frmFindNew
         Me.txtFeedURL.Size = New System.Drawing.Size(416, 20)
         Me.txtFeedURL.TabIndex = 0
         '
-        'frmFindNew
+        'FindNew
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(570, 416)
         Me.Controls.Add(Me.pnlFindNew)
-        Me.Name = "frmFindNew"
+        Me.Name = "FindNew"
         Me.Text = "Find New"
         Me.pnlFindNew.ResumeLayout(False)
         Me.pnlFindNew.PerformLayout()

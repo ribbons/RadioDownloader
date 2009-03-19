@@ -1,5 +1,5 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class frmStatus
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+Partial Class Status
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -44,7 +44,7 @@ Partial Class frmStatus
         Me.prgProgress.Size = New System.Drawing.Size(411, 23)
         Me.prgProgress.TabIndex = 1
         '
-        'frmStatus
+        'Status
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
@@ -55,7 +55,7 @@ Partial Class frmStatus
         Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.Name = "frmStatus"
+        Me.Name = "Status"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
         Me.ResumeLayout(False)

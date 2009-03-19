@@ -1,4 +1,4 @@
-﻿' Plugin for Radio Downloader to download general podcasts.
+' Plugin for Radio Downloader to download general podcasts.
 ' Copyright © 2008  www.nerdoftheherd.com
 '
 ' This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,8 +19,8 @@ Imports System.Xml
 Imports System.Net
 Imports System.Windows.Forms
 
-Public Class frmFindNew
-    Friend clsPluginInst As clsPodcastProvider
+Public Class FindNew
+    Friend clsPluginInst As PodcastProvider
 
     Private Sub cmdViewEps_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdViewEps.Click
         Try
@@ -36,7 +36,7 @@ Public Class frmFindNew
 
             ' First test that we can load something from the specified URL
             Try
-                strRSS = clsPluginInst.clsCachedHTTP.DownloadString(strURL, clsPodcastProvider.intCacheHTTPHours)
+                strRSS = clsPluginInst.clsCachedHTTP.DownloadString(strURL, PodcastProvider.intCacheHTTPHours)
             Catch expArgument As ArgumentException
                 lblResult.Text = "The specified URL was not valid."
                 lblResult.ForeColor = Drawing.Color.Red

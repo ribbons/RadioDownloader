@@ -1,4 +1,4 @@
-<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> Partial Class frmCleanUp
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> Partial Class CleanUp
 #Region "Windows Form Designer generated code "
     <System.Diagnostics.DebuggerNonUserCode()> Public Sub New()
         MyBase.New()
@@ -87,7 +87,7 @@
         Me.radType.Text = "Remove orphan entries"
         Me.radType.UseVisualStyleBackColor = True
         '
-        'frmCleanUp
+        'CleanUp
         '
         Me.AcceptButton = Me.cmdOK
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -106,7 +106,7 @@
         Me.Location = New System.Drawing.Point(3, 29)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.Name = "frmCleanUp"
+        Me.Name = "CleanUp"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent

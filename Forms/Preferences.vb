@@ -17,7 +17,7 @@ Option Explicit On
 
 Imports System.IO
 
-Friend Class frmPreferences
+Friend Class Preferences
 	Inherits System.Windows.Forms.Form
 	
 	Private Sub cmdCancel_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdCancel.Click
@@ -42,7 +42,7 @@ Friend Class frmPreferences
         Me.Close()
     End Sub
 
-    Private Sub frmPreferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
+    Private Sub Preferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         Me.Font = SystemFonts.MessageBoxFont
 
         txtSaveIn.Text = GetSaveFolder()

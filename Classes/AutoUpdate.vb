@@ -20,7 +20,7 @@ Imports System.Net
 Imports System.Threading
 Imports System.Diagnostics
 
-Public Class clsAutoUpdate
+Public Class AutoUpdate
     Private strVersionInfoURL As String
     Private strDownloadUrl As String
     Private strSaveFileName As String

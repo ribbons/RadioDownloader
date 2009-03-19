@@ -55,10 +55,10 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderDescription() As String
     ReadOnly Property ProgInfoUpdateFreqDays() As Integer
 
-    Function GetFindNewPanel(ByVal clsCachedHTTP As clsCachedWebClient, ByVal objView As Object) As Panel
-    Function GetProgrammeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As ProgrammeInfo
-    Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String) As String()
-    Function GetEpisodeInfo(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As EpisodeInfo
+    Function GetFindNewPanel(ByVal clsCachedHTTP As CachedWebClient, ByVal objView As Object) As Panel
+    Function GetProgrammeInfo(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String) As ProgrammeInfo
+    Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String) As String()
+    Function GetEpisodeInfo(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As EpisodeInfo
 
     Event FindNewViewChange(ByVal objView As Object)
     Event FindNewException(ByVal expException As Exception)
@@ -67,10 +67,10 @@ Public Interface IRadioProvider
     Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
     Event Finished(ByVal strFileExtension As String)
 
-    Sub DownloadProgramme(ByVal clsCachedHTTP As clsCachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As ProgrammeInfo, ByVal EpInfo As EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer)
+    Sub DownloadProgramme(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As ProgrammeInfo, ByVal EpInfo As EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer)
 End Interface
 
-Public Class clsPlugins
+Public Class Plugins
     Private Const strInterfaceName As String = "IRadioProvider"
     Private htbPlugins As New Hashtable
 

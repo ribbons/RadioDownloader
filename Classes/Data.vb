@@ -22,32 +22,32 @@ Imports System.Data.SQLite
 Imports System.Collections.Generic
 Imports System.Text.RegularExpressions
 
-Public Class clsData
+Public Class Data
     Public Enum Statuses
         Waiting
         Downloaded
         Errored
     End Enum
 
-    Private Shared clsDataInstance As clsData
+    Private Shared clsDataInstance As Data
 
     Private sqlConnection As SQLiteConnection
-    Private clsPluginsInst As clsPlugins
+    Private clsPluginsInst As Plugins
 
-    Private clsCurDldProgData As clsDldProgData
+    Private clsCurDldProgData As DldProgData
     Private thrDownloadThread As Thread
     Private WithEvents DownloadPluginInst As IRadioProvider
     Private WithEvents FindNewPluginInst As IRadioProvider
 
     Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
-    Public Event Progress(ByVal clsCurDldProgData As clsDldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Public Event DldError(ByVal clsCurDldProgData As clsDldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-    Public Event Finished(ByVal clsCurDldProgData As clsDldProgData)
+    Public Event Progress(ByVal clsCurDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    Public Event DldError(ByVal clsCurDldProgData As DldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+    Public Event Finished(ByVal clsCurDldProgData As DldProgData)
 
-    Public Shared Function GetInstance() As clsData
+    Public Shared Function GetInstance() As Data
         If clsDataInstance Is Nothing Then
-            clsDataInstance = New clsData
+            clsDataInstance = New Data
         End If
 
         Return clsDataInstance
@@ -67,7 +67,7 @@ Public Class clsData
         sqlCommand.ExecuteNonQuery()
 
         ' Setup an instance of the plugins class
-        clsPluginsInst = New clsPlugins(My.Application.Info.DirectoryPath)
+        clsPluginsInst = New Plugins(My.Application.Info.DirectoryPath)
 
 
         ' Fetch the version of the database
@@ -97,11 +97,11 @@ Public Class clsData
         Dim intCount As Integer = 0
         Dim intTotal As Integer = CInt(sqlCommand.ExecuteScalar)
 
-        frmStatus.lblStatus.Text = "Migrating downloads..."
-        frmStatus.prgProgress.Visible = True
-        frmStatus.prgProgress.Maximum = intTotal
-        frmStatus.prgProgress.Value = 0
-        frmStatus.Visible = True
+        Status.lblStatus.Text = "Migrating downloads..."
+        Status.prgProgress.Visible = True
+        Status.prgProgress.Maximum = intTotal
+        Status.prgProgress.Value = 0
+        Status.Visible = True
         Application.DoEvents()
 
         ' Migrate the downloads
@@ -121,8 +121,8 @@ Public Class clsData
 
         With sqlReader
             While .Read
-                frmStatus.lblStatus.Text = "Migrating download " + CStr(intCount) + " of " + CStr(intTotal) + "..."
-                frmStatus.prgProgress.Value = intCount
+                Status.lblStatus.Text = "Migrating download " + CStr(intCount) + " of " + CStr(intTotal) + "..."
+                Status.prgProgress.Value = intCount
                 Application.DoEvents()
 
                 If sqlReader.IsDBNull(sqlReader.GetOrdinal("image")) Then
@@ -171,8 +171,8 @@ Public Class clsData
             .Close()
         End With
 
-        frmStatus.lblStatus.Text = "Performing cleanup.."
-        frmStatus.prgProgress.Visible = False
+        Status.lblStatus.Text = "Performing cleanup.."
+        Status.prgProgress.Visible = False
         Application.DoEvents()
 
         ' Delete all of the images stored in the info table, so the old data doesn't take up loads of space.
@@ -183,10 +183,10 @@ Public Class clsData
         intCount = -1
         intTotal = CInt(sqlCommand.ExecuteScalar)
 
-        frmStatus.lblStatus.Text = "Attempting to migrate subscriptions..."
-        frmStatus.prgProgress.Visible = True
-        frmStatus.prgProgress.Maximum = intTotal
-        frmStatus.prgProgress.Value = 0
+        Status.lblStatus.Text = "Attempting to migrate subscriptions..."
+        Status.prgProgress.Visible = True
+        Status.prgProgress.Maximum = intTotal
+        Status.prgProgress.Value = 0
         Application.DoEvents()
 
         ' Then migrate the subscriptions
@@ -196,8 +196,8 @@ Public Class clsData
         With sqlReader
             While .Read
                 intCount += 1
-                frmStatus.lblStatus.Text = "Attempting to migrate subscription " + CStr(intCount) + " of " + CStr(intTotal) + "..."
-                frmStatus.prgProgress.Value = intCount
+                Status.lblStatus.Text = "Attempting to migrate subscription " + CStr(intCount) + " of " + CStr(intTotal) + "..."
+                Status.prgProgress.Value = intCount
                 Application.DoEvents()
 
                 Select Case .GetString(.GetOrdinal("type"))
@@ -218,7 +218,7 @@ Public Class clsData
             .Close()
         End With
 
-        frmStatus.Visible = False
+        Status.Visible = False
         Application.DoEvents()
     End Sub
 
@@ -274,7 +274,7 @@ Public Class clsData
                     Dim intEpID As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))
 
                     If clsPluginsInst.PluginExists(gidPluginID) Then
-                        clsCurDldProgData = New clsDldProgData
+                        clsCurDldProgData = New DldProgData
 
                         Dim priProgInfo As IRadioProvider.ProgrammeInfo
                         If sqlReader.IsDBNull(sqlReader.GetOrdinal("progname")) Then
@@ -374,7 +374,7 @@ Public Class clsData
 
         Try
             With clsCurDldProgData
-                DownloadPluginInst.DownloadProgramme(New clsCachedWebClient(Me), .ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .BandwidthLimit, .AttemptNumber)
+                DownloadPluginInst.DownloadProgramme(New CachedWebClient(Me), .ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .BandwidthLimit, .AttemptNumber)
             End With
         Catch expUnknown As Exception
             Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, expUnknown.GetType.ToString + ": " + expUnknown.Message + vbCrLf + expUnknown.StackTrace)
@@ -746,9 +746,9 @@ Public Class clsData
         End While
 
         If booErrorStatus Then
-            frmMain.SetTrayStatus(False, frmMain.ErrorStatus.Error)
+            Main.SetTrayStatus(False, Main.ErrorStatus.Error)
         Else
-            frmMain.SetTrayStatus(False, frmMain.ErrorStatus.Normal)
+            Main.SetTrayStatus(False, Main.ErrorStatus.Normal)
         End If
 
         sqlReader.Close()
@@ -1020,7 +1020,7 @@ Public Class clsData
         End If
     End Sub
 
-    Public Function GetCurrentDownloadInfo() As clsDldProgData
+    Public Function GetCurrentDownloadInfo() As DldProgData
         Return clsCurDldProgData
     End Function
 
@@ -1111,9 +1111,9 @@ Public Class clsData
         End If
 
         If booRunVacuum Then
-            frmStatus.lblStatus.Text = "Compacting Database..."
-            frmStatus.prgProgress.Visible = False
-            frmStatus.Visible = True
+            Status.lblStatus.Text = "Compacting Database..."
+            Status.prgProgress.Visible = False
+            Status.Visible = True
             Application.DoEvents()
 
             ' Make SQLite recreate the database to reduce the size on disk and remove fragmentation
@@ -1122,10 +1122,10 @@ Public Class clsData
 
             SetDBSetting("lastvacuum", Now.ToString("O"))
 
-            frmStatus.prgProgress.Value = 1
+            Status.prgProgress.Value = 1
             Application.DoEvents()
 
-            frmStatus.Visible = False
+            Status.Visible = False
             Application.DoEvents()
         End If
     End Sub
@@ -1133,17 +1133,17 @@ Public Class clsData
     Public Function GetFindNewPanel(ByVal gidPluginID As Guid, ByVal objView As Object) As Panel
         If clsPluginsInst.PluginExists(gidPluginID) Then
             FindNewPluginInst = clsPluginsInst.GetPluginInstance(gidPluginID)
-            Return FindNewPluginInst.GetFindNewPanel(New clsCachedWebClient(Me), objView)
+            Return FindNewPluginInst.GetFindNewPanel(New CachedWebClient(Me), objView)
         Else
             Return New Panel
         End If
     End Function
 
     Private Sub FindNewPluginInst_FindNewException(ByVal expException As System.Exception) Handles FindNewPluginInst.FindNewException
-        If frmError.Visible = False Then
-            Dim clsReport As New clsErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
-            frmError.AssignReport(clsReport)
-            frmError.ShowDialog()
+        If ReportError.Visible = False Then
+            Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+            ReportError.AssignReport(clsReport)
+            ReportError.ShowDialog()
         End If
     End Sub
 
@@ -1158,7 +1158,7 @@ Public Class clsData
         If StoreProgrammeInfo(gidPluginID, strProgExtID, PluginException) = False Then
             If PluginException IsNot Nothing Then
                 If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + vbCrLf + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
-                    Dim clsReport As New clsErrorReporting(PluginException.GetType.ToString + ": " + PluginException.Message, PluginException.GetType.ToString + vbCrLf + PluginException.StackTrace)
+                    Dim clsReport As New ErrorReporting(PluginException.GetType.ToString + ": " + PluginException.Message, PluginException.GetType.ToString + vbCrLf + PluginException.StackTrace)
                     clsReport.SendReport(My.Settings.ErrorReportURL)
                 End If
 
@@ -1182,7 +1182,7 @@ Public Class clsData
         Dim ProgInfo As IRadioProvider.ProgrammeInfo
 
         Try
-            ProgInfo = ThisInstance.GetProgrammeInfo(New clsCachedWebClient(Me), strProgExtID)
+            ProgInfo = ThisInstance.GetProgrammeInfo(New CachedWebClient(Me), strProgExtID)
         Catch PluginException
             ' Catch unhandled errors in the plugin
             Return False
@@ -1345,7 +1345,7 @@ Public Class clsData
         End If
 
         Dim strEpisodeExtIDs As String()
-        Dim clsCachedWebInst As New clsCachedWebClient(Me)
+        Dim clsCachedWebInst As New CachedWebClient(Me)
         Dim ThisInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(gidProviderID)
 
         Try

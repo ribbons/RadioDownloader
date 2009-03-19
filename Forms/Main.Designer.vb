@@ -1,4 +1,4 @@
-<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> Partial Class frmMain
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> Partial Class Main
 #Region "Windows Form Designer generated code "
 	<System.Diagnostics.DebuggerNonUserCode()> Public Sub New()
 		MyBase.New()
@@ -23,7 +23,7 @@
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmMain))
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.tbrView = New System.Windows.Forms.ToolStrip
@@ -538,7 +538,7 @@
         Me.tbtDownloads.Size = New System.Drawing.Size(98, 28)
         Me.tbtDownloads.Text = "Downloads"
         '
-        'frmMain
+        'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
@@ -558,7 +558,7 @@
         Me.KeyPreview = True
         Me.Location = New System.Drawing.Point(11, 37)
         Me.MinimumSize = New System.Drawing.Size(500, 300)
-        Me.Name = "frmMain"
+        Me.Name = "Main"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
         Me.tbrView.ResumeLayout(False)

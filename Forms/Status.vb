@@ -1,4 +1,4 @@
-﻿' Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
+' Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
 ' Copyright © 2008  www.nerdoftheherd.com
 '
 ' This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
@@ -15,12 +15,12 @@
 Option Strict On
 Option Explicit On
 
-Public Class frmStatus
-    Private Sub frmStatus_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+Public Class Status
+    Private Sub Status_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         e.Cancel = True
     End Sub
 
-    Private Sub frmStatus_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+    Private Sub Status_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.Font = SystemFonts.MessageBoxFont
     End Sub
 End Class
