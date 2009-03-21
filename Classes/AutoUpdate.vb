@@ -17,23 +17,20 @@ Option Strict On
 
 Imports System.IO
 Imports System.Net
+Imports System.Security
 Imports System.Threading
-Imports System.Diagnostics
+Imports Microsoft.Win32
 
 Public Class AutoUpdate
     Private strVersionInfoURL As String
     Private strDownloadUrl As String
-    Private strSaveFileName As String
-    Private strRunCommand As String
-    Private strRunArguments As String
+    Private installerSavePath As String
     Private thrDownloadThread As New Thread(AddressOf DownloadUpdate)
 
-    Public Sub New(ByVal strVersionInfoURL As String, ByVal strDownloadUrl As String, ByVal strSaveFileName As String, ByVal strRunCommand As String, ByVal strRunArguments As String)
+    Public Sub New(ByVal strVersionInfoURL As String, ByVal strDownloadUrl As String, ByVal installerProductId As Guid, ByVal saveBasePath As String, ByVal defaultInstallerFileName As String)
         Me.strVersionInfoURL = strVersionInfoURL
         Me.strDownloadUrl = strDownloadUrl
-        Me.strSaveFileName = strSaveFileName
-        Me.strRunCommand = strRunCommand
-        Me.strRunArguments = strRunArguments
+        Me.installerSavePath = saveBasePath + "\" + installerName(installerProductId, defaultInstallerFileName)
     End Sub
 
     Public ReadOnly Property UpdateDownloaded() As Boolean
@@ -77,8 +74,8 @@ Public Class AutoUpdate
 
     Public Sub InstallUpdate()
         If My.Settings.UpdateDownloaded Then
-            If File.Exists(strSaveFileName) Then
-                Process.Start(strRunCommand, strRunArguments)
+            If File.Exists(installerSavePath) Then
+                Process.Start("msiexec", "/i """ + installerSavePath + """ REINSTALL=ALL REINSTALLMODE=vamus")
             End If
 
             My.Settings.UpdateDownloaded = False
@@ -88,7 +85,7 @@ Public Class AutoUpdate
     Private Sub DownloadUpdate()
         Dim webUpdate As New WebClient
         Try
-            webUpdate.DownloadFile(strDownloadUrl, strSaveFileName)
+            webUpdate.DownloadFile(strDownloadUrl, installerSavePath)
         Catch expWeb As WebException
             ' Temporary problem downloading the file, we will try again later
             Exit Sub
@@ -96,4 +93,46 @@ Public Class AutoUpdate
 
         My.Settings.UpdateDownloaded = True
     End Sub
+
+    Private Function installerName(ByVal productId As Guid, ByVal defaultInstallerFileName As String) As String
+        Dim prodIdCharArray() As Char = productId.ToString("N").ToUpper.ToCharArray()
+
+        ' ProductID is stored in the registry in an encoded form, where the following blocks are reversed
+        Dim blocks() As Integer = {8, 4, 4, 2, 2, 2, 2, 2, 2, 2, 2}
+        Dim currentPosition As Integer = 0
+
+        ' Perform the block reversal
+        For reverseBlock As Integer = 0 To 10
+            Array.Reverse(prodIdCharArray, currentPosition, blocks(reverseBlock))
+            currentPosition += blocks(reverseBlock)
+        Next
+
+        Dim sourceList As RegistryKey = Nothing
+
+        Try
+            sourceList = Registry.ClassesRoot.OpenSubKey("Installer\Products\" + prodIdCharArray + "\SourceList")
+        Catch securityExp As SecurityException
+            ' Unable to read the registry key, so just return the default
+            Return defaultInstallerFileName
+        End Try
+
+        If sourceList Is Nothing Then
+            ' The key could not be found, so just return the default
+            Return defaultInstallerFileName
+        End If
+
+        Dim packageName As String = CStr(sourceList.GetValue("PackageName"))
+
+        If packageName Is Nothing Then
+            ' The value could not be found, so just return the default
+            Return defaultInstallerFileName
+        End If
+
+        If packageName.ToLower.EndsWith(".msi") = False Then
+            ' The file name has the wrong extension, so just return the default
+            Return defaultInstallerFileName
+        End If
+
+        Return packageName
+    End Function
 End Class

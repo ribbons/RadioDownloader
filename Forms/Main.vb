@@ -194,7 +194,7 @@ Public Class Main
         Call SetTrayStatus(False)
         nicTrayIcon.Visible = True
 
-        clsUpdate = New AutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString, "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", GetAppDataFolder() + "\Radio Downloader.msi", "msiexec", "/i """ + GetAppDataFolder() + "\Radio Downloader.msi"" REINSTALL=ALL REINSTALLMODE=vamus")
+        clsUpdate = New AutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString, "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi", New Guid("B20EC097-6E80-4637-ACCE-F01A2E5071F4"), GetAppDataFolder(), "Radio Downloader.msi")
         If My.Settings.UpdateDownloaded Then
             Call InstallUpdate()
         End If
