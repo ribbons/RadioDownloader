@@ -44,6 +44,8 @@ Public Class AutoUpdate
             If My.Settings.UpdateDownloaded = False Then
                 If thrDownloadThread.IsAlive = False Then
                     Dim webUpdate As New WebClient
+                    webUpdate.Headers.Add("user-agent", My.Application.Info.AssemblyName + " " + My.Application.Info.Version.ToString)
+
                     Dim strVersionInfo As String
                     Dim strSplitInfo() As String
 
@@ -84,6 +86,8 @@ Public Class AutoUpdate
 
     Private Sub DownloadUpdate()
         Dim webUpdate As New WebClient
+        webUpdate.Headers.Add("user-agent", My.Application.Info.AssemblyName + " " + My.Application.Info.Version.ToString)
+
         Try
             webUpdate.DownloadFile(strDownloadUrl, installerSavePath)
         Catch expWeb As WebException
