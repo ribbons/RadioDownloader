@@ -93,10 +93,16 @@ Public Class Main
     End Sub
 
     Private Sub Main_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
-        If e.KeyCode = Keys.F1 Then
-            e.Handled = True
-            Call mnuHelpShowHelp_Click(sender, e)
-        End If
+        Select Case e.KeyCode
+            Case Keys.F1
+                e.Handled = True
+                Call mnuHelpShowHelp_Click(sender, e)
+            Case Keys.Delete
+                If tbtDelete.Visible Then
+                    e.Handled = True
+                    Call tbtDelete_Click()
+                End If
+        End Select
     End Sub
 
     Private Sub Main_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
