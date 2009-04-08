@@ -170,7 +170,7 @@ Module modMain
         expException = DirectCast(e.ExceptionObject, Exception)
 
         If ReportError.Visible = False Then
-            Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+            Dim clsReport As New ErrorReporting(expException)
             ReportError.AssignReport(clsReport)
             ReportError.ShowDialog()
         End If
@@ -178,7 +178,7 @@ Module modMain
 
     Public Sub ThreadExceptionHandler(ByVal sender As Object, ByVal e As Threading.ThreadExceptionEventArgs)
         If ReportError.Visible = False Then
-            Dim clsReport As New ErrorReporting(e.Exception.GetType.ToString + ": " + e.Exception.Message, e.Exception.GetType.ToString + vbCrLf + e.Exception.StackTrace)
+            Dim clsReport As New ErrorReporting(e.Exception)
             ReportError.AssignReport(clsReport)
             ReportError.ShowDialog()
         End If

@@ -543,7 +543,7 @@ Public Class Main
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
             If ReportError.Visible = False Then
-                Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                Dim clsReport As New ErrorReporting(expException)
                 ReportError.AssignReport(clsReport)
                 ReportError.ShowDialog()
             End If
@@ -605,7 +605,7 @@ Public Class Main
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
             If ReportError.Visible = False Then
-                Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                Dim clsReport As New ErrorReporting(expException)
                 ReportError.AssignReport(clsReport)
                 ReportError.ShowDialog()
             End If
@@ -661,7 +661,7 @@ Public Class Main
         Catch expException As Exception
             ' Errors in a sub called via a delegate are not caught in the right place
             If ReportError.Visible = False Then
-                Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+                Dim clsReport As New ErrorReporting(expException)
                 ReportError.AssignReport(clsReport)
                 ReportError.ShowDialog()
             End If

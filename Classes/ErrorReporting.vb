@@ -15,30 +15,91 @@
 Option Strict On
 Option Explicit On
 
-Imports System.Web
+Imports System.Collections.Generic
+Imports System.IO
 Imports System.Net
 Imports System.Reflection
 Imports System.Text.Encoding
-Imports System.Diagnostics.Process
+Imports System.Web
+Imports System.Xml.Serialization
 
 Public Class ErrorReporting
-    Dim htbFields As New Hashtable
+    Dim fields As New Dictionary(Of String, String)
 
     Public Sub New(ByVal strError As String, ByVal strDetails As String)
         Try
-            htbFields.Add("version", My.Application.Info.Version.ToString)
-            htbFields.Add("errortext", strError)
-            htbFields.Add("errordetails", strDetails)
+            fields.Add("version", My.Application.Info.Version.ToString)
+            fields.Add("errortext", strError)
+            fields.Add("errordetails", strDetails)
 
-            Dim strLoadedAssemblies As String = ""
+            Dim loadedAssemblies As String = ""
 
-            For Each LoadedAssembly As Assembly In AppDomain.CurrentDomain.GetAssemblies()
-                strLoadedAssemblies += LoadedAssembly.GetName.Name + vbCrLf
-                strLoadedAssemblies += "Assembly Version: " + LoadedAssembly.GetName.Version.ToString + vbCrLf
-                strLoadedAssemblies += "CodeBase: " + LoadedAssembly.CodeBase + vbCrLf + vbCrLf
+            For Each loadedAssembly As Assembly In AppDomain.CurrentDomain.GetAssemblies()
+                loadedAssemblies += loadedAssembly.GetName.Name + vbCrLf
+                loadedAssemblies += "Assembly Version: " + loadedAssembly.GetName.Version.ToString + vbCrLf
+                loadedAssemblies += "CodeBase: " + loadedAssembly.CodeBase + vbCrLf + vbCrLf
             Next
 
-            htbFields.Add("loadedassemblies", strLoadedAssemblies)
+            fields.Add("loadedassemblies", loadedAssemblies)
+        Catch
+            ' No way of reporting errors that have happened here, so just give up
+        End Try
+    End Sub
+
+    Public Sub New(ByVal uncaughtException As Exception)
+        Me.New(uncaughtException.GetType.ToString + ": " + uncaughtException.Message, uncaughtException.GetType.ToString + vbCrLf + uncaughtException.StackTrace)
+
+        Try
+            fields.Add("exceptiontostring", uncaughtException.ToString())
+
+            ' Set up a list of types which do not need to be serialized
+            Dim notSerialize As New List(Of Type)
+            notSerialize.AddRange(New Type() {GetType(String), GetType(Integer), GetType(Single), GetType(Double), GetType(Boolean)})
+
+            ' Store the type of the exception and get a list of its properties to loop through
+            Dim exceptionType As Type = uncaughtException.GetType()
+            Dim baseExceptionProperties() As PropertyInfo = GetType(Exception).GetProperties
+
+            Dim extraProperty As Boolean
+
+            For Each thisExpProperty As PropertyInfo In exceptionType.GetProperties
+                extraProperty = True
+
+                ' Check if this property exists in the base exception class: if not then add it to the report
+                For Each baseProperty As PropertyInfo In baseExceptionProperties
+                    If thisExpProperty.Name = baseProperty.Name Then
+                        extraProperty = False
+                        Exit For
+                    End If
+                Next
+
+                If extraProperty Then
+                    Dim propertyValue As Object = thisExpProperty.GetValue(uncaughtException, Nothing)
+
+                    If propertyValue IsNot Nothing AndAlso propertyValue.ToString <> "" Then
+                        If notSerialize.Contains(propertyValue.GetType) = False Then
+                            If propertyValue.GetType.IsSerializable Then
+                                ' Attempt to serialize the object as an XML string
+                                Try
+                                    Dim valueStringWriter As New StringWriter()
+                                    Dim valueSerializer As New XmlSerializer(propertyValue.GetType)
+
+                                    valueSerializer.Serialize(valueStringWriter, propertyValue)
+                                    fields.Add("expdata:" + thisExpProperty.Name, valueStringWriter.ToString)
+
+                                    Continue For
+                                Catch notSupported As NotSupportedException
+                                    ' Not possible to serialize - do nothing & fall through to the ToString code
+                                Catch invalidOperation As InvalidOperationException
+                                    ' Problem serializing the object - do nothing & fall through to the ToString code
+                                End Try
+                            End If
+                        End If
+
+                        fields.Add("expdata:" + thisExpProperty.Name, propertyValue.ToString)
+                    End If
+                End If
+            Next
         Catch
             ' No way of reporting errors that have happened here, so just give up
         End Try
@@ -48,8 +109,8 @@ Public Class ErrorReporting
         ToString = ""
 
         Try
-            For Each htbItem As DictionaryEntry In htbFields
-                ToString += CStr(htbItem.Key) + ": " + CStr(htbItem.Value) + vbCrLf
+            For Each reportField As KeyValuePair(Of String, String) In fields
+                ToString += reportField.Key + ": " + reportField.Value + vbCrLf
             Next
         Catch
             ' No way of reporting errors that have happened here, so just give up
@@ -63,8 +124,8 @@ Public Class ErrorReporting
 
             Dim strPostData As String = ""
 
-            For Each htbItem As DictionaryEntry In htbFields
-                strPostData += "&" + CStr(htbItem.Key) + "=" + HttpUtility.UrlEncode(CStr(htbItem.Value))
+            For Each reportField As KeyValuePair(Of String, String) In fields
+                strPostData += "&" + HttpUtility.UrlEncode(reportField.Key) + "=" + HttpUtility.UrlEncode(reportField.Value)
             Next
 
             strPostData = strPostData.Substring(1)
@@ -76,7 +137,7 @@ Public Class ErrorReporting
                 MsgBox("Your error report was sent successfully.", MsgBoxStyle.Information)
 
                 If strReturnLines(1).Substring(0, 7) = "http://" Then
-                    Start(strReturnLines(1))
+                    Process.Start(strReturnLines(1))
                 End If
             End If
         Catch

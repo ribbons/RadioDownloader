@@ -1141,7 +1141,7 @@ Public Class Data
 
     Private Sub FindNewPluginInst_FindNewException(ByVal expException As System.Exception) Handles FindNewPluginInst.FindNewException
         If ReportError.Visible = False Then
-            Dim clsReport As New ErrorReporting(expException.GetType.ToString + ": " + expException.Message, expException.GetType.ToString + vbCrLf + expException.StackTrace)
+            Dim clsReport As New ErrorReporting(expException)
             ReportError.AssignReport(clsReport)
             ReportError.ShowDialog()
         End If
@@ -1158,7 +1158,7 @@ Public Class Data
         If StoreProgrammeInfo(gidPluginID, strProgExtID, PluginException) = False Then
             If PluginException IsNot Nothing Then
                 If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + vbCrLf + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
-                    Dim clsReport As New ErrorReporting(PluginException.GetType.ToString + ": " + PluginException.Message, PluginException.GetType.ToString + vbCrLf + PluginException.StackTrace)
+                    Dim clsReport As New ErrorReporting(PluginException)
                     clsReport.SendReport(My.Settings.ErrorReportURL)
                 End If
 
