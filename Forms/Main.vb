@@ -16,10 +16,6 @@ Option Strict On
 Option Explicit On
 
 Imports System.IO
-Imports System.IO.File
-Imports System.Reflection
-Imports System.Text.ASCIIEncoding
-Imports System.Diagnostics.Process
 Imports System.Windows.Forms.VisualStyles
 
 Public Class Main
@@ -330,7 +326,7 @@ Public Class Main
                 Dim strActionString As String
 
                 If staDownloadStatus = Data.Statuses.Downloaded Then
-                    If Exists(.DownloadPath(intEpID)) Then
+                    If File.Exists(.DownloadPath(intEpID)) Then
                         strActionString = "Play,Delete"
                     Else
                         strActionString = "Delete"
@@ -763,7 +759,7 @@ Public Class Main
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
         If clsProgData.DownloadStatus(intEpID) = Data.Statuses.Downloaded Then
-            If Exists(clsProgData.DownloadPath(intEpID)) Then
+            If File.Exists(clsProgData.DownloadPath(intEpID)) Then
                 Process.Start(clsProgData.DownloadPath(intEpID))
 
                 ' Bump the play count of this item up by one, and update the list so that the icon changes colour
@@ -779,7 +775,7 @@ Public Class Main
     Private Sub tbtDelete_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
         Dim strDownloadPath As String = clsProgData.DownloadPath(intEpID)
-        Dim booExists As Boolean = Exists(strDownloadPath)
+        Dim booExists As Boolean = File.Exists(strDownloadPath)
         Dim strDelQuestion As String = "Are you sure that you would like to delete this episode"
 
         If booExists Then
@@ -788,7 +784,7 @@ Public Class Main
 
         If MsgBox(strDelQuestion + "?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
             If booExists Then
-                Delete(strDownloadPath)
+                File.Delete(strDownloadPath)
             End If
 
             clsProgData.RemoveDownload(intEpID)
@@ -846,11 +842,11 @@ Public Class Main
     End Sub
 
     Private Sub mnuHelpShowHelp_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpShowHelp.Click
-        Start("http://www.nerdoftheherd.com/tools/radiodld/help/")
+        Process.Start("http://www.nerdoftheherd.com/tools/radiodld/help/")
     End Sub
 
     Private Sub mnuHelpReportBug_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuHelpReportBug.Click
-        Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php")
+        Process.Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php")
     End Sub
 
     Private Sub tbtCleanUp_Click()
