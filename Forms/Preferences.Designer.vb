@@ -87,7 +87,7 @@
         Me.cmdChangeFolder.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdChangeFolder.Size = New System.Drawing.Size(73, 25)
         Me.cmdChangeFolder.TabIndex = 2
-        Me.cmdChangeFolder.Text = "Change"
+        Me.cmdChangeFolder.Text = "&Change"
         Me.cmdChangeFolder.UseVisualStyleBackColor = False
         '
         'txtSaveIn
@@ -161,7 +161,7 @@
         Me.cmdReset.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdReset.Size = New System.Drawing.Size(77, 25)
         Me.cmdReset.TabIndex = 7
-        Me.cmdReset.Text = "Reset"
+        Me.cmdReset.Text = "&Reset"
         Me.cmdReset.UseVisualStyleBackColor = False
         '
         'lblRunAfter

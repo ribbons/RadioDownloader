@@ -67,7 +67,7 @@ Partial Class FindNew
         Me.cmdViewEps.Name = "cmdViewEps"
         Me.cmdViewEps.Size = New System.Drawing.Size(73, 23)
         Me.cmdViewEps.TabIndex = 1
-        Me.cmdViewEps.Text = "View"
+        Me.cmdViewEps.Text = "&View"
         Me.cmdViewEps.UseVisualStyleBackColor = True
         '
         'txtFeedURL
