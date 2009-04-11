@@ -70,7 +70,7 @@
         Me.lblExplainOrphan.Name = "lblExplainOrphan"
         Me.lblExplainOrphan.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.lblExplainOrphan.Size = New System.Drawing.Size(311, 44)
-        Me.lblExplainOrphan.TabIndex = 0
+        Me.lblExplainOrphan.TabIndex = 3
         Me.lblExplainOrphan.Text = "This will remove the programmes in your download list for which the audio file ha" & _
             "s been moved or deleted."
         '
@@ -84,7 +84,7 @@
         Me.radType.Size = New System.Drawing.Size(143, 18)
         Me.radType.TabIndex = 2
         Me.radType.TabStop = True
-        Me.radType.Text = "Remove orphan entries"
+        Me.radType.Text = "&Remove orphan entries"
         Me.radType.UseVisualStyleBackColor = True
         '
         'CleanUp

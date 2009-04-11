@@ -68,7 +68,7 @@ Partial Class ReportError
         Me.lblWhiteBar.Location = New System.Drawing.Point(0, -1)
         Me.lblWhiteBar.Name = "lblWhiteBar"
         Me.lblWhiteBar.Size = New System.Drawing.Size(493, 58)
-        Me.lblWhiteBar.TabIndex = 3
+        Me.lblWhiteBar.TabIndex = 2
         '
         'lblTopMessage
         '
@@ -78,7 +78,7 @@ Partial Class ReportError
         Me.lblTopMessage.Location = New System.Drawing.Point(21, 15)
         Me.lblTopMessage.Name = "lblTopMessage"
         Me.lblTopMessage.Size = New System.Drawing.Size(385, 13)
-        Me.lblTopMessage.TabIndex = 4
+        Me.lblTopMessage.TabIndex = 3
         Me.lblTopMessage.Text = "Radio Downloader has encountered a problem and needs to close."
         '
         'lblTopMessage2
@@ -89,7 +89,7 @@ Partial Class ReportError
         Me.lblTopMessage2.Location = New System.Drawing.Point(21, 30)
         Me.lblTopMessage2.Name = "lblTopMessage2"
         Me.lblTopMessage2.Size = New System.Drawing.Size(211, 13)
-        Me.lblTopMessage2.TabIndex = 5
+        Me.lblTopMessage2.TabIndex = 4
         Me.lblTopMessage2.Text = "We are sorry for the inconvenience."
         '
         'lblTopBorder
@@ -101,7 +101,7 @@ Partial Class ReportError
         Me.lblTopBorder.Location = New System.Drawing.Point(0, 56)
         Me.lblTopBorder.Name = "lblTopBorder"
         Me.lblTopBorder.Size = New System.Drawing.Size(493, 1)
-        Me.lblTopBorder.TabIndex = 6
+        Me.lblTopBorder.TabIndex = 5
         '
         'lblIfYouWere
         '
@@ -109,7 +109,7 @@ Partial Class ReportError
         Me.lblIfYouWere.Location = New System.Drawing.Point(30, 69)
         Me.lblIfYouWere.Name = "lblIfYouWere"
         Me.lblIfYouWere.Size = New System.Drawing.Size(425, 13)
-        Me.lblIfYouWere.TabIndex = 7
+        Me.lblIfYouWere.TabIndex = 6
         Me.lblIfYouWere.Text = "If you were in the middle of something, the information you were working on might" & _
             " be lost."
         '
@@ -120,7 +120,7 @@ Partial Class ReportError
         Me.lblPleaseTell.Location = New System.Drawing.Point(30, 91)
         Me.lblPleaseTell.Name = "lblPleaseTell"
         Me.lblPleaseTell.Size = New System.Drawing.Size(292, 13)
-        Me.lblPleaseTell.TabIndex = 8
+        Me.lblPleaseTell.TabIndex = 7
         Me.lblPleaseTell.Text = "Please tell NerdoftheHerd.com about this problem."
         '
         'PictureBox1
@@ -142,7 +142,7 @@ Partial Class ReportError
         Me.lblWeHaveCreated.Location = New System.Drawing.Point(30, 113)
         Me.lblWeHaveCreated.Name = "lblWeHaveCreated"
         Me.lblWeHaveCreated.Size = New System.Drawing.Size(430, 13)
-        Me.lblWeHaveCreated.TabIndex = 9
+        Me.lblWeHaveCreated.TabIndex = 8
         Me.lblWeHaveCreated.Text = "We have created an error report that you can send to help us improve Radio Downlo" & _
             "ader."
         '
@@ -152,7 +152,7 @@ Partial Class ReportError
         Me.lblWeWill.Location = New System.Drawing.Point(30, 135)
         Me.lblWeWill.Name = "lblWeWill"
         Me.lblWeWill.Size = New System.Drawing.Size(266, 13)
-        Me.lblWeWill.TabIndex = 10
+        Me.lblWeWill.TabIndex = 9
         Me.lblWeWill.Text = "We will treat this report as confidential and anonymous."
         '
         'lnkWhatData
@@ -161,11 +161,11 @@ Partial Class ReportError
         Me.lnkWhatData.Location = New System.Drawing.Point(30, 158)
         Me.lnkWhatData.Name = "lnkWhatData"
         Me.lnkWhatData.Size = New System.Drawing.Size(200, 13)
-        Me.lnkWhatData.TabIndex = 2
+        Me.lnkWhatData.TabIndex = 10
         Me.lnkWhatData.TabStop = True
-        Me.lnkWhatData.Text = "What data does this error report contain?"
+        Me.lnkWhatData.Text = "&What data does this error report contain?"
         '
-        'Error
+        'ReportError
         '
         Me.AcceptButton = Me.cmdSend
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -188,7 +188,7 @@ Partial Class ReportError
         Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.MaximizeBox = False
         Me.MinimizeBox = False
-        Me.Name = "Error"
+        Me.Name = "ReportError"
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"

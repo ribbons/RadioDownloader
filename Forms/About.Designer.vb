@@ -63,7 +63,7 @@ Partial Class About
         Me.TextboxLicense.ReadOnly = True
         Me.TextboxLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.TextboxLicense.Size = New System.Drawing.Size(489, 140)
-        Me.TextboxLicense.TabIndex = 2
+        Me.TextboxLicense.TabIndex = 5
         Me.TextboxLicense.Text = resources.GetString("TextboxLicense.Text")
         '
         'LabelCopyright
@@ -81,7 +81,7 @@ Partial Class About
         Me.HomepageLink.Location = New System.Drawing.Point(82, 56)
         Me.HomepageLink.Name = "HomepageLink"
         Me.HomepageLink.Size = New System.Drawing.Size(228, 13)
-        Me.HomepageLink.TabIndex = 1
+        Me.HomepageLink.TabIndex = 3
         Me.HomepageLink.TabStop = True
         Me.HomepageLink.Text = "http://www.nerdoftheherd.com/tools/radiodld/"
         '
@@ -93,7 +93,7 @@ Partial Class About
         Me.LabelLicense.Name = "LabelLicense"
         Me.LabelLicense.Size = New System.Drawing.Size(47, 13)
         Me.LabelLicense.TabIndex = 4
-        Me.LabelLicense.Text = "License:"
+        Me.LabelLicense.Text = "&License:"
         '
         'ButtonOK
         '

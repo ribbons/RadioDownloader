@@ -57,8 +57,8 @@ Partial Class FindNew
         Me.lblInstructions.Margin = New System.Windows.Forms.Padding(4, 0, 3, 10)
         Me.lblInstructions.Name = "lblInstructions"
         Me.lblInstructions.Size = New System.Drawing.Size(189, 13)
-        Me.lblInstructions.TabIndex = 2
-        Me.lblInstructions.Text = "Enter the URL of a podcast RSS feed:"
+        Me.lblInstructions.TabIndex = 0
+        Me.lblInstructions.Text = "&Enter the URL of a podcast RSS feed:"
         '
         'cmdViewEps
         '
@@ -66,7 +66,7 @@ Partial Class FindNew
         Me.cmdViewEps.Location = New System.Drawing.Point(461, 63)
         Me.cmdViewEps.Name = "cmdViewEps"
         Me.cmdViewEps.Size = New System.Drawing.Size(73, 23)
-        Me.cmdViewEps.TabIndex = 1
+        Me.cmdViewEps.TabIndex = 2
         Me.cmdViewEps.Text = "&View"
         Me.cmdViewEps.UseVisualStyleBackColor = True
         '
@@ -77,7 +77,7 @@ Partial Class FindNew
         Me.txtFeedURL.Location = New System.Drawing.Point(39, 65)
         Me.txtFeedURL.Name = "txtFeedURL"
         Me.txtFeedURL.Size = New System.Drawing.Size(416, 20)
-        Me.txtFeedURL.TabIndex = 0
+        Me.txtFeedURL.TabIndex = 1
         '
         'FindNew
         '
