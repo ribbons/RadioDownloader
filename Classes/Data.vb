@@ -22,7 +22,7 @@ Imports System.Data.SQLite
 Imports System.Collections.Generic
 Imports System.Text.RegularExpressions
 
-Public Class Data
+Friend Class Data
     Public Enum Statuses
         Waiting
         Downloaded
@@ -360,9 +360,9 @@ Public Class Data
 
                         FindAndDownload = True
                     End If
-                    Else
-                        Exit While
-                    End If
+                Else
+                    Exit While
+                End If
             End While
 
             sqlReader.Close()
@@ -374,7 +374,7 @@ Public Class Data
 
         Try
             With clsCurDldProgData
-                DownloadPluginInst.DownloadProgramme(New CachedWebClient(Me), .ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .BandwidthLimit, .AttemptNumber)
+                DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .BandwidthLimit, .AttemptNumber)
             End With
         Catch expUnknown As Exception
             Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, expUnknown.GetType.ToString + ": " + expUnknown.Message + vbCrLf + expUnknown.StackTrace)
@@ -1133,7 +1133,7 @@ Public Class Data
     Public Function GetFindNewPanel(ByVal gidPluginID As Guid, ByVal objView As Object) As Panel
         If clsPluginsInst.PluginExists(gidPluginID) Then
             FindNewPluginInst = clsPluginsInst.GetPluginInstance(gidPluginID)
-            Return FindNewPluginInst.GetFindNewPanel(New CachedWebClient(Me), objView)
+            Return FindNewPluginInst.GetFindNewPanel(objView)
         Else
             Return New Panel
         End If
@@ -1182,7 +1182,7 @@ Public Class Data
         Dim ProgInfo As IRadioProvider.ProgrammeInfo
 
         Try
-            ProgInfo = ThisInstance.GetProgrammeInfo(New CachedWebClient(Me), strProgExtID)
+            ProgInfo = ThisInstance.GetProgrammeInfo(strProgExtID)
         Catch PluginException
             ' Catch unhandled errors in the plugin
             Return False
@@ -1345,11 +1345,11 @@ Public Class Data
         End If
 
         Dim strEpisodeExtIDs As String()
-        Dim clsCachedWebInst As New CachedWebClient(Me)
+        Dim clsCachedWebInst As New CachedWebClient()
         Dim ThisInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(gidProviderID)
 
         Try
-            strEpisodeExtIDs = ThisInstance.GetAvailableEpisodeIDs(clsCachedWebInst, strProgExtID)
+            strEpisodeExtIDs = ThisInstance.GetAvailableEpisodeIDs(strProgExtID)
         Catch expException As Exception
             ' Catch any unhandled provider exceptions
             Exit Function
@@ -1391,7 +1391,7 @@ Public Class Data
                     intEpisodeIDs(intEpisodeIDs.GetUpperBound(0)) = sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))
                 Else
                     Try
-                        EpisodeInfo = ThisInstance.GetEpisodeInfo(clsCachedWebInst, strProgExtID, strEpisodeExtID)
+                        EpisodeInfo = ThisInstance.GetEpisodeInfo(strProgExtID, strEpisodeExtID)
                     Catch expException As Exception
                         ' Catch any unhandled provider exceptions
                         sqlReader.Close()

@@ -17,7 +17,7 @@ Option Explicit On
 
 Imports System.IO
 
-Module modMain
+Friend Module modMain
     Public Structure RECT
         Dim Left_Renamed As Integer
         Dim Top As Integer

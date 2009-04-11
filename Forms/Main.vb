@@ -18,7 +18,7 @@ Option Explicit On
 Imports System.IO
 Imports System.Windows.Forms.VisualStyles
 
-Public Class Main
+Friend Class Main
     Inherits System.Windows.Forms.Form
 
     Public Enum ErrorStatus
@@ -319,7 +319,7 @@ Public Class Main
     Private Sub SetContextForSelectedDownload()
         If lstDownloads.SelectedItems.Count > 0 Then
             Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-            
+
             With clsProgData
                 Dim staDownloadStatus As Data.Statuses = .DownloadStatus(intEpID)
                 Dim strInfoBox As String = ""

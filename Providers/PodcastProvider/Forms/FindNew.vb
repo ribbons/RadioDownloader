@@ -19,7 +19,9 @@ Imports System.Xml
 Imports System.Net
 Imports System.Windows.Forms
 
-Public Class FindNew
+Imports RadioDld
+
+Friend Class FindNew
     Friend clsPluginInst As PodcastProvider
 
     Private Sub cmdViewEps_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdViewEps.Click
@@ -31,12 +33,13 @@ Public Class FindNew
             Application.DoEvents()
 
             Dim strURL As String = txtFeedURL.Text
+            Dim cachedWeb As New CachedWebClient
             Dim strRSS As String
             Dim xmlRSS As New XmlDocument
 
             ' First test that we can load something from the specified URL
             Try
-                strRSS = clsPluginInst.clsCachedHTTP.DownloadString(strURL, PodcastProvider.intCacheHTTPHours)
+                strRSS = cachedWeb.DownloadString(strURL, PodcastProvider.intCacheHTTPHours)
             Catch expArgument As ArgumentException
                 lblResult.Text = "The specified URL was not valid."
                 lblResult.ForeColor = Drawing.Color.Red

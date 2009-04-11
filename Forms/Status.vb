@@ -15,7 +15,7 @@
 Option Strict On
 Option Explicit On
 
-Public Class Status
+Friend Class Status
     Private Sub Status_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         e.Cancel = True
     End Sub

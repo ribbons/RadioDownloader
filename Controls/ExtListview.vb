@@ -20,7 +20,7 @@ Imports System.Runtime.InteropServices
 
 ' Parts of the code in this class are based on c# code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
 
-Public Class ExtListView : Inherits ListView
+Friend Class ExtListView : Inherits ListView
     ' Window Messages
     Private Const WM_CREATE As Integer = &H1
     Private Const WM_SETFOCUS As Integer = &H7

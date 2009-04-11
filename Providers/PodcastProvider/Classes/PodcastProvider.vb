@@ -36,7 +36,6 @@ Public Class PodcastProvider
     Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
     Public Event Finished(ByVal strFileExtension As String) Implements IRadioProvider.Finished
 
-    Friend clsCachedHTTP As RadioDld.CachedWebClient
     Friend Const intCacheHTTPHours As Integer = 2
 
     Private Shared Event PowerModeChanged As PowerModeChangedEventHandler
@@ -78,24 +77,23 @@ Public Class PodcastProvider
         End Get
     End Property
 
-    Public Function GetFindNewPanel(ByVal clsCachedHTTP As CachedWebClient, ByVal objView As Object) As Panel Implements IRadioProvider.GetFindNewPanel
-        Me.clsCachedHTTP = clsCachedHTTP
-
+    Public Function GetFindNewPanel(ByVal objView As Object) As Panel Implements IRadioProvider.GetFindNewPanel
         Dim FindNewInst As New FindNew
         FindNewInst.clsPluginInst = Me
         Return FindNewInst.pnlFindNew
     End Function
 
-    Public Function GetProgrammeInfo(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String) As IRadioProvider.ProgrammeInfo Implements IRadioProvider.GetProgrammeInfo
+    Public Function GetProgrammeInfo(ByVal strProgExtID As String) As IRadioProvider.ProgrammeInfo Implements IRadioProvider.GetProgrammeInfo
         Dim ProgInfo As New IRadioProvider.ProgrammeInfo
         ProgInfo.Success = False
 
+        Dim cachedWeb As New CachedWebClient
         Dim strRSS As String
         Dim xmlRSS As New XmlDocument
         Dim xmlNamespaceMgr As XmlNamespaceManager
 
         Try
-            strRSS = clsCachedHTTP.DownloadString(strProgExtID, intCacheHTTPHours)
+            strRSS = cachedWeb.DownloadString(strProgExtID, intCacheHTTPHours)
         Catch expWeb As WebException
             Return ProgInfo
         End Try
@@ -127,21 +125,22 @@ Public Class PodcastProvider
             Return ProgInfo
         End If
 
-        ProgInfo.Image = RSSNodeImage(clsCachedHTTP, xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
+        ProgInfo.Image = RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
 
         ProgInfo.Success = True
         Return ProgInfo
     End Function
 
-    Public Function GetAvailableEpisodeIDs(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
+    Public Function GetAvailableEpisodeIDs(ByVal strProgExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
         Dim strEpisodeIDs(-1) As String
         GetAvailableEpisodeIDs = strEpisodeIDs
 
+        Dim cachedWeb As New CachedWebClient
         Dim strRSS As String
         Dim xmlRSS As New XmlDocument
 
         Try
-            strRSS = clsCachedHTTP.DownloadString(strProgExtID, intCacheHTTPHours)
+            strRSS = cachedWeb.DownloadString(strProgExtID, intCacheHTTPHours)
         Catch expWeb As WebException
             Exit Function
         End Try
@@ -173,16 +172,17 @@ Public Class PodcastProvider
         Return strEpisodeIDs
     End Function
 
-    Function GetEpisodeInfo(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As IRadioProvider.EpisodeInfo Implements IRadioProvider.GetEpisodeInfo
+    Function GetEpisodeInfo(ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As IRadioProvider.EpisodeInfo Implements IRadioProvider.GetEpisodeInfo
         Dim EpisodeInfo As New IRadioProvider.EpisodeInfo
         EpisodeInfo.Success = False
 
+        Dim cachedWeb As New CachedWebClient
         Dim strRSS As String
         Dim xmlRSS As New XmlDocument
         Dim xmlNamespaceMgr As XmlNamespaceManager
 
         Try
-            strRSS = clsCachedHTTP.DownloadString(strProgExtID, intCacheHTTPHours)
+            strRSS = cachedWeb.DownloadString(strProgExtID, intCacheHTTPHours)
         Catch expWeb As WebException
             Return EpisodeInfo
         End Try
@@ -348,10 +348,10 @@ Public Class PodcastProvider
                     EpisodeInfo.Date = Now
                 End If
 
-                EpisodeInfo.Image = RSSNodeImage(clsCachedHTTP, xmlItem, xmlNamespaceMgr)
+                EpisodeInfo.Image = RSSNodeImage(xmlItem, xmlNamespaceMgr)
 
                 If EpisodeInfo.Image Is Nothing Then
-                    EpisodeInfo.Image = RSSNodeImage(clsCachedHTTP, xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
+                    EpisodeInfo.Image = RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
                 End If
 
                 EpisodeInfo.ExtInfo = dicExtInfo
@@ -364,7 +364,7 @@ Public Class PodcastProvider
         Return EpisodeInfo
     End Function
 
-    Public Sub DownloadProgramme(ByVal clsCachedHTTP As CachedWebClient, ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
+    Public Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intBandwidthLimitKBytes As Integer, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
         strProgDldUrl = EpInfo.ExtInfo("EnclosureURL")
 
         Dim intFileNamePos As Integer = strFinalName.LastIndexOf("\")
@@ -414,13 +414,15 @@ Public Class PodcastProvider
         Return strItemID
     End Function
 
-    Private Function RSSNodeImage(ByVal clsCachedHTTP As CachedWebClient, ByVal xmlNode As XmlNode, ByVal xmlNamespaceMgr As XmlNamespaceManager) As Bitmap
+    Private Function RSSNodeImage(ByVal xmlNode As XmlNode, ByVal xmlNamespaceMgr As XmlNamespaceManager) As Bitmap
+        Dim cachedWeb As New CachedWebClient
+
         Try
             Dim xmlImageNode As XmlNode = xmlNode.SelectSingleNode("itunes:image", xmlNamespaceMgr)
 
             If xmlImageNode IsNot Nothing Then
                 Dim strImageUrl As String = xmlImageNode.Attributes("href").Value
-                Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+                Dim bteImageData As Byte() = cachedWeb.DownloadData(strImageUrl, intCacheHTTPHours)
                 RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
             Else
                 RSSNodeImage = Nothing
@@ -435,7 +437,7 @@ Public Class PodcastProvider
 
                 If xmlImageUrlNode IsNot Nothing Then
                     Dim strImageUrl As String = xmlImageUrlNode.InnerText
-                    Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+                    Dim bteImageData As Byte() = cachedWeb.DownloadData(strImageUrl, intCacheHTTPHours)
                     RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
                 Else
                     RSSNodeImage = Nothing
@@ -450,7 +452,7 @@ Public Class PodcastProvider
 
                     If xmlImageNode IsNot Nothing Then
                         Dim strImageUrl As String = xmlImageNode.Attributes("url").Value
-                        Dim bteImageData As Byte() = clsCachedHTTP.DownloadData(strImageUrl, intCacheHTTPHours)
+                        Dim bteImageData As Byte() = cachedWeb.DownloadData(strImageUrl, intCacheHTTPHours)
                         RSSNodeImage = New Bitmap(New IO.MemoryStream(bteImageData))
                     Else
                         RSSNodeImage = Nothing

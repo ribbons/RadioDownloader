@@ -17,7 +17,7 @@ Option Explicit On
 
 Imports System.Windows.Forms
 
-Public Class ReportError
+Friend Class ReportError
     Private clsReport As ErrorReporting
 
     Public Sub AssignReport(ByVal clsReport As ErrorReporting)

@@ -17,7 +17,7 @@ Option Explicit On
 
 Imports System.Runtime.InteropServices
 
-Public Class ExtToolBar : Inherits ToolBar
+Friend Class ExtToolBar : Inherits ToolBar
     ' Window Messages
     Private Const WM_USER As Integer = &H400
     Private Const TB_SETBUTTONINFO As Integer = WM_USER + 64

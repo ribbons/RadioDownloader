@@ -18,7 +18,7 @@ Option Strict On
 Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
-Public Class UpdateDB
+Friend Class UpdateDB
     Private sqlSpecConn As SQLiteConnection
     Private sqlUpdConn As SQLiteConnection
 

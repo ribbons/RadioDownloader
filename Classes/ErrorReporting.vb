@@ -23,7 +23,7 @@ Imports System.Text.Encoding
 Imports System.Web
 Imports System.Xml.Serialization
 
-Public Class ErrorReporting
+Friend Class ErrorReporting
     Dim fields As New Dictionary(Of String, String)
 
     Public Sub New(ByVal strError As String, ByVal strDetails As String)

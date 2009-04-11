@@ -19,22 +19,22 @@ Imports System.Net
 Imports System.Text
 
 Public Class CachedWebClient
-    Private clsDataInst As Data
+    Private dataInst As Data
 
-    Public Sub New(ByVal clsDataInst As Data)
-        Me.clsDataInst = clsDataInst
+    Public Sub New()
+        Me.dataInst = Data.GetInstance
     End Sub
 
-    Public Function DownloadData(ByVal strURI As String, ByVal intFetchIntervalHrs As Integer) As Byte()
-        If intFetchIntervalHrs = 0 Then
-            Throw New ArgumentException("intFetchIntervalHrs cannot be zero.")
+    Public Function DownloadData(ByVal uri As String, ByVal fetchIntervalHrs As Integer) As Byte()
+        If fetchIntervalHrs = 0 Then
+            Throw New ArgumentException("fetchIntervalHrs cannot be zero.", "fetchIntervalHrs")
         End If
 
-        Dim dteLastFetch As Date = clsDataInst.GetHTTPCacheLastUpdate(strURI)
+        Dim lastFetch As Date = dataInst.GetHTTPCacheLastUpdate(uri)
 
-        If dteLastFetch <> Nothing Then
-            If dteLastFetch.AddHours(intFetchIntervalHrs) > Now Then
-                Dim bteCacheData As Byte() = clsDataInst.GetHTTPCacheContent(strURI)
+        If lastFetch <> Nothing Then
+            If lastFetch.AddHours(fetchIntervalHrs) > Now Then
+                Dim bteCacheData As Byte() = dataInst.GetHTTPCacheContent(uri)
 
                 If bteCacheData IsNot Nothing Then
                     Return bteCacheData
@@ -42,15 +42,15 @@ Public Class CachedWebClient
             End If
         End If
 
-        Debug.Print("Cached WebClient: Fetching " + strURI)
+        Debug.Print("Cached WebClient: Fetching " + uri)
         Dim webClient As New WebClient
-        Dim bteData As Byte() = webClient.DownloadData(strURI)
+        Dim data As Byte() = webClient.DownloadData(uri)
 
-        clsDataInst.AddToHTTPCache(strURI, bteData)
-        Return bteData
+        dataInst.AddToHTTPCache(uri, data)
+        Return data
     End Function
 
-    Public Function DownloadString(ByVal strURI As String, ByVal intFetchIntervalHrs As Integer) As String
-        Return Encoding.UTF8.GetString(DownloadData(strURI, intFetchIntervalHrs))
+    Public Function DownloadString(ByVal uri As String, ByVal fetchIntervalHrs As Integer) As String
+        Return Encoding.UTF8.GetString(DownloadData(uri, fetchIntervalHrs))
     End Function
 End Class

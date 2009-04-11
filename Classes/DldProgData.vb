@@ -15,7 +15,7 @@
 Option Strict On
 Option Explicit On
 
-Public Class DldProgData
+Friend Class DldProgData
     Private gidPluginID As Guid
     Private strProgExtID As String
     Private intEpID As Integer

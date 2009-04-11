@@ -21,7 +21,7 @@ Imports System.Security
 Imports System.Threading
 Imports Microsoft.Win32
 
-Public Class AutoUpdate
+Friend Class AutoUpdate
     Private strVersionInfoURL As String
     Private strDownloadUrl As String
     Private installerSavePath As String

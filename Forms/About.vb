@@ -17,7 +17,7 @@ Option Explicit On
 
 Imports System.Diagnostics.Process
 
-Public NotInheritable Class About
+Friend NotInheritable Class About
     Private Sub About_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         ' Set the title of the form.
         Dim ApplicationTitle As String
