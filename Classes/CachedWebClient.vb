@@ -51,6 +51,6 @@ Public Class CachedWebClient
     End Function
 
     Public Function DownloadString(ByVal strURI As String, ByVal intFetchIntervalHrs As Integer) As String
-        Return Encoding.ASCII.GetString(DownloadData(strURI, intFetchIntervalHrs))
+        Return Encoding.UTF8.GetString(DownloadData(strURI, intFetchIntervalHrs))
     End Function
 End Class
