@@ -15,6 +15,7 @@
 Option Strict On
 Option Explicit On
 
+Imports System.Collections.Generic
 Imports System.Runtime.InteropServices
 
 Friend Class ExtToolBar : Inherits ToolBar
@@ -32,7 +33,8 @@ Friend Class ExtToolBar : Inherits ToolBar
     Private Const BTNS_WHOLEDROPDOWN As Integer = &H80
 
     'API Structs
-    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto)> Private Structure TBBUTTONINFO
+    <StructLayout(LayoutKind.Sequential, CharSet:=CharSet.Auto)> _
+    Private Structure TBBUTTONINFO
         Dim cbSize As Integer
         Dim dwMask As Integer
         Dim idCommand As Integer
@@ -48,20 +50,27 @@ Friend Class ExtToolBar : Inherits ToolBar
     ' API Declarations
     Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As TBBUTTONINFO) As IntPtr
 
-    Public Sub SetWholeDropDown(ByVal tbrButton As ToolBarButton)
-        If tbrButton Is Nothing Then
-            Throw New ArgumentNullException("tbrButton")
+    ' Variables
+    Private wholeDropDownButtons As New List(Of ToolBarButton)
+
+    Public Sub SetWholeDropDown(ByVal button As ToolBarButton)
+        If button Is Nothing Then
+            Throw New ArgumentNullException("button")
         End If
 
-        Dim tbrInfo As TBBUTTONINFO
+        If wholeDropDownButtons.Contains(button) = False Then
+            wholeDropDownButtons.Add(button)
+        End If
 
-        With tbrInfo
-            .cbSize = Marshal.SizeOf(tbrInfo)
+        Dim buttonInfo As TBBUTTONINFO
+
+        With buttonInfo
+            .cbSize = Marshal.SizeOf(buttonInfo)
             .dwMask = TBIF_STYLE Or TBIF_BYINDEX
             .fsStyle = BTNS_WHOLEDROPDOWN Or BTNS_AUTOSIZE
         End With
 
-        SendMessage(Me.Handle, TB_SETBUTTONINFO, CType(Me.Buttons.IndexOf(tbrButton), IntPtr), tbrInfo)
+        SendMessage(Me.Handle, TB_SETBUTTONINFO, CType(Me.Buttons.IndexOf(button), IntPtr), buttonInfo)
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
@@ -88,4 +97,34 @@ Friend Class ExtToolBar : Inherits ToolBar
 
         MyBase.WndProc(m)
     End Sub
+
+    Protected Overrides Function ProcessMnemonic(ByVal inputChar As Char) As Boolean
+        For Each checkButton As ToolBarButton In Me.Buttons
+            If checkButton.Visible AndAlso IsMnemonic(inputChar, checkButton.Text) Then
+                If wholeDropDownButtons.Contains(checkButton) Then
+                    ' Give the toolbar button a pressed appearance
+                    checkButton.Pushed = True
+                    ' Set the whole dropdown flag again as setting pushed will have cleared it
+                    SetWholeDropDown(checkButton)
+
+                    ' Calculate where the menu should be shown
+                    Dim menuLocation As New Point(checkButton.Rectangle.Left, checkButton.Rectangle.Bottom)
+                    ' Show the menu (modally)
+                    CType(checkButton.DropDownMenu, ContextMenu).Show(Me, menuLocation)
+
+                    ' Remove the pressed appearance
+                    checkButton.Pushed = False
+                    SetWholeDropDown(checkButton)
+                Else
+                    ' Just fire the click code for the button
+                    Me.OnButtonClick(New ToolBarButtonClickEventArgs(checkButton))
+                End If
+
+                ' Let the calling function know that we found a matching mnemonic
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
 End Class

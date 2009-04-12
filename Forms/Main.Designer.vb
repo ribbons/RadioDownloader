@@ -27,7 +27,13 @@
         Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tmrStartProcess = New System.Windows.Forms.Timer(Me.components)
         Me.tbrView = New System.Windows.Forms.ToolStrip
+        Me.tbtBack = New System.Windows.Forms.ToolStripButton
+        Me.tbtForward = New System.Windows.Forms.ToolStripButton
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
+        Me.tbtFindNew = New System.Windows.Forms.ToolStripButton
+        Me.tbtFavourites = New System.Windows.Forms.ToolStripButton
+        Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton
+        Me.tbtDownloads = New System.Windows.Forms.ToolStripButton
         Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.mnuTray = New System.Windows.Forms.ContextMenu
@@ -54,10 +60,6 @@
         Me.picSidebarImg = New System.Windows.Forms.PictureBox
         Me.pnlPluginSpace = New System.Windows.Forms.Panel
         Me.tblToolbars = New System.Windows.Forms.TableLayoutPanel
-        Me.lstDownloads = New RadioDld.ExtListView
-        Me.lstSubscribed = New RadioDld.ExtListView
-        Me.lstEpisodes = New RadioDld.ExtListView
-        Me.lstProviders = New RadioDld.ExtListView
         Me.tbrToolbar = New RadioDld.ExtToolBar
         Me.tbtOptionsMenu = New System.Windows.Forms.ToolBarButton
         Me.tbtDownload = New System.Windows.Forms.ToolBarButton
@@ -73,12 +75,10 @@
         Me.tbrHelp = New RadioDld.ExtToolBar
         Me.tbtHelpMenu = New System.Windows.Forms.ToolBarButton
         Me.picSideBarBorder = New System.Windows.Forms.PictureBox
-        Me.tbtBack = New System.Windows.Forms.ToolStripButton
-        Me.tbtForward = New System.Windows.Forms.ToolStripButton
-        Me.tbtFindNew = New System.Windows.Forms.ToolStripButton
-        Me.tbtFavourites = New System.Windows.Forms.ToolStripButton
-        Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton
-        Me.tbtDownloads = New System.Windows.Forms.ToolStripButton
+        Me.lstDownloads = New RadioDld.ExtListView
+        Me.lstSubscribed = New RadioDld.ExtListView
+        Me.lstEpisodes = New RadioDld.ExtListView
+        Me.lstProviders = New RadioDld.ExtListView
         Me.tbrView.SuspendLayout()
         Me.tblInfo.SuspendLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -104,12 +104,71 @@
         Me.tbrView.Padding = New System.Windows.Forms.Padding(3, 0, 1, 0)
         Me.tbrView.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
         Me.tbrView.Size = New System.Drawing.Size(757, 31)
-        Me.tbrView.TabIndex = 11
+        Me.tbrView.TabIndex = 0
+        '
+        'tbtBack
+        '
+        Me.tbtBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tbtBack.Image = Global.RadioDld.My.Resources.Resources.views_back
+        Me.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtBack.Name = "tbtBack"
+        Me.tbtBack.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtBack.Size = New System.Drawing.Size(32, 28)
+        Me.tbtBack.Text = "Back"
+        '
+        'tbtForward
+        '
+        Me.tbtForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+        Me.tbtForward.Image = Global.RadioDld.My.Resources.Resources.views_forward
+        Me.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtForward.Name = "tbtForward"
+        Me.tbtForward.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtForward.Size = New System.Drawing.Size(32, 28)
+        Me.tbtForward.Text = "Forward"
         '
         'ToolStripSeparator1
         '
         Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
         Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 31)
+        '
+        'tbtFindNew
+        '
+        Me.tbtFindNew.Checked = True
+        Me.tbtFindNew.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.tbtFindNew.Image = Global.RadioDld.My.Resources.Resources.views_find_new
+        Me.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtFindNew.Name = "tbtFindNew"
+        Me.tbtFindNew.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtFindNew.Size = New System.Drawing.Size(128, 28)
+        Me.tbtFindNew.Text = "&Find Programme"
+        '
+        'tbtFavourites
+        '
+        Me.tbtFavourites.Image = CType(resources.GetObject("tbtFavourites.Image"), System.Drawing.Image)
+        Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtFavourites.Name = "tbtFavourites"
+        Me.tbtFavourites.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtFavourites.Size = New System.Drawing.Size(93, 28)
+        Me.tbtFavourites.Text = "F&avourites"
+        Me.tbtFavourites.Visible = False
+        '
+        'tbtSubscriptions
+        '
+        Me.tbtSubscriptions.Image = Global.RadioDld.My.Resources.Resources.views_subscriptions
+        Me.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtSubscriptions.Name = "tbtSubscriptions"
+        Me.tbtSubscriptions.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtSubscriptions.Size = New System.Drawing.Size(110, 28)
+        Me.tbtSubscriptions.Text = "&Subscriptions"
+        '
+        'tbtDownloads
+        '
+        Me.tbtDownloads.Image = Global.RadioDld.My.Resources.Resources.views_downloads
+        Me.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtDownloads.Name = "tbtDownloads"
+        Me.tbtDownloads.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtDownloads.Size = New System.Drawing.Size(98, 28)
+        Me.tbtDownloads.Text = "&Downloads"
         '
         'ttxSearch
         '
@@ -159,7 +218,7 @@
         Me.prgDldProg.Location = New System.Drawing.Point(430, 427)
         Me.prgDldProg.Name = "prgDldProg"
         Me.prgDldProg.Size = New System.Drawing.Size(100, 23)
-        Me.prgDldProg.TabIndex = 16
+        Me.prgDldProg.TabIndex = 7
         Me.prgDldProg.Visible = False
         '
         'tmrCheckForUpdates
@@ -234,7 +293,7 @@
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle)
         Me.tblInfo.Size = New System.Drawing.Size(187, 406)
-        Me.tblInfo.TabIndex = 18
+        Me.tblInfo.TabIndex = 8
         '
         'txtSideDescript
         '
@@ -250,7 +309,7 @@
         Me.txtSideDescript.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.txtSideDescript.ShortcutsEnabled = False
         Me.txtSideDescript.Size = New System.Drawing.Size(171, 280)
-        Me.txtSideDescript.TabIndex = 2
+        Me.txtSideDescript.TabIndex = 1
         Me.txtSideDescript.Text = "Description"
         '
         'lblSideMainTitle
@@ -290,7 +349,7 @@
         Me.pnlPluginSpace.Location = New System.Drawing.Point(197, 149)
         Me.pnlPluginSpace.Name = "pnlPluginSpace"
         Me.pnlPluginSpace.Size = New System.Drawing.Size(560, 62)
-        Me.pnlPluginSpace.TabIndex = 20
+        Me.pnlPluginSpace.TabIndex = 3
         '
         'tblToolbars
         '
@@ -305,62 +364,7 @@
         Me.tblToolbars.RowCount = 1
         Me.tblToolbars.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.tblToolbars.Size = New System.Drawing.Size(757, 34)
-        Me.tblToolbars.TabIndex = 21
-        '
-        'lstDownloads
-        '
-        Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstDownloads.FullRowSelect = True
-        Me.lstDownloads.HideSelection = False
-        Me.lstDownloads.Location = New System.Drawing.Point(197, 418)
-        Me.lstDownloads.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
-        Me.lstDownloads.MultiSelect = False
-        Me.lstDownloads.Name = "lstDownloads"
-        Me.lstDownloads.Size = New System.Drawing.Size(560, 54)
-        Me.lstDownloads.TabIndex = 15
-        Me.lstDownloads.UseCompatibleStateImageBehavior = False
-        Me.lstDownloads.View = System.Windows.Forms.View.Details
-        '
-        'lstSubscribed
-        '
-        Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstSubscribed.FullRowSelect = True
-        Me.lstSubscribed.HideSelection = False
-        Me.lstSubscribed.Location = New System.Drawing.Point(197, 348)
-        Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
-        Me.lstSubscribed.MultiSelect = False
-        Me.lstSubscribed.Name = "lstSubscribed"
-        Me.lstSubscribed.Size = New System.Drawing.Size(560, 49)
-        Me.lstSubscribed.TabIndex = 14
-        Me.lstSubscribed.UseCompatibleStateImageBehavior = False
-        Me.lstSubscribed.View = System.Windows.Forms.View.Details
-        '
-        'lstEpisodes
-        '
-        Me.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstEpisodes.CheckBoxes = True
-        Me.lstEpisodes.FullRowSelect = True
-        Me.lstEpisodes.HideSelection = False
-        Me.lstEpisodes.Location = New System.Drawing.Point(197, 247)
-        Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
-        Me.lstEpisodes.MultiSelect = False
-        Me.lstEpisodes.Name = "lstEpisodes"
-        Me.lstEpisodes.Size = New System.Drawing.Size(560, 50)
-        Me.lstEpisodes.TabIndex = 19
-        Me.lstEpisodes.UseCompatibleStateImageBehavior = False
-        Me.lstEpisodes.View = System.Windows.Forms.View.Details
-        '
-        'lstProviders
-        '
-        Me.lstProviders.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.lstProviders.HideSelection = False
-        Me.lstProviders.Location = New System.Drawing.Point(197, 63)
-        Me.lstProviders.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
-        Me.lstProviders.MultiSelect = False
-        Me.lstProviders.Name = "lstProviders"
-        Me.lstProviders.Size = New System.Drawing.Size(560, 62)
-        Me.lstProviders.TabIndex = 12
-        Me.lstProviders.UseCompatibleStateImageBehavior = False
+        Me.tblToolbars.TabIndex = 1
         '
         'tbrToolbar
         '
@@ -373,7 +377,7 @@
         Me.tbrToolbar.Name = "tbrToolbar"
         Me.tbrToolbar.ShowToolTips = True
         Me.tbrToolbar.Size = New System.Drawing.Size(678, 26)
-        Me.tbrToolbar.TabIndex = 17
+        Me.tbrToolbar.TabIndex = 0
         Me.tbrToolbar.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
         Me.tbrToolbar.Wrappable = False
         '
@@ -382,67 +386,67 @@
         Me.tbtOptionsMenu.DropDownMenu = Me.mnuOptions
         Me.tbtOptionsMenu.ImageKey = "options"
         Me.tbtOptionsMenu.Name = "tbtOptionsMenu"
-        Me.tbtOptionsMenu.Text = "Options"
+        Me.tbtOptionsMenu.Text = "&Options"
         '
         'tbtDownload
         '
         Me.tbtDownload.ImageKey = "download"
         Me.tbtDownload.Name = "tbtDownload"
-        Me.tbtDownload.Text = "Download"
+        Me.tbtDownload.Text = "Do&wnload"
         '
         'tbtSubscribe
         '
         Me.tbtSubscribe.ImageKey = "subscribe"
         Me.tbtSubscribe.Name = "tbtSubscribe"
-        Me.tbtSubscribe.Text = "Subscribe"
+        Me.tbtSubscribe.Text = "S&ubscribe"
         '
         'tbtUnsubscribe
         '
         Me.tbtUnsubscribe.ImageKey = "unsubscribe"
         Me.tbtUnsubscribe.Name = "tbtUnsubscribe"
-        Me.tbtUnsubscribe.Text = "Unsubscribe"
+        Me.tbtUnsubscribe.Text = "&Unsubscribe"
         '
         'tbtCurrentEps
         '
         Me.tbtCurrentEps.ImageKey = "current_episodes"
         Me.tbtCurrentEps.Name = "tbtCurrentEps"
-        Me.tbtCurrentEps.Text = "Current Episodes"
+        Me.tbtCurrentEps.Text = "&Current Episodes"
         '
         'tbtCancel
         '
         Me.tbtCancel.ImageKey = "delete"
         Me.tbtCancel.Name = "tbtCancel"
-        Me.tbtCancel.Text = "Cancel"
+        Me.tbtCancel.Text = "&Cancel"
         '
         'tbtPlay
         '
         Me.tbtPlay.ImageKey = "play"
         Me.tbtPlay.Name = "tbtPlay"
-        Me.tbtPlay.Text = "Play"
+        Me.tbtPlay.Text = "&Play"
         '
         'tbtDelete
         '
         Me.tbtDelete.ImageKey = "delete"
         Me.tbtDelete.Name = "tbtDelete"
-        Me.tbtDelete.Text = "Delete"
+        Me.tbtDelete.Text = "D&elete"
         '
         'tbtRetry
         '
         Me.tbtRetry.ImageKey = "retry"
         Me.tbtRetry.Name = "tbtRetry"
-        Me.tbtRetry.Text = "Retry"
+        Me.tbtRetry.Text = "&Retry"
         '
         'tbtReportError
         '
         Me.tbtReportError.ImageKey = "report_error"
         Me.tbtReportError.Name = "tbtReportError"
-        Me.tbtReportError.Text = "Report Error"
+        Me.tbtReportError.Text = "Report &Error"
         '
         'tbtCleanUp
         '
         Me.tbtCleanUp.ImageKey = "clean_up"
         Me.tbtCleanUp.Name = "tbtCleanUp"
-        Me.tbtCleanUp.Text = "Clean Up"
+        Me.tbtCleanUp.Text = "Clean &Up"
         '
         'tbrHelp
         '
@@ -457,7 +461,7 @@
         Me.tbrHelp.Name = "tbrHelp"
         Me.tbrHelp.ShowToolTips = True
         Me.tbrHelp.Size = New System.Drawing.Size(73, 26)
-        Me.tbrHelp.TabIndex = 0
+        Me.tbrHelp.TabIndex = 1
         Me.tbrHelp.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right
         Me.tbrHelp.Wrappable = False
         '
@@ -466,7 +470,7 @@
         Me.tbtHelpMenu.DropDownMenu = Me.mnuHelp
         Me.tbtHelpMenu.ImageKey = "help"
         Me.tbtHelpMenu.Name = "tbtHelpMenu"
-        Me.tbtHelpMenu.Text = "Help"
+        Me.tbtHelpMenu.Text = "&Help"
         '
         'picSideBarBorder
         '
@@ -479,64 +483,60 @@
         Me.picSideBarBorder.TabIndex = 22
         Me.picSideBarBorder.TabStop = False
         '
-        'tbtBack
+        'lstDownloads
         '
-        Me.tbtBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.tbtBack.Image = Global.RadioDld.My.Resources.Resources.views_back
-        Me.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtBack.Name = "tbtBack"
-        Me.tbtBack.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtBack.Size = New System.Drawing.Size(32, 28)
-        Me.tbtBack.Text = "Back"
+        Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstDownloads.FullRowSelect = True
+        Me.lstDownloads.HideSelection = False
+        Me.lstDownloads.Location = New System.Drawing.Point(197, 418)
+        Me.lstDownloads.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
+        Me.lstDownloads.MultiSelect = False
+        Me.lstDownloads.Name = "lstDownloads"
+        Me.lstDownloads.Size = New System.Drawing.Size(560, 54)
+        Me.lstDownloads.TabIndex = 6
+        Me.lstDownloads.UseCompatibleStateImageBehavior = False
+        Me.lstDownloads.View = System.Windows.Forms.View.Details
         '
-        'tbtForward
+        'lstSubscribed
         '
-        Me.tbtForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.tbtForward.Image = Global.RadioDld.My.Resources.Resources.views_forward
-        Me.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtForward.Name = "tbtForward"
-        Me.tbtForward.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtForward.Size = New System.Drawing.Size(32, 28)
-        Me.tbtForward.Text = "Forward"
+        Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstSubscribed.FullRowSelect = True
+        Me.lstSubscribed.HideSelection = False
+        Me.lstSubscribed.Location = New System.Drawing.Point(197, 348)
+        Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
+        Me.lstSubscribed.MultiSelect = False
+        Me.lstSubscribed.Name = "lstSubscribed"
+        Me.lstSubscribed.Size = New System.Drawing.Size(560, 49)
+        Me.lstSubscribed.TabIndex = 5
+        Me.lstSubscribed.UseCompatibleStateImageBehavior = False
+        Me.lstSubscribed.View = System.Windows.Forms.View.Details
         '
-        'tbtFindNew
+        'lstEpisodes
         '
-        Me.tbtFindNew.Checked = True
-        Me.tbtFindNew.CheckState = System.Windows.Forms.CheckState.Checked
-        Me.tbtFindNew.Image = Global.RadioDld.My.Resources.Resources.views_find_new
-        Me.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtFindNew.Name = "tbtFindNew"
-        Me.tbtFindNew.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtFindNew.Size = New System.Drawing.Size(128, 28)
-        Me.tbtFindNew.Text = "Find Programme"
+        Me.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstEpisodes.CheckBoxes = True
+        Me.lstEpisodes.FullRowSelect = True
+        Me.lstEpisodes.HideSelection = False
+        Me.lstEpisodes.Location = New System.Drawing.Point(197, 247)
+        Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstEpisodes.MultiSelect = False
+        Me.lstEpisodes.Name = "lstEpisodes"
+        Me.lstEpisodes.Size = New System.Drawing.Size(560, 50)
+        Me.lstEpisodes.TabIndex = 4
+        Me.lstEpisodes.UseCompatibleStateImageBehavior = False
+        Me.lstEpisodes.View = System.Windows.Forms.View.Details
         '
-        'tbtFavourites
+        'lstProviders
         '
-        Me.tbtFavourites.Image = CType(resources.GetObject("tbtFavourites.Image"), System.Drawing.Image)
-        Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtFavourites.Name = "tbtFavourites"
-        Me.tbtFavourites.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtFavourites.Size = New System.Drawing.Size(93, 28)
-        Me.tbtFavourites.Text = "Favourites"
-        Me.tbtFavourites.Visible = False
-        '
-        'tbtSubscriptions
-        '
-        Me.tbtSubscriptions.Image = Global.RadioDld.My.Resources.Resources.views_subscriptions
-        Me.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtSubscriptions.Name = "tbtSubscriptions"
-        Me.tbtSubscriptions.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtSubscriptions.Size = New System.Drawing.Size(110, 28)
-        Me.tbtSubscriptions.Text = "Subscriptions"
-        '
-        'tbtDownloads
-        '
-        Me.tbtDownloads.Image = Global.RadioDld.My.Resources.Resources.views_downloads
-        Me.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtDownloads.Name = "tbtDownloads"
-        Me.tbtDownloads.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtDownloads.Size = New System.Drawing.Size(98, 28)
-        Me.tbtDownloads.Text = "Downloads"
+        Me.lstProviders.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstProviders.HideSelection = False
+        Me.lstProviders.Location = New System.Drawing.Point(197, 63)
+        Me.lstProviders.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstProviders.MultiSelect = False
+        Me.lstProviders.Name = "lstProviders"
+        Me.lstProviders.Size = New System.Drawing.Size(560, 62)
+        Me.lstProviders.TabIndex = 2
+        Me.lstProviders.UseCompatibleStateImageBehavior = False
         '
         'Main
         '
