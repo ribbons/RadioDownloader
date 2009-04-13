@@ -905,6 +905,9 @@ Friend Class Main
 
         SetViewDefaults(ViewData)
 
+        ' Set the focus to a control which does not show it, to prevent the toolbar momentarily showing focus
+        lblSideMainTitle.Focus()
+
         lstProviders.Visible = False
         pnlPluginSpace.Visible = False
         lstEpisodes.Visible = False
@@ -923,6 +926,7 @@ Friend Class Main
                 pnlPluginSpace.Controls.Clear()
                 pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View))
                 pnlPluginSpace.Controls(0).Dock = DockStyle.Fill
+                pnlPluginSpace.Controls(0).Focus()
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
                 RemoveHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
