@@ -38,7 +38,6 @@ Public Class PodcastProvider
 
     Friend Const intCacheHTTPHours As Integer = 2
 
-    Private Shared Event PowerModeChanged As PowerModeChangedEventHandler
     Private WithEvents webDownload As WebClient
 
     Private strDownloadFileName As String
@@ -492,7 +491,7 @@ Public Class PodcastProvider
 
     Private Sub webDownload_DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs) Handles webDownload.DownloadFileCompleted
         If e.Cancelled = False Then
-            RemoveHandler PowerModeChanged, AddressOf PowerModeChange
+            RemoveHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange
 
             If e.Error IsNot Nothing Then
                 If TypeOf e.Error Is WebException Then
