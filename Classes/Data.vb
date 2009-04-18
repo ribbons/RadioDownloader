@@ -1223,7 +1223,7 @@ Friend Class Data
 
         ' Convert the image into a byte array
         Dim mstImage As New MemoryStream()
-        bmpImage.Save(mstImage, Imaging.ImageFormat.Bmp)
+        bmpImage.Save(mstImage, Imaging.ImageFormat.Png)
         Dim bteImage(CInt(mstImage.Length - 1)) As Byte
         mstImage.Position = 0
         mstImage.Read(bteImage, 0, CInt(mstImage.Length))
