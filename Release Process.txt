@@ -1,8 +1,8 @@
 Release process
 ===============
 
-Development & Full Releases
----------------------------
+Beta & Full Releases
+--------------------
 
  1. Update version number in Core Application & Plugins
  2. Run publish.bat to compile Core Application & Plugins
@@ -13,15 +13,15 @@ Development & Full Releases
  7. Commit version changes.
  8. Create tag for release number in form radio_downloader/tags/x.x.x
 
-Development
------------
+Beta Release
+------------
 
- 9. Copy Installer to local nerdoftheherd downloads/development folder.
+ 9. Copy Installer to local nerdoftheherd downloads/beta folder.
 10. Upload to website.
 11. Write news item if thorough testing is required.
 
-Full Releases
--------------
+Full Release
+------------
 
  9. Run zipped source creator batch file
 10. Copy Source and Installer to local nerdoftheherd downloads folder.
