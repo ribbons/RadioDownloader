@@ -23,10 +23,9 @@ Beta Release
 Full Release
 ------------
 
- 9. Run zipped source creator batch file
-10. Copy Source and Installer to local nerdoftheherd downloads folder.
+ 9. Run zipped source creator batch file.
+10. Move source and installer to local nerdoftheherd downloads folder.
 11. Update local latestversion.txt with latest version number.
-12. Add new version number & new target milestone into the Radio Downloader product in Bugzilla.
+12. Add new version number into the Radio Downloader product in Bugzilla.
 13. Upload to website
 14. Write news item.
-
