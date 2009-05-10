@@ -208,38 +208,6 @@
           <Text>[DlgTitleFont]Company Information</Text>
         </Control>
       </Dialog>
-      <Dialog Id="BrowseDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="PathEdit" Type="PathEdit" X="84" Y="202" Width="261" Height="18" Property="_BrowseProperty" Indirect="yes" />
-        <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_OK]">
-          <Publish Event="SetTargetPath" Value="[_BrowseProperty]"><![CDATA[1]]></Publish>
-          <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="240" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
-          <Publish Event="Reset" Value="0"><![CDATA[1]]></Publish>
-          <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="ComboLabel" Type="Text" X="25" Y="58" Width="44" Height="10" TabSkip="no" Text="&amp;Look in:" />
-        <Control Id="DirectoryCombo" Type="DirectoryCombo" X="70" Y="55" Width="220" Height="80" Property="_BrowseProperty" Indirect="yes" Fixed="yes" Remote="yes">
-          <Subscribe Event="IgnoreChange" Attribute="IgnoreChange" />
-        </Control>
-        <Control Id="Up" Type="PushButton" X="298" Y="55" Width="19" Height="19" ToolTip="Up One Level" Icon="yes" FixedSize="yes" IconSize="16" Text="Up">
-          <Publish Event="DirectoryListUp" Value="0"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="NewFolder" Type="PushButton" X="325" Y="55" Width="19" Height="19" ToolTip="Create A New Folder" Icon="yes" FixedSize="yes" IconSize="16" Text="New">
-          <Publish Event="DirectoryListNew" Value="0"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="DirectoryList" Type="DirectoryList" X="25" Y="83" Width="320" Height="110" Property="_BrowseProperty" Sunken="yes" Indirect="yes" TabSkip="no" />
-        <Control Id="PathLabel" Type="Text" X="25" Y="205" Width="59" Height="10" TabSkip="no" Text="&amp;Folder name:" />
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Browse to the destination folder</Text>
-        </Control>
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>[DlgTitleFont]Change current destination folder</Text>
-        </Control>
-      </Dialog>
       <Dialog Id="CancelDlg" Width="260" Height="85" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="No" Type="PushButton" X="132" Y="57" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_No]">
           <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
@@ -251,84 +219,6 @@
           <Text>Are you sure you want to cancel [ProductName] installation?</Text>
         </Control>
         <Control Id="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" ToolTip="Information icon" FixedSize="yes" IconSize="32" Text="[InfoIcon]" />
-      </Dialog>
-      <Dialog Id="CustomizeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
-        <Control Id="Tree" Type="SelectionTree" X="25" Y="85" Width="175" Height="95" Property="_BrowseProperty" Sunken="yes" TabSkip="no" Text="Tree of selections" />
-        <Control Id="Browse" Type="PushButton" X="304" Y="200" Width="56" Height="17" Text="[ButtonText_Browse]">
-          <Publish Event="SelectionBrowse" Value="BrowseDlg"><![CDATA[1]]></Publish>
-          <Condition Action="hide"><![CDATA[Installed]]></Condition>
-        </Control>
-        <Control Id="Reset" Type="PushButton" X="42" Y="243" Width="56" Height="17" Text="[ButtonText_Reset]" Hidden="yes">
-          <Publish Event="Reset" Value="0"><![CDATA[1]]></Publish>
-          <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
-        </Control>
-        <Control Id="DiskCost" Type="PushButton" X="111" Y="243" Width="56" Height="17" Hidden="yes">
-          <Text>Disk &amp;Usage</Text>
-          <Publish Event="SpawnDialog" Value="DiskCostDlg"><![CDATA[1]]></Publish>
-          <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
-        </Control>
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
-          <Publish Event="NewDialog" Value="MaintenanceTypeDlg"><![CDATA[InstallMode = "Change"]]></Publish>
-          <Publish Event="NewDialog" Value="LicenseAgreementDlg"><![CDATA[InstallMode <> "Change"]]></Publish>
-        </Control>
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
-          <Publish Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[1]]></Publish>
-          <Subscribe Event="SelectionNoItems" Attribute="Enabled" />
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
-          <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
-        <Control Id="Text" Type="Text" X="25" Y="55" Width="320" Height="20">
-          <Text>Click on the icons in the tree below to change the way features will be installed.</Text>
-        </Control>
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Select the way you want features to be installed.</Text>
-        </Control>
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>[DlgTitleFont]Custom Setup</Text>
-        </Control>
-        <Control Id="Box" Type="GroupBox" X="210" Y="81" Width="140" Height="98" />
-        <Control Id="ItemDescription" Type="Text" X="215" Y="90" Width="131" Height="30">
-          <Text>Multiline description of the currently selected item.</Text>
-          <Subscribe Event="SelectionDescription" Attribute="Text" />
-        </Control>
-        <Control Id="ItemSize" Type="Text" X="215" Y="130" Width="131" Height="45">
-          <Text>The size of the currently selected item.</Text>
-          <Subscribe Event="SelectionSize" Attribute="Text" />
-        </Control>
-        <Control Id="Location" Type="Text" X="75" Y="200" Width="215" Height="20">
-          <Text>&lt;The selection's path&gt;</Text>
-          <Subscribe Event="SelectionPath" Attribute="Text" />
-          <Subscribe Event="SelectionPathOn" Attribute="Visible" />
-          <Condition Action="hide"><![CDATA[Installed]]></Condition>
-        </Control>
-        <Control Id="LocationLabel" Type="Text" X="25" Y="200" Width="50" Height="10" Text="Location:">
-          <Subscribe Event="SelectionPathOn" Attribute="Visible" />
-          <Condition Action="hide"><![CDATA[Installed]]></Condition>
-        </Control>
-      </Dialog>
-      <Dialog Id="DiskCostDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_OK]">
-          <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
-        <Control Id="Text" Type="Text" X="20" Y="53" Width="330" Height="40">
-          <Text>The highlighted volumes (if any) do not have enough disk space available for the currently selected features.  You can either remove some files from the highlighted volumes, or choose to install less features onto local drive(s), or select different destination drive(s).</Text>
-        </Control>
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
-        <Control Id="Description" Type="Text" X="20" Y="20" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
-          <Text>The disk space required for the installation of the selected features.</Text>
-        </Control>
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>[DlgTitleFont]Disk Space Requirements</Text>
-        </Control>
-        <Control Id="VolumeList" Type="VolumeCostList" X="20" Y="100" Width="330" Height="120" Sunken="yes" Fixed="yes" Remote="yes">
-          <Text>{120}{70}{70}{70}{70}</Text>
-        </Control>
       </Dialog>
       <Dialog Id="ErrorDlg" Width="270" Height="105" Title="Installer Information" ErrorDialog="yes" NoMinimize="yes">
         <Control Id="ErrorText" Type="Text" X="48" Y="15" Width="205" Height="60" TabSkip="no" Text="Information text" />
@@ -382,7 +272,8 @@
       <Dialog Id="LicenseAgreementDlg" Width="370" Height="270" Title="[ProductName] License Agreement" NoMinimize="yes">
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_IAgree]">
           <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg"><![CDATA[CostingComplete = 1]]></Publish>
-          <Publish Event="NewDialog" Value="CustomizeDlg"><![CDATA[1]]></Publish>
+          <Publish Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[1]]></Publish>
+          <Condition Action="enable">1</Condition>
         </Control>
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]" Disabled="yes" />
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
@@ -402,28 +293,19 @@
         </Control>
       </Dialog>
       <Dialog Id="MaintenanceTypeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="ChangeLabel" Type="Text" X="105" Y="65" Width="100" Height="10" TabSkip="no">
-          <Text>[DlgTitleFont]&amp;Modify</Text>
-        </Control>
-        <Control Id="ChangeButton" Type="PushButton" X="50" Y="65" Width="38" Height="38" ToolTip="Modify Installation" Default="yes" Icon="yes" FixedSize="yes" IconSize="32" Text="[CustomSetupIcon]">
-          <Publish Property="InstallMode" Value="Change"><![CDATA[1]]></Publish>
-          <Publish Property="Progress1" Value="Changing"><![CDATA[1]]></Publish>
-          <Publish Property="Progress2" Value="changes"><![CDATA[1]]></Publish>
-          <Publish Event="NewDialog" Value="CustomizeDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="RepairLabel" Type="Text" X="105" Y="114" Width="100" Height="10" TabSkip="no">
+        <Control Id="RepairLabel" Type="Text" X="105" Y="84" Width="100" Height="10" TabSkip="no">
           <Text>[DlgTitleFont]Re&amp;pair</Text>
         </Control>
-        <Control Id="RepairButton" Type="PushButton" X="50" Y="114" Width="38" Height="38" ToolTip="Repair Installation" Icon="yes" FixedSize="yes" IconSize="32" Text="[RepairIcon]">
+        <Control Id="RepairButton" Type="PushButton" X="50" Y="84" Width="38" Height="38" ToolTip="Repair Installation" Icon="yes" FixedSize="yes" IconSize="32" Text="[RepairIcon]">
           <Publish Property="InstallMode" Value="Repair"><![CDATA[1]]></Publish>
           <Publish Property="Progress1" Value="Repairing"><![CDATA[1]]></Publish>
           <Publish Property="Progress2" Value="repaires"><![CDATA[1]]></Publish>
           <Publish Event="NewDialog" Value="VerifyRepairDlg"><![CDATA[1]]></Publish>
         </Control>
-        <Control Id="RemoveLabel" Type="Text" X="105" Y="163" Width="100" Height="10" TabSkip="no">
+        <Control Id="RemoveLabel" Type="Text" X="105" Y="133" Width="100" Height="10" TabSkip="no">
           <Text>[DlgTitleFont]&amp;Remove</Text>
         </Control>
-        <Control Id="RemoveButton" Type="PushButton" X="50" Y="163" Width="38" Height="38" ToolTip="Remove Installation" Icon="yes" FixedSize="yes" IconSize="32" Text="[RemoveIcon]">
+        <Control Id="RemoveButton" Type="PushButton" X="50" Y="133" Width="38" Height="38" ToolTip="Remove Installation" Icon="yes" FixedSize="yes" IconSize="32" Text="[RemoveIcon]">
           <Publish Property="InstallMode" Value="Remove"><![CDATA[1]]></Publish>
           <Publish Property="Progress1" Value="Removing"><![CDATA[1]]></Publish>
           <Publish Property="Progress2" Value="removes"><![CDATA[1]]></Publish>
@@ -445,13 +327,10 @@
         <Control Id="Title" Type="Text" X="15" Y="6" Width="240" Height="15" Transparent="yes" NoPrefix="yes">
           <Text>[DlgTitleFont]Modify, Repair or Remove installation</Text>
         </Control>
-        <Control Id="ChangeText" Type="Text" X="105" Y="78" Width="230" Height="20">
-          <Text>Allows users to change the way features are installed.</Text>
-        </Control>
-        <Control Id="RemoveText" Type="Text" X="105" Y="176" Width="230" Height="20">
+        <Control Id="RemoveText" Type="Text" X="105" Y="146" Width="230" Height="20">
           <Text>Removes [ProductName] from your computer.</Text>
         </Control>
-        <Control Id="RepairText" Type="Text" X="105" Y="127" Width="230" Height="30">
+        <Control Id="RepairText" Type="Text" X="105" Y="97" Width="230" Height="30">
           <Text>Repairs errors in the most recent installation state - fixes missing or corrupt files, shortcuts and registry entries.</Text>
         </Control>
       </Dialog>
@@ -467,7 +346,7 @@
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
         <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
-          <Text>The [Wizard] will allow you to change the way [ProductName] features are installed on your computer or even to remove [ProductName] from your computer.  Click Next to continue or Cancel to exit the [Wizard].</Text>
+          <Text>The [Wizard] will allow you to repair the installation of [ProductName] or to remove it from your computer.  Click Next to continue or Cancel to exit the [Wizard].</Text>
         </Control>
         <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
           <Text>{\VerdanaBold13}Welcome to the [ProductName] [Wizard]</Text>
@@ -622,7 +501,7 @@
         <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
           <Publish Event="NewDialog" Value="AdminInstallPointDlg"><![CDATA[InstallMode = "Server Image"]]></Publish>
-          <Publish Event="NewDialog" Value="CustomizeDlg"><![CDATA[InstallMode = "Custom" OR InstallMode = "Change"]]></Publish>
+          <Publish Event="NewDialog" Value="LicenseAgreementDlg"><![CDATA[InstallMode = "Custom" OR InstallMode = "Change"]]></Publish>
           <Publish Event="NewDialog" Value="MaintenanceTypeDlg"><![CDATA[InstallMode = "Repair"]]></Publish>
         </Control>
         <Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="20">
@@ -744,7 +623,7 @@
       </Component>
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes" />
-    <Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="INSTALLLOCATION" Description="The Radio Downloader application.">
+    <Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow" AllowAdvertise="no" Description="The Radio Downloader application.">
       <ComponentRef Id="RadioDownloaderExe" />
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
