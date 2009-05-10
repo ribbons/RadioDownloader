@@ -544,7 +544,6 @@
     <Property Id="ButtonText_IAgree"><![CDATA[I &Agree]]></Property>
     <Property Id="Setup"><![CDATA[Setup]]></Property>
     <Property Id="ButtonText_Browse"><![CDATA[Br&owse]]></Property>
-    <Property Id="CustomSetupIcon"><![CDATA[custicon]]></Property>
     <Property Id="RepairIcon"><![CDATA[repairic]]></Property>
     <Property Id="ExclamationIcon"><![CDATA[exclamic]]></Property>
     <Property Id="ButtonText_Repair"><![CDATA[&Repair]]></Property>
@@ -582,7 +581,6 @@
       <RemoveExistingProducts After="InstallFinalize" />
     </InstallExecuteSequence>
     <Binary Id="bannrbmp" SourceFile="Binary\bannrbmp.bmp" />
-    <Binary Id="custicon" SourceFile="Binary\custicon.ico" />
     <Binary Id="dlgbmp" SourceFile="Binary\dlgbmp.bmp" />
     <Binary Id="exclamic" SourceFile="Binary\exclamic.ico" />
     <Binary Id="info" SourceFile="Binary\info.ico" />
