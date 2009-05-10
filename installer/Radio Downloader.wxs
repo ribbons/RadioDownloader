@@ -682,7 +682,6 @@
     <Property Id="ButtonText_Exit"><![CDATA[&Exit]]></Property>
     <Property Id="ButtonText_Return"><![CDATA[&Return]]></Property>
     <Property Id="ButtonText_OK"><![CDATA[OK]]></Property>
-    <Property Id="CompleteSetupIcon"><![CDATA[completi]]></Property>
     <Property Id="ButtonText_Resume"><![CDATA[&Resume]]></Property>
     <Property Id="InstallerIcon"><![CDATA[insticon]]></Property>
     <Property Id="ButtonText_Finish"><![CDATA[&Finish]]></Property>
@@ -704,7 +703,6 @@
       <RemoveExistingProducts After="InstallFinalize" />
     </InstallExecuteSequence>
     <Binary Id="bannrbmp" SourceFile="Binary\bannrbmp.bmp" />
-    <Binary Id="completi" SourceFile="Binary\completi.ico" />
     <Binary Id="custicon" SourceFile="Binary\custicon.ico" />
     <Binary Id="dlgbmp" SourceFile="Binary\dlgbmp.bmp" />
     <Binary Id="exclamic" SourceFile="Binary\exclamic.ico" />
