@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2003/01/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
   <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="www.nerdoftheherd.com" Name="Radio Downloader" Version="0.5.6.0" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
-    <Package Id="????????-????-????-????-????????????" Compressed="yes" />
+    <Package Compressed="yes" />
     <UI>
       <Property Id="ErrorDialog"><![CDATA[ErrorDlg]]></Property>
       <Property Id="DefaultUIFont"><![CDATA[DlgFont8]]></Property>
@@ -120,9 +120,9 @@
         </Control>
       </Dialog>
       <Dialog Id="AdminBrowseDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="PathEdit" Type="PathEdit" X="84" Y="202" Width="261" Height="17" Property="TARGETDIR" />
+        <Control Id="PathEdit" Type="PathEdit" X="84" Y="202" Width="261" Height="17" Property="INSTALLLOCATION" />
         <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_OK]">
-          <Publish Event="SetTargetPath" Value="TARGETDIR"><![CDATA[1]]></Publish>
+          <Publish Event="SetTargetPath" Value="INSTALLLOCATION"><![CDATA[1]]></Publish>
           <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="240" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
@@ -130,7 +130,7 @@
           <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
         </Control>
         <Control Id="ComboLabel" Type="Text" X="25" Y="58" Width="44" Height="10" TabSkip="no" Text="&amp;Look in:" />
-        <Control Id="DirectoryCombo" Type="DirectoryCombo" X="70" Y="55" Width="220" Height="80" Property="TARGETDIR" Removable="yes" Fixed="yes" Remote="yes">
+        <Control Id="DirectoryCombo" Type="DirectoryCombo" X="70" Y="55" Width="220" Height="80" Property="INSTALLLOCATION" Removable="yes" Fixed="yes" Remote="yes">
           <Subscribe Event="IgnoreChange" Attribute="IgnoreChange" />
         </Control>
         <Control Id="Up" Type="PushButton" X="298" Y="55" Width="19" Height="19" ToolTip="Up One Level" Icon="yes" FixedSize="yes" IconSize="16" Text="Up">
@@ -139,7 +139,7 @@
         <Control Id="NewFolder" Type="PushButton" X="325" Y="55" Width="19" Height="19" ToolTip="Create A New Folder" Icon="yes" FixedSize="yes" IconSize="16" Text="New">
           <Publish Event="DirectoryListNew" Value="0"><![CDATA[1]]></Publish>
         </Control>
-        <Control Id="DirectoryList" Type="DirectoryList" X="25" Y="83" Width="320" Height="110" Property="TARGETDIR" Sunken="yes" TabSkip="no" />
+        <Control Id="DirectoryList" Type="DirectoryList" X="25" Y="83" Width="320" Height="110" Property="INSTALLLOCATION" Sunken="yes" TabSkip="no" />
         <Control Id="PathLabel" Type="Text" X="25" Y="205" Width="59" Height="10" TabSkip="no" Text="&amp;Folder name:" />
         <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
         <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
@@ -155,7 +155,7 @@
         <Control Id="Text" Type="Text" X="25" Y="80" Width="320" Height="10" TabSkip="no">
           <Text>&amp;Enter a new network location or click Browse to browse to one.</Text>
         </Control>
-        <Control Id="PathEdit" Type="PathEdit" X="25" Y="93" Width="320" Height="18" Property="TARGETDIR" />
+        <Control Id="PathEdit" Type="PathEdit" X="25" Y="93" Width="320" Height="18" Property="INSTALLLOCATION" />
         <Control Id="Browse" Type="PushButton" X="289" Y="119" Width="56" Height="17" Text="[ButtonText_Browse]">
           <Publish Event="SpawnDialog" Value="AdminBrowseDlg"><![CDATA[1]]></Publish>
         </Control>
@@ -163,7 +163,7 @@
           <Publish Event="NewDialog" Value="AdminRegistrationDlg"><![CDATA[1]]></Publish>
         </Control>
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
-          <Publish Event="SetTargetPath" Value="TARGETDIR"><![CDATA[1]]></Publish>
+          <Publish Event="SetTargetPath" Value="INSTALLLOCATION"><![CDATA[1]]></Publish>
           <Publish Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[1]]></Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
@@ -384,15 +384,13 @@
           <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg"><![CDATA[CostingComplete = 1]]></Publish>
           <Publish Event="NewDialog" Value="CustomizeDlg"><![CDATA[1]]></Publish>
         </Control>
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]" Disabled="yes">
-        </Control>
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]" Disabled="yes" />
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
           <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
         </Control>
         <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
         <Control Id="AgreementText" Type="ScrollableText" X="20" Y="60" Width="330" Height="160" Sunken="yes" TabSkip="no">
-          <Text SourceFile="..\license.rtf">
-          </Text>
+          <Text SourceFile="..\license.rtf" />
         </Control>
         <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
@@ -957,7 +955,6 @@
     <Property Id="RemoveIcon"><![CDATA[removico]]></Property>
     <Property Id="ButtonText_Yes"><![CDATA[&Yes]]></Property>
     <Property Id="ButtonText_Ignore"><![CDATA[&Ignore]]></Property>
-    <Property Id="ProductID"><![CDATA[none]]></Property>
     <Property Id="ButtonText_Reset"><![CDATA[&Reset]]></Property>
     <Property Id="ButtonText_Remove"><![CDATA[&Remove]]></Property>
     <Property Id="ButtonText_Exit"><![CDATA[&Exit]]></Property>
@@ -984,52 +981,50 @@
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallFinalize" />
     </InstallExecuteSequence>
-    <Binary Id="bannrbmp" src="Binary\bannrbmp.bmp" />
-    <Binary Id="completi" src="Binary\completi.ico" />
-    <Binary Id="custicon" src="Binary\custicon.ico" />
-    <Binary Id="dlgbmp" src="Binary\dlgbmp.bmp" />
-    <Binary Id="exclamic" src="Binary\exclamic.ico" />
-    <Binary Id="info" src="Binary\info.ico" />
-    <Binary Id="insticon" src="Binary\insticon.ico" />
-    <Binary Id="New" src="Binary\New.ico" />
-    <Binary Id="removico" src="Binary\removico.ico" />
-    <Binary Id="repairic" src="Binary\repairic.ico" />
-    <Binary Id="Up" src="Binary\Up.ico" />
-    <Directory Id="SOURCEDIR" Name="SourceDir">
-      <Directory Id="ProgramFilesFolder" Name="PFiles" LongName="Program Files">
-        <Directory Id="TARGETDIR" Name="RadioDld" LongName="Radio Downloader">
+    <Binary Id="bannrbmp" SourceFile="Binary\bannrbmp.bmp" />
+    <Binary Id="completi" SourceFile="Binary\completi.ico" />
+    <Binary Id="custicon" SourceFile="Binary\custicon.ico" />
+    <Binary Id="dlgbmp" SourceFile="Binary\dlgbmp.bmp" />
+    <Binary Id="exclamic" SourceFile="Binary\exclamic.ico" />
+    <Binary Id="info" SourceFile="Binary\info.ico" />
+    <Binary Id="insticon" SourceFile="Binary\insticon.ico" />
+    <Binary Id="New" SourceFile="Binary\New.ico" />
+    <Binary Id="removico" SourceFile="Binary\removico.ico" />
+    <Binary Id="repairic" SourceFile="Binary\repairic.ico" />
+    <Binary Id="Up" SourceFile="Binary\Up.ico" />
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFilesFolder" Name="Program Files">
+        <Directory Id="INSTALLLOCATION" Name="Radio Downloader">
           <Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E" DiskId="1">
-            <File Id="RadioDownloaderExe" Name="RadioDld.exe" LongName="Radio Downloader.exe" Vital="yes" Source="..\bin\Radio Downloader.exe">
-              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="RadioDld" IconIndex="0" LongName="Radio Downloader" WorkingDirectory="INSTALLDIR" />
+            <File Id="RadioDownloaderExe" ShortName="RadioDld.exe" Source="..\bin\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
+              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" ShortName="RadioDld" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloaderIcon.exe">
+                <Icon Id="RadioDownloaderIcon.exe" SourceFile="..\bin\Radio Downloader.exe" />
+              </Shortcut>
             </File>
-            <File Id="RadioDownloaderPdb" Name="RadioDld.pdb" LongName="Radio Downloader.pdb" Source="..\bin\Radio Downloader.pdb" Vital="no" />
+            <File Id="RadioDownloaderPdb" ShortName="RadioDld.pdb" Name="Radio Downloader.pdb" Source="..\bin\Radio Downloader.pdb" />
           </Component>
           <Component Id="SQLiteDll" Guid="DC4B5709-7257-4230-824D-DBA2E103ED29" DiskId="1">
-            <File Id="SystemDataSqliteDll" Name="Sqlite.DLL" LongName="System.Data.SQLite.DLL" Source="..\bin\System.Data.SQLite.DLL" Vital="yes" />
+            <File Id="SystemDataSqliteDll" ShortName="Sqlite.DLL" Name="System.Data.SQLite.DLL" Source="..\bin\System.Data.SQLite.DLL" />
           </Component>
           <Component Id="Database" Guid="D8715547-94E1-40C0-BAA3-37B364884EB5" DiskId="1">
-            <File Id="StoreDb" Name="store.db" Source="..\bin\store.db" Vital="yes" />
+            <File Id="StoreDb" Name="store.db" Source="..\bin\store.db" />
           </Component>
           <Component Id="GplTxt" Guid="66264481-3504-4FFD-B8EC-AA10DC2250C5" DiskId="1">
-            <File Id="GplTxt" Name="GPL.txt" Source="..\GPL.txt" Vital="yes" />
+            <File Id="GplTxt" Name="GPL.txt" Source="..\GPL.txt" />
           </Component>
           <Component Id="PodcastProviderDll" Guid="4B6DBD87-EB57-4E5F-A87A-CF6A21BC4C02" DiskId="1">
-            <File Id="PodcastProvider.dll" LongName="PodcastProvider.dll" Name="PODCAST.DLL" Source="..\bin\PodcastProvider.dll" />
-            <File Id="PodcastProvider.pdb" LongName="PodcastProvider.pdb" Name="PODCAST.PDB" Source="..\bin\PodcastProvider.pdb" />
+            <File Id="PodcastProvider.dll" ShortName="PODCAST.DLL" Name="PodcastProvider.dll" Source="..\bin\PodcastProvider.dll" />
+            <File Id="PodcastProvider.pdb" ShortName="PODCAST.PDB" Name="PodcastProvider.pdb" Source="..\bin\PodcastProvider.pdb" />
           </Component>
         </Directory>
       </Directory>
-      <Directory Id="ProgramMenuFolder" LongName="Start Menu Programs" Name="PMenu">
-      </Directory>
+      <Directory Id="ProgramMenuFolder" ShortName="PMenu" Name="Start Menu Programs" />
       <Component Id="RunOnStartup" Guid="FC61531E-1B54-4680-A20A-6CBFC605B1C6">
-        <Registry Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string">
-          <RegistryValue>"[TARGETDIR]Radio Downloader.exe" -starttray</RegistryValue>
-        </Registry>
+        <RegistryValue Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string" Value="&quot;[INSTALLLOCATION]Radio Downloader.exe&quot; -starttray" />
       </Component>
     </Directory>
-    <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes">
-    </Media>
-    <Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="TARGETDIR" Description="The Radio Downloader application.">
+    <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes" />
+    <Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow" AllowAdvertise="no" ConfigurableDirectory="INSTALLLOCATION" Description="The Radio Downloader application.">
       <ComponentRef Id="RadioDownloaderExe" />
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
@@ -1039,8 +1034,5 @@
     </Feature>
     <Condition Message="Radio Downloader requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
     <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
-    <Upgrade Id="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
-      <UpgradeVersion OnlyDetect="yes" Property="PATCHFOUND" />
-    </Upgrade>
   </Product>
 </Wix>
