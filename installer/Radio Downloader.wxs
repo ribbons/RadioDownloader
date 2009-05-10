@@ -997,7 +997,7 @@
         <Directory Id="INSTALLLOCATION" Name="Radio Downloader">
           <Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E" DiskId="1">
             <File Id="RadioDownloaderExe" Source="..\bin\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
-              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" ShortName="RadioDld" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloaderIcon.exe">
+              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloaderIcon.exe">
                 <Icon Id="RadioDownloaderIcon.exe" SourceFile="..\bin\Radio Downloader.exe" />
               </Shortcut>
             </File>
@@ -1018,7 +1018,7 @@
           </Component>
         </Directory>
       </Directory>
-      <Directory Id="ProgramMenuFolder" ShortName="PMenu" Name="Start Menu Programs" />
+      <Directory Id="ProgramMenuFolder" Name="Start Menu Programs" />
       <Component Id="RunOnStartup" Guid="FC61531E-1B54-4680-A20A-6CBFC605B1C6">
         <RegistryValue Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string" Value="&quot;[INSTALLLOCATION]Radio Downloader.exe&quot; -starttray" />
       </Component>
