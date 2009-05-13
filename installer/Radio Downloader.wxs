@@ -3,6 +3,7 @@
   <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="www.nerdoftheherd.com" Name="Radio Downloader" Version="0.5.6.0" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
     <Package Compressed="yes" />
     <UI>
+      <?include Error Text.wxi ?>
       <Property Id="ErrorDialog"><![CDATA[ErrorDlg]]></Property>
       <Property Id="DefaultUIFont"><![CDATA[DlgFont8]]></Property>
       <Dialog Id="AdminWelcomeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
