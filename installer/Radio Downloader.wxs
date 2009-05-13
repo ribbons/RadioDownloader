@@ -540,7 +540,6 @@
     <Property Id="INSTALLLEVEL"><![CDATA[3]]></Property>
     <Property Id="InfoIcon"><![CDATA[info]]></Property>
     <Property Id="ButtonText_Retry"><![CDATA[&Retry]]></Property>
-    <Property Id="ComponentDownload"><![CDATA[ftp://anonymous@microsoft.com/components/]]></Property>
     <Property Id="BannerBitmap"><![CDATA[bannrbmp]]></Property>
     <Property Id="DialogBitmap"><![CDATA[dlgbmp]]></Property>
     <Property Id="ALLUSERS"><![CDATA[2]]></Property>
