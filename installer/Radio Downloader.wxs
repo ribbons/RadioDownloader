@@ -562,7 +562,7 @@
         <Directory Id="INSTALLLOCATION" Name="Radio Downloader">
           <Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E">
             <File Id="RadioDownloaderExe" Source="..\bin\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
-              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloaderIcon.exe">
+              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloaderIcon.exe" Description="Easily download radio station content and podcasts.">
                 <Icon Id="RadioDownloaderIcon.exe" SourceFile="Binary\ProgramIcon.exe" />
               </Shortcut>
             </File>
