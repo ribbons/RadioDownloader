@@ -583,7 +583,6 @@
           </Component>
         </Directory>
       </Directory>
-      <Directory Id="ProgramMenuFolder" Name="Start Menu Programs" />
       <Component Id="RunOnStartup" Guid="FC61531E-1B54-4680-A20A-6CBFC605B1C6">
         <RegistryValue Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string" Value="&quot;[INSTALLLOCATION]Radio Downloader.exe&quot; -starttray" />
       </Component>
