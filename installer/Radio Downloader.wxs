@@ -15,8 +15,13 @@
         <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+        <Control Id="DescriptionAdmin" Type="Text" X="135" Y="70" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+          <Text>Press Finish to exit the [Wizard].</Text>
+          <Condition Action="hide">InstallMode &lt;&gt; "Server Image"</Condition>
+        </Control>
         <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
-          <Text>Click the Finish button to exit the [Wizard].</Text>
+          <Text>Press Finish to exit the [Wizard] and start [ProductName].</Text>
+          <Condition Action="hide">InstallMode = "Server Image"</Condition>
         </Control>
         <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
           <Text>{\VerdanaBold13}[ProductName] setup is complete.</Text>
@@ -69,7 +74,7 @@
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
         <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Next]" />
         <Control Id="Text" Type="Text" X="35" Y="65" Width="300" Height="20">
-          <Text>Please wait while the [Wizard] [Progress2] [ProductName].  This may take several minutes.</Text>
+          <Text>Please wait while [ProductName] is being installed.</Text>
         </Control>
         <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
@@ -329,7 +334,6 @@
     <Property Id="ButtonText_Repair"><![CDATA[&Repair]]></Property>
     <Property Id="ButtonText_Back"><![CDATA[< &Back]]></Property>
     <Property Id="InstallMode"><![CDATA[Custom]]></Property>
-    <Property Id="Progress2"><![CDATA[installs]]></Property>
     <Property Id="Progress1"><![CDATA[Installing]]></Property>
     <Property Id="Wizard"><![CDATA[Setup Wizard]]></Property>
     <Property Id="ButtonText_Yes"><![CDATA[&Yes]]></Property>
