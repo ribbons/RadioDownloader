@@ -6,24 +6,6 @@
       <?include Error Text.wxi ?>
       <Property Id="ErrorDialog"><![CDATA[ErrorDlg]]></Property>
       <Property Id="DefaultUIFont"><![CDATA[DlgFont8]]></Property>
-      <Dialog Id="AdminWelcomeDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
-          <Publish Property="InstallMode" Value="Server Image"><![CDATA[1]]></Publish>
-          <Publish Event="NewDialog" Value="AdminInstallPointDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
-          <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Back]" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
-        <Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="30" Transparent="yes" NoPrefix="yes">
-          <Text>The [Wizard] will create a server image of [ProductName], at a specified network location.  Click Next to continue or Cancel to exit the [Wizard].</Text>
-        </Control>
-        <Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
-          <Text>{\VerdanaBold13}Welcome to the [ProductName] [Wizard]</Text>
-        </Control>
-      </Dialog>
       <Dialog Id="ExitDialog" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Finish]">
           <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
@@ -120,50 +102,15 @@
           <Text>Click the Finish button to exit the [Wizard].</Text>
         </Control>
       </Dialog>
-      <Dialog Id="AdminBrowseDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="PathEdit" Type="PathEdit" X="84" Y="202" Width="261" Height="17" Property="INSTALLLOCATION" />
-        <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_OK]">
-          <Publish Event="SetTargetPath" Value="INSTALLLOCATION"><![CDATA[1]]></Publish>
-          <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="240" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
-          <Publish Event="Reset" Value="0"><![CDATA[1]]></Publish>
-          <Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="ComboLabel" Type="Text" X="25" Y="58" Width="44" Height="10" TabSkip="no" Text="&amp;Look in:" />
-        <Control Id="DirectoryCombo" Type="DirectoryCombo" X="70" Y="55" Width="220" Height="80" Property="INSTALLLOCATION" Removable="yes" Fixed="yes" Remote="yes">
-          <Subscribe Event="IgnoreChange" Attribute="IgnoreChange" />
-        </Control>
-        <Control Id="Up" Type="PushButton" X="298" Y="55" Width="19" Height="19" ToolTip="Up One Level" Icon="yes" FixedSize="yes" IconSize="16" Text="Up">
-          <Publish Event="DirectoryListUp" Value="0"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="NewFolder" Type="PushButton" X="325" Y="55" Width="19" Height="19" ToolTip="Create A New Folder" Icon="yes" FixedSize="yes" IconSize="16" Text="New">
-          <Publish Event="DirectoryListNew" Value="0"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="DirectoryList" Type="DirectoryList" X="25" Y="83" Width="320" Height="110" Property="INSTALLLOCATION" Sunken="yes" TabSkip="no" />
-        <Control Id="PathLabel" Type="Text" X="25" Y="205" Width="59" Height="10" TabSkip="no" Text="&amp;Folder name:" />
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Browse to the destination folder</Text>
-        </Control>
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>[DlgTitleFont]Change current destination folder</Text>
-        </Control>
-      </Dialog>
       <Dialog Id="AdminInstallPointDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="Text" Type="Text" X="25" Y="80" Width="320" Height="10" TabSkip="no">
-          <Text>&amp;Enter a new network location or click Browse to browse to one.</Text>
+          <Text>&amp;Enter a network location, and then press Install.</Text>
         </Control>
         <Control Id="PathEdit" Type="PathEdit" X="25" Y="93" Width="320" Height="18" Property="INSTALLLOCATION" />
-        <Control Id="Browse" Type="PushButton" X="289" Y="119" Width="56" Height="17" Text="[ButtonText_Browse]">
-          <Publish Event="SpawnDialog" Value="AdminBrowseDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
-          <Publish Event="NewDialog" Value="AdminWelcomeDlg"><![CDATA[1]]></Publish>
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]" Default="yes" Disabled="yes">
         </Control>
         <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]">
+          <Publish Property="InstallMode" Value="Server Image"><![CDATA[1]]></Publish>
           <Publish Event="SetTargetPath" Value="INSTALLLOCATION"><![CDATA[1]]></Publish>
           <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace <> 1]]></Publish>
           <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]></Publish>
@@ -477,8 +424,8 @@
         <Show Dialog="UserExit" OnExit="cancel" />
         <Show Dialog="ExitDialog" OnExit="success" />
         <Show Dialog="PrepareDlg" Before="CostInitialize"><![CDATA[]]></Show>
-        <Show Dialog="AdminWelcomeDlg" After="CostFinalize" />
-        <Show Dialog="ProgressDlg" After="AdminWelcomeDlg" />
+        <Show Dialog="AdminInstallPointDlg" After="CostFinalize" />
+        <Show Dialog="ProgressDlg" After="AdminInstallPointDlg" />
       </AdminUISequence>
       <InstallUISequence>
         <Show Dialog="FatalError" OnExit="error" />
@@ -534,10 +481,8 @@
     <Binary Id="dialog_background" SourceFile="Binary\dialog_background.jpg" />
     <Binary Id="exclamic" SourceFile="Binary\exclamic.ico" />
     <Binary Id="info" SourceFile="Binary\info.ico" />
-    <Binary Id="New" SourceFile="Binary\New.ico" />
     <Binary Id="removico" SourceFile="Binary\removico.ico" />
     <Binary Id="repairic" SourceFile="Binary\repairic.ico" />
-    <Binary Id="Up" SourceFile="Binary\Up.ico" />
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder" Name="Program Files">
         <Directory Id="INSTALLLOCATION" Name="Radio Downloader">
