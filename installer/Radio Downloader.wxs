@@ -329,17 +329,13 @@
     <Property Id="ButtonText_Install"><![CDATA[&Install]]></Property>
     <Property Id="ButtonText_Next"><![CDATA[&Next >]]></Property>
     <Property Id="Setup"><![CDATA[Setup]]></Property>
-    <Property Id="ButtonText_Browse"><![CDATA[Br&owse]]></Property>
     <Property Id="ExclamationIcon"><![CDATA[exclamic]]></Property>
-    <Property Id="ButtonText_Repair"><![CDATA[&Repair]]></Property>
     <Property Id="ButtonText_Back"><![CDATA[< &Back]]></Property>
     <Property Id="InstallMode"><![CDATA[Custom]]></Property>
     <Property Id="Progress1"><![CDATA[Installing]]></Property>
     <Property Id="Wizard"><![CDATA[Setup Wizard]]></Property>
     <Property Id="ButtonText_Yes"><![CDATA[&Yes]]></Property>
     <Property Id="ButtonText_Ignore"><![CDATA[&Ignore]]></Property>
-    <Property Id="ButtonText_Reset"><![CDATA[&Reset]]></Property>
-    <Property Id="ButtonText_Remove"><![CDATA[&Remove]]></Property>
     <Property Id="ButtonText_Exit"><![CDATA[&Exit]]></Property>
     <Property Id="ButtonText_Return"><![CDATA[&Return]]></Property>
     <Property Id="ButtonText_OK"><![CDATA[OK]]></Property>
