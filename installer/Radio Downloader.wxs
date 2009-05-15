@@ -163,9 +163,13 @@
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
           <Publish Event="NewDialog" Value="AdminWelcomeDlg"><![CDATA[1]]></Publish>
         </Control>
-        <Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
+        <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]">
           <Publish Event="SetTargetPath" Value="INSTALLLOCATION"><![CDATA[1]]></Publish>
-          <Publish Event="NewDialog" Value="VerifyReadyDlg"><![CDATA[1]]></Publish>
+          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace <> 1]]></Publish>
+          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]></Publish>
+          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
+          <Publish Event="EnableRollback" Value="False"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
+          <Publish Event="SpawnDialog" Value="OutOfDiskDlg"><![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]></Publish>
         </Control>
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
           <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
@@ -174,7 +178,7 @@
         <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
         <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
         <Control Id="Description" Type="Text" X="25" Y="20" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
-          <Text>Please specify a network location for the server image of [ProductName] product</Text>
+          <Text>Please specify a network location for the server image of [ProductName]</Text>
         </Control>
         <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
           <Text>[DlgTitleFont]Network Location</Text>
@@ -464,35 +468,6 @@
           <Text>Please wait while the installer finishes determining your disk space requirements.</Text>
         </Control>
         <Control Id="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" ToolTip="Exclamation icon" FixedSize="yes" IconSize="32" Text="[ExclamationIcon]" />
-      </Dialog>
-      <Dialog Id="VerifyReadyDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes" TrackDiskSpace="yes">
-        <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]">
-          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace <> 1]]></Publish>
-          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]></Publish>
-          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
-          <Publish Event="EnableRollback" Value="False"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
-          <Publish Event="SpawnDialog" Value="OutOfDiskDlg"><![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]></Publish>
-        </Control>
-        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
-          <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
-        </Control>
-        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
-        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
-          <Publish Event="NewDialog" Value="AdminInstallPointDlg"><![CDATA[InstallMode = "Server Image"]]></Publish>
-          <Publish Event="NewDialog" Value="LicenseAgreementDlg"><![CDATA[InstallMode = "Custom" OR InstallMode = "Change"]]></Publish>
-          <Publish Event="NewDialog" Value="MaintenanceTypeDlg"><![CDATA[InstallMode = "Repair"]]></Publish>
-        </Control>
-        <Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="20">
-          <Text>Click Install to begin the installation. If you want to review or change any of your installation settings, click Back.  Click Cancel to exit the wizard.</Text>
-        </Control>
-        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
-        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
-        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>Setup is ready to begin the installation</Text>
-        </Control>
-        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
-          <Text>[DlgTitleFont]Ready to Install</Text>
-        </Control>
       </Dialog>
       <TextStyle Id="DlgFont8" FaceName="Tahoma" Size="8" />
       <TextStyle Id="DlgFontBold8" FaceName="Tahoma" Size="8" Bold="yes" />
