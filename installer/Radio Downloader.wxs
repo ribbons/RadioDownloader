@@ -540,8 +540,8 @@
     <Property Id="INSTALLLEVEL"><![CDATA[3]]></Property>
     <Property Id="InfoIcon"><![CDATA[info]]></Property>
     <Property Id="ButtonText_Retry"><![CDATA[&Retry]]></Property>
-    <Property Id="BannerBitmap"><![CDATA[bannrbmp]]></Property>
-    <Property Id="DialogBitmap"><![CDATA[dlgbmp]]></Property>
+    <Property Id="BannerBitmap"><![CDATA[dialog_banner]]></Property>
+    <Property Id="DialogBitmap"><![CDATA[dialog_background]]></Property>
     <Property Id="ALLUSERS"><![CDATA[2]]></Property>
     <Property Id="PATCHFOUND"><![CDATA[0]]></Property>
     <Property Id="ButtonText_Update"><![CDATA[&Update]]></Property>
@@ -550,8 +550,8 @@
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallFinalize" />
     </InstallExecuteSequence>
-    <Binary Id="bannrbmp" SourceFile="Binary\bannrbmp.bmp" />
-    <Binary Id="dlgbmp" SourceFile="Binary\dlgbmp.bmp" />
+    <Binary Id="dialog_banner" SourceFile="Binary\dialog_banner.jpg" />
+    <Binary Id="dialog_background" SourceFile="Binary\dialog_background.jpg" />
     <Binary Id="exclamic" SourceFile="Binary\exclamic.ico" />
     <Binary Id="info" SourceFile="Binary\info.ico" />
     <Binary Id="New" SourceFile="Binary\New.ico" />
