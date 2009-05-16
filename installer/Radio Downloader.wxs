@@ -353,7 +353,6 @@
     <Property Id="BannerBitmap"><![CDATA[dialog_banner]]></Property>
     <Property Id="DialogBitmap"><![CDATA[dialog_background]]></Property>
     <Property Id="ALLUSERS"><![CDATA[2]]></Property>
-    <Property Id="PATCHFOUND"><![CDATA[0]]></Property>
     <Property Id="ButtonText_Update"><![CDATA[&Update]]></Property>
     <Property Id="ARPHELPLINK" Value="http://www.nerdoftheherd.com/tools/radiodld/" />
     <Property Id="ARPNOMODIFY" Value="1" />
