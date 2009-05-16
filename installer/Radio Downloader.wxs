@@ -225,6 +225,9 @@
         <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
           <Text>[DlgTitleFont]End-User License Agreement</Text>
         </Control>
+        <Control Type="Text" Id="Version" Width="155" Height="10" X="20" Y="246" NoPrefix="yes">
+          <Text>Version !(bind.FileVersion.RadioDownloaderExe)</Text>
+        </Control>
       </Dialog>
       <Dialog Id="OutOfDiskDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
         <Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_OK]">
