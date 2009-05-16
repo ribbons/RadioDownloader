@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader" Version="0.5.6.0" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
+  <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader" Version="!(bind.FileVersion.RadioDownloaderExe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
     <Package Compressed="yes" Comments="Radio Downloader allows you to easily download radio station content and podcasts." Keywords="Radio Downloader,Installer,Radio,Podcasts" />
     <UI>
       <?include Error Text.wxi ?>
