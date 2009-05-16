@@ -358,7 +358,7 @@
     <Property Id="ARPNOMODIFY" Value="1" />
     <AdminExecuteSequence />
     <InstallExecuteSequence>
-      <RemoveExistingProducts After="InstallFinalize" />
+      <RemoveExistingProducts After="InstallInitialize" />
     </InstallExecuteSequence>
     <Binary Id="dialog_banner" SourceFile="Binary\dialog_banner.jpg" />
     <Binary Id="dialog_background" SourceFile="Binary\dialog_background.jpg" />
@@ -404,7 +404,14 @@
       <ComponentRef Id="RunOnStartup" />
       <ComponentRef Id="PodcastProviderDll" />
     </Feature>
-    <Condition Message="Radio Downloader requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
+    <Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
+    <Condition Message="A newer version of [ProductName] is already installed.">NOT NEWERVERSIONDETECTED</Condition>
+    <Condition Message="This version of [ProductName] is already installed.  To remove this version, use Add/Remove Programs in the Control Panel.">NOT CURRENTVERSIONALREADYINSTALLED</Condition>
     <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
+    <Upgrade Id="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
+      <UpgradeVersion Property="OLDERVERSIONBEINGUPGRADED" IncludeMaximum="no" Maximum="!(bind.FileVersion.RadioDownloaderExe)" OnlyDetect="no" />
+      <UpgradeVersion Property="NEWERVERSIONDETECTED" OnlyDetect="yes" IncludeMinimum="no" Minimum="!(bind.FileVersion.RadioDownloaderExe)" />
+      <UpgradeVersion Property="CURRENTVERSIONALREADYINSTALLED" IncludeMaximum="yes" IncludeMinimum="yes" Maximum="!(bind.FileVersion.RadioDownloaderExe)" Minimum="!(bind.FileVersion.RadioDownloaderExe)" OnlyDetect="yes" />
+    </Upgrade>
   </Product>
 </Wix>
