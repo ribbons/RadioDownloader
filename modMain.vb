@@ -164,28 +164,4 @@ Friend Module modMain
         If lngPos > 0 Then strString = Left(strString, lngPos - 1)
         TrimNull = strString
     End Function
-
-    Public Sub ExceptionHandler(ByVal sender As Object, ByVal e As UnhandledExceptionEventArgs)
-        Dim expException As Exception
-        expException = DirectCast(e.ExceptionObject, Exception)
-
-        If ReportError.Visible = False Then
-            Dim clsReport As New ErrorReporting(expException)
-            ReportError.AssignReport(clsReport)
-            ReportError.ShowDialog()
-        End If
-    End Sub
-
-    Public Sub ThreadExceptionHandler(ByVal sender As Object, ByVal e As Threading.ThreadExceptionEventArgs)
-        If ReportError.Visible = False Then
-            Dim clsReport As New ErrorReporting(e.Exception)
-            ReportError.AssignReport(clsReport)
-            ReportError.ShowDialog()
-        End If
-    End Sub
-
-    Public Sub StartupNextInstanceHandler(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs)
-        ' This is called when another instance is started, so do the same as a double click on the tray icon
-        Call Main.mnuTrayShow_Click(New Object, New System.EventArgs)
-    End Sub
 End Module

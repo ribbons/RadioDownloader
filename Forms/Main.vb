@@ -109,6 +109,14 @@ Friend Class Main
         ' Add a handler for when a second instance is loaded
         AddHandler My.Application.StartupNextInstance, AddressOf StartupNextInstanceHandler
 
+        ' If /exit was passed on the command line, then just exit immediately
+        For Each commandLineArg As String In Environment.GetCommandLineArgs
+            If commandLineArg.ToLower = "/exit" Then
+                Me.mnuTrayExit_Click(eventSender, eventArgs)
+                Exit Sub
+            End If
+        Next
+
         ' If this is the first run of a new version of the application, then upgrade the settings from the old version.
         If My.Settings.UpgradeSettings Then
             My.Settings.Upgrade()
@@ -665,8 +673,8 @@ Friend Class Main
     End Sub
 
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
-        For Each strCommand As String In Environment.GetCommandLineArgs()
-            If strCommand = "-starttray" Then
+        For Each commandLineArg As String In Environment.GetCommandLineArgs
+            If commandLineArg.ToLower = "/startintray" Then
                 Call TrayAnimate(Me, True)
                 Me.Visible = False
             End If
@@ -1091,5 +1099,37 @@ Friend Class Main
 
     Private Sub picSideBarBorder_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles picSideBarBorder.Paint
         e.Graphics.DrawLine(New Pen(Color.FromArgb(255, 167, 186, 197)), 0, 0, 0, picSideBarBorder.Height)
+    End Sub
+
+    Private Sub ExceptionHandler(ByVal sender As Object, ByVal e As UnhandledExceptionEventArgs)
+        Dim expException As Exception
+        expException = DirectCast(e.ExceptionObject, Exception)
+
+        If ReportError.Visible = False Then
+            Dim clsReport As New ErrorReporting(expException)
+            ReportError.AssignReport(clsReport)
+            ReportError.ShowDialog()
+        End If
+    End Sub
+
+    Private Sub ThreadExceptionHandler(ByVal sender As Object, ByVal e As Threading.ThreadExceptionEventArgs)
+        If ReportError.Visible = False Then
+            Dim clsReport As New ErrorReporting(e.Exception)
+            ReportError.AssignReport(clsReport)
+            ReportError.ShowDialog()
+        End If
+    End Sub
+
+    Private Sub StartupNextInstanceHandler(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs)
+        For Each commandLineArg As String In e.CommandLine
+            If commandLineArg.ToLower = "/exit" Then
+                ' Close the application
+                Me.mnuOptionsExit_Click(sender, e)
+                Exit Sub
+            End If
+        Next
+
+        ' Do the same as a double click on the tray icon
+        Call Me.mnuTrayShow_Click(sender, e)
     End Sub
 End Class
