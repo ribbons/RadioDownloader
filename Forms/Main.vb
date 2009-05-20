@@ -215,8 +215,11 @@ Friend Class Main
         tbrToolbar.SetWholeDropDown(tbtOptionsMenu)
         tbrHelp.SetWholeDropDown(tbtHelpMenu)
         tbrHelp.Width = tbtHelpMenu.Rectangle.Width
-        tblToolbars.ColumnStyles(0) = New ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right))
-        tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right)
+
+        If Me.WindowState <> FormWindowState.Minimized Then
+            tblToolbars.ColumnStyles(0) = New ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right))
+            tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right)
+        End If
 
         tmrCheckSub.Enabled = True
         tmrStartProcess.Enabled = True
@@ -1052,26 +1055,28 @@ Friend Class Main
     End Sub
 
     Private Sub TextBoxAutoScrollbars(ByVal txtTextBox As TextBox)
-        Static booPreventNest As Boolean = False
-        If booPreventNest Then Exit Sub
-        booPreventNest = True
+        If Me.WindowState <> FormWindowState.Minimized Then
+            Static booPreventNest As Boolean = False
+            If booPreventNest Then Exit Sub
+            booPreventNest = True
 
-        Dim sizTextSize As Size = TextRenderer.MeasureText(txtTextBox.Text, txtTextBox.Font, txtTextBox.Size, TextFormatFlags.TextBoxControl Or TextFormatFlags.WordBreak)
+            Dim sizTextSize As Size = TextRenderer.MeasureText(txtTextBox.Text, txtTextBox.Font, txtTextBox.Size, TextFormatFlags.TextBoxControl Or TextFormatFlags.WordBreak)
 
-        Dim booHScroll As Boolean = txtTextBox.ClientSize.Width < sizTextSize.Width
-        Dim booVScroll As Boolean = txtTextBox.ClientSize.Height < sizTextSize.Height
+            Dim booHScroll As Boolean = txtTextBox.ClientSize.Width < sizTextSize.Width
+            Dim booVScroll As Boolean = txtTextBox.ClientSize.Height < sizTextSize.Height
 
-        If Not booHScroll And Not booVScroll Then
-            txtTextBox.ScrollBars = ScrollBars.None
-        ElseIf booHScroll And booVScroll Then
-            txtTextBox.ScrollBars = ScrollBars.Both
-        ElseIf booVScroll Then
-            txtTextBox.ScrollBars = ScrollBars.Vertical
-        Else
-            txtTextBox.ScrollBars = ScrollBars.Horizontal
+            If Not booHScroll And Not booVScroll Then
+                txtTextBox.ScrollBars = ScrollBars.None
+            ElseIf booHScroll And booVScroll Then
+                txtTextBox.ScrollBars = ScrollBars.Both
+            ElseIf booVScroll Then
+                txtTextBox.ScrollBars = ScrollBars.Vertical
+            Else
+                txtTextBox.ScrollBars = ScrollBars.Horizontal
+            End If
+
+            booPreventNest = False
         End If
-
-        booPreventNest = False
     End Sub
 
     Private Sub txtSideDescript_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtSideDescript.GotFocus
