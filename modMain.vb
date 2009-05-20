@@ -157,7 +157,7 @@ Friend Module modMain
         Call GetWindowRect(lngTrayHwnd, GetSysTrayPos)
     End Function
 
-    Public Function TrimNull(ByVal strString As String) As String
+    Private Function TrimNull(ByVal strString As String) As String
         Dim lngPos As Integer
         lngPos = InStr(strString, Chr(0))
 
