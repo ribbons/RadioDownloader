@@ -662,7 +662,7 @@ Friend Class Main
 
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         For Each commandLineArg As String In Environment.GetCommandLineArgs
-            If commandLineArg.ToLower = "/startintray" Then
+            If commandLineArg.ToLower = "/hidemainwindow" Then
                 Call TrayAnimate(Me, True)
                 Me.Visible = False
             End If
