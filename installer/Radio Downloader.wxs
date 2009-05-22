@@ -356,9 +356,11 @@
     <Property Id="ButtonText_Update"><![CDATA[&Update]]></Property>
     <Property Id="ARPHELPLINK" Value="http://www.nerdoftheherd.com/tools/radiodld/" />
     <Property Id="ARPNOMODIFY" Value="1" />
+    <Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
     <AdminExecuteSequence />
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize" />
+      <Custom Action="CloseBeforeUninstall" Before="InstallValidate">Installed OR OLDERVERSIONBEINGUPGRADED</Custom>
     </InstallExecuteSequence>
     <Binary Id="dialog_banner" SourceFile="Binary\dialog_banner.jpg" />
     <Binary Id="dialog_background" SourceFile="Binary\dialog_background.jpg" />
@@ -408,6 +410,7 @@
     <Condition Message="A newer version of [ProductName] is already installed.">NOT NEWERVERSIONDETECTED</Condition>
     <Condition Message="This version of [ProductName] is already installed.  To remove this version, use Add/Remove Programs in the Control Panel.">NOT CURRENTVERSIONALREADYINSTALLED</Condition>
     <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
+    <CustomAction ExeCommand="/exit" Id="CloseBeforeUninstall" FileKey="RadioDownloaderExe" Return="ignore" Impersonate="yes" />
     <Upgrade Id="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
       <UpgradeVersion Property="OLDERVERSIONBEINGUPGRADED" IncludeMaximum="no" Maximum="!(bind.FileVersion.RadioDownloaderExe)" OnlyDetect="no" />
       <UpgradeVersion Property="NEWERVERSIONDETECTED" OnlyDetect="yes" IncludeMinimum="no" Minimum="!(bind.FileVersion.RadioDownloaderExe)" />
