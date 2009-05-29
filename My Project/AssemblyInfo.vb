@@ -13,4 +13,5 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyVersion("0.5.6.0")> 
 
 <Assembly: CLSCompliant(True)> 
+<Assembly: ComVisible(False)> 
 <Assembly: NeutralResourcesLanguageAttribute("en-GB")> 
