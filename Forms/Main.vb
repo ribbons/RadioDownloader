@@ -179,7 +179,7 @@ Friend Class Main
         Call lstDownloads.Columns.Add("Progress", CInt(0.179 * lstDownloads.Width))
 
         clsProgData = Data.GetInstance
-        Call clsProgData.UpdateProviderList(lstProviders, imlProviders)
+        Call clsProgData.UpdateProviderList(lstProviders, imlProviders, mnuOptionsProviderOpts)
         Call clsProgData.UpdateDlList(lstDownloads)
         Call clsProgData.UpdateSubscrList(lstSubscribed)
 

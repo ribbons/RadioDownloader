@@ -79,6 +79,7 @@
         Me.tbtCleanUp = New System.Windows.Forms.ToolBarButton
         Me.tbrHelp = New RadioDld.ExtToolBar
         Me.tbtHelpMenu = New System.Windows.Forms.ToolBarButton
+        Me.mnuOptionsProviderOpts = New System.Windows.Forms.MenuItem
         Me.tbrView.SuspendLayout()
         Me.tblInfo.SuspendLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -229,21 +230,21 @@
         '
         'mnuOptions
         '
-        Me.mnuOptions.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.mnuOptionsShowOpts, Me.mnuOptionsSep, Me.mnuOptionsExit})
+        Me.mnuOptions.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.mnuOptionsShowOpts, Me.mnuOptionsProviderOpts, Me.mnuOptionsSep, Me.mnuOptionsExit})
         '
         'mnuOptionsShowOpts
         '
         Me.mnuOptionsShowOpts.Index = 0
-        Me.mnuOptionsShowOpts.Text = "Show &Options"
+        Me.mnuOptionsShowOpts.Text = "Main &Options"
         '
         'mnuOptionsSep
         '
-        Me.mnuOptionsSep.Index = 1
+        Me.mnuOptionsSep.Index = 2
         Me.mnuOptionsSep.Text = "-"
         '
         'mnuOptionsExit
         '
-        Me.mnuOptionsExit.Index = 2
+        Me.mnuOptionsExit.Index = 3
         Me.mnuOptionsExit.Text = "E&xit"
         '
         'mnuHelp
@@ -542,6 +543,11 @@
         Me.tbtHelpMenu.Name = "tbtHelpMenu"
         Me.tbtHelpMenu.Text = "&Help"
         '
+        'mnuOptionsProviderOpts
+        '
+        Me.mnuOptionsProviderOpts.Index = 1
+        Me.mnuOptionsProviderOpts.Text = "&Provider Options"
+        '
         'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -631,5 +637,6 @@
     Friend WithEvents lblSideMainTitle As System.Windows.Forms.Label
     Friend WithEvents txtSideDescript As System.Windows.Forms.TextBox
     Friend WithEvents picSideBarBorder As System.Windows.Forms.PictureBox
+    Friend WithEvents mnuOptionsProviderOpts As System.Windows.Forms.MenuItem
 #End Region
 End Class

@@ -50,7 +50,6 @@
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdCancel.Location = New System.Drawing.Point(297, 287)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
@@ -66,7 +65,6 @@
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdOK.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdOK.Location = New System.Drawing.Point(214, 287)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
@@ -103,7 +101,7 @@
         Me.txtSaveIn.Name = "txtSaveIn"
         Me.txtSaveIn.ReadOnly = True
         Me.txtSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.txtSaveIn.Size = New System.Drawing.Size(341, 21)
+        Me.txtSaveIn.Size = New System.Drawing.Size(341, 20)
         Me.txtSaveIn.TabIndex = 4
         '
         'lblSaveIn
@@ -116,7 +114,7 @@
         Me.lblSaveIn.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblSaveIn.Name = "lblSaveIn"
         Me.lblSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
-        Me.lblSaveIn.Size = New System.Drawing.Size(169, 13)
+        Me.lblSaveIn.Size = New System.Drawing.Size(167, 13)
         Me.lblSaveIn.TabIndex = 3
         Me.lblSaveIn.Text = "&Save downloaded programmes in:"
         '
@@ -126,7 +124,7 @@
         Me.lblFileNameFormat.Location = New System.Drawing.Point(12, 72)
         Me.lblFileNameFormat.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblFileNameFormat.Name = "lblFileNameFormat"
-        Me.lblFileNameFormat.Size = New System.Drawing.Size(208, 13)
+        Me.lblFileNameFormat.Size = New System.Drawing.Size(202, 13)
         Me.lblFileNameFormat.TabIndex = 6
         Me.lblFileNameFormat.Text = "&Downloaded programme file name format:"
         '
@@ -136,7 +134,7 @@
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtFileNameFormat.Location = New System.Drawing.Point(37, 93)
         Me.txtFileNameFormat.Name = "txtFileNameFormat"
-        Me.txtFileNameFormat.Size = New System.Drawing.Size(420, 21)
+        Me.txtFileNameFormat.Size = New System.Drawing.Size(420, 20)
         Me.txtFileNameFormat.TabIndex = 7
         '
         'lblFilenameFormatResult
@@ -145,7 +143,7 @@
         Me.lblFilenameFormatResult.Location = New System.Drawing.Point(34, 120)
         Me.lblFilenameFormatResult.Margin = New System.Windows.Forms.Padding(3, 3, 3, 17)
         Me.lblFilenameFormatResult.Name = "lblFilenameFormatResult"
-        Me.lblFilenameFormatResult.Size = New System.Drawing.Size(41, 13)
+        Me.lblFilenameFormatResult.Size = New System.Drawing.Size(40, 13)
         Me.lblFilenameFormatResult.TabIndex = 8
         Me.lblFilenameFormatResult.Text = "Result:"
         '
@@ -155,7 +153,6 @@
         Me.cmdReset.BackColor = System.Drawing.SystemColors.Control
         Me.cmdReset.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdReset.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdReset.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdReset.Location = New System.Drawing.Point(380, 287)
         Me.cmdReset.Name = "cmdReset"
         Me.cmdReset.RightToLeft = System.Windows.Forms.RightToLeft.No
@@ -170,7 +167,7 @@
         Me.lblRunAfter.Location = New System.Drawing.Point(12, 150)
         Me.lblRunAfter.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblRunAfter.Name = "lblRunAfter"
-        Me.lblRunAfter.Size = New System.Drawing.Size(234, 13)
+        Me.lblRunAfter.Size = New System.Drawing.Size(229, 13)
         Me.lblRunAfter.TabIndex = 9
         Me.lblRunAfter.Text = "Run &command after download (blank for none):"
         '
@@ -180,7 +177,7 @@
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtRunAfter.Location = New System.Drawing.Point(37, 171)
         Me.txtRunAfter.Name = "txtRunAfter"
-        Me.txtRunAfter.Size = New System.Drawing.Size(420, 21)
+        Me.txtRunAfter.Size = New System.Drawing.Size(420, 20)
         Me.txtRunAfter.TabIndex = 10
         '
         'lblRunAfterFileDef
@@ -189,7 +186,7 @@
         Me.lblRunAfterFileDef.Location = New System.Drawing.Point(34, 198)
         Me.lblRunAfterFileDef.Margin = New System.Windows.Forms.Padding(3, 3, 3, 17)
         Me.lblRunAfterFileDef.Name = "lblRunAfterFileDef"
-        Me.lblRunAfterFileDef.Size = New System.Drawing.Size(206, 13)
+        Me.lblRunAfterFileDef.Size = New System.Drawing.Size(192, 13)
         Me.lblRunAfterFileDef.TabIndex = 11
         Me.lblRunAfterFileDef.Text = "%file% = full path to the downloaded file"
         '
@@ -199,7 +196,7 @@
         Me.lblBandwidthLimit.Location = New System.Drawing.Point(12, 228)
         Me.lblBandwidthLimit.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblBandwidthLimit.Name = "lblBandwidthLimit"
-        Me.lblBandwidthLimit.Size = New System.Drawing.Size(193, 13)
+        Me.lblBandwidthLimit.Size = New System.Drawing.Size(187, 13)
         Me.lblBandwidthLimit.TabIndex = 12
         Me.lblBandwidthLimit.Text = "Download &bandwidth limit (0 for none):"
         '
@@ -209,7 +206,7 @@
         Me.updBandwidthLimit.Margin = New System.Windows.Forms.Padding(3, 3, 3, 20)
         Me.updBandwidthLimit.Maximum = New Decimal(New Integer() {268435, 0, 0, 0})
         Me.updBandwidthLimit.Name = "updBandwidthLimit"
-        Me.updBandwidthLimit.Size = New System.Drawing.Size(56, 21)
+        Me.updBandwidthLimit.Size = New System.Drawing.Size(56, 20)
         Me.updBandwidthLimit.TabIndex = 13
         '
         'lblKB
@@ -217,7 +214,7 @@
         Me.lblKB.AutoSize = True
         Me.lblKB.Location = New System.Drawing.Point(99, 253)
         Me.lblKB.Name = "lblKB"
-        Me.lblKB.Size = New System.Drawing.Size(27, 13)
+        Me.lblKB.Size = New System.Drawing.Size(30, 13)
         Me.lblKB.TabIndex = 14
         Me.lblKB.Text = "kB/s"
         '
@@ -245,17 +242,16 @@
         Me.Controls.Add(Me.txtSaveIn)
         Me.Controls.Add(Me.lblSaveIn)
         Me.Cursor = System.Windows.Forms.Cursors.Default
-        Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
-        Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.Location = New System.Drawing.Point(3, 29)
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.Name = "Preferences"
         Me.RightToLeft = System.Windows.Forms.RightToLeft.No
+        Me.ShowIcon = False
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
-        Me.Text = "Options"
+        Me.Text = "Main Options"
         CType(Me.updBandwidthLimit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()

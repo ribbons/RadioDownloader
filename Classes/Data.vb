@@ -1024,31 +1024,49 @@ Friend Class Data
         Return clsCurDldProgData
     End Function
 
-    Public Sub UpdateProviderList(ByVal lstProviders As ListView, ByVal imlProviders As ImageList)
-        Dim gidPluginIDs() As Guid
-        gidPluginIDs = clsPluginsInst.GetPluginIdList
+    Public Sub UpdateProviderList(ByVal providerList As ListView, ByVal providerIcons As ImageList, ByVal providerOptsMenu As MenuItem)
+        Dim pluginIDList() As Guid
+        pluginIDList = clsPluginsInst.GetPluginIdList
 
-        Dim ThisInstance As IRadioProvider
-        Dim lstAdd As ListViewItem
+        Dim providerInstance As IRadioProvider
+        Dim addListItem As ListViewItem
+        Dim addMenuItem As MenuItem
 
-        For Each gidPluginID As Guid In gidPluginIDs
-            ThisInstance = clsPluginsInst.GetPluginInstance(gidPluginID)
+        For Each pluginID As Guid In pluginIDList
+            providerInstance = clsPluginsInst.GetPluginInstance(pluginID)
 
-            lstAdd = New ListViewItem
-            lstAdd.Text = ThisInstance.ProviderName
-            lstAdd.Tag = gidPluginID
+            addListItem = New ListViewItem
+            addListItem.Text = providerInstance.ProviderName
+            addListItem.Tag = pluginID
 
-            Dim bmpIcon As Bitmap = ThisInstance.ProviderIcon
+            Dim providerIcon As Bitmap = providerInstance.ProviderIcon
 
-            If bmpIcon IsNot Nothing Then
-                imlProviders.Images.Add(gidPluginID.ToString, bmpIcon)
-                lstAdd.ImageKey = gidPluginID.ToString
+            If providerIcon IsNot Nothing Then
+                providerIcons.Images.Add(pluginID.ToString, providerIcon)
+                addListItem.ImageKey = pluginID.ToString
             Else
-                lstAdd.ImageKey = "default"
+                addListItem.ImageKey = "default"
             End If
 
-            lstProviders.Items.Add(lstAdd)
+            providerList.Items.Add(addListItem)
+
+            addMenuItem = New MenuItem(providerInstance.ProviderName + " Provider")
+
+            If providerInstance.GetShowOptionsHandler IsNot Nothing Then
+                AddHandler addMenuItem.Click, providerInstance.GetShowOptionsHandler
+            Else
+                addMenuItem.Enabled = False
+            End If
+
+
+            providerOptsMenu.MenuItems.Add(addMenuItem)
         Next
+
+        If providerOptsMenu.MenuItems.Count = 0 Then
+            addMenuItem = New MenuItem("No providers")
+            addMenuItem.Enabled = False
+            providerOptsMenu.MenuItems.Add(addMenuItem)
+        End If
     End Sub
 
     Public Sub PerformCleanup()

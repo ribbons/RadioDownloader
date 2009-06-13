@@ -76,6 +76,10 @@ Public Class PodcastProvider
         End Get
     End Property
 
+    Public Function GetShowOptionsHandler() As EventHandler Implements IRadioProvider.GetShowOptionsHandler
+        Return Nothing
+    End Function
+
     Public Function GetFindNewPanel(ByVal objView As Object) As Panel Implements IRadioProvider.GetFindNewPanel
         Dim FindNewInst As New FindNew
         FindNewInst.clsPluginInst = Me

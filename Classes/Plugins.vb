@@ -55,6 +55,7 @@ Public Interface IRadioProvider
     ReadOnly Property ProviderDescription() As String
     ReadOnly Property ProgInfoUpdateFreqDays() As Integer
 
+    Function GetShowOptionsHandler() As EventHandler
     Function GetFindNewPanel(ByVal objView As Object) As Panel
     Function GetProgrammeInfo(ByVal strProgExtID As String) As ProgrammeInfo
     Function GetAvailableEpisodeIDs(ByVal strProgExtID As String) As String()
