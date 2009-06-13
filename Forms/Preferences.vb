@@ -55,7 +55,10 @@ Friend Class Preferences
 
     Private Sub cmdReset_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdReset.Click
         If MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question) = MsgBoxResult.Yes Then
-            My.Settings.Reset()
+            My.Settings.SaveFolder = My.Settings.Properties.Item("SaveFolder").DefaultValue.ToString
+            My.Settings.FileNameFormat = My.Settings.Properties.Item("FileNameFormat").DefaultValue.ToString
+            My.Settings.RunAfterCommand = My.Settings.Properties.Item("RunAfterCommand").DefaultValue.ToString
+
             Me.Close()
         End If
     End Sub
