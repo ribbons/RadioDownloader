@@ -38,7 +38,6 @@ Friend Class Preferences
         My.Settings.SaveFolder = txtSaveIn.Text
         My.Settings.FileNameFormat = txtFileNameFormat.Text
         My.Settings.RunAfterCommand = txtRunAfter.Text
-        My.Settings.BandwidthLimit = CInt(updBandwidthLimit.Value)
         Me.Close()
     End Sub
 
@@ -48,7 +47,6 @@ Friend Class Preferences
         txtSaveIn.Text = GetSaveFolder()
         txtFileNameFormat.Text = My.Settings.FileNameFormat
         txtRunAfter.Text = My.Settings.RunAfterCommand
-        updBandwidthLimit.Value = My.Settings.BandwidthLimit
     End Sub
 
     Private Sub txtFileNameFormat_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFileNameFormat.TextChanged

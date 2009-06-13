@@ -37,10 +37,6 @@
         Me.lblRunAfter = New System.Windows.Forms.Label
         Me.txtRunAfter = New System.Windows.Forms.TextBox
         Me.lblRunAfterFileDef = New System.Windows.Forms.Label
-        Me.lblBandwidthLimit = New System.Windows.Forms.Label
-        Me.updBandwidthLimit = New System.Windows.Forms.NumericUpDown
-        Me.lblKB = New System.Windows.Forms.Label
-        CType(Me.updBandwidthLimit, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'cmdCancel
@@ -50,7 +46,7 @@
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdCancel.Location = New System.Drawing.Point(297, 287)
+        Me.cmdCancel.Location = New System.Drawing.Point(297, 237)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdCancel.Size = New System.Drawing.Size(77, 25)
@@ -65,7 +61,7 @@
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdOK.Location = New System.Drawing.Point(214, 287)
+        Me.cmdOK.Location = New System.Drawing.Point(214, 237)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdOK.Size = New System.Drawing.Size(77, 25)
@@ -153,7 +149,7 @@
         Me.cmdReset.BackColor = System.Drawing.SystemColors.Control
         Me.cmdReset.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdReset.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdReset.Location = New System.Drawing.Point(380, 287)
+        Me.cmdReset.Location = New System.Drawing.Point(380, 237)
         Me.cmdReset.Name = "cmdReset"
         Me.cmdReset.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdReset.Size = New System.Drawing.Size(77, 25)
@@ -190,34 +186,6 @@
         Me.lblRunAfterFileDef.TabIndex = 11
         Me.lblRunAfterFileDef.Text = "%file% = full path to the downloaded file"
         '
-        'lblBandwidthLimit
-        '
-        Me.lblBandwidthLimit.AutoSize = True
-        Me.lblBandwidthLimit.Location = New System.Drawing.Point(12, 228)
-        Me.lblBandwidthLimit.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
-        Me.lblBandwidthLimit.Name = "lblBandwidthLimit"
-        Me.lblBandwidthLimit.Size = New System.Drawing.Size(187, 13)
-        Me.lblBandwidthLimit.TabIndex = 12
-        Me.lblBandwidthLimit.Text = "Download &bandwidth limit (0 for none):"
-        '
-        'updBandwidthLimit
-        '
-        Me.updBandwidthLimit.Location = New System.Drawing.Point(37, 249)
-        Me.updBandwidthLimit.Margin = New System.Windows.Forms.Padding(3, 3, 3, 20)
-        Me.updBandwidthLimit.Maximum = New Decimal(New Integer() {268435, 0, 0, 0})
-        Me.updBandwidthLimit.Name = "updBandwidthLimit"
-        Me.updBandwidthLimit.Size = New System.Drawing.Size(56, 20)
-        Me.updBandwidthLimit.TabIndex = 13
-        '
-        'lblKB
-        '
-        Me.lblKB.AutoSize = True
-        Me.lblKB.Location = New System.Drawing.Point(99, 253)
-        Me.lblKB.Name = "lblKB"
-        Me.lblKB.Size = New System.Drawing.Size(30, 13)
-        Me.lblKB.TabIndex = 14
-        Me.lblKB.Text = "kB/s"
-        '
         'Preferences
         '
         Me.AcceptButton = Me.cmdOK
@@ -225,10 +193,7 @@
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.CancelButton = Me.cmdCancel
-        Me.ClientSize = New System.Drawing.Size(469, 324)
-        Me.Controls.Add(Me.lblKB)
-        Me.Controls.Add(Me.updBandwidthLimit)
-        Me.Controls.Add(Me.lblBandwidthLimit)
+        Me.ClientSize = New System.Drawing.Size(469, 274)
         Me.Controls.Add(Me.lblRunAfterFileDef)
         Me.Controls.Add(Me.txtRunAfter)
         Me.Controls.Add(Me.lblRunAfter)
@@ -252,7 +217,6 @@
         Me.ShowInTaskbar = False
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent
         Me.Text = "Main Options"
-        CType(Me.updBandwidthLimit, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
         Me.PerformLayout()
 
@@ -264,8 +228,5 @@
     Friend WithEvents lblRunAfter As System.Windows.Forms.Label
     Friend WithEvents txtRunAfter As System.Windows.Forms.TextBox
     Friend WithEvents lblRunAfterFileDef As System.Windows.Forms.Label
-    Friend WithEvents lblBandwidthLimit As System.Windows.Forms.Label
-    Friend WithEvents updBandwidthLimit As System.Windows.Forms.NumericUpDown
-    Friend WithEvents lblKB As System.Windows.Forms.Label
 #End Region
 End Class

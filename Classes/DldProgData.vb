@@ -23,7 +23,6 @@ Friend Class DldProgData
     Private priProgInfo As IRadioProvider.ProgrammeInfo
     Private epiEpisodeInfo As IRadioProvider.EpisodeInfo
     Private strFinalName As String
-    Private intBandwidthLimit As Integer
     Private intAttemptNumber As Integer
 
     Public Property PluginID() As Guid
@@ -86,15 +85,6 @@ Friend Class DldProgData
         End Get
         Set(ByVal strFinalName As String)
             Me.strFinalName = strFinalName
-        End Set
-    End Property
-
-    Public Property BandwidthLimit() As Integer
-        Get
-            Return intBandwidthLimit
-        End Get
-        Set(ByVal intBandwidthLimit As Integer)
-            Me.intBandwidthLimit = intBandwidthLimit
         End Set
     End Property
 
