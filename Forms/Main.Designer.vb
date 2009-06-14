@@ -254,6 +254,7 @@
         'mnuHelpShowHelp
         '
         Me.mnuHelpShowHelp.Index = 0
+        Me.mnuHelpShowHelp.Shortcut = System.Windows.Forms.Shortcut.F1
         Me.mnuHelpShowHelp.Text = "&Help Contents"
         '
         'mnuHelpReportBug
