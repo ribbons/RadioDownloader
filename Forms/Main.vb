@@ -97,6 +97,33 @@ Friend Class Main
                 If tbtDelete.Visible Then
                     e.Handled = True
                     Call tbtDelete_Click()
+                ElseIf tbtCancel.Visible Then
+                    e.Handled = True
+                    Call tbtCancel_Click()
+                End If
+            Case Keys.Back
+                If Me.ActiveControl.GetType IsNot GetType(TextBox) Then
+                    If e.Shift Then
+                        If tbtForward.Enabled Then
+                            e.Handled = True
+                            Call tbtForward_Click(sender, e)
+                        End If
+                    Else
+                        If tbtBack.Enabled Then
+                            e.Handled = True
+                            Call tbtBack_Click(sender, e)
+                        End If
+                    End If
+                End If
+            Case Keys.BrowserBack
+                If tbtBack.Enabled Then
+                    e.Handled = True
+                    Call tbtBack_Click(sender, e)
+                End If
+            Case Keys.BrowserForward
+                If tbtForward.Enabled Then
+                    e.Handled = True
+                    Call tbtForward_Click(sender, e)
                 End If
         End Select
     End Sub
