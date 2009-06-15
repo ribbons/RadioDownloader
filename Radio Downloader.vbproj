@@ -207,6 +207,7 @@
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </Content>
+    <None Include="Resources\toolbar\choose programme_16.png" />
     <None Include="Resources\icons\Icon 64.png" />
     <None Include="Resources\icons\Icon 32.png" />
     <None Include="Resources\icons\Working.ico" />

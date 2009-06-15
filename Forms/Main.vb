@@ -177,6 +177,7 @@ Friend Class Main
 
         imlProviders.Images.Add("default", My.Resources.provider_default)
 
+        imlToolbar.Images.Add("choose_programme", My.Resources.toolbar_choose_programme)
         imlToolbar.Images.Add("clean_up", My.Resources.toolbar_clean_up)
         imlToolbar.Images.Add("current_episodes", My.Resources.toolbar_current_episodes)
         imlToolbar.Images.Add("delete", My.Resources.toolbar_delete)
@@ -273,8 +274,9 @@ Friend Class Main
 
     Private Sub SetContextForSelectedProvider()
         If lstProviders.SelectedItems.Count > 0 Then
-            Dim gidPluginID As Guid = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
+            SetToolbarButtons("ChooseProgramme")
 
+            Dim gidPluginID As Guid = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
             Call SetSideBar(clsProgData.ProviderName(gidPluginID), clsProgData.ProviderDescription(gidPluginID), Nothing)
         Else
             Call SetViewDefaults()
@@ -282,11 +284,7 @@ Friend Class Main
     End Sub
 
     Private Sub lstProviders_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
-        Dim ViewData As FindNewViewData
-        ViewData.ProviderID = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
-        ViewData.View = Nothing
-
-        Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, ViewData)
+        Call tbtChooseProgramme_Click()
     End Sub
 
     Private Sub lstEpisodes_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lstEpisodes.ItemCheck
@@ -429,9 +427,10 @@ Friend Class Main
         End If
     End Sub
 
-    Private Sub SetToolbarButtons(ByVal strButtons As String)
-        Dim strSplitButtons() As String = Split(strButtons, ",")
+    Private Sub SetToolbarButtons(ByVal buttons As String)
+        Dim splitButtons() As String = Split(buttons, ",")
 
+        tbtChooseProgramme.Visible = False
         tbtDownload.Visible = False
         tbtSubscribe.Visible = False
         tbtUnsubscribe.Visible = False
@@ -443,8 +442,10 @@ Friend Class Main
         tbtReportError.Visible = False
         tbtCleanUp.Visible = False
 
-        For Each strLoopButtons As String In strSplitButtons
-            Select Case strLoopButtons
+        For Each loopButtons As String In splitButtons
+            Select Case loopButtons
+                Case "ChooseProgramme"
+                    tbtChooseProgramme.Visible = True
                 Case "Download"
                     tbtDownload.Visible = True
                 Case "Subscribe"
@@ -852,6 +853,14 @@ Friend Class Main
         clsReport.SendReport(My.Settings.ErrorReportURL)
     End Sub
 
+    Private Sub tbtChooseProgramme_Click()
+        Dim ViewData As FindNewViewData
+        ViewData.ProviderID = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
+        ViewData.View = Nothing
+
+        Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, ViewData)
+    End Sub
+
     Private Sub mnuOptionsShowOpts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsShowOpts.Click
         Call Preferences.ShowDialog()
     End Sub
@@ -1036,6 +1045,8 @@ Friend Class Main
 
     Private Sub tbrToolbar_ButtonClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ToolBarButtonClickEventArgs) Handles tbrToolbar.ButtonClick
         Select Case e.Button.Name
+            Case "tbtChooseProgramme"
+                Call tbtChooseProgramme_Click()
             Case "tbtDownload"
                 Call tbtDownload_Click()
             Case "tbtSubscribe"

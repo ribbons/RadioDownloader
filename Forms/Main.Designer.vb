@@ -67,6 +67,7 @@
         Me.lstProviders = New RadioDld.ExtListView
         Me.tbrToolbar = New RadioDld.ExtToolBar
         Me.tbtOptionsMenu = New System.Windows.Forms.ToolBarButton
+        Me.tbtChooseProgramme = New System.Windows.Forms.ToolBarButton
         Me.tbtDownload = New System.Windows.Forms.ToolBarButton
         Me.tbtSubscribe = New System.Windows.Forms.ToolBarButton
         Me.tbtUnsubscribe = New System.Windows.Forms.ToolBarButton
@@ -439,7 +440,8 @@
         'tbrToolbar
         '
         Me.tbrToolbar.Appearance = System.Windows.Forms.ToolBarAppearance.Flat
-        Me.tbrToolbar.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtOptionsMenu, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp})
+        Me.tbrToolbar.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtOptionsMenu, Me.tbtChooseProgramme, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp})
+        Me.tbrToolbar.ButtonSize = New System.Drawing.Size(135, 22)
         Me.tbrToolbar.Divider = False
         Me.tbrToolbar.DropDownArrows = True
         Me.tbrToolbar.Location = New System.Drawing.Point(3, 2)
@@ -458,6 +460,12 @@
         Me.tbtOptionsMenu.ImageKey = "options"
         Me.tbtOptionsMenu.Name = "tbtOptionsMenu"
         Me.tbtOptionsMenu.Text = "&Options"
+        '
+        'tbtChooseProgramme
+        '
+        Me.tbtChooseProgramme.ImageKey = "choose_programme"
+        Me.tbtChooseProgramme.Name = "tbtChooseProgramme"
+        Me.tbtChooseProgramme.Text = "&Choose Programme"
         '
         'tbtDownload
         '
@@ -639,5 +647,6 @@
     Friend WithEvents txtSideDescript As System.Windows.Forms.TextBox
     Friend WithEvents picSideBarBorder As System.Windows.Forms.PictureBox
     Friend WithEvents mnuOptionsProviderOpts As System.Windows.Forms.MenuItem
+    Friend WithEvents tbtChooseProgramme As System.Windows.Forms.ToolBarButton
 #End Region
 End Class
