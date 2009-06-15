@@ -1039,6 +1039,29 @@ Friend Class Data
             errorText = DownloadErrorType(episodeID).ToString
         End If
 
+        Dim command As New SQLiteCommand("select ep.name as epname, ep.description as epdesc, date, duration, ep.extid as epextid, pr.name as progname, pr.description as progdesc, pr.extid as progextid, pluginid from episodes as ep, programmes as pr where epid=@epid and ep.progid=pr.progid", sqlConnection)
+        command.Parameters.Add(New SQLiteParameter("@epid", episodeID))
+        Dim reader As SQLiteDataReader = command.ExecuteReader
+
+        If reader.Read Then
+            errorExtraDetails.Add("episode:name", reader.GetString(reader.GetOrdinal("epname")))
+            errorExtraDetails.Add("episode:description", reader.GetString(reader.GetOrdinal("epdesc")))
+            errorExtraDetails.Add("episode:date", reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd hh:mm"))
+            errorExtraDetails.Add("episode:duration", CStr(reader.GetInt32(reader.GetOrdinal("duration"))))
+            errorExtraDetails.Add("episode:extid", reader.GetString(reader.GetOrdinal("epextid")))
+
+            errorExtraDetails.Add("programme:name", reader.GetString(reader.GetOrdinal("progname")))
+            errorExtraDetails.Add("programme:description", reader.GetString(reader.GetOrdinal("progdesc")))
+            errorExtraDetails.Add("programme:extid", reader.GetString(reader.GetOrdinal("progextid")))
+
+            Dim providerGuid As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
+            errorExtraDetails.Add("provider:id", reader.GetString(reader.GetOrdinal("pluginid")))
+            errorExtraDetails.Add("provider:name", ProviderName(providerGuid))
+            errorExtraDetails.Add("provider:description", ProviderDescription(providerGuid))
+        End If
+
+        reader.Close()
+
         Dim clsReport As New ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails)
         clsReport.SendReport(My.Settings.ErrorReportURL)
     End Sub
