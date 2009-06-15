@@ -19,6 +19,39 @@ Imports System.IO
 Imports System.Reflection
 Imports System.Collections.Generic
 
+<Serializable()> _
+Public Class DldErrorDataItem
+    Private itemName As String
+    Private itemData As String
+
+    Public Property Name() As String
+        Get
+            Return itemName
+        End Get
+        Set(ByVal value As String)
+            itemName = value
+        End Set
+    End Property
+
+    Public Property Data() As String
+        Get
+            Return itemData
+        End Get
+        Set(ByVal value As String)
+            itemData = value
+        End Set
+    End Property
+
+    Protected Sub New()
+        ' Do nothing, just needed for deserialisation
+    End Sub
+
+    Public Sub New(ByVal name As String, ByVal data As String)
+        itemName = name
+        itemData = data
+    End Sub
+End Class
+
 Public Interface IRadioProvider
     Structure ProgrammeInfo
         Dim Name As String
@@ -65,7 +98,7 @@ Public Interface IRadioProvider
     Event FindNewException(ByVal expException As Exception)
     Event FoundNew(ByVal strProgExtID As String)
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
-    Event DldError(ByVal errType As ErrorType, ByVal strErrorDetails As String)
+    Event DldError(ByVal errorType As ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
     Event Finished(ByVal strFileExtension As String)
 
     Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As ProgrammeInfo, ByVal EpInfo As EpisodeInfo, ByVal strFinalName As String, ByVal intAttempt As Integer)

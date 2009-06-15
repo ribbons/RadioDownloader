@@ -21,6 +21,7 @@ Imports System.Threading
 Imports System.Data.SQLite
 Imports System.Collections.Generic
 Imports System.Text.RegularExpressions
+Imports System.Xml.Serialization
 
 Friend Class Data
     Public Enum Statuses
@@ -41,9 +42,9 @@ Friend Class Data
 
     Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
-    Public Event Progress(ByVal clsCurDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Public Event DldError(ByVal clsCurDldProgData As DldProgData, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
-    Public Event Finished(ByVal clsCurDldProgData As DldProgData)
+    Public Event Progress(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    Public Event DldError(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
+    Public Event Finished(ByVal currentDldProgData As DldProgData)
 
     Public Shared Function GetInstance() As Data
         If clsDataInstance Is Nothing Then
@@ -240,12 +241,21 @@ Friend Class Data
         MyBase.Finalize()
     End Sub
 
-    Public Sub DownloadSetErrored(ByVal intEpID As Integer, ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String)
+    Public Sub DownloadSetErrored(ByVal intEpID As Integer, ByVal errType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
+        If errType = IRadioProvider.ErrorType.UnknownError Then
+            furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
+
+            Dim detailsStringWriter As New StringWriter()
+            Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
+            detailsSerializer.Serialize(detailsStringWriter, furtherDetails)
+            errorDetails = detailsStringWriter.ToString
+        End If
+
         Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, errortime=@errortime, errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Errored))
         sqlCommand.Parameters.Add(New SQLiteParameter("@errortime", Now))
         sqlCommand.Parameters.Add(New SQLiteParameter("@errortype", errType))
-        sqlCommand.Parameters.Add(New SQLiteParameter("@errordetails", strErrorDetails))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         sqlCommand.ExecuteNonQuery()
     End Sub
@@ -375,8 +385,12 @@ Friend Class Data
             With clsCurDldProgData
                 DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
             End With
-        Catch expUnknown As Exception
-            Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, expUnknown.GetType.ToString + ": " + expUnknown.Message + vbCrLf + expUnknown.StackTrace)
+        Catch unknownExp As Exception
+            Dim extraDetails As New List(Of DldErrorDataItem)
+            extraDetails.Add(New DldErrorDataItem("error", unknownExp.GetType.ToString + ": " + unknownExp.Message))
+            extraDetails.Add(New DldErrorDataItem("exceptiontostring", unknownExp.ToString))
+
+            Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, unknownExp.GetType.ToString + vbCrLf + unknownExp.StackTrace, extraDetails)
         End Try
     End Sub
 
@@ -994,8 +1008,43 @@ Friend Class Data
         sqlReader.Close()
     End Function
 
-    Private Sub DownloadPluginInst_DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Handles DownloadPluginInst.DldError
-        RaiseEvent DldError(clsCurDldProgData, errType, strErrorDetails)
+    Public Sub DownloadReportError(ByVal episodeID As Integer)
+        Dim errorText As String = String.Empty
+        Dim extraDetailsString As String = DownloadErrorDetails(episodeID)
+        Dim errorExtraDetails As New Dictionary(Of String, String)
+
+        Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
+
+        Try
+            Dim extraDetails As List(Of DldErrorDataItem)
+            extraDetails = DirectCast(detailsSerializer.Deserialize(New StringReader(extraDetailsString)), List(Of DldErrorDataItem))
+
+            For Each detailItem As DldErrorDataItem In extraDetails
+                Select Case detailItem.Name
+                    Case "error"
+                        errorText = detailItem.Data
+                    Case "details"
+                        extraDetailsString = detailItem.Data
+                    Case Else
+                        errorExtraDetails.Add(detailItem.Name, detailItem.Data)
+                End Select
+            Next
+        Catch invalidOperationExp As InvalidOperationException
+            ' Do nothing, and fall back to reporting all the details as one string
+        Catch invalidCastExp As InvalidCastException
+            ' Do nothing, and fall back to reporting all the details as one string
+        End Try
+
+        If errorText = String.Empty Then
+            errorText = DownloadErrorType(episodeID).ToString
+        End If
+
+        Dim clsReport As New ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails)
+        clsReport.SendReport(My.Settings.ErrorReportURL)
+    End Sub
+
+    Private Sub DownloadPluginInst_DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles DownloadPluginInst.DldError
+        RaiseEvent DldError(clsCurDldProgData, errorType, errorDetails, furtherDetails)
         thrDownloadThread = Nothing
         clsCurDldProgData = Nothing
     End Sub

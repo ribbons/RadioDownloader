@@ -33,7 +33,7 @@ Public Class PodcastProvider
     Public Event FindNewException(ByVal expException As Exception) Implements IRadioProvider.FindNewException
     Public Event FoundNew(ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
     Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
-    Public Event DldError(ByVal errType As IRadioProvider.ErrorType, ByVal strErrorDetails As String) Implements IRadioProvider.DldError
+    Public Event DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Implements IRadioProvider.DldError
     Public Event Finished(ByVal strFileExtension As String) Implements IRadioProvider.Finished
 
     Friend Const intCacheHTTPHours As Integer = 2
@@ -505,13 +505,17 @@ Public Class PodcastProvider
                         Dim webErrorResponse As HttpWebResponse = CType(expWeb.Response, HttpWebResponse)
 
                         If webErrorResponse.StatusCode = HttpStatusCode.NotFound Then
-                            RaiseEvent DldError(IRadioProvider.ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.")
+                            RaiseEvent DldError(IRadioProvider.ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.", New List(Of DldErrorDataItem))
                             Exit Sub
                         End If
                     End If
                 End If
 
-                RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.GetType.ToString + ": " + e.Error.Message + vbCrLf + e.Error.StackTrace)
+                Dim extraDetails As New List(Of DldErrorDataItem)
+                extraDetails.Add(New DldErrorDataItem("error", e.Error.GetType.ToString + ": " + e.Error.Message))
+                extraDetails.Add(New DldErrorDataItem("exceptiontostring", e.Error.ToString))
+
+                RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.GetType.ToString + vbCrLf + e.Error.StackTrace, extraDetails)
             Else
                 RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
                 Call File.Move(strDownloadFileName, strFinalName)

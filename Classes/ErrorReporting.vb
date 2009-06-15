@@ -46,6 +46,14 @@ Friend Class ErrorReporting
         End Try
     End Sub
 
+    Public Sub New(ByVal errorText As String, ByVal errorDetails As String, ByVal extraFields As Dictionary(Of String, String))
+        Me.New(errorText, errorDetails)
+
+        For Each extraItem As KeyValuePair(Of String, String) In extraFields
+            fields.Add(extraItem.Key, extraItem.Value)
+        Next
+    End Sub
+
     Public Sub New(ByVal uncaughtException As Exception)
         Me.New(uncaughtException.GetType.ToString + ": " + uncaughtException.Message, uncaughtException.GetType.ToString + vbCrLf + uncaughtException.StackTrace)
 
