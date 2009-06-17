@@ -144,7 +144,7 @@ Friend Class ErrorReporting
             If strReturnLines(0) = "success" Then
                 MsgBox("Your error report was sent successfully.", MsgBoxStyle.Information)
 
-                If strReturnLines(1).Substring(0, 7) = "http://" Then
+                If strReturnLines(1).StartsWith("http://") Or strReturnLines(1).StartsWith("https://") Then
                     Process.Start(strReturnLines(1))
                 End If
             End If
