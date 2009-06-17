@@ -386,11 +386,18 @@ Friend Class Data
                 DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
             End With
         Catch unknownExp As Exception
+            Dim exceptionMessage As String = unknownExp.Message
+
+            If exceptionMessage.Contains(Environment.NewLine) Then
+                ' Just use the first line for the main error text
+                exceptionMessage = Split(exceptionMessage, Environment.NewLine)(0)
+            End If
+
             Dim extraDetails As New List(Of DldErrorDataItem)
-            extraDetails.Add(New DldErrorDataItem("error", unknownExp.GetType.ToString + ": " + unknownExp.Message))
+            extraDetails.Add(New DldErrorDataItem("error", unknownExp.GetType.ToString + ": " + exceptionMessage))
             extraDetails.Add(New DldErrorDataItem("exceptiontostring", unknownExp.ToString))
 
-            Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, unknownExp.GetType.ToString + vbCrLf + unknownExp.StackTrace, extraDetails)
+            Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, unknownExp.GetType.ToString + ": " + unknownExp.Message + vbCrLf + unknownExp.StackTrace, extraDetails)
         End Try
     End Sub
 
