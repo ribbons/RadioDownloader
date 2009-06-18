@@ -241,15 +241,19 @@ Friend Class Data
         MyBase.Finalize()
     End Sub
 
-    Public Sub DownloadSetErrored(ByVal intEpID As Integer, ByVal errType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
-        If errType = IRadioProvider.ErrorType.UnknownError Then
-            furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
+    Public Function DownloadSetErrored(ByVal intEpID As Integer, ByVal errType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) As Boolean
+        Select Case errType
+            Case IRadioProvider.ErrorType.RemoveFromList
+                Call RemoveDownload(intEpID)
+                Return False
+            Case IRadioProvider.ErrorType.UnknownError
+                furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
 
-            Dim detailsStringWriter As New StringWriter()
-            Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
-            detailsSerializer.Serialize(detailsStringWriter, furtherDetails)
-            errorDetails = detailsStringWriter.ToString
-        End If
+                Dim detailsStringWriter As New StringWriter()
+                Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
+                detailsSerializer.Serialize(detailsStringWriter, furtherDetails)
+                errorDetails = detailsStringWriter.ToString
+        End Select
 
         Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, errortime=@errortime, errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Errored))
@@ -258,7 +262,9 @@ Friend Class Data
         sqlCommand.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
         sqlCommand.ExecuteNonQuery()
-    End Sub
+
+        Return True
+    End Function
 
     Public Sub DownloadSetDownloaded(ByVal intEpID As Integer, ByVal strDownloadPath As String)
         Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", sqlConnection)

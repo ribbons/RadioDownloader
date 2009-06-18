@@ -543,17 +543,21 @@ Friend Class Main
     Private Sub clsProgData_DldError_FormThread(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
         Try
             If clsProgData.EpisodeExists(currentDldProgData.EpID) Then
-                Call clsProgData.DownloadSetErrored(currentDldProgData.EpID, errorType, errorDetails, furtherDetails)
-
-                If lstDownloads.Items.ContainsKey(CStr(currentDldProgData.EpID)) Then
-                    If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-                        If lstDownloads.Items(CStr(currentDldProgData.EpID)).Selected Then
-                            ' The item that has just errored is selected, so update the information
-                            Call SetContextForSelectedDownload()
-                        ElseIf lstDownloads.SelectedItems.Count = 0 Then
-                            ' No items are selected, so update the statistics
-                            Call SetViewDefaults()
+                If clsProgData.DownloadSetErrored(currentDldProgData.EpID, errorType, errorDetails, furtherDetails) Then
+                    If lstDownloads.Items.ContainsKey(CStr(currentDldProgData.EpID)) Then
+                        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+                            If lstDownloads.Items(CStr(currentDldProgData.EpID)).Selected Then
+                                ' The item that has just errored is selected, so update the information
+                                Call SetContextForSelectedDownload()
+                            End If
                         End If
+                    End If
+                End If
+
+                If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+                    If lstDownloads.SelectedItems.Count = 0 Then
+                        ' No items are selected, so update the statistics
+                        Call SetViewDefaults()
                     End If
                 End If
             End If

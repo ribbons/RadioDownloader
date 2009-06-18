@@ -76,10 +76,11 @@ Public Interface IRadioProvider
     End Enum
 
     Enum ErrorType
-        UnknownError
-        MissingDependency
-        ShorterThanExpected
-        NotAvailable
+        UnknownError = 0
+        MissingDependency = 1
+        ShorterThanExpected = 2
+        NotAvailable = 3
+        RemoveFromList = 4
     End Enum
 
     ReadOnly Property ProviderID() As Guid
