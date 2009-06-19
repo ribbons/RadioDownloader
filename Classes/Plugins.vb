@@ -81,6 +81,7 @@ Public Interface IRadioProvider
         ShorterThanExpected = 2
         NotAvailable = 3
         RemoveFromList = 4
+        NotAvailableInLocation = 5
     End Enum
 
     ReadOnly Property ProviderID() As Guid

@@ -363,13 +363,15 @@ Friend Class Main
 
                     Select Case .DownloadErrorType(intEpID)
                         Case IRadioProvider.ErrorType.MissingDependency
-                            strErrorName = "Missing Dependency"
+                            strErrorName = "Missing dependency"
                         Case IRadioProvider.ErrorType.ShorterThanExpected
-                            strErrorName = "Shorter Than Expected"
+                            strErrorName = "Shorter than expected"
                         Case IRadioProvider.ErrorType.NotAvailable
-                            strErrorName = "Not Available"
+                            strErrorName = "Not available"
+                        Case IRadioProvider.ErrorType.NotAvailableInLocation
+                            strErrorName = "Not available in your location"
                         Case IRadioProvider.ErrorType.UnknownError
-                            strErrorName = "Unknown Error"
+                            strErrorName = "Unknown error"
                             strErrorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
                             strActionString = "Retry,Cancel,ReportError"
                     End Select
