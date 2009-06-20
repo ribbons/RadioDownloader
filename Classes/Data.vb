@@ -255,9 +255,8 @@ Friend Class Data
                 errorDetails = detailsStringWriter.ToString
         End Select
 
-        Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, errortime=@errortime, errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Errored))
-        sqlCommand.Parameters.Add(New SQLiteParameter("@errortime", Now))
         sqlCommand.Parameters.Add(New SQLiteParameter("@errortype", errType))
         sqlCommand.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
@@ -276,11 +275,9 @@ Friend Class Data
 
     Public Function FindAndDownload() As Boolean
         If thrDownloadThread Is Nothing Then
-            Dim sqlCommand As New SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid, dl.errorcount from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and ((dl.errorcount=1 and dl.errortime<@twohoursago) or (dl.errorcount=2 and dl.errortime<@eighthoursago)))) order by ep.date", sqlConnection)
+            Dim sqlCommand As New SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid, dl.errorcount from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", sqlConnection)
             sqlCommand.Parameters.Add(New SQLiteParameter("@statuswait", Statuses.Waiting))
             sqlCommand.Parameters.Add(New SQLiteParameter("@statuserr", Statuses.Errored))
-            sqlCommand.Parameters.Add(New SQLiteParameter("@twohoursago", Now.AddHours(-2)))
-            sqlCommand.Parameters.Add(New SQLiteParameter("@eighthoursago", Now.AddHours(-8)))
 
             Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
