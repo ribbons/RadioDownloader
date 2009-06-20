@@ -60,7 +60,7 @@ Friend Class Main
 
     Private WithEvents clsProgData As Data
     Private clsDoDBUpdate As UpdateDB
-    Private clsUpdate As AutoUpdate
+    Private clsUpdate As UpdateCheck
 
     Private Delegate Sub clsProgData_Progress_Delegate(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Private Delegate Sub clsProgData_DldError_Delegate(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
@@ -218,10 +218,7 @@ Friend Class Main
         Call SetTrayStatus(False)
         nicTrayIcon.Visible = True
 
-        clsUpdate = New AutoUpdate("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString, "http://www.nerdoftheherd.com/tools/radiodld/downloads/Radio Downloader.msi?reqver=" + My.Application.Info.Version.ToString, New Guid("B20EC097-6E80-4637-ACCE-F01A2E5071F4"), GetAppDataFolder(), "Radio Downloader.msi")
-        If My.Settings.UpdateDownloaded Then
-            Call InstallUpdate()
-        End If
+        clsUpdate = New UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString)
 
         picSideBarBorder.Width = 2
 
@@ -705,25 +702,15 @@ Friend Class Main
     End Sub
 
     Private Sub tmrCheckForUpdates_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrCheckForUpdates.Tick
-        If My.Settings.UpdateDownloaded Then
-            If My.Settings.AskedAboutUpdate = False Then
-                ' Set AskedAboutUpdate to true before asking to prevent a messagebox an
-                ' hour being popped up until the messagebox is answered.
-                My.Settings.AskedAboutUpdate = True
+        If clsUpdate.IsUpdateAvailable Then
+            If My.Settings.LastUpdatePrompt.AddDays(7) < Now Then
+                My.Settings.LastUpdatePrompt = Now
 
-                If MsgBox("A new version of Radio Downloader has been downloaded and is ready to be installed.  Would you like to install the update now?" + vbCrLf + "(If you choose 'No' the update will be installed next time you start Radio Downloader)", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, "Radio Downloader") = MsgBoxResult.Yes Then
-                    Call InstallUpdate()
+                If MsgBox("A new version of Radio Downloader is available." + Environment.NewLine + "Would you like to visit the website to download it now?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, "Radio Downloader") = MsgBoxResult.Yes Then
+                    Process.Start("http://www.nerdoftheherd.com/tools/radiodld/")
                 End If
             End If
-        Else
-            clsUpdate.CheckForUpdates()
         End If
-    End Sub
-
-    Private Sub InstallUpdate()
-        My.Settings.AskedAboutUpdate = False
-        clsUpdate.InstallUpdate()
-        Call mnuTrayExit_Click(mnuTrayExit, New EventArgs)
     End Sub
 
     Private Sub tbtSubscribe_Click()

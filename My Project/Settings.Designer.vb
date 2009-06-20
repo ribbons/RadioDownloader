@@ -104,25 +104,13 @@ Namespace My
         
         <Global.System.Configuration.UserScopedSettingAttribute(),  _
          Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property UpdateDownloaded() As Boolean
+         Global.System.Configuration.DefaultSettingValueAttribute("2000-01-01")>  _
+        Public Property LastUpdatePrompt() As Date
             Get
-                Return CType(Me("UpdateDownloaded"),Boolean)
+                Return CType(Me("LastUpdatePrompt"),Date)
             End Get
             Set
-                Me("UpdateDownloaded") = value
-            End Set
-        End Property
-        
-        <Global.System.Configuration.UserScopedSettingAttribute(),  _
-         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
-         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
-        Public Property AskedAboutUpdate() As Boolean
-            Get
-                Return CType(Me("AskedAboutUpdate"),Boolean)
-            End Get
-            Set
-                Me("AskedAboutUpdate") = value
+                Me("LastUpdatePrompt") = value
             End Set
         End Property
         

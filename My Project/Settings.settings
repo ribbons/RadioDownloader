@@ -14,11 +14,8 @@
     <Setting Name="UpgradeSettings" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="UpdateDownloaded" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="AskedAboutUpdate" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="LastUpdatePrompt" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)">2000-01-01</Value>
     </Setting>
     <Setting Name="LastCheckForUpdates" Type="System.DateTime" Scope="User">
       <Value Profile="(Default)">2000-01-01</Value>

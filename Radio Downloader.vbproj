@@ -99,7 +99,7 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Classes\AutoUpdate.vb" />
+    <Compile Include="Classes\UpdateCheck.vb" />
     <Compile Include="Classes\CachedWebClient.vb" />
     <Compile Include="Classes\DldProgData.vb" />
     <Compile Include="Classes\ErrorReporting.vb" />
