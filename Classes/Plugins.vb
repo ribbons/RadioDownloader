@@ -108,7 +108,7 @@ End Interface
 
 Friend Class Plugins
     Private Const strInterfaceName As String = "IRadioProvider"
-    Private htbPlugins As New Hashtable
+    Private availablePlugins As New Dictionary(Of Guid, AvailablePlugin)
 
     Private Structure AvailablePlugin
         Dim AssemblyPath As String
@@ -116,20 +116,20 @@ Friend Class Plugins
     End Structure
 
     Public Function PluginExists(ByVal gidPluginID As Guid) As Boolean
-        Return htbPlugins.ContainsKey(gidPluginID)
+        Return availablePlugins.ContainsKey(gidPluginID)
     End Function
 
     Public Function GetPluginInstance(ByVal gidPluginID As Guid) As IRadioProvider
         If PluginExists(gidPluginID) Then
-            Return CreateInstance(DirectCast(htbPlugins.Item(gidPluginID), AvailablePlugin))
+            Return CreateInstance(availablePlugins.Item(gidPluginID))
         Else
             Return Nothing
         End If
     End Function
 
     Public Function GetPluginIdList() As Guid()
-        ReDim GetPluginIdList(htbPlugins.Keys.Count - 1)
-        htbPlugins.Keys.CopyTo(GetPluginIdList, 0)
+        ReDim GetPluginIdList(availablePlugins.Keys.Count - 1)
+        availablePlugins.Keys.CopyTo(GetPluginIdList, 0)
     End Function
 
     ' Next three functions are based on code from http://www.developerfusion.co.uk/show/4371/3/
@@ -170,7 +170,7 @@ Friend Class Plugins
                         Try
                             Dim objPlugin As IRadioProvider
                             objPlugin = CreateInstance(Plugin)
-                            htbPlugins.Add(objPlugin.ProviderID, Plugin)
+                            availablePlugins.Add(objPlugin.ProviderID, Plugin)
                         Catch
                             Continue For
                         End Try
