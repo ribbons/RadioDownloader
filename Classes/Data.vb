@@ -83,157 +83,99 @@ Friend Class Data
         ' Set the current database version.  This is done before the upgrades are attempted so that
         ' if the upgrade throws an exception this can be reported, but the programme will run next time.
         ' NB: Remember to change default version in the database if this next line is changed!
-        SetDBSetting("databaseversion", 2)
+        SetDBSetting("databaseversion", 3)
 
         Select Case intCurrentVer
-            Case 1
-                Call UpgradeDBv1to2()
             Case 2
+                Call UpgradeDBv2to3()
+            Case 3
                 ' Nothing to do, this is the current version.
         End Select
     End Sub
 
-    Private Sub UpgradeDBv1to2()
-        Dim sqlCommand As New SQLiteCommand("select count(*) from tblDownloads", sqlConnection)
-        Dim intCount As Integer = 0
-        Dim intTotal As Integer = CInt(sqlCommand.ExecuteScalar)
+    Private Sub UpgradeDBv2to3()
+        Dim command As SQLiteCommand
+        Dim count As Integer = 0
+        Dim unusedTables() As String = {"tblDownloads", "tblInfo", "tblLastFetch", "tblSettings", "tblStationVisibility", "tblSubscribed"}
 
-        Status.lblStatus.Text = "Migrating downloads..."
+        Status.lblStatus.Text = "Removing unused tables..."
         Status.prgProgress.Visible = True
-        Status.prgProgress.Maximum = intTotal
         Status.prgProgress.Value = 0
+        Status.prgProgress.Maximum = unusedTables.GetUpperBound(0) + 1
         Status.Visible = True
         Application.DoEvents()
 
-        ' Migrate the downloads
-        sqlCommand = New SQLiteCommand("select inf.name, inf.description, inf.duration, inf.image, dld.date as dlddate, dld.path, dld.playcount from tblDownloads as dld, tblInfo as inf where dld.type=inf.type and dld.id=inf.id and inf.date=dld.date and inf.station=dld.station and status=1", sqlConnection)
-        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+        ' Delete the unused (v0.4 era) tables if they exist
+        For Each unusedTable As String In unusedTables
+            Status.lblStatus.Text = "Removing unused table " + CStr(count) + " of " + CStr(unusedTables.GetUpperBound(0) + 1) + "..."
+            Status.prgProgress.Value = count
+            Application.DoEvents()
 
-        Dim intImage As Integer
-        Dim intEpID As Integer
-        Dim intDataLength As Integer
+            command = New SQLiteCommand("drop table if exists " + unusedTable, sqlConnection)
+            command.ExecuteNonQuery()
 
-        Dim sqlCheckEpisode As New SQLiteCommand("select epid from episodes where name=@name and description=@description and duration=@duration and date=@date", sqlConnection)
-        Dim sqlCheckEpRdr As SQLiteDataReader
-        Dim sqlMigrateInf As New SQLiteCommand("insert into episodes (name, description, duration, date, image) values (@name, @description, @duration, @date, @image)", sqlConnection)
-        Dim sqlGetRowIDCmd As New SQLiteCommand("select last_insert_rowid()", sqlConnection)
-        Dim sqlCheckDld As New SQLiteCommand("select count(*) from downloads where epid=@epid", sqlConnection)
-        Dim sqlMigrateDld As New SQLiteCommand("insert into downloads (epid, status, filepath, playcount) values (@epid, @status, @filepath, @playcount)", sqlConnection)
+            count += 1
+        Next
 
-        With sqlReader
-            While .Read
-                Status.lblStatus.Text = "Migrating download " + CStr(intCount) + " of " + CStr(intTotal) + "..."
-                Status.prgProgress.Value = intCount
-                Application.DoEvents()
-
-                If sqlReader.IsDBNull(sqlReader.GetOrdinal("image")) Then
-                    intImage = Nothing
-                Else
-                    ' Get the image as a bitmap
-                    intDataLength = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, Nothing, 0, 0))
-                    Dim bteContent(intDataLength - 1) As Byte
-                    sqlReader.GetBytes(sqlReader.GetOrdinal("image"), 0, bteContent, 0, intDataLength)
-                    intImage = StoreImage(New Bitmap(New MemoryStream(bteContent)))
-                End If
-
-                sqlCheckEpisode.Parameters.Add(New SQLiteParameter("@name", .GetString(.GetOrdinal("name"))))
-                sqlCheckEpisode.Parameters.Add(New SQLiteParameter("@description", .GetString(.GetOrdinal("description"))))
-                sqlCheckEpisode.Parameters.Add(New SQLiteParameter("@duration", .GetInt32(.GetOrdinal("duration")) * 60))
-                sqlCheckEpisode.Parameters.Add(New SQLiteParameter("@date", UpgradeDBv1to2CustDateFmt(sqlReader, "dlddate")))
-                sqlCheckEpRdr = sqlCheckEpisode.ExecuteReader
-
-                If sqlCheckEpRdr.Read = False Then
-                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@name", .GetString(.GetOrdinal("name"))))
-                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@description", .GetString(.GetOrdinal("description"))))
-                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@duration", .GetInt32(.GetOrdinal("duration")) * 60))
-                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@date", UpgradeDBv1to2CustDateFmt(sqlReader, "dlddate")))
-                    sqlMigrateInf.Parameters.Add(New SQLiteParameter("@image", intImage))
-                    sqlMigrateInf.ExecuteNonQuery()
-
-                    intEpID = CInt(sqlGetRowIDCmd.ExecuteScalar)
-                Else
-                    intEpID = sqlCheckEpRdr.GetInt32(sqlCheckEpRdr.GetOrdinal("epid"))
-                End If
-
-                sqlCheckEpRdr.Close()
-
-                sqlCheckDld.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-                If CInt(sqlCheckDld.ExecuteScalar) = 0 Then
-                    sqlMigrateDld.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-                    sqlMigrateDld.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
-                    sqlMigrateDld.Parameters.Add(New SQLiteParameter("@filepath", .GetString(.GetOrdinal("path"))))
-                    sqlMigrateDld.Parameters.Add(New SQLiteParameter("@playcount", .GetInt32(.GetOrdinal("playcount"))))
-                    sqlMigrateDld.ExecuteNonQuery()
-                End If
-
-                intCount += 1
-            End While
-
-            .Close()
-        End With
-
-        Status.lblStatus.Text = "Performing cleanup.."
-        Status.prgProgress.Visible = False
+        Status.lblStatus.Text = "Finished removing unused tables"
+        Status.prgProgress.Value = count
         Application.DoEvents()
 
-        ' Delete all of the images stored in the info table, so the old data doesn't take up loads of space.
-        Dim sqlReduceClutter As New SQLiteCommand("update tblInfo set image=null", sqlConnection)
-        sqlReduceClutter.ExecuteNonQuery()
+        ' Work through the images and re-save them to ensure they are compressed
+        command = New SQLiteCommand("select imgid from images", sqlConnection)
+        Dim reader As SQLiteDataReader = command.ExecuteReader
+        Dim compressImages As New List(Of Integer)
 
-        sqlCommand = New SQLiteCommand("select count(*) from tblSubscribed", sqlConnection)
-        intCount = -1
-        intTotal = CInt(sqlCommand.ExecuteScalar)
+        While reader.Read
+            compressImages.Add(reader.GetInt32(reader.GetOrdinal("imgid")))
+        End While
 
-        Status.lblStatus.Text = "Attempting to migrate subscriptions..."
-        Status.prgProgress.Visible = True
-        Status.prgProgress.Maximum = intTotal
+        reader.Close()
+
+        Status.lblStatus.Text = "Compressing images..."
         Status.prgProgress.Value = 0
+        Status.prgProgress.Maximum = compressImages.Count
         Application.DoEvents()
 
-        ' Then migrate the subscriptions
-        sqlCommand = New SQLiteCommand("select type, id from tblSubscribed", sqlConnection)
-        sqlReader = sqlCommand.ExecuteReader
+        Dim deleteCmd As New SQLiteCommand("delete from images where imgid=@imgid", sqlConnection)
+        Dim updateProgs As New SQLiteCommand("update programmes set image=@newimgid where image=@oldimgid", sqlConnection)
+        Dim updateEps As New SQLiteCommand("update episodes set image=@newimgid where image=@oldimgid", sqlConnection)
 
-        With sqlReader
-            While .Read
-                intCount += 1
-                Status.lblStatus.Text = "Attempting to migrate subscription " + CStr(intCount) + " of " + CStr(intTotal) + "..."
-                Status.prgProgress.Value = intCount
-                Application.DoEvents()
+        Dim newImageID As Integer
+        Dim image As Bitmap
+        count = 1
 
-                Select Case .GetString(.GetOrdinal("type"))
-                    Case "BBCPODCAST"
-                        Dim gidPluginID As New Guid("3cfbe63e-95b8-4f80-8570-4ace909e0921")
-                        Dim strExtID As String = "http://downloads.bbc.co.uk/podcasts/" + .GetString(.GetOrdinal("id")) + "/rss.xml"
+        For Each oldImageID As Integer In compressImages
+            Status.lblStatus.Text = "Compressing image " + CStr(count) + " of " + CStr(compressImages.Count) + "..."
+            Status.prgProgress.Value = count - 1
+            Application.DoEvents()
 
-                        If StoreProgrammeInfo(gidPluginID, strExtID, New Exception) Then
-                            Dim intProgID As Integer = ExtIDToProgID(gidPluginID, strExtID)
+            image = RetrieveImage(oldImageID)
 
-                            If intProgID <> Nothing Then
-                                AddSubscription(intProgID)
-                            End If
-                        End If
-                End Select
-            End While
+            deleteCmd.Parameters.Add(New SQLiteParameter("@imgid", oldImageID))
+            deleteCmd.ExecuteNonQuery()
 
-            .Close()
-        End With
+            newImageID = StoreImage(image)
+            Application.DoEvents()
+
+            updateProgs.Parameters.Add(New SQLiteParameter("@oldimgid", oldImageID))
+            updateProgs.Parameters.Add(New SQLiteParameter("@newimgid", newImageID))
+            updateProgs.ExecuteNonQuery()
+
+            updateEps.Parameters.Add(New SQLiteParameter("@oldimgid", oldImageID))
+            updateEps.Parameters.Add(New SQLiteParameter("@newimgid", newImageID))
+            updateEps.ExecuteNonQuery()
+
+            count += 1
+        Next
+
+        Status.lblStatus.Text = "Finished compressing images"
+        Status.prgProgress.Value = compressImages.Count
+        Application.DoEvents()
 
         Status.Visible = False
         Application.DoEvents()
     End Sub
-
-    Private Function UpgradeDBv1to2CustDateFmt(ByVal sqlReader As SQLiteDataReader, ByVal strColumn As String) As Date
-        Try
-            Return DateTime.ParseExact(sqlReader.GetString(sqlReader.GetOrdinal(strColumn)), "yyyy-MM-dd HH:mm", Nothing)
-        Catch expException As InvalidCastException
-            ' Somehow we have a value which can't be cast as a date, return nothing
-            Return Nothing
-        Catch expException As FormatException
-            ' Somehow we have a valid date string of the wrong format, return nothing
-            Return Nothing
-        End Try
-    End Function
 
     Protected Overrides Sub Finalize()
         sqlConnection.Close()
