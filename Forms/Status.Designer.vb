@@ -49,6 +49,7 @@ Partial Class Status
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(438, 250)
+        Me.ControlBox = False
         Me.Controls.Add(Me.prgProgress)
         Me.Controls.Add(Me.lblStatus)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
