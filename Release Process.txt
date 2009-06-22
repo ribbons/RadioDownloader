@@ -10,11 +10,11 @@ Beta & Full Releases
  4. Test installer - update: msiexec /i "Radio Downloader.msi" REINSTALL=ALL REINSTALLMODE=vamus
  5. Test installer - clean install
  6. Commit version changes.
- 7. Create tag for release number in form radio_downloader/tags/x.x.x
 
 Beta Release
 ------------
 
+ 7. Create tag for release number in form radio_downloader/tags/betas/x.x.x
  8. Copy Installer to local nerdoftheherd downloads/beta folder.
  9. Upload to website.
 10. Write news item if thorough testing is required.
@@ -22,6 +22,7 @@ Beta Release
 Full Release
 ------------
 
+ 7. Create tag for release number in form radio_downloader/tags/releases/x.x.x
  8. Run zipped source creator batch file.
  9. Move source and installer to local nerdoftheherd downloads folder.
 10. Update local latestversion.txt with latest version number.
