@@ -249,6 +249,7 @@ Friend Class Main
 
         tmrCheckSub.Enabled = True
         tmrStartProcess.Enabled = True
+        tmrCheckForUpdates.Enabled = True
     End Sub
 
     Private Sub Main_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing

@@ -226,7 +226,6 @@
         '
         'tmrCheckForUpdates
         '
-        Me.tmrCheckForUpdates.Enabled = True
         Me.tmrCheckForUpdates.Interval = 3600000
         '
         'mnuOptions
