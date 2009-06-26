@@ -15,7 +15,7 @@ Beta Release
 ------------
 
  7. Create tag for release number in form radio_downloader/tags/betas/x.x.x
- 8. Copy Installer to local nerdoftheherd downloads/beta folder.
+ 8. Move Installer to local nerdoftheherd downloads/beta folder.
  9. Upload to website.
 10. Write news item if thorough testing is required.
 
@@ -27,6 +27,6 @@ Full Release
  9. Move source and installer to local nerdoftheherd downloads folder.
 10. Update local latestversion.txt with latest version number.
 11. Add new version number into the Radio Downloader product in Bugzilla.
-12. Upload to website
+12. Upload to website.
 13. Write news item.
 14. Prevent errors from being submitted against previous version in error reporting.
