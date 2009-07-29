@@ -360,7 +360,7 @@
     <AdminExecuteSequence />
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize" />
-      <Custom Action="CloseBeforeUninstall" Before="InstallValidate">(Installed OR OLDERVERSIONBEINGUPGRADED) AND NOT REINSTALL</Custom>
+      <Custom Action="CloseBeforeUninstall" Before="InstallValidate">Installed OR OLDERVERSIONBEINGUPGRADED</Custom>
     </InstallExecuteSequence>
     <Binary Id="dialog_banner" SourceFile="Binary\dialog_banner.jpg" />
     <Binary Id="dialog_background" SourceFile="Binary\dialog_background.jpg" />
