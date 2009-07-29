@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-  <Product Id="B20EC097-6E80-4637-ACCE-F01A2E5071F4" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader" Version="!(bind.FileVersion.RadioDownloaderExe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
+  <Product Id="*" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader" Version="!(bind.FileVersion.RadioDownloaderExe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
     <Package Compressed="yes" Comments="Radio Downloader allows you to easily download radio station content and podcasts." Keywords="Radio Downloader,Installer,Radio,Podcasts" />
     <UI>
       <?include Error Text.wxi ?>
@@ -409,12 +409,14 @@
     <Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
     <Condition Message="A newer version of [ProductName] is already installed.">NOT NEWERVERSIONDETECTED</Condition>
     <Condition Message="This version of [ProductName] is already installed.  To remove this version, use Add/Remove Programs in the Control Panel.">NOT CURRENTVERSIONALREADYINSTALLED</Condition>
+    <Condition Message="The version of [ProductName] already installed is too old to upgrade directly.  Remove the currently installed version using Add/Remove Programs in the Control Panel first.">NOT VERSIONTOOOLDTOUPGRADE</Condition>
     <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
     <CustomAction ExeCommand="/exit" Id="CloseBeforeUninstall" FileKey="RadioDownloaderExe" Return="ignore" Impersonate="yes" />
     <Upgrade Id="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
-      <UpgradeVersion Property="OLDERVERSIONBEINGUPGRADED" IncludeMaximum="no" Maximum="!(bind.FileVersion.RadioDownloaderExe)" OnlyDetect="no" />
+      <UpgradeVersion Property="OLDERVERSIONBEINGUPGRADED" IncludeMaximum="no" Maximum="!(bind.FileVersion.RadioDownloaderExe)" OnlyDetect="no" IncludeMinimum="yes" Minimum="0.5.8" />
       <UpgradeVersion Property="NEWERVERSIONDETECTED" OnlyDetect="yes" IncludeMinimum="no" Minimum="!(bind.FileVersion.RadioDownloaderExe)" />
       <UpgradeVersion Property="CURRENTVERSIONALREADYINSTALLED" IncludeMaximum="yes" IncludeMinimum="yes" Maximum="!(bind.FileVersion.RadioDownloaderExe)" Minimum="!(bind.FileVersion.RadioDownloaderExe)" OnlyDetect="yes" />
+      <UpgradeVersion Property="VERSIONTOOOLDTOUPGRADE" IncludeMaximum="no" Maximum="0.5.8" OnlyDetect="yes" />
     </Upgrade>
   </Product>
 </Wix>
