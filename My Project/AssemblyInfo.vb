@@ -10,7 +10,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyCopyright("Copyright © 2007-2009 Matt Robinson")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: AssemblyCulture("")> 
-<Assembly: AssemblyVersion("0.5.9.0")> 
+<Assembly: AssemblyVersion("0.5.10.0")> 
 
 <Assembly: CLSCompliant(True)> 
 <Assembly: ComVisible(False)> 
