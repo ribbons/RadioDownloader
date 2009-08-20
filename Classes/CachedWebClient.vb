@@ -44,6 +44,7 @@ Public Class CachedWebClient
 
         Debug.Print("Cached WebClient: Fetching " + uri)
         Dim webClient As New WebClient
+        webClient.Headers.Add("user-agent", My.Application.Info.AssemblyName + " " + My.Application.Info.Version.ToString)
         Dim data As Byte() = webClient.DownloadData(uri)
 
         dataInst.AddToHTTPCache(uri, data)
