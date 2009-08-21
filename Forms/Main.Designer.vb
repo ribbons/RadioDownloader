@@ -90,7 +90,7 @@
         '
         'tmrCheckSub
         '
-        Me.tmrCheckSub.Interval = 60000
+        Me.tmrCheckSub.Interval = 600000
         '
         'tmrStartProcess
         '
