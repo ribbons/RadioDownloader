@@ -327,6 +327,9 @@ Friend Class Data
         DownloadPluginInst = clsPluginsInst.GetPluginInstance(clsCurDldProgData.PluginID)
 
         Try
+            ' Make sure that the temp folder still exists
+            Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath, "RadioDownloader"))
+
             With clsCurDldProgData
                 DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
             End With
