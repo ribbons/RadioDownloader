@@ -15,10 +15,20 @@
 Option Strict On
 Option Explicit On
 
+Imports System.IO
 Imports System.Net
+Imports System.Runtime.Serialization.Formatters.Binary
 Imports System.Text
 
 Public Class CachedWebClient
+    <Serializable()> _
+    Public Structure CacheWebException
+        Dim Message As String
+        Dim InnerException As Exception
+        Dim Status As WebExceptionStatus
+        Dim Response As WebResponse
+    End Structure
+
     Private dataInst As Data
 
     Public Sub New()
@@ -34,10 +44,23 @@ Public Class CachedWebClient
 
         If lastFetch <> Nothing Then
             If lastFetch.AddHours(fetchIntervalHrs) > Now Then
-                Dim bteCacheData As Byte() = dataInst.GetHTTPCacheContent(uri)
+                Dim requestSuccess As Boolean
+                Dim cacheData As Byte() = dataInst.GetHTTPCacheContent(uri, requestSuccess)
 
-                If bteCacheData IsNot Nothing Then
-                    Return bteCacheData
+                If cacheData IsNot Nothing Then
+                    If requestSuccess Then
+                        Return cacheData
+                    Else
+                        Dim memoryStream As New MemoryStream(cacheData)
+                        Dim binaryFormatter As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter()
+
+                        ' Deserialise the CacheWebException structure
+                        Dim cachedException As CacheWebException
+                        cachedException = DirectCast(binaryFormatter.Deserialize(memoryStream), CacheWebException)
+
+                        ' Crete a new WebException with the cached data and throw it
+                        Throw New WebException(cachedException.Message, cachedException.InnerException, cachedException.Status, cachedException.Response)
+                    End If
                 End If
             End If
         End If
@@ -45,9 +68,33 @@ Public Class CachedWebClient
         Debug.Print("Cached WebClient: Fetching " + uri)
         Dim webClient As New WebClient
         webClient.Headers.Add("user-agent", My.Application.Info.AssemblyName + " " + My.Application.Info.Version.ToString)
-        Dim data As Byte() = webClient.DownloadData(uri)
 
-        dataInst.AddToHTTPCache(uri, data)
+        Dim data As Byte()
+
+        Try
+            data = webClient.DownloadData(uri)
+        Catch webExp As WebException
+            ' A WebException doesn't serialise well, as Response and Status get lost,
+            ' so store the information in a structure and then recreate it later
+            Dim cacheException As New CacheWebException
+            cacheException.Message = webExp.Message
+            cacheException.InnerException = webExp.InnerException
+            cacheException.Status = webExp.Status
+            cacheException.Response = webExp.Response
+
+            Dim stream As New MemoryStream()
+            Dim formatter As New BinaryFormatter()
+
+            ' Serialise the CacheWebException and store it in the cache
+            formatter.Serialize(stream, cacheException)
+            dataInst.AddToHTTPCache(uri, False, stream.ToArray())
+
+            ' Re-throw the WebException
+            Throw
+        End Try
+
+        dataInst.AddToHTTPCache(uri, True, data)
+
         Return data
     End Function
 

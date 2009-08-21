@@ -64,7 +64,7 @@ Friend Class Data
         Call VacuumDatabase()
 
         ' Create the temp table for caching HTTP requests
-        Dim sqlCommand As New SQLiteCommand("create temporary table httpcache (uri varchar (1000), lastfetch datetime, data blob)", sqlConnection)
+        Dim sqlCommand As New SQLiteCommand("create temporary table httpcache (uri varchar (1000), lastfetch datetime, success int, data blob)", sqlConnection)
         sqlCommand.ExecuteNonQuery()
 
         ' Setup an instance of the plugins class
@@ -1320,21 +1320,22 @@ Friend Class Data
         sqlReader.Close()
     End Function
 
-    Public Sub AddToHTTPCache(ByVal strURI As String, ByVal bteData As Byte())
+    Public Sub AddToHTTPCache(ByVal uri As String, ByVal requestSuccess As Boolean, ByVal data As Byte())
         Dim sqlCommand As New SQLiteCommand("delete from httpcache where uri=@uri", sqlConnection)
-        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", uri))
         sqlCommand.ExecuteNonQuery()
 
-        sqlCommand = New SQLiteCommand("insert into httpcache (uri, lastfetch, data) values(@uri, @lastfetch, @data)", sqlConnection)
-        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+        sqlCommand = New SQLiteCommand("insert into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", uri))
         sqlCommand.Parameters.Add(New SQLiteParameter("@lastfetch", Now))
-        sqlCommand.Parameters.Add(New SQLiteParameter("@data", bteData))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@success", requestSuccess))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@data", data))
         sqlCommand.ExecuteNonQuery()
     End Sub
 
-    Public Function GetHTTPCacheLastUpdate(ByVal strURI As String) As Date
+    Public Function GetHTTPCacheLastUpdate(ByVal uri As String) As Date
         Dim sqlCommand As New SQLiteCommand("select lastfetch from httpcache where uri=@uri", sqlConnection)
-        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", uri))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
@@ -1346,12 +1347,14 @@ Friend Class Data
         sqlReader.Close()
     End Function
 
-    Public Function GetHTTPCacheContent(ByVal strURI As String) As Byte()
-        Dim sqlCommand As New SQLiteCommand("select data from httpcache where uri=@uri", sqlConnection)
-        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", strURI))
+    Public Function GetHTTPCacheContent(ByVal uri As String, ByRef requestSuccess As Boolean) As Byte()
+        Dim sqlCommand As New SQLiteCommand("select success, data from httpcache where uri=@uri", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@uri", uri))
         Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
 
         If sqlReader.Read Then
+            requestSuccess = sqlReader.GetBoolean(sqlReader.GetOrdinal("success"))
+
             ' Get the length of the content by passing nothing to getbytes
             Dim intContentLength As Integer = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("data"), 0, Nothing, 0, 0))
             Dim bteContent(intContentLength - 1) As Byte
