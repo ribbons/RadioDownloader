@@ -57,6 +57,7 @@ Public Interface IRadioProvider
         Dim Name As String
         Dim Description As String
         Dim Image As Bitmap
+        Dim SingleEpisode As Boolean
         Dim Success As Boolean
     End Structure
 

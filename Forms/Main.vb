@@ -305,7 +305,11 @@ Friend Class Main
                 If .IsSubscribed(intProgID) Then
                     Call SetToolbarButtons("Download,Unsubscribe")
                 Else
-                    Call SetToolbarButtons("Download,Subscribe")
+                    If clsProgData.ProgrammeIsSingleEpisode(intProgID) Then
+                        Call SetToolbarButtons("Download")
+                    Else
+                        Call SetToolbarButtons("Download,Subscribe")
+                    End If
                 End If
             End With
         Else
@@ -986,7 +990,11 @@ Friend Class Main
                 If clsProgData.IsSubscribed(intProgID) Then
                     Call SetToolbarButtons("Unsubscribe")
                 Else
-                    Call SetToolbarButtons("Subscribe")
+                    If clsProgData.ProgrammeIsSingleEpisode(intProgID) Then
+                        Call SetToolbarButtons("")
+                    Else
+                        Call SetToolbarButtons("Subscribe")
+                    End If
                 End If
 
                 Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))

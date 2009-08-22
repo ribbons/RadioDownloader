@@ -466,6 +466,22 @@ Friend Class Data
         sqlReader.Close()
     End Function
 
+    Public Function ProgrammeIsSingleEpisode(ByVal intProgID As Integer) As Boolean
+        Call UpdateProgInfoAsRequired(intProgID)
+
+        Dim sqlCommand As New SQLiteCommand("select singleepisode from programmes where progid=@progid", sqlConnection)
+        sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
+        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+
+        If sqlReader.Read Then
+            ProgrammeIsSingleEpisode = sqlReader.GetBoolean(sqlReader.GetOrdinal("singleepisode"))
+        Else
+            ProgrammeIsSingleEpisode = False
+        End If
+
+        sqlReader.Close()
+    End Function
+
     Public Function EpisodeExists(ByVal intEpID As Integer) As Boolean
         Dim sqlCommand As New SQLiteCommand("select count(*) from episodes where epid=@epid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
@@ -1250,10 +1266,11 @@ Friend Class Data
             intProgID = CInt(sqlCommand.ExecuteScalar)
         End If
 
-        sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, lastupdate=@lastupdate where progid=@progid", sqlConnection)
+        sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", sqlConnection)
         sqlCommand.Parameters.Add(New SQLiteParameter("@name", ProgInfo.Name))
         sqlCommand.Parameters.Add(New SQLiteParameter("@description", ProgInfo.Description))
         sqlCommand.Parameters.Add(New SQLiteParameter("@image", StoreImage(ProgInfo.Image)))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@singleepisode", ProgInfo.SingleEpisode))
         sqlCommand.Parameters.Add(New SQLiteParameter("@lastupdate", Now))
         sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         sqlCommand.ExecuteNonQuery()
