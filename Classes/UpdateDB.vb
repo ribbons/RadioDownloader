@@ -15,6 +15,7 @@
 Option Explicit On
 Option Strict On
 
+Imports System.Collections.Generic
 Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
@@ -50,7 +51,7 @@ Friend Class UpdateDB
                         ' The structure of the table doesn't match, so update it
 
                         ' Store a list of common column names for transferring the data
-                        Dim strColNames As String = ColNames(sqlUpdReader.GetString(sqlUpdReader.GetOrdinal("sql")), .GetString(.GetOrdinal("sql")))
+                        Dim strColNames As String = ColNames(.GetString(.GetOrdinal("name")))
 
                         sqlUpdReader.Close()
 
@@ -86,11 +87,11 @@ Friend Class UpdateDB
                             sqlUpdCommand = New SQLiteCommand("ROLLBACK TRANSACTION", sqlUpdConn)
                             sqlUpdCommand.ExecuteNonQuery()
 
-                            Throw expException
+                            Throw
                         End Try
                     End If
                 Else
-                    ' Create the database
+                    ' Create the table
                     sqlUpdCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), sqlUpdConn)
                     sqlUpdCommand.ExecuteNonQuery()
                 End If
@@ -104,56 +105,36 @@ Friend Class UpdateDB
         Return True
     End Function
 
-    Private Function ColNames(ByVal strSqlFrom As String, ByVal strSqlTo As String) As String
-        Dim strFromCols() As String = ListColsFromSql(strSqlFrom)
-        Dim strToCols() As String = ListColsFromSql(strSqlTo)
-        Dim strResultCols(-1) As String
+    Private Function ColNames(ByVal tableName As String) As String
+        Dim fromCols As List(Of String) = ListTableColumns(sqlUpdConn, tableName)
+        Dim toCols As List(Of String) = ListTableColumns(sqlSpecConn, tableName)
+        Dim resultCols As New List(Of String)
 
-        ' Need to sort strToCols so that BinarySearch works effectively.
-        Array.Sort(strToCols)
-
-        ' Store an intersect of the from and to columns in strResultCols
-        For Each strFromCol As String In strFromCols
-            If Array.BinarySearch(strToCols, strFromCol) >= 0 Then
-                ReDim Preserve strResultCols(strResultCols.GetUpperBound(0) + 1)
-                strResultCols(strResultCols.GetUpperBound(0)) = strFromCol
+        ' Store an intersect of the from and to columns in resultCols
+        For Each fromCol As String In fromCols
+            If toCols.Contains(fromCol) Then
+                resultCols.Add(fromCol)
             End If
         Next
 
-        If strResultCols.GetUpperBound(0) > -1 Then
-            Return "[" + Join(strResultCols, "], [") + "]"
+        If resultCols.Count > 0 Then
+            Return "[" + Join(resultCols.ToArray, "], [") + "]"
         Else
             Return ""
         End If
     End Function
 
-    Private Function ListColsFromSql(ByVal strSql As String) As String()
-        ' Work through the sql definition of a table, pick out the row names, and store them in an array
+    Private Function ListTableColumns(ByVal connection As SQLiteConnection, ByVal tableName As String) As List(Of String)
+        Dim returnList As New List(Of String)
 
-        Dim strReturnList(-1) As String
-        Dim strSqlLines() As String = Split(strSql, vbLf)
-        Dim booInBrackets As Boolean
+        Dim restrictionValues() As String = {Nothing, Nothing, tableName, Nothing}
+        Dim columns As DataTable = connection.GetSchema(SQLite.SQLiteMetaDataCollectionNames.Columns, restrictionValues)
 
-        Dim ColNameLine As New Regex(vbTab + "\[(?<row>.*?)\].*")
-
-        For Each strSqlLine As String In strSqlLines
-            If booInBrackets = False Then
-                If strSqlLine = "(" Then
-                    booInBrackets = True
-                End If
-            Else
-                If strSqlLine = ")" Then
-                    booInBrackets = False
-                Else
-                    If ColNameLine.IsMatch(strSqlLine) Then
-                        ReDim Preserve strReturnList(strReturnList.GetUpperBound(0) + 1)
-                        strReturnList(strReturnList.GetUpperBound(0)) = ColNameLine.Match(strSqlLine).Groups("row").Value
-                    End If
-                End If
-            End If
+        For Each columnRow As DataRow In columns.Rows
+            returnList.Add(columnRow.Item("COLUMN_NAME").ToString)
         Next
 
-        Return strReturnList
+        Return returnList
     End Function
 
     Protected Overrides Sub Finalize()
