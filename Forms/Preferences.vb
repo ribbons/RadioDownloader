@@ -44,13 +44,13 @@ Friend Class Preferences
     Private Sub Preferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         Me.Font = SystemFonts.MessageBoxFont
 
-        txtSaveIn.Text = GetSaveFolder()
+        txtSaveIn.Text = FileUtils.GetSaveFolder()
         txtFileNameFormat.Text = My.Settings.FileNameFormat
         txtRunAfter.Text = My.Settings.RunAfterCommand
     End Sub
 
     Private Sub txtFileNameFormat_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtFileNameFormat.TextChanged
-        lblFilenameFormatResult.Text = "Result: " + FindFreeSaveFileName(txtFileNameFormat.Text, "Programme Name", "Episode Name", Now, "") + ".mp3"
+        lblFilenameFormatResult.Text = "Result: " + FileUtils.FindFreeSaveFileName(txtFileNameFormat.Text, "Programme Name", "Episode Name", Now, "") + ".mp3"
     End Sub
 
     Private Sub cmdReset_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdReset.Click

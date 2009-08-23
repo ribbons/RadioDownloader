@@ -138,14 +138,14 @@ Friend Class Main
 
         ' Make sure that the temp and application data folders exist
         Directory.CreateDirectory(System.IO.Path.GetTempPath + "\RadioDownloader")
-        Directory.CreateDirectory(GetAppDataFolder)
+        Directory.CreateDirectory(FileUtils.GetAppDataFolder)
 
         ' Make sure that the database exists.  If not, then copy across the empty database from the program's folder.
-        Dim fileExits As New IO.FileInfo(GetAppDataFolder() + "\store.db")
+        Dim fileExits As New IO.FileInfo(FileUtils.GetAppDataFolder() + "\store.db")
 
         If fileExits.Exists = False Then
             Try
-                IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\store.db")
+                IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", FileUtils.GetAppDataFolder() + "\store.db")
             Catch expFileNotFound As FileNotFoundException
                 Call MsgBox("The Radio Downloader template database was not found at '" + My.Application.Info.DirectoryPath + "\store.db'." + vbCrLf + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical)
                 Me.Close()
@@ -156,7 +156,7 @@ Friend Class Main
             ' As the database already exists, copy the specimen database across from the program folder
             ' and then make sure that the current db's structure matches it.
             Try
-                IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", GetAppDataFolder() + "\spec-store.db", True)
+                IO.File.Copy(My.Application.Info.DirectoryPath + "\store.db", FileUtils.GetAppDataFolder() + "\spec-store.db", True)
             Catch expFileNotFound As FileNotFoundException
                 Call MsgBox("The Radio Downloader template database was not found at '" + My.Application.Info.DirectoryPath + "\store.db'." + vbCrLf + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical)
                 Me.Close()
@@ -164,7 +164,7 @@ Friend Class Main
                 Exit Sub
             End Try
 
-            clsDoDBUpdate = New UpdateDB(GetAppDataFolder() + "\spec-store.db", GetAppDataFolder() + "\store.db")
+            clsDoDBUpdate = New UpdateDB(FileUtils.GetAppDataFolder() + "\spec-store.db", FileUtils.GetAppDataFolder() + "\store.db")
             Call clsDoDBUpdate.UpdateStructure()
         End If
 

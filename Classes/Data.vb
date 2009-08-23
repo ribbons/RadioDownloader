@@ -57,7 +57,7 @@ Friend Class Data
     Private Sub New()
         MyBase.New()
 
-        sqlConnection = New SQLiteConnection("Data Source=" + GetAppDataFolder() + "\store.db;Version=3;New=False")
+        sqlConnection = New SQLiteConnection("Data Source=" + FileUtils.GetAppDataFolder() + "\store.db;Version=3;New=False")
         sqlConnection.Open()
 
         ' Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
@@ -300,7 +300,7 @@ Friend Class Data
                             .EpisodeInfo = epiEpInfo
                         End With
 
-                        clsCurDldProgData.FinalName = FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("progname")), EpisodeName(intEpID), sqlReader.GetDateTime(sqlReader.GetOrdinal("date")), GetSaveFolder())
+                        clsCurDldProgData.FinalName = FileUtils.FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("progname")), EpisodeName(intEpID), sqlReader.GetDateTime(sqlReader.GetOrdinal("date")), FileUtils.GetSaveFolder())
 
                         If sqlReader.GetInt32(sqlReader.GetOrdinal("status")) = Statuses.Errored Then
                             Call ResetDownload(intEpID, True)
