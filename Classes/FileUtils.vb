@@ -13,6 +13,7 @@
 ' to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 Imports System.IO
+Imports System.Text.RegularExpressions
 
 Friend Class FileUtils
     Public Shared Function GetSaveFolder() As String
@@ -44,61 +45,49 @@ Friend Class FileUtils
         Return My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData.Substring(0, lngLastSlash)
     End Function
 
-    Public Shared Function FindFreeSaveFileName(ByVal strFormatString As String, ByVal strProgrammeName As String, ByVal strEpisodeName As String, ByVal dteEpisodeDate As Date, ByVal strSavePath As String) As String
-        If strSavePath <> "" Then
-            strSavePath += "\"
-        End If
+    Public Shared Function FindFreeSaveFileName(ByVal formatString As String, ByVal programmeName As String, ByVal episodeName As String, ByVal episodeDate As Date, ByVal baseSavePath As String) As String
+        Dim saveName As String = CreateSaveFileName(formatString, programmeName, episodeName, episodeDate)
+        Dim savePath As String = Path.Combine(baseSavePath, saveName)
+        Dim diffNum As Integer = 1
 
-        Dim strSaveName As String = CreateSaveFileName(strFormatString, strProgrammeName, strEpisodeName, dteEpisodeDate)
-        Dim intDiffNum As Integer = 1
+        'Make sure the save folder exists (to support subfolders in the save file name template)
+        Directory.CreateDirectory(Path.GetDirectoryName(savePath))
 
-        If strSavePath = "" Then
-            ' This is only for the example on the prefs form, so don't check if the file already exists.
-            Return strSaveName
-        End If
-
-        While Directory.GetFiles(strSavePath, strSaveName + ".*").Length > 0
-            strSaveName = CreateSaveFileName(strFormatString + " (" + CStr(intDiffNum) + ")", strProgrammeName, strEpisodeName, dteEpisodeDate)
-            intDiffNum += 1
+        While Directory.GetFiles(Path.GetDirectoryName(savePath), Path.GetFileName(savePath) + ".*").Length > 0
+            savePath = Path.Combine(baseSavePath, saveName + " (" + CStr(diffNum) + ")")
+            diffNum += 1
         End While
 
-        Return strSavePath + strSaveName
+        Return savePath
     End Function
 
-    Private Shared Function CreateSaveFileName(ByVal strFormatString As String, ByVal strProgrammeName As String, ByVal strEpisodeName As String, ByVal dteEpisodeDate As Date) As String
-        Dim strName As String = strFormatString
+    Public Shared Function CreateSaveFileName(ByVal formatString As String, ByVal programmeName As String, ByVal episodeName As String, ByVal episodeDate As Date) As String
+        Dim fileName As String = formatString
 
         ' Convert %title% -> %epname% for backwards compatability
-        strName = strName.Replace("%title%", "%epname%")
+        fileName = fileName.Replace("%title%", "%epname%")
 
         ' Make variable substitutions
-        strName = strName.Replace("%progname%", strProgrammeName)
-        strName = strName.Replace("%epname%", strEpisodeName)
-        strName = strName.Replace("%day%", dteEpisodeDate.ToString("dd"))
-        strName = strName.Replace("%month%", dteEpisodeDate.ToString("MM"))
-        strName = strName.Replace("%shortmonthname%", dteEpisodeDate.ToString("MMM"))
-        strName = strName.Replace("%monthname%", dteEpisodeDate.ToString("MMMM"))
-        strName = strName.Replace("%year%", dteEpisodeDate.ToString("yy"))
-        strName = strName.Replace("%longyear%", dteEpisodeDate.ToString("yyyy"))
+        fileName = fileName.Replace("%progname%", programmeName)
+        fileName = fileName.Replace("%epname%", episodeName)
+        fileName = fileName.Replace("%day%", episodeDate.ToString("dd"))
+        fileName = fileName.Replace("%month%", episodeDate.ToString("MM"))
+        fileName = fileName.Replace("%shortmonthname%", episodeDate.ToString("MMM"))
+        fileName = fileName.Replace("%monthname%", episodeDate.ToString("MMMM"))
+        fileName = fileName.Replace("%year%", episodeDate.ToString("yy"))
+        fileName = fileName.Replace("%longyear%", episodeDate.ToString("yyyy"))
 
-        Dim strCleanedName As String
-        Dim strTrimmedName As String = ""
+        ' Replace invalid file name characters with spaces (except for directory separators
+        ' as this then allows the flexibility of storing the downloads in subdirectories)
+        For Each removeChar As Char In Path.GetInvalidFileNameChars
+            If removeChar <> Path.DirectorySeparatorChar Then
+                fileName = Replace(fileName, removeChar, " ")
+            End If
+        Next
 
-        strCleanedName = Replace(strName, "\", " ")
-        strCleanedName = Replace(strCleanedName, "/", " ")
-        strCleanedName = Replace(strCleanedName, ":", " ")
-        strCleanedName = Replace(strCleanedName, "*", " ")
-        strCleanedName = Replace(strCleanedName, "?", " ")
-        strCleanedName = Replace(strCleanedName, """", " ")
-        strCleanedName = Replace(strCleanedName, ">", " ")
-        strCleanedName = Replace(strCleanedName, "<", " ")
-        strCleanedName = Replace(strCleanedName, "|", " ")
+        ' Replace runs of spaces with a single space
+        fileName = Regex.Replace(fileName, " {2,}", " ")
 
-        Do While strTrimmedName <> strCleanedName
-            strTrimmedName = strCleanedName
-            strCleanedName = Replace(strCleanedName, "  ", " ")
-        Loop
-
-        Return Trim(strCleanedName)
+        Return Trim(fileName)
     End Function
 End Class
