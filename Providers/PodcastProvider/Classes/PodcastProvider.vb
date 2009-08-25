@@ -377,7 +377,7 @@ Public Class PodcastProvider
             strExtension = strProgDldUrl.Substring(intExtensionPos + 1)
         End If
 
-        strDownloadFileName = System.IO.Path.GetTempPath + "\RadioDownloader\" + strFinalName.Substring(intFileNamePos + 1) + "." + strExtension
+        strDownloadFileName = Path.Combine(System.IO.Path.GetTempPath, Path.Combine("RadioDownloader", strFinalName.Substring(intFileNamePos + 1) + "." + strExtension))
         Me.strFinalName = strFinalName + "." + strExtension
 
         AddHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange

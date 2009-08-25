@@ -57,7 +57,7 @@ Friend Class Data
     Private Sub New()
         MyBase.New()
 
-        sqlConnection = New SQLiteConnection("Data Source=" + FileUtils.GetAppDataFolder() + "\store.db;Version=3;New=False")
+        sqlConnection = New SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False")
         sqlConnection.Open()
 
         ' Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
