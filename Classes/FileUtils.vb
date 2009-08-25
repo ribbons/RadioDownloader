@@ -20,29 +20,18 @@ Friend Class FileUtils
         If My.Settings.SaveFolder <> "" Then
             If New DirectoryInfo(My.Settings.SaveFolder).Exists Then
                 Return My.Settings.SaveFolder
+            Else
+                My.Settings.SaveFolder = ""
             End If
-
-            My.Settings.SaveFolder = ""
         End If
 
-        Dim strMyDocs As String = My.Computer.FileSystem.SpecialDirectories.MyDocuments
-
-        If strMyDocs.Substring(strMyDocs.Length - 1) = "\" Then
-            strMyDocs = strMyDocs.Substring(0, strMyDocs.Length - 1)
-        End If
-
-        GetSaveFolder = strMyDocs + "\Downloaded Radio"
-
-        If New DirectoryInfo(GetSaveFolder).Exists = False Then
-            Call New DirectoryInfo(GetSaveFolder).Create()
-        End If
+        ' Set the save folder to the default and make sure it folder exists
+        GetSaveFolder = Path.Combine(My.Computer.FileSystem.SpecialDirectories.MyDocuments, "Downloaded Radio")
+        Directory.CreateDirectory(GetSaveFolder)
     End Function
 
     Public Shared Function GetAppDataFolder() As String
-        Dim lngLastSlash As Integer
-        lngLastSlash = My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData.LastIndexOf("\")
-
-        Return My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData.Substring(0, lngLastSlash)
+        Return New DirectoryInfo(My.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData).Parent.FullName
     End Function
 
     Public Shared Function FindFreeSaveFileName(ByVal formatString As String, ByVal programmeName As String, ByVal episodeName As String, ByVal episodeDate As Date, ByVal baseSavePath As String) As String
