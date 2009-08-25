@@ -86,9 +86,9 @@ Public Class PodcastProvider
         Return FindNewInst.pnlFindNew
     End Function
 
-    Public Function GetProgrammeInfo(ByVal strProgExtID As String) As IRadioProvider.ProgrammeInfo Implements IRadioProvider.GetProgrammeInfo
-        Dim ProgInfo As New IRadioProvider.ProgrammeInfo
-        ProgInfo.Success = False
+    Public Function GetProgrammeInfo(ByVal strProgExtID As String) As IRadioProvider.GetProgrammeInfoReturn Implements IRadioProvider.GetProgrammeInfo
+        Dim getProgInfo As New IRadioProvider.GetProgrammeInfoReturn
+        getProgInfo.Success = False
 
         Dim cachedWeb As New CachedWebClient
         Dim strRSS As String
@@ -98,13 +98,13 @@ Public Class PodcastProvider
         Try
             strRSS = cachedWeb.DownloadString(strProgExtID, intCacheHTTPHours)
         Catch expWeb As WebException
-            Return ProgInfo
+            Return getProgInfo
         End Try
 
         Try
             xmlRSS.LoadXml(strRSS)
         Catch expXML As XmlException
-            Return ProgInfo
+            Return getProgInfo
         End Try
 
         Try
@@ -117,21 +117,20 @@ Public Class PodcastProvider
         Dim xmlDescription As XmlNode = xmlRSS.SelectSingleNode("./rss/channel/description")
 
         If xmlTitle Is Nothing Or xmlDescription Is Nothing Then
-            Return ProgInfo
+            Return getProgInfo
         End If
 
-        ProgInfo.Name = xmlTitle.InnerText
-        ProgInfo.Description = xmlDescription.InnerText
+        getProgInfo.ProgrammeInfo.Name = xmlTitle.InnerText
 
-        If ProgInfo.Name = "" Then
-            ProgInfo.Description = ""
-            Return ProgInfo
+        If getProgInfo.ProgrammeInfo.Name = "" Then
+            Return getProgInfo
         End If
 
-        ProgInfo.Image = RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
+        getProgInfo.ProgrammeInfo.Description = xmlDescription.InnerText
+        getProgInfo.ProgrammeInfo.Image = RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
 
-        ProgInfo.Success = True
-        Return ProgInfo
+        getProgInfo.Success = True
+        Return getProgInfo
     End Function
 
     Public Function GetAvailableEpisodeIDs(ByVal strProgExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
@@ -175,9 +174,9 @@ Public Class PodcastProvider
         Return strEpisodeIDs
     End Function
 
-    Function GetEpisodeInfo(ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As IRadioProvider.EpisodeInfo Implements IRadioProvider.GetEpisodeInfo
-        Dim EpisodeInfo As New IRadioProvider.EpisodeInfo
-        EpisodeInfo.Success = False
+    Function GetEpisodeInfo(ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As IRadioProvider.GetEpisodeInfoReturn Implements IRadioProvider.GetEpisodeInfo
+        Dim episodeInfoReturn As New IRadioProvider.GetEpisodeInfoReturn
+        episodeInfoReturn.Success = False
 
         Dim cachedWeb As New CachedWebClient
         Dim strRSS As String
@@ -187,13 +186,13 @@ Public Class PodcastProvider
         Try
             strRSS = cachedWeb.DownloadString(strProgExtID, intCacheHTTPHours)
         Catch expWeb As WebException
-            Return EpisodeInfo
+            Return episodeInfoReturn
         End Try
 
         Try
             xmlRSS.LoadXml(strRSS)
         Catch expXML As XmlException
-            Return EpisodeInfo
+            Return episodeInfoReturn
         End Try
 
         Try
@@ -206,7 +205,7 @@ Public Class PodcastProvider
         xmlItems = xmlRSS.SelectNodes("./rss/channel/item")
 
         If xmlItems Is Nothing Then
-            Return EpisodeInfo
+            Return episodeInfoReturn
         End If
 
         Dim strItemID As String
@@ -221,48 +220,47 @@ Public Class PodcastProvider
                 Dim xmlEnclosure As XmlNode = xmlItem.SelectSingleNode("./enclosure")
 
                 If xmlEnclosure Is Nothing Then
-                    Return EpisodeInfo
+                    Return episodeInfoReturn
                 End If
 
                 Dim xmlUrl As XmlAttribute = xmlEnclosure.Attributes("url")
 
                 If xmlUrl Is Nothing Then
-                    Return EpisodeInfo
+                    Return episodeInfoReturn
                 End If
 
                 Try
                     Dim uriTestValid As New Uri(xmlUrl.Value)
                 Catch expUriFormat As UriFormatException
                     ' The enclosure url is empty or malformed, so return false for success
-                    Return EpisodeInfo
+                    Return episodeInfoReturn
                 End Try
 
                 Dim dicExtInfo As New Dictionary(Of String, String)
                 dicExtInfo.Add("EnclosureURL", xmlUrl.Value)
 
                 If xmlTitle IsNot Nothing Then
-                    EpisodeInfo.Name = xmlTitle.InnerText
+                    episodeInfoReturn.EpisodeInfo.Name = xmlTitle.InnerText
+                End If
+
+                If episodeInfoReturn.EpisodeInfo.Name = "" Then
+                    Return episodeInfoReturn
                 End If
 
                 If xmlDescription IsNot Nothing Then
-                    EpisodeInfo.Description = xmlDescription.InnerText
+                    Dim description As String = xmlDescription.InnerText
 
                     ' Replace common block level tags with newlines
-                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("<br", vbCrLf + "<br")
-                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("<p", vbCrLf + "<p")
-                    EpisodeInfo.Description = EpisodeInfo.Description.Replace("<div", vbCrLf + "<div")
+                    description = description.Replace("<br", vbCrLf + "<br")
+                    description = description.Replace("<p", vbCrLf + "<p")
+                    description = description.Replace("<div", vbCrLf + "<div")
 
                     ' Replace HTML entities with their character counterparts
-                    EpisodeInfo.Description = HttpUtility.HtmlDecode(EpisodeInfo.Description)
+                    description = HttpUtility.HtmlDecode(description)
 
                     ' Strip out any HTML tags
                     Dim RegExpression As New Regex("<(.|\n)+?>")
-                    EpisodeInfo.Description = RegExpression.Replace(EpisodeInfo.Description, "")
-                End If
-
-                If EpisodeInfo.Name = "" Then
-                    EpisodeInfo.Description = ""
-                    Return EpisodeInfo
+                    episodeInfoReturn.EpisodeInfo.Description = RegExpression.Replace(description, "")
                 End If
 
                 Try
@@ -272,17 +270,17 @@ Public Class PodcastProvider
                         Dim strSplitDuration() As String = Split(xmlDuration.InnerText.Replace(".", ":"), ":")
 
                         If strSplitDuration.GetUpperBound(0) = 0 Then
-                            EpisodeInfo.DurationSecs = CInt(strSplitDuration(0))
+                            episodeInfoReturn.EpisodeInfo.DurationSecs = CInt(strSplitDuration(0))
                         ElseIf strSplitDuration.GetUpperBound(0) = 1 Then
-                            EpisodeInfo.DurationSecs = (CInt(strSplitDuration(0)) * 60) + CInt(strSplitDuration(1))
+                            episodeInfoReturn.EpisodeInfo.DurationSecs = (CInt(strSplitDuration(0)) * 60) + CInt(strSplitDuration(1))
                         Else
-                            EpisodeInfo.DurationSecs = ((CInt(strSplitDuration(0)) * 60) + CInt(strSplitDuration(1))) * 60 + CInt(strSplitDuration(2))
+                            episodeInfoReturn.EpisodeInfo.DurationSecs = ((CInt(strSplitDuration(0)) * 60) + CInt(strSplitDuration(1))) * 60 + CInt(strSplitDuration(2))
                         End If
                     Else
-                        EpisodeInfo.DurationSecs = Nothing
+                        episodeInfoReturn.EpisodeInfo.DurationSecs = Nothing
                     End If
                 Catch
-                    EpisodeInfo.DurationSecs = Nothing
+                    episodeInfoReturn.EpisodeInfo.DurationSecs = Nothing
                 End Try
 
                 If xmlPubDate IsNot Nothing Then
@@ -340,31 +338,31 @@ Public Class PodcastProvider
                     Next
 
                     Try
-                        EpisodeInfo.Date = Date.Parse(strPubDate, Nothing, DateTimeStyles.AssumeUniversal)
+                        episodeInfoReturn.EpisodeInfo.Date = Date.Parse(strPubDate, Nothing, DateTimeStyles.AssumeUniversal)
                     Catch expFormat As FormatException
-                        EpisodeInfo.Date = Now
+                        episodeInfoReturn.EpisodeInfo.Date = Now
                         tspOffset = New TimeSpan(0)
                     End Try
 
-                    EpisodeInfo.Date = EpisodeInfo.Date.Subtract(tspOffset)
+                    episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Subtract(tspOffset)
                 Else
-                    EpisodeInfo.Date = Now
+                    episodeInfoReturn.EpisodeInfo.Date = Now
                 End If
 
-                EpisodeInfo.Image = RSSNodeImage(xmlItem, xmlNamespaceMgr)
+                episodeInfoReturn.EpisodeInfo.Image = RSSNodeImage(xmlItem, xmlNamespaceMgr)
 
-                If EpisodeInfo.Image Is Nothing Then
-                    EpisodeInfo.Image = RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
+                If episodeInfoReturn.EpisodeInfo.Image Is Nothing Then
+                    episodeInfoReturn.EpisodeInfo.Image = RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr)
                 End If
 
-                EpisodeInfo.ExtInfo = dicExtInfo
-                EpisodeInfo.Success = True
+                episodeInfoReturn.EpisodeInfo.ExtInfo = dicExtInfo
+                episodeInfoReturn.Success = True
 
-                Return EpisodeInfo
+                Return episodeInfoReturn
             End If
         Next
 
-        Return EpisodeInfo
+        Return episodeInfoReturn
     End Function
 
     Public Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme

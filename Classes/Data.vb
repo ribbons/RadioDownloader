@@ -1240,16 +1240,16 @@ Friend Class Data
         End If
 
         Dim ThisInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(gidPluginID)
-        Dim ProgInfo As IRadioProvider.ProgrammeInfo
+        Dim getProgInfo As IRadioProvider.GetProgrammeInfoReturn
 
         Try
-            ProgInfo = ThisInstance.GetProgrammeInfo(strProgExtID)
+            getProgInfo = ThisInstance.GetProgrammeInfo(strProgExtID)
         Catch PluginException
             ' Catch unhandled errors in the plugin
             Return False
         End Try
 
-        If ProgInfo.Success = False Then
+        If getProgInfo.Success = False Then
             Return False
         End If
 
@@ -1267,10 +1267,10 @@ Friend Class Data
         End If
 
         sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", sqlConnection)
-        sqlCommand.Parameters.Add(New SQLiteParameter("@name", ProgInfo.Name))
-        sqlCommand.Parameters.Add(New SQLiteParameter("@description", ProgInfo.Description))
-        sqlCommand.Parameters.Add(New SQLiteParameter("@image", StoreImage(ProgInfo.Image)))
-        sqlCommand.Parameters.Add(New SQLiteParameter("@singleepisode", ProgInfo.SingleEpisode))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@name", getProgInfo.ProgrammeInfo.Name))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@description", getProgInfo.ProgrammeInfo.Description))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@image", StoreImage(getProgInfo.ProgrammeInfo.Image)))
+        sqlCommand.Parameters.Add(New SQLiteParameter("@singleepisode", getProgInfo.ProgrammeInfo.SingleEpisode))
         sqlCommand.Parameters.Add(New SQLiteParameter("@lastupdate", Now))
         sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
         sqlCommand.ExecuteNonQuery()
@@ -1420,7 +1420,7 @@ Friend Class Data
             Exit Function
         End Try
 
-        Dim EpisodeInfo As IRadioProvider.EpisodeInfo
+        Dim episodeInfoReturn As IRadioProvider.GetEpisodeInfoReturn
 
         If strEpisodeExtIDs IsNot Nothing Then
             ' Remove any duplicates, so that episodes don't get listed twice
@@ -1456,19 +1456,19 @@ Friend Class Data
                     intEpisodeIDs(intEpisodeIDs.GetUpperBound(0)) = sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))
                 Else
                     Try
-                        EpisodeInfo = ThisInstance.GetEpisodeInfo(strProgExtID, strEpisodeExtID)
+                        episodeInfoReturn = ThisInstance.GetEpisodeInfo(strProgExtID, strEpisodeExtID)
                     Catch expException As Exception
                         ' Catch any unhandled provider exceptions
                         sqlReader.Close()
                         Continue For
                     End Try
 
-                    If EpisodeInfo.Success = False Then
+                    If episodeInfoReturn.Success = False Then
                         sqlReader.Close()
                         Continue For
                     End If
 
-                    If EpisodeInfo.Name = "" Or EpisodeInfo.Date = Nothing Then
+                    If episodeInfoReturn.EpisodeInfo.Name = "" Or episodeInfoReturn.EpisodeInfo.Date = Nothing Then
                         sqlReader.Close()
                         Continue For
                     End If
@@ -1476,18 +1476,18 @@ Friend Class Data
                     With sqlAddEpisodeCmd
                         .Parameters.Add(New SQLiteParameter("@progid", intProgID))
                         .Parameters.Add(New SQLiteParameter("@extid", strEpisodeExtID))
-                        .Parameters.Add(New SQLiteParameter("@name", EpisodeInfo.Name))
-                        .Parameters.Add(New SQLiteParameter("@description", EpisodeInfo.Description))
-                        .Parameters.Add(New SQLiteParameter("@duration", EpisodeInfo.DurationSecs))
-                        .Parameters.Add(New SQLiteParameter("@date", EpisodeInfo.Date))
-                        .Parameters.Add(New SQLiteParameter("@image", StoreImage(EpisodeInfo.Image)))
+                        .Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
+                        .Parameters.Add(New SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description))
+                        .Parameters.Add(New SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs))
+                        .Parameters.Add(New SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date))
+                        .Parameters.Add(New SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)))
                         .ExecuteNonQuery()
                     End With
 
                     Dim intEpID As Integer = CInt(sqlGetRowIDCmd.ExecuteScalar)
 
-                    If EpisodeInfo.ExtInfo IsNot Nothing Then
-                        For Each kvpItem As KeyValuePair(Of String, String) In EpisodeInfo.ExtInfo
+                    If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
+                        For Each kvpItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
                             With sqlAddExtInfoCmd
                                 .Parameters.Add(New SQLiteParameter("@epid", intEpID))
                                 .Parameters.Add(New SQLiteParameter("@name", kvpItem.Key))

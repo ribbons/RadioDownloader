@@ -58,6 +58,10 @@ Public Interface IRadioProvider
         Dim Description As String
         Dim Image As Bitmap
         Dim SingleEpisode As Boolean
+    End Structure
+
+    Structure GetProgrammeInfoReturn
+        Dim ProgrammeInfo As ProgrammeInfo
         Dim Success As Boolean
     End Structure
 
@@ -68,6 +72,10 @@ Public Interface IRadioProvider
         Dim [Date] As DateTime
         Dim Image As Bitmap
         Dim ExtInfo As Dictionary(Of String, String)
+    End Structure
+
+    Structure GetEpisodeInfoReturn
+        Dim EpisodeInfo As EpisodeInfo
         Dim Success As Boolean
     End Structure
 
@@ -93,9 +101,9 @@ Public Interface IRadioProvider
 
     Function GetShowOptionsHandler() As EventHandler
     Function GetFindNewPanel(ByVal objView As Object) As Panel
-    Function GetProgrammeInfo(ByVal strProgExtID As String) As ProgrammeInfo
+    Function GetProgrammeInfo(ByVal strProgExtID As String) As GetProgrammeInfoReturn
     Function GetAvailableEpisodeIDs(ByVal strProgExtID As String) As String()
-    Function GetEpisodeInfo(ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As EpisodeInfo
+    Function GetEpisodeInfo(ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As GetEpisodeInfoReturn
 
     Event FindNewViewChange(ByVal objView As Object)
     Event FindNewException(ByVal expException As Exception)
