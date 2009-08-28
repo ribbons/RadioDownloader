@@ -26,11 +26,11 @@ Imports System.Xml.Serialization
 Friend Class ErrorReporting
     Dim fields As New Dictionary(Of String, String)
 
-    Public Sub New(ByVal strError As String, ByVal strDetails As String)
+    Public Sub New(ByVal errorText As String, ByVal errorDetails As String)
         Try
             fields.Add("version", My.Application.Info.Version.ToString)
-            fields.Add("errortext", strError)
-            fields.Add("errordetails", strDetails)
+            fields.Add("errortext", errorText)
+            fields.Add("errordetails", errorDetails)
 
             Dim loadedAssemblies As String = ""
 
@@ -49,9 +49,23 @@ Friend Class ErrorReporting
     Public Sub New(ByVal errorText As String, ByVal errorDetails As String, ByVal extraFields As Dictionary(Of String, String))
         Me.New(errorText, errorDetails)
 
-        For Each extraItem As KeyValuePair(Of String, String) In extraFields
-            fields.Add(extraItem.Key, extraItem.Value)
-        Next
+        Try
+            For Each extraItem As KeyValuePair(Of String, String) In extraFields
+                fields.Add(extraItem.Key, extraItem.Value)
+            Next
+        Catch
+            ' No way of reporting errors that have happened here, so just give up
+        End Try
+    End Sub
+
+    Public Sub New(ByVal errorPrefix As String, ByVal uncaughtException As Exception)
+        Me.New(uncaughtException)
+
+        Try
+            fields("errortext") = errorPrefix + ": " + fields("errortext")
+        Catch
+            ' No way of reporting errors that have happened here, so just give up
+        End Try
     End Sub
 
     Public Sub New(ByVal uncaughtException As Exception)
@@ -108,6 +122,14 @@ Friend Class ErrorReporting
                     End If
                 End If
             Next
+
+            If uncaughtException.Data IsNot Nothing Then
+                For Each dataEntry As DictionaryEntry In uncaughtException.Data
+                    If dataEntry.Key.GetType Is GetType(String) And dataEntry.Value.GetType Is GetType(String) Then
+                        fields.Add("expdata:Data:" + CStr(dataEntry.Key), CStr(dataEntry.Value))
+                    End If
+                Next
+            End If
         Catch
             ' No way of reporting errors that have happened here, so just give up
         End Try

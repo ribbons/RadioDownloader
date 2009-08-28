@@ -63,6 +63,7 @@ Public Interface IRadioProvider
     Structure GetProgrammeInfoReturn
         Dim ProgrammeInfo As ProgrammeInfo
         Dim Success As Boolean
+        Dim Exception As Exception
     End Structure
 
     Structure EpisodeInfo
@@ -106,7 +107,7 @@ Public Interface IRadioProvider
     Function GetEpisodeInfo(ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As GetEpisodeInfoReturn
 
     Event FindNewViewChange(ByVal objView As Object)
-    Event FindNewException(ByVal expException As Exception)
+    Event FindNewException(ByVal exception As Exception, ByVal unhandled As Boolean)
     Event FoundNew(ByVal strProgExtID As String)
     Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
     Event DldError(ByVal errorType As ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))

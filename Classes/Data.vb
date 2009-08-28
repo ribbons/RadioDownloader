@@ -1200,11 +1200,16 @@ Friend Class Data
         End If
     End Function
 
-    Private Sub FindNewPluginInst_FindNewException(ByVal expException As System.Exception) Handles FindNewPluginInst.FindNewException
-        If ReportError.Visible = False Then
-            Dim clsReport As New ErrorReporting(expException)
-            ReportError.AssignReport(clsReport)
-            ReportError.ShowDialog()
+    Private Sub FindNewPluginInst_FindNewException(ByVal exception As Exception, ByVal unhandled As Boolean) Handles FindNewPluginInst.FindNewException
+        Dim reportException As New ErrorReporting("Find New Error", exception)
+
+        If unhandled Then
+            If ReportError.Visible = False Then
+                ReportError.AssignReport(reportException)
+                ReportError.ShowDialog()
+            End If
+        Else
+            reportException.SendReport(My.Settings.ErrorReportURL)
         End If
     End Sub
 

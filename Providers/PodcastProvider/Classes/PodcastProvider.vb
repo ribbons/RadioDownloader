@@ -30,7 +30,7 @@ Public Class PodcastProvider
     Implements IRadioProvider
 
     Public Event FindNewViewChange(ByVal objView As Object) Implements IRadioProvider.FindNewViewChange
-    Public Event FindNewException(ByVal expException As Exception) Implements IRadioProvider.FindNewException
+    Public Event FindNewException(ByVal exception As Exception, ByVal unhandled As Boolean) Implements IRadioProvider.FindNewException
     Public Event FoundNew(ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
     Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
     Public Event DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Implements IRadioProvider.DldError
@@ -385,7 +385,7 @@ Public Class PodcastProvider
     End Sub
 
     Friend Sub RaiseFindNewException(ByVal expException As Exception)
-        RaiseEvent FindNewException(expException)
+        RaiseEvent FindNewException(expException, True)
     End Sub
 
     Friend Sub RaiseFoundNew(ByVal strExtID As String)
