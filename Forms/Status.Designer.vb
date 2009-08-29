@@ -30,12 +30,12 @@ Partial Class Status
         '
         Me.lblStatus.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.lblStatus.Location = New System.Drawing.Point(12, 69)
+        Me.lblStatus.Location = New System.Drawing.Point(12, 9)
         Me.lblStatus.Name = "lblStatus"
-        Me.lblStatus.Size = New System.Drawing.Size(414, 38)
+        Me.lblStatus.Size = New System.Drawing.Size(414, 86)
         Me.lblStatus.TabIndex = 0
         Me.lblStatus.Text = "Please wait"
-        Me.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
+        Me.lblStatus.TextAlign = System.Drawing.ContentAlignment.BottomCenter
         '
         'prgProgress
         '
@@ -62,6 +62,6 @@ Partial Class Status
         Me.ResumeLayout(False)
 
     End Sub
-    Friend WithEvents lblStatus As System.Windows.Forms.Label
-    Friend WithEvents prgProgress As System.Windows.Forms.ProgressBar
+    Private WithEvents lblStatus As System.Windows.Forms.Label
+    Private WithEvents prgProgress As System.Windows.Forms.ProgressBar
 End Class

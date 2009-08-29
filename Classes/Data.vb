@@ -98,17 +98,17 @@ Friend Class Data
         Dim count As Integer = 0
         Dim unusedTables() As String = {"tblDownloads", "tblInfo", "tblLastFetch", "tblSettings", "tblStationVisibility", "tblSubscribed"}
 
-        Status.lblStatus.Text = "Removing unused tables..."
-        Status.prgProgress.Visible = True
-        Status.prgProgress.Value = 0
-        Status.prgProgress.Maximum = unusedTables.GetUpperBound(0) + 1
-        Status.Visible = True
+        Status.StatusText = "Removing unused tables..."
+        Status.ProgressBarMarquee = False
+        Status.ProgressBarValue = 0
+        Status.ProgressBarMax = unusedTables.GetUpperBound(0) + 1
+        Status.Show()
         Application.DoEvents()
 
         ' Delete the unused (v0.4 era) tables if they exist
         For Each unusedTable As String In unusedTables
-            Status.lblStatus.Text = "Removing unused table " + CStr(count) + " of " + CStr(unusedTables.GetUpperBound(0) + 1) + "..."
-            Status.prgProgress.Value = count
+            Status.StatusText = "Removing unused table " + CStr(count) + " of " + CStr(unusedTables.GetUpperBound(0) + 1) + "..."
+            Status.ProgressBarValue = count
             Application.DoEvents()
 
             command = New SQLiteCommand("drop table if exists " + unusedTable, sqlConnection)
@@ -117,8 +117,8 @@ Friend Class Data
             count += 1
         Next
 
-        Status.lblStatus.Text = "Finished removing unused tables"
-        Status.prgProgress.Value = count
+        Status.StatusText = "Finished removing unused tables"
+        Status.ProgressBarValue = count
         Application.DoEvents()
 
         ' Work through the images and re-save them to ensure they are compressed
@@ -132,9 +132,9 @@ Friend Class Data
 
         reader.Close()
 
-        Status.lblStatus.Text = "Compressing images..."
-        Status.prgProgress.Value = 0
-        Status.prgProgress.Maximum = compressImages.Count
+        Status.StatusText = "Compressing images..."
+        Status.ProgressBarValue = 0
+        Status.ProgressBarMax = compressImages.Count
         Application.DoEvents()
 
         Dim deleteCmd As New SQLiteCommand("delete from images where imgid=@imgid", sqlConnection)
@@ -146,8 +146,8 @@ Friend Class Data
         count = 1
 
         For Each oldImageID As Integer In compressImages
-            Status.lblStatus.Text = "Compressing image " + CStr(count) + " of " + CStr(compressImages.Count) + "..."
-            Status.prgProgress.Value = count - 1
+            Status.StatusText = "Compressing image " + CStr(count) + " of " + CStr(compressImages.Count) + "..."
+            Status.ProgressBarValue = count - 1
             Application.DoEvents()
 
             image = RetrieveImage(oldImageID)
@@ -169,11 +169,11 @@ Friend Class Data
             count += 1
         Next
 
-        Status.lblStatus.Text = "Finished compressing images"
-        Status.prgProgress.Value = compressImages.Count
+        Status.StatusText = "Finished compressing images"
+        Status.ProgressBarValue = compressImages.Count
         Application.DoEvents()
 
-        Status.Visible = False
+        Status.Hide()
         Application.DoEvents()
     End Sub
 
@@ -1172,9 +1172,9 @@ Friend Class Data
         End If
 
         If booRunVacuum Then
-            Status.lblStatus.Text = "Compacting Database..."
-            Status.prgProgress.Visible = False
-            Status.Visible = True
+            Status.StatusText = "Compacting Database..." + Environment.NewLine + Environment.NewLine + "This may take some time if you have downloaded a lot of programmes."
+            Status.ProgressBarMarquee = True
+            Status.Show()
             Application.DoEvents()
 
             ' Make SQLite recreate the database to reduce the size on disk and remove fragmentation
@@ -1183,10 +1183,7 @@ Friend Class Data
 
             SetDBSetting("lastvacuum", Now.ToString("O"))
 
-            Status.prgProgress.Value = 1
-            Application.DoEvents()
-
-            Status.Visible = False
+            Status.Hide()
             Application.DoEvents()
         End If
     End Sub
