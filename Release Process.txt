@@ -17,7 +17,7 @@ Beta Release
  7. Create tag for release number in form radio_downloader/tags/betas/x.x.x
  8. Move Installer to local nerdoftheherd downloads/beta folder.
  9. Upload to website.
-10. Write news item if thorough testing is required.
+10. Post message to beta mailing list about release.
 
 Full Release
 ------------
