@@ -74,20 +74,22 @@ Public Class CachedWebClient
         Try
             data = webClient.DownloadData(uri)
         Catch webExp As WebException
-            ' A WebException doesn't serialise well, as Response and Status get lost,
-            ' so store the information in a structure and then recreate it later
-            Dim cacheException As New CacheWebException
-            cacheException.Message = webExp.Message
-            cacheException.InnerException = webExp.InnerException
-            cacheException.Status = webExp.Status
-            cacheException.Response = webExp.Response
+            If webExp.Status <> WebExceptionStatus.NameResolutionFailure And webExp.Status <> WebExceptionStatus.Timeout Then
+                ' A WebException doesn't serialise well, as Response and Status get lost,
+                ' so store the information in a structure and then recreate it later
+                Dim cacheException As New CacheWebException
+                cacheException.Message = webExp.Message
+                cacheException.InnerException = webExp.InnerException
+                cacheException.Status = webExp.Status
+                cacheException.Response = webExp.Response
 
-            Dim stream As New MemoryStream()
-            Dim formatter As New BinaryFormatter()
+                Dim stream As New MemoryStream()
+                Dim formatter As New BinaryFormatter()
 
-            ' Serialise the CacheWebException and store it in the cache
-            formatter.Serialize(stream, cacheException)
-            dataInst.AddToHTTPCache(uri, False, stream.ToArray())
+                ' Serialise the CacheWebException and store it in the cache
+                formatter.Serialize(stream, cacheException)
+                dataInst.AddToHTTPCache(uri, False, stream.ToArray())
+            End If
 
             ' Re-throw the WebException
             Throw
