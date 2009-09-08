@@ -14,7 +14,7 @@ Beta & Full Releases
 Beta Release
 ------------
 
- 7. Create tag for release number in form radio_downloader/tags/betas/x.x.x
+ 7. Create tag for release number in form radio_downloader/tags/betas/x.x
  8. Move Installer to local nerdoftheherd downloads/beta folder.
  9. Upload to website.
 10. Post message to beta mailing list about release.
@@ -22,7 +22,7 @@ Beta Release
 Full Release
 ------------
 
- 7. Create tag for release number in form radio_downloader/tags/releases/x.x.x
+ 7. Create tag for release number in form radio_downloader/tags/releases/x.x
  8. Run zipped source creator batch file.
  9. Move source and installer to local nerdoftheherd downloads folder.
 10. Update local latestversion.txt with latest version number.
