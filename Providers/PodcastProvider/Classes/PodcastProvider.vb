@@ -381,6 +381,7 @@ Public Class PodcastProvider
         AddHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange
 
         webDownload = New WebClient
+        webDownload.Headers.Add("user-agent", My.Application.Info.AssemblyName + " " + My.Application.Info.Version.ToString)
         webDownload.DownloadFileAsync(New Uri(strProgDldUrl), strDownloadFileName)
     End Sub
 
