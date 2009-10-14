@@ -796,26 +796,32 @@ Friend Class Main
     End Sub
 
     Private Sub tbtDelete_Click()
-        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-        Dim strDownloadPath As String = clsProgData.DownloadPath(intEpID)
-        Dim booExists As Boolean = File.Exists(strDownloadPath)
-        Dim strDelQuestion As String = "Are you sure that you would like to delete this episode"
+        Dim epID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
+        Dim downloadPath As String = clsProgData.DownloadPath(epID)
+        Dim fileExists As Boolean = File.Exists(downloadPath)
+        Dim delQuestion As String = "Are you sure that you would like to delete this episode"
 
-        If booExists Then
-            strDelQuestion += " and the associated audio file"
+        If fileExists Then
+            delQuestion += " and the associated audio file"
         End If
 
-        If MsgBox(strDelQuestion + "?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-            If booExists Then
-                File.Delete(strDownloadPath)
+        If MsgBox(delQuestion + "?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            If fileExists Then
+                Try
+                    File.Delete(downloadPath)
+                Catch ioExp As IOException
+                    If MsgBox("There was a problem deleting the audio file for this episode, as the file is in use by another application." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation Or MsgBoxStyle.YesNo) = MsgBoxResult.No Then
+                        Exit Sub
+                    End If
+                End Try
             End If
 
-            clsProgData.RemoveDownload(intEpID)
+            clsProgData.RemoveDownload(epID)
             clsProgData.UpdateDlList(lstDownloads)
 
             ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
             ' it doesn't just download it all over again
-            Call clsProgData.EpisodeSetAutoDownload(intEpID, False)
+            Call clsProgData.EpisodeSetAutoDownload(epID, False)
         End If
     End Sub
 
