@@ -498,10 +498,13 @@ Public Class PodcastProvider
 
             If e.Error IsNot Nothing Then
                 If TypeOf e.Error Is WebException Then
-                    Dim expWeb As WebException = CType(e.Error, WebException)
+                    Dim webExp As WebException = CType(e.Error, WebException)
 
-                    If TypeOf expWeb.Response Is HttpWebResponse Then
-                        Dim webErrorResponse As HttpWebResponse = CType(expWeb.Response, HttpWebResponse)
+                    If webExp.Status = WebExceptionStatus.NameResolutionFailure Then
+                        RaiseEvent DldError(IRadioProvider.ErrorType.NotAvailable, "Unable to resolve the domain to download this episode from.  Check your internet connection, or try again later.", New List(Of DldErrorDataItem))
+                        Exit Sub
+                    ElseIf TypeOf webExp.Response Is HttpWebResponse Then
+                        Dim webErrorResponse As HttpWebResponse = CType(webExp.Response, HttpWebResponse)
 
                         If webErrorResponse.StatusCode = HttpStatusCode.NotFound Then
                             RaiseEvent DldError(IRadioProvider.ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.", New List(Of DldErrorDataItem))
