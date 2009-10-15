@@ -9,7 +9,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyProduct("Podcast Plugin")> 
 <Assembly: AssemblyCopyright("Copyright © 2007-2009 Matt Robinson")> 
 <Assembly: AssemblyTrademark("")> 
-<Assembly: AssemblyVersion("0.6.0.0")> 
+<Assembly: AssemblyVersion("0.7.0.0")> 
 
 <Assembly: CLSCompliant(True)> 
 <Assembly: ComVisible(False)> 
