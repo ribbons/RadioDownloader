@@ -3,7 +3,6 @@
   <Product Id="*" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader" Version="!(bind.FileVersion.RadioDownloaderExe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
     <Package Compressed="yes" Comments="Radio Downloader allows you to easily download radio station content and podcasts." Keywords="Radio Downloader,Installer,Radio,Podcasts" />
     <UI>
-      <?include Error Text.wxi ?>
       <Property Id="ErrorDialog"><![CDATA[ErrorDlg]]></Property>
       <Property Id="DefaultUIFont"><![CDATA[DlgFont8]]></Property>
       <Dialog Id="ExitDialog" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
