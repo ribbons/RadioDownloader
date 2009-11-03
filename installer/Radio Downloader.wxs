@@ -361,17 +361,17 @@
       <RemoveExistingProducts After="InstallInitialize" />
       <Custom Action="CloseBeforeUninstall" Before="InstallValidate">Installed OR OLDERVERSIONBEINGUPGRADED</Custom>
     </InstallExecuteSequence>
-    <Binary Id="dialog_banner" SourceFile="Binary\dialog_banner.jpg" />
-    <Binary Id="dialog_background" SourceFile="Binary\dialog_background.jpg" />
-    <Binary Id="exclamic" SourceFile="Binary\exclamic.ico" />
-    <Binary Id="info" SourceFile="Binary\info.ico" />
+    <Binary Id="dialog_banner" SourceFile="Resources\dialog_banner.jpg" />
+    <Binary Id="dialog_background" SourceFile="Resources\dialog_background.jpg" />
+    <Binary Id="exclamic" SourceFile="Resources\exclamic.ico" />
+    <Binary Id="info" SourceFile="Resources\info.ico" />
     <Directory Id="TARGETDIR" Name="SourceDir">
       <Directory Id="ProgramFilesFolder" Name="Program Files">
         <Directory Id="INSTALLLOCATION" Name="Radio Downloader">
           <Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E">
             <File Id="RadioDownloaderExe" Source="..\bin\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
               <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloaderIcon.exe" Description="Easily download radio station content and podcasts.">
-                <Icon Id="RadioDownloaderIcon.exe" SourceFile="Binary\ProgramIcon.exe" />
+                <Icon Id="RadioDownloaderIcon.exe" SourceFile="Resources\ProgramIcon.exe" />
               </Shortcut>
             </File>
             <File Name="Radio Downloader.pdb" Source="..\bin\Radio Downloader.pdb" />
