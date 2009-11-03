@@ -13,10 +13,20 @@ rem Set up an x86 Release build environment
 call "%sdklocation%\Bin\setenv.cmd" /Release /x86
 if ERRORLEVEL 1 goto failed
 
+rem Clean and build Radio Downloader and the providers
+
 msbuild /p:Configuration=Release /t:Clean
 if ERRORLEVEL 1 goto failed
 
 msbuild /p:Configuration=Release
+if ERRORLEVEL 1 goto failed
+
+rem Clean and build the installer
+
+msbuild /p:Configuration=Release /t:Clean "installer/Radio Downloader.wixproj"
+if ERRORLEVEL 1 goto failed
+
+msbuild /p:Configuration=Release "installer/Radio Downloader.wixproj"
 if ERRORLEVEL 1 goto failed
 
 goto exit
