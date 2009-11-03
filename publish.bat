@@ -1,10 +1,28 @@
 @echo off
 
-rem Batch file to publish the Radio Downloader and plugins to the 'bin' folder.
+rem Batch file to publish Radio Downloader and the plugins to the 'bin' folder.
 
-call "C:\Program Files\Microsoft SDKs\Windows\v6.1\Bin\setenv.cmd"
+rem Required to run the SDK setenv script
+setlocal ENABLEEXTENSIONS
+setlocal ENABLEDELAYEDEXPANSION
+
+rem Set up an x86 Release build environment
+call "%programfiles%\Microsoft SDKs\Windows\v7.0\Bin\setenv.cmd" /Release /x86
+if ERRORLEVEL 1 goto failed
 
 msbuild /t:Clean
-msbuild /p:Configuration=Release
+if ERRORLEVEL 1 goto failed
+
+msbuild
+if ERRORLEVEL 1 goto failed
+
+goto exit
+
+:failed
+
+echo.
+echo Publish failed - review above output for more details
+
+:exit
 
 pause
