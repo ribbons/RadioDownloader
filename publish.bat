@@ -13,10 +13,10 @@ rem Set up an x86 Release build environment
 call "%sdklocation%\Bin\setenv.cmd" /Release /x86
 if ERRORLEVEL 1 goto failed
 
-msbuild /t:Clean
+msbuild /p:Configuration=Release /t:Clean
 if ERRORLEVEL 1 goto failed
 
-msbuild
+msbuild /p:Configuration=Release
 if ERRORLEVEL 1 goto failed
 
 goto exit
