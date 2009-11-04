@@ -4,29 +4,28 @@ Release process
 Beta & Full Releases
 --------------------
 
- 1. Update version number in Core Application & Plugins
- 2. Run publish.bat to compile Core Application & Plugins
- 3. Build installer
- 4. Test installer - major upgrade
- 5. Test installer - clean install
- 6. Commit version changes.
+ 1. Update version number in application & providers
+ 2. Run publish.bat to build & sign application, providers and installer
+ 3. Test installer - major upgrade
+ 4. Test installer - clean install
+ 5. Commit version changes.
 
 Beta Release
 ------------
 
- 7. Create tag for release number in form radio_downloader/tags/betas/x.x
- 8. Move Installer to local nerdoftheherd downloads/beta folder.
- 9. Upload to website.
-10. Post message to beta mailing list about release.
+ 6. Create tag for release number in form radio_downloader/tags/betas/x.x
+ 7. Move Installer to local nerdoftheherd downloads/beta folder.
+ 8. Upload to website.
+ 9. Post message to beta mailing list about release.
 
 Full Release
 ------------
 
- 7. Create tag for release number in form radio_downloader/tags/releases/x.x
- 8. Run zipped source creator batch file.
- 9. Move source and installer to local nerdoftheherd downloads folder.
-10. Update local latestversion.txt with latest version number.
-11. Add new version number into the Radio Downloader product in Bugzilla.
-12. Upload to website.
-13. Write news item.
-14. Prevent errors from being submitted against previous version in error reporting.
+ 6. Create tag for release number in form radio_downloader/tags/releases/x.x
+ 7. Run zipped source creator batch file.
+ 8. Move source and installer to local nerdoftheherd downloads folder.
+ 9. Update local latestversion.txt with latest version number.
+10. Add new version number into the Radio Downloader product in Bugzilla.
+11. Upload to website.
+12. Write news item.
+13. Prevent errors from being submitted against previous version in error reporting.
