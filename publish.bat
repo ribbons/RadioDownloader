@@ -41,7 +41,7 @@ if ERRORLEVEL 1 goto failed
 
 rem Sign the installer
 
-signtool sign /t %timestampserver% "installer\Radio Downloader.msi"
+signtool sign /t %timestampserver% /d "Radio Downloader" "installer\Radio Downloader.msi"
 if ERRORLEVEL 1 set signfailed=1
 
 if not "%signfailed%" == "" goto signfailed
