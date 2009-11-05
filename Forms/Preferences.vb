@@ -38,6 +38,7 @@ Friend Class Preferences
         My.Settings.SaveFolder = txtSaveIn.Text
         My.Settings.FileNameFormat = txtFileNameFormat.Text
         My.Settings.RunAfterCommand = txtRunAfter.Text
+        My.Settings.Save()
         Me.Close()
     End Sub
 
@@ -58,7 +59,7 @@ Friend Class Preferences
             My.Settings.SaveFolder = My.Settings.Properties.Item("SaveFolder").DefaultValue.ToString
             My.Settings.FileNameFormat = My.Settings.Properties.Item("FileNameFormat").DefaultValue.ToString
             My.Settings.RunAfterCommand = My.Settings.Properties.Item("RunAfterCommand").DefaultValue.ToString
-
+            My.Settings.Save()
             Me.Close()
         End If
     End Sub

@@ -134,6 +134,7 @@ Friend Class Main
         If My.Settings.UpgradeSettings Then
             My.Settings.Upgrade()
             My.Settings.UpgradeSettings = False
+            My.Settings.Save()
         End If
 
         ' Make sure that the temp and application data folders exist
