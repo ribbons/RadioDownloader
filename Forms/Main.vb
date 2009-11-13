@@ -284,6 +284,11 @@ Friend Class Main
     End Sub
 
     Private Sub lstProviders_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
+        ' Occasionally the event gets fired when there isn't an item selected
+        If lstProviders.SelectedItems.Count = 0 Then
+            Exit Sub
+        End If
+
         Call tbtChooseProgramme_Click()
     End Sub
 
@@ -334,6 +339,11 @@ Friend Class Main
     End Sub
 
     Private Sub lstDownloads_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstDownloads.ItemActivate
+        ' Occasionally the event gets fired when there isn't an item selected
+        If lstDownloads.SelectedItems.Count = 0 Then
+            Exit Sub
+        End If
+
         Call tbtPlay_Click()
     End Sub
 
