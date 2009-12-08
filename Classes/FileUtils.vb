@@ -17,16 +17,23 @@ Imports System.Text.RegularExpressions
 
 Friend Class FileUtils
     Public Shared Function GetSaveFolder() As String
+        Const defaultFolder As String = "Downloaded Radio"
+
         If My.Settings.SaveFolder <> "" Then
-            If New DirectoryInfo(My.Settings.SaveFolder).Exists Then
-                Return My.Settings.SaveFolder
-            Else
-                My.Settings.SaveFolder = ""
+            If New DirectoryInfo(My.Settings.SaveFolder).Exists = False Then
+                Throw New DirectoryNotFoundException()
             End If
+
+            Return My.Settings.SaveFolder
         End If
 
-        ' Set the save folder to the default and make sure it folder exists
-        GetSaveFolder = Path.Combine(My.Computer.FileSystem.SpecialDirectories.MyDocuments, "Downloaded Radio")
+        Try
+            GetSaveFolder = Path.Combine(My.Computer.FileSystem.SpecialDirectories.MyDocuments, defaultFolder)
+        Catch dirNotFoundExp As DirectoryNotFoundException
+            ' The user's Documents folder could not be found, so fall back to a folder under the system drive
+            GetSaveFolder = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), defaultFolder)
+        End Try
+
         Directory.CreateDirectory(GetSaveFolder)
     End Function
 

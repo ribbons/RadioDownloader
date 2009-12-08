@@ -375,8 +375,8 @@ Friend Class Main
                     strActionString = "Retry,Cancel"
 
                     Select Case .DownloadErrorType(intEpID)
-                        Case IRadioProvider.ErrorType.MissingDependency
-                            strErrorName = "Missing dependency"
+                        Case IRadioProvider.ErrorType.LocalProblem
+                            strErrorName = "Local problem"
                         Case IRadioProvider.ErrorType.ShorterThanExpected
                             strErrorName = "Shorter than expected"
                         Case IRadioProvider.ErrorType.NotAvailable

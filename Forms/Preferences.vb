@@ -45,7 +45,12 @@ Friend Class Preferences
     Private Sub Preferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         Me.Font = SystemFonts.MessageBoxFont
 
-        txtSaveIn.Text = FileUtils.GetSaveFolder()
+        Try
+            txtSaveIn.Text = FileUtils.GetSaveFolder()
+        Catch dirNotFoundExp As DirectoryNotFoundException
+            txtSaveIn.Text = My.Settings.SaveFolder
+        End Try
+
         txtFileNameFormat.Text = My.Settings.FileNameFormat
         txtRunAfter.Text = My.Settings.RunAfterCommand
     End Sub

@@ -300,8 +300,6 @@ Friend Class Data
                             .EpisodeInfo = epiEpInfo
                         End With
 
-                        clsCurDldProgData.FinalName = FileUtils.FindFreeSaveFileName(My.Settings.FileNameFormat, sqlReader.GetString(sqlReader.GetOrdinal("progname")), EpisodeName(intEpID), sqlReader.GetDateTime(sqlReader.GetOrdinal("date")), FileUtils.GetSaveFolder())
-
                         If sqlReader.GetInt32(sqlReader.GetOrdinal("status")) = Statuses.Errored Then
                             Call ResetDownload(intEpID, True)
                             clsCurDldProgData.AttemptNumber = sqlReader.GetInt32(sqlReader.GetOrdinal("errorcount")) + 1
@@ -331,6 +329,13 @@ Friend Class Data
             Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath, "RadioDownloader"))
 
             With clsCurDldProgData
+                Try
+                    clsCurDldProgData.FinalName = FileUtils.FindFreeSaveFileName(My.Settings.FileNameFormat, clsCurDldProgData.ProgInfo.Name, clsCurDldProgData.EpisodeInfo.Name, clsCurDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder())
+                Catch dirNotFoundExp As DirectoryNotFoundException
+                    Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", New List(Of DldErrorDataItem))
+                    Exit Sub
+                End Try
+
                 DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
             End With
         Catch unknownExp As Exception

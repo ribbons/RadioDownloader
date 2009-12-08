@@ -87,7 +87,7 @@ Public Interface IRadioProvider
 
     Enum ErrorType
         UnknownError = 0
-        MissingDependency = 1
+        LocalProblem = 1
         ShorterThanExpected = 2
         NotAvailable = 3
         RemoveFromList = 4
