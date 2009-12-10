@@ -25,10 +25,7 @@ if ERRORLEVEL 1 goto failed
 
 rem Sign Radio Downloader and the provider
 
-signtool sign /t %timestampserver% "bin\Radio Downloader.exe"
-if ERRORLEVEL 1 set signfailed=1
-
-signtool sign /t %timestampserver% "bin\PodcastProvider.dll"
+signtool sign /t %timestampserver% "bin\Radio Downloader.exe" "bin\PodcastProvider.dll"
 if ERRORLEVEL 1 set signfailed=1
 
 rem Clean and build the installer
