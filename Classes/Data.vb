@@ -1417,7 +1417,6 @@ Friend Class Data
         End If
 
         Dim strEpisodeExtIDs As String()
-        Dim clsCachedWebInst As New CachedWebClient()
         Dim ThisInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(gidProviderID)
 
         Try
