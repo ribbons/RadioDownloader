@@ -710,7 +710,7 @@ Friend Class Main
 
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         For Each commandLineArg As String In Environment.GetCommandLineArgs
-            If commandLineArg.ToLower = "/hidemainwindow" Then
+            If commandLineArg.ToUpperInvariant = "/HIDEMAINWINDOW" Then
                 Call TrayAnimate(Me, True)
                 Me.Visible = False
             End If

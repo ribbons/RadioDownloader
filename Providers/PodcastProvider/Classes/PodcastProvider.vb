@@ -328,10 +328,10 @@ Public Class PodcastProvider
 
                     ' Strip the day of the week from the beginning of the date string if it is there,
                     ' as it can contradict the date itself.
-                    Dim strDays() As String = {"mon,", "tue,", "wed,", "thu,", "fri,", "sat,", "sun,"}
+                    Dim strDays() As String = {"MON,", "TUE,", "WED,", "THU,", "FRI,", "SAT,", "SUN,"}
 
                     For Each strDay As String In strDays
-                        If strPubDate.ToLower.StartsWith(strDay) Then
+                        If strPubDate.ToUpperInvariant.StartsWith(strDay) Then
                             strPubDate = strPubDate.Substring(strDay.Length).Trim
                             Exit For
                         End If

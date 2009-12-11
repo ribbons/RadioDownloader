@@ -22,7 +22,7 @@ Namespace My
 
             ' If /exit was passed on the command line, then just exit immediately
             For Each commandLineArg As String In Environment.GetCommandLineArgs
-                If commandLineArg.ToLower = "/exit" Then
+                If commandLineArg.ToUpperInvariant = "/EXIT" Then
                     e.Cancel = True
                     Exit Sub
                 End If
@@ -31,7 +31,7 @@ Namespace My
 
         Private Sub MyApplication_StartupNextInstance(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs) Handles Me.StartupNextInstance
             For Each commandLineArg As String In e.CommandLine
-                If commandLineArg.ToLower = "/exit" Then
+                If commandLineArg.ToUpperInvariant = "/EXIT" Then
                     ' Close the application
                     RadioDld.Main.mnuTrayExit_Click(sender, e)
                     Exit Sub
