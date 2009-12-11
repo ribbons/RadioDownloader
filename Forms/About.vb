@@ -29,8 +29,8 @@ Friend NotInheritable Class About
 
         Me.Font = SystemFonts.MessageBoxFont
 
-        Me.Text = String.Format("About {0}", ApplicationTitle)
-        Me.LabelNameAndVer.Text = String.Format("{0} {1}", My.Application.Info.ProductName, My.Application.Info.Version.ToString)
+        Me.Text = "About " + ApplicationTitle
+        Me.LabelNameAndVer.Text = My.Application.Info.ProductName + " " + My.Application.Info.Version.ToString
         Me.LabelCopyright.Text = My.Application.Info.Copyright
     End Sub
 

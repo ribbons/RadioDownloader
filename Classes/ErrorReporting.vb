@@ -16,6 +16,7 @@ Option Strict On
 Option Explicit On
 
 Imports System.Collections.Generic
+Imports System.Globalization
 Imports System.IO
 Imports System.Net
 Imports System.Reflection
@@ -103,7 +104,7 @@ Friend Class ErrorReporting
                             If propertyValue.GetType.IsSerializable Then
                                 ' Attempt to serialize the object as an XML string
                                 Try
-                                    Dim valueStringWriter As New StringWriter()
+                                    Dim valueStringWriter As New StringWriter(CultureInfo.InvariantCulture)
                                     Dim valueSerializer As New XmlSerializer(propertyValue.GetType)
 
                                     valueSerializer.Serialize(valueStringWriter, propertyValue)

@@ -16,6 +16,7 @@ Option Strict On
 Option Explicit On
 
 Imports System.Collections.Generic
+Imports System.Globalization
 Imports System.Runtime.InteropServices
 
 ' Parts of the code in this class are based on c# code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
@@ -78,7 +79,7 @@ Friend Class ExtListView : Inherits ListView
         End If
 
         If intSubItem >= intOrder.Length Then
-            Throw New IndexOutOfRangeException("SubItem " + intSubItem.ToString + " out of range")
+            Throw New IndexOutOfRangeException("SubItem " + intSubItem.ToString(CultureInfo.InvariantCulture) + " out of range")
         End If
 
         ' Retrieve the bounds of the entire ListViewItem (all subitems)

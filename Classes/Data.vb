@@ -15,11 +15,12 @@
 Option Strict On
 Option Explicit On
 
+Imports System.Collections.Generic
+Imports System.Data.SQLite
+Imports System.Globalization
 Imports System.IO
 Imports System.IO.File
 Imports System.Threading
-Imports System.Data.SQLite
-Imports System.Collections.Generic
 Imports System.Text.RegularExpressions
 Imports System.Xml.Serialization
 
@@ -191,7 +192,7 @@ Friend Class Data
             Case IRadioProvider.ErrorType.UnknownError
                 furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
 
-                Dim detailsStringWriter As New StringWriter()
+                Dim detailsStringWriter As New StringWriter(CultureInfo.InvariantCulture)
                 Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
                 detailsSerializer.Serialize(detailsStringWriter, furtherDetails)
                 errorDetails = detailsStringWriter.ToString
@@ -511,7 +512,7 @@ Friend Class Data
                     ' Use regex to remove a number of different date formats from programme titles.
                     ' Will only remove dates with the same month & year as the programme itself, but any day of the month
                     ' as there is sometimes a mismatch of a day or two between the date in a title and the publish date.
-                    Dim regStripDate As New Regex("\A(" + dteEpisodeDate.ToString("yyyy") + "/" + dteEpisodeDate.ToString("MM") + "/\d{2} ?-? )?(?<name>.*?)( ?:? (\d{2}/" + dteEpisodeDate.ToString("MM") + "/" + dteEpisodeDate.ToString("yyyy") + "|((Mon|Tue|Wed|Thu|Fri) )?(\d{1,2}(st|nd|rd|th)? )?(" + dteEpisodeDate.ToString("MMMM") + "|" + dteEpisodeDate.ToString("MMM") + ")( \d{1,2}(st|nd|rd|th)?| (" + dteEpisodeDate.ToString("yy") + "|" + dteEpisodeDate.ToString("yyyy") + "))?))?\Z")
+                    Dim regStripDate As New Regex("\A(" + dteEpisodeDate.ToString("yyyy", CultureInfo.InvariantCulture) + "/" + dteEpisodeDate.ToString("MM", CultureInfo.InvariantCulture) + "/\d{2} ?-? )?(?<name>.*?)( ?:? (\d{2}/" + dteEpisodeDate.ToString("MM", CultureInfo.InvariantCulture) + "/" + dteEpisodeDate.ToString("yyyy", CultureInfo.InvariantCulture) + "|((Mon|Tue|Wed|Thu|Fri) )?(\d{1,2}(st|nd|rd|th)? )?(" + dteEpisodeDate.ToString("MMMM", CultureInfo.InvariantCulture) + "|" + dteEpisodeDate.ToString("MMM", CultureInfo.InvariantCulture) + ")( \d{1,2}(st|nd|rd|th)?| (" + dteEpisodeDate.ToString("yy", CultureInfo.InvariantCulture) + "|" + dteEpisodeDate.ToString("yyyy", CultureInfo.InvariantCulture) + "))?))?\Z")
 
                     If regStripDate.IsMatch(EpisodeName) Then
                         EpisodeName = regStripDate.Match(EpisodeName).Groups("name").ToString
@@ -633,7 +634,7 @@ Friend Class Data
             EpisodeDetails += strDescription + vbCrLf + vbCrLf
         End If
 
-        EpisodeDetails += "Date: " + EpisodeDate(intEpID).ToString("ddd dd/MMM/yy HH:mm")
+        EpisodeDetails += "Date: " + EpisodeDate(intEpID).ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
 
         Dim intDuration As Integer = EpisodeDuration(intEpID)
 
@@ -1023,7 +1024,7 @@ Friend Class Data
         If reader.Read Then
             errorExtraDetails.Add("episode:name", reader.GetString(reader.GetOrdinal("epname")))
             errorExtraDetails.Add("episode:description", reader.GetString(reader.GetOrdinal("epdesc")))
-            errorExtraDetails.Add("episode:date", reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd hh:mm"))
+            errorExtraDetails.Add("episode:date", reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture))
             errorExtraDetails.Add("episode:duration", CStr(reader.GetInt32(reader.GetOrdinal("duration"))))
             errorExtraDetails.Add("episode:extid", reader.GetString(reader.GetOrdinal("epextid")))
 
@@ -1173,7 +1174,7 @@ Friend Class Data
         If objLastVacuum Is Nothing Then
             booRunVacuum = True
         Else
-            booRunVacuum = DateTime.ParseExact(CStr(objLastVacuum), "O", Nothing).AddMonths(3) < Now
+            booRunVacuum = DateTime.ParseExact(CStr(objLastVacuum), "O", CultureInfo.InvariantCulture).AddMonths(3) < Now
         End If
 
         If booRunVacuum Then
@@ -1186,7 +1187,7 @@ Friend Class Data
             Dim sqlCommand As New SQLiteCommand("vacuum", sqlConnection)
             sqlCommand.ExecuteNonQuery()
 
-            SetDBSetting("lastvacuum", Now.ToString("O"))
+            SetDBSetting("lastvacuum", Now.ToString("O", CultureInfo.InvariantCulture))
 
             Status.Hide()
             Application.DoEvents()

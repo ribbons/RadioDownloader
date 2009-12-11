@@ -12,6 +12,7 @@
 ' You should have received a copy of the GNU General Public License along with this program; if not, write
 ' to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+Imports System.Globalization
 Imports System.IO
 Imports System.Text.RegularExpressions
 
@@ -66,12 +67,12 @@ Friend Class FileUtils
         ' Make variable substitutions
         fileName = fileName.Replace("%progname%", programmeName)
         fileName = fileName.Replace("%epname%", episodeName)
-        fileName = fileName.Replace("%day%", episodeDate.ToString("dd"))
-        fileName = fileName.Replace("%month%", episodeDate.ToString("MM"))
-        fileName = fileName.Replace("%shortmonthname%", episodeDate.ToString("MMM"))
-        fileName = fileName.Replace("%monthname%", episodeDate.ToString("MMMM"))
-        fileName = fileName.Replace("%year%", episodeDate.ToString("yy"))
-        fileName = fileName.Replace("%longyear%", episodeDate.ToString("yyyy"))
+        fileName = fileName.Replace("%day%", episodeDate.ToString("dd", CultureInfo.CurrentCulture))
+        fileName = fileName.Replace("%month%", episodeDate.ToString("MM", CultureInfo.CurrentCulture))
+        fileName = fileName.Replace("%shortmonthname%", episodeDate.ToString("MMM", CultureInfo.CurrentCulture))
+        fileName = fileName.Replace("%monthname%", episodeDate.ToString("MMMM", CultureInfo.CurrentCulture))
+        fileName = fileName.Replace("%year%", episodeDate.ToString("yy", CultureInfo.CurrentCulture))
+        fileName = fileName.Replace("%longyear%", episodeDate.ToString("yyyy", CultureInfo.CurrentCulture))
 
         ' Replace invalid file name characters with spaces (except for directory separators
         ' as this then allows the flexibility of storing the downloads in subdirectories)
