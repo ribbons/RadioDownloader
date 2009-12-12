@@ -255,4 +255,7 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <Target Name="AfterBuild">
+    <Exec Command='"$(ProgramFiles)\Microsoft FxCop 1.36\FxCopCmd.exe" /project:"Radio Downloader.FxCop" /console'/>
+  </Target>
 </Project>
