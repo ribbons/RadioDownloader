@@ -285,7 +285,7 @@ Public Class PodcastProvider
 
                 If xmlPubDate IsNot Nothing Then
                     Dim strPubDate As String = xmlPubDate.InnerText.Trim
-                    Dim intZonePos As Integer = strPubDate.LastIndexOf(" ")
+                    Dim intZonePos As Integer = strPubDate.LastIndexOf(" ", StringComparison.Ordinal)
                     Dim tspOffset As TimeSpan = New TimeSpan(0)
 
                     If intZonePos > 0 Then
@@ -328,10 +328,10 @@ Public Class PodcastProvider
 
                     ' Strip the day of the week from the beginning of the date string if it is there,
                     ' as it can contradict the date itself.
-                    Dim strDays() As String = {"MON,", "TUE,", "WED,", "THU,", "FRI,", "SAT,", "SUN,"}
+                    Dim strDays() As String = {"mon,", "tue,", "wed,", "thu,", "fri,", "sat,", "sun,"}
 
                     For Each strDay As String In strDays
-                        If strPubDate.ToUpperInvariant.StartsWith(strDay) Then
+                        If strPubDate.StartsWith(strDay, StringComparison.OrdinalIgnoreCase) Then
                             strPubDate = strPubDate.Substring(strDay.Length).Trim
                             Exit For
                         End If
@@ -368,8 +368,8 @@ Public Class PodcastProvider
     Public Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
         strProgDldUrl = EpInfo.ExtInfo("EnclosureURL")
 
-        Dim intFileNamePos As Integer = strFinalName.LastIndexOf("\")
-        Dim intExtensionPos As Integer = strProgDldUrl.LastIndexOf(".")
+        Dim intFileNamePos As Integer = strFinalName.LastIndexOf("\", StringComparison.Ordinal)
+        Dim intExtensionPos As Integer = strProgDldUrl.LastIndexOf(".", StringComparison.Ordinal)
 
         If intExtensionPos > -1 Then
             strExtension = strProgDldUrl.Substring(intExtensionPos + 1)
