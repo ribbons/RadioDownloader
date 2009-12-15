@@ -55,7 +55,7 @@
         Me.mnuHelpAbout = New System.Windows.Forms.MenuItem
         Me.imlToolbar = New System.Windows.Forms.ImageList(Me.components)
         Me.tblInfo = New System.Windows.Forms.TableLayoutPanel
-        Me.txtSideDescript = New System.Windows.Forms.TextBox
+        Me.txtSideDescript = New System.Windows.Forms.RichTextBox
         Me.lblSideMainTitle = New System.Windows.Forms.Label
         Me.picSidebarImg = New System.Windows.Forms.PictureBox
         Me.pnlPluginSpace = New System.Windows.Forms.Panel
@@ -306,10 +306,8 @@
         Me.txtSideDescript.Dock = System.Windows.Forms.DockStyle.Fill
         Me.txtSideDescript.Location = New System.Drawing.Point(8, 120)
         Me.txtSideDescript.Margin = New System.Windows.Forms.Padding(8, 5, 8, 6)
-        Me.txtSideDescript.Multiline = True
         Me.txtSideDescript.Name = "txtSideDescript"
         Me.txtSideDescript.ReadOnly = True
-        Me.txtSideDescript.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.txtSideDescript.ShortcutsEnabled = False
         Me.txtSideDescript.Size = New System.Drawing.Size(171, 280)
         Me.txtSideDescript.TabIndex = 1
@@ -643,7 +641,7 @@
     Friend WithEvents tblToolbars As System.Windows.Forms.TableLayoutPanel
     Friend WithEvents tbrHelp As ExtToolBar
     Friend WithEvents lblSideMainTitle As System.Windows.Forms.Label
-    Friend WithEvents txtSideDescript As System.Windows.Forms.TextBox
+    Friend WithEvents txtSideDescript As System.Windows.Forms.RichTextBox
     Friend WithEvents picSideBarBorder As System.Windows.Forms.PictureBox
     Friend WithEvents mnuOptionsProviderOpts As System.Windows.Forms.MenuItem
     Friend WithEvents tbtChooseProgramme As System.Windows.Forms.ToolBarButton

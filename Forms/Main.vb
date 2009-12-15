@@ -409,7 +409,10 @@ Friend Class Main
         lblSideMainTitle.Text = strTitle
 
         txtSideDescript.Text = strDescription
-        TextBoxAutoScrollbars(txtSideDescript)
+
+        ' Make sure the scrollbars update correctly
+        txtSideDescript.ScrollBars = RichTextBoxScrollBars.None
+        txtSideDescript.ScrollBars = RichTextBoxScrollBars.Both
 
         If bmpPicture IsNot Nothing Then
             If bmpPicture.Width > picSidebarImg.MaximumSize.Width Or bmpPicture.Height > picSidebarImg.MaximumSize.Height Then
@@ -1110,37 +1113,16 @@ Friend Class Main
         End If
     End Sub
 
-    Private Sub TextBoxAutoScrollbars(ByVal txtTextBox As TextBox)
-        If Me.WindowState <> FormWindowState.Minimized Then
-            Static booPreventNest As Boolean = False
-            If booPreventNest Then Exit Sub
-            booPreventNest = True
-
-            Dim sizTextSize As Size = TextRenderer.MeasureText(txtTextBox.Text, txtTextBox.Font, txtTextBox.Size, TextFormatFlags.TextBoxControl Or TextFormatFlags.WordBreak)
-
-            Dim booHScroll As Boolean = txtTextBox.ClientSize.Width < sizTextSize.Width
-            Dim booVScroll As Boolean = txtTextBox.ClientSize.Height < sizTextSize.Height
-
-            If Not booHScroll And Not booVScroll Then
-                txtTextBox.ScrollBars = ScrollBars.None
-            ElseIf booHScroll And booVScroll Then
-                txtTextBox.ScrollBars = ScrollBars.Both
-            ElseIf booVScroll Then
-                txtTextBox.ScrollBars = ScrollBars.Vertical
-            Else
-                txtTextBox.ScrollBars = ScrollBars.Horizontal
-            End If
-
-            booPreventNest = False
-        End If
-    End Sub
-
     Private Sub txtSideDescript_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtSideDescript.GotFocus
         lblSideMainTitle.Focus()
     End Sub
 
+    Private Sub txtSideDescript_LinkClicked(ByVal sender As Object, ByVal e As System.Windows.Forms.LinkClickedEventArgs) Handles txtSideDescript.LinkClicked
+        Process.Start(e.LinkText)
+    End Sub
+
     Private Sub txtSideDescript_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles txtSideDescript.Resize
-        TextBoxAutoScrollbars(txtSideDescript)
+        txtSideDescript.Refresh() ' Make sure the scrollbars update correctly
     End Sub
 
     Private Sub picSideBarBorder_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles picSideBarBorder.Paint
