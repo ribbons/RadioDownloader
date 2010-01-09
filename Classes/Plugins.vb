@@ -92,6 +92,7 @@ Public Interface IRadioProvider
         NotAvailable = 3
         RemoveFromList = 4
         NotAvailableInLocation = 5
+        NetworkProblem = 6
     End Enum
 
     ReadOnly Property ProviderID() As Guid

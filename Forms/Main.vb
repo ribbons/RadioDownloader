@@ -383,6 +383,8 @@ Friend Class Main
                             strErrorName = "Not available"
                         Case IRadioProvider.ErrorType.NotAvailableInLocation
                             strErrorName = "Not available in your location"
+                        Case IRadioProvider.ErrorType.NetworkProblem
+                            strErrorName = "Network problem"
                         Case IRadioProvider.ErrorType.UnknownError
                             strErrorName = "Unknown error"
                             strErrorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
