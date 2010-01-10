@@ -7,7 +7,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Plugin to support downloading podcasts within Radio Downloader.")> 
 <Assembly: AssemblyCompany("")> 
 <Assembly: AssemblyProduct("Podcast Plugin")> 
-<Assembly: AssemblyCopyright("Copyright © 2007-2009 Matt Robinson")> 
+<Assembly: AssemblyCopyright("Copyright © 2007-2010 Matt Robinson")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: AssemblyVersion("0.8.2.0")> 
 

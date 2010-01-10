@@ -7,7 +7,7 @@ Imports System.Runtime.InteropServices
 <Assembly: AssemblyDescription("Utility to automatically download radio programmes made available online, using a plugin framework for provider specific implementation.")> 
 <Assembly: AssemblyCompany("www.nerdoftheherd.com")> 
 <Assembly: AssemblyProduct("Radio Downloader")> 
-<Assembly: AssemblyCopyright("Copyright © 2007-2009 Matt Robinson")> 
+<Assembly: AssemblyCopyright("Copyright © 2007-2010 Matt Robinson")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: AssemblyCulture("")> 
 <Assembly: AssemblyVersion("0.8.2.0")> 
