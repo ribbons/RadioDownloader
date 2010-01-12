@@ -726,6 +726,7 @@ Friend Class Main
         If clsUpdate.IsUpdateAvailable Then
             If My.Settings.LastUpdatePrompt.AddDays(7) < Now Then
                 My.Settings.LastUpdatePrompt = Now
+                My.Settings.Save() ' Save the last prompt time in case of unexpected termination
 
                 If MsgBox("A new version of Radio Downloader is available." + Environment.NewLine + "Would you like to visit the website to download it now?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, "Radio Downloader") = MsgBoxResult.Yes Then
                     Process.Start("http://www.nerdoftheherd.com/tools/radiodld/")
