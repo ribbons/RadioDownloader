@@ -26,6 +26,7 @@ Full Release
  8. Move source and installer to local nerdoftheherd downloads folder.
  9. Update local latestversion.txt with latest version number.
 10. Add new version number into the Radio Downloader product in Bugzilla.
-11. Upload to website.
-12. Write news item.
+11. Write news item.
+12. Upload source and installer to SourceForge.
+12. Upload files and news to website.
 13. Prevent errors from being submitted against previous version in error reporting.
