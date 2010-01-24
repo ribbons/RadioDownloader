@@ -16,6 +16,7 @@ Option Strict On
 Option Explicit On
 
 Imports System.Collections.Generic
+Imports System.Globalization
 Imports System.IO
 Imports System.Windows.Forms.VisualStyles
 
@@ -54,6 +55,20 @@ Friend Class Main
         Dim ProviderID As Guid
         Dim View As Object
     End Structure
+
+    Private Class ListComparer
+        Implements IComparer
+
+        Private dataInstance As Data
+
+        Public Sub New()
+            dataInstance = Data.GetInstance
+        End Sub
+
+        Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
+            Return dataInstance.CompareDownloads(CInt(CType(x, ListViewItem).Name), CInt(CType(y, ListViewItem).Name))
+        End Function
+    End Class
 
     Private viwBackData(-1) As ViewStore
     Private viwFwdData(-1) As ViewStore
@@ -209,9 +224,10 @@ Friend Class Main
         Call lstDownloads.Columns.Add("Progress", CInt(0.179 * lstDownloads.Width))
 
         clsProgData = Data.GetInstance
-        Call clsProgData.UpdateProviderList(lstProviders, imlProviders, mnuOptionsProviderOpts)
-        Call clsProgData.UpdateDlList(lstDownloads)
-        Call clsProgData.UpdateSubscrList(lstSubscribed)
+        'Call clsProgData.UpdateProviderList(lstProviders, imlProviders, mnuOptionsProviderOpts)
+        Call clsProgData.InitDownloadList()
+        lstDownloads.ListViewItemSorter = New ListComparer()
+        'Call clsProgData.UpdateSubscrList(lstSubscribed)
 
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
 
@@ -273,14 +289,14 @@ Friend Class Main
     End Sub
 
     Private Sub SetContextForSelectedProvider()
-        If lstProviders.SelectedItems.Count > 0 Then
-            SetToolbarButtons("ChooseProgramme")
+        'If lstProviders.SelectedItems.Count > 0 Then
+        '    SetToolbarButtons("ChooseProgramme")
 
-            Dim gidPluginID As Guid = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
-            Call SetSideBar(clsProgData.ProviderName(gidPluginID), clsProgData.ProviderDescription(gidPluginID), Nothing)
-        Else
-            Call SetViewDefaults()
-        End If
+        '    Dim gidPluginID As Guid = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
+        '    Call SetSideBar(clsProgData.ProviderName(gidPluginID), clsProgData.ProviderDescription(gidPluginID), Nothing)
+        'Else
+        '    Call SetViewDefaults()
+        'End If
     End Sub
 
     Private Sub lstProviders_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
@@ -293,7 +309,7 @@ Friend Class Main
     End Sub
 
     Private Sub lstEpisodes_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lstEpisodes.ItemCheck
-        clsProgData.EpisodeSetAutoDownload(CInt(lstEpisodes.Items(e.Index).Tag), e.NewValue = CheckState.Checked)
+        'clsProgData.EpisodeSetAutoDownload(CInt(lstEpisodes.Items(e.Index).Tag), e.NewValue = CheckState.Checked)
     End Sub
 
     Private Sub lstEpisodes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
@@ -306,17 +322,17 @@ Friend Class Main
             Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
             With clsProgData
-                Call SetSideBar(.EpisodeName(intEpID), .EpisodeDetails(intEpID), .EpisodeImage(intEpID))
+                'Call SetSideBar(.EpisodeName(intEpID), .EpisodeDetails(intEpID), .EpisodeImage(intEpID))
 
-                If .IsSubscribed(intProgID) Then
-                    Call SetToolbarButtons("Download,Unsubscribe")
-                Else
-                    If clsProgData.ProgrammeIsSingleEpisode(intProgID) Then
-                        Call SetToolbarButtons("Download")
-                    Else
-                        Call SetToolbarButtons("Download,Subscribe")
-                    End If
-                End If
+                'If .IsSubscribed(intProgID) Then
+                '    Call SetToolbarButtons("Download,Unsubscribe")
+                'Else
+                '    If clsProgData.ProgrammeIsSingleEpisode(intProgID) Then
+                '        Call SetToolbarButtons("Download")
+                '    Else
+                '        Call SetToolbarButtons("Download,Subscribe")
+                '    End If
+                'End If
             End With
         Else
             Call SetViewDefaults() ' Revert back to programme info in sidebar
@@ -331,8 +347,8 @@ Friend Class Main
         If lstSubscribed.SelectedItems.Count > 0 Then
             Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
 
-            Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
-            Call SetToolbarButtons("Unsubscribe,CurrentEps")
+            'Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
+            'Call SetToolbarButtons("Unsubscribe,CurrentEps")
         Else
             Call SetViewDefaults() ' Revert back to subscribed items view default sidebar and toolbar
         End If
@@ -348,63 +364,91 @@ Friend Class Main
     End Sub
 
     Private Sub lstDownloads_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstDownloads.SelectedIndexChanged
-        Call SetContextForSelectedDownload()
-    End Sub
-
-    Private Sub SetContextForSelectedDownload()
         If lstDownloads.SelectedItems.Count > 0 Then
-            Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-
-            With clsProgData
-                Dim staDownloadStatus As Data.Statuses = .DownloadStatus(intEpID)
-                Dim strInfoBox As String = ""
-                Dim strActionString As String
-
-                If staDownloadStatus = Data.Statuses.Downloaded Then
-                    If File.Exists(.DownloadPath(intEpID)) Then
-                        strActionString = "Play,Delete"
-                    Else
-                        strActionString = "Delete"
-                    End If
-
-                    strInfoBox = vbCrLf + "Play count: " + CStr(.DownloadPlayCount(intEpID))
-                ElseIf staDownloadStatus = Data.Statuses.Errored Then
-                    Dim strErrorName As String = ""
-                    Dim strErrorDetails As String = .DownloadErrorDetails(intEpID)
-
-                    strActionString = "Retry,Cancel"
-
-                    Select Case .DownloadErrorType(intEpID)
-                        Case IRadioProvider.ErrorType.LocalProblem
-                            strErrorName = "Local problem"
-                        Case IRadioProvider.ErrorType.ShorterThanExpected
-                            strErrorName = "Shorter than expected"
-                        Case IRadioProvider.ErrorType.NotAvailable
-                            strErrorName = "Not available"
-                        Case IRadioProvider.ErrorType.NotAvailableInLocation
-                            strErrorName = "Not available in your location"
-                        Case IRadioProvider.ErrorType.NetworkProblem
-                            strErrorName = "Network problem"
-                        Case IRadioProvider.ErrorType.UnknownError
-                            strErrorName = "Unknown error"
-                            strErrorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
-                            strActionString = "Retry,Cancel,ReportError"
-                    End Select
-
-                    strInfoBox = vbCrLf + vbCrLf + "Error: " + strErrorName
-                    If strErrorDetails <> "" Then
-                        strInfoBox += vbCrLf + vbCrLf + strErrorDetails
-                    End If
-                Else
-                    strActionString = "Cancel"
-                End If
-
-                Call SetSideBar(.EpisodeName(intEpID), .EpisodeDetails(intEpID) + strInfoBox, .EpisodeImage(intEpID))
-                Call SetToolbarButtons(strActionString)
-            End With
+            Call ShowDownloadInfo(CInt(lstDownloads.SelectedItems(0).Name))
         Else
             Call SetViewDefaults() ' Revert back to downloads view default sidebar and toolbar
         End If
+    End Sub
+
+    Private Sub ShowDownloadInfo(ByVal epid As Integer)
+        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
+
+        Dim actionString As String
+        Dim infoText As String = ""
+
+        If info.description IsNot Nothing Then
+            infoText += info.description + Environment.NewLine + Environment.NewLine
+        End If
+
+        infoText += "Date: " + info.episodedate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
+
+        If info.duration <> Nothing Then
+            infoText += Environment.NewLine + "Duration: "
+
+            Dim mins As Integer = info.duration \ 60
+            Dim hours As Integer = mins \ 60
+            mins = mins Mod 60
+
+            If hours > 0 Then
+                infoText += CStr(hours) + "hr" + Plural(hours)
+            End If
+
+            If hours > 0 And mins > 0 Then
+                infoText += " "
+            End If
+
+            If mins > 0 Then
+                infoText += CStr(mins) + "min"
+            End If
+        End If
+
+        Select Case info.status
+            Case Data.DownloadStatus.Downloaded
+                '            If File.Exists(.DownloadPath(intEpID)) Then
+                '                strActionString = "Play,Delete"
+                '            Else
+                actionString = "Delete"
+                '            End If
+
+                'strInfoBox = vbCrLf + "Play count: " + CStr(.DownloadPlayCount(intEpID))
+            Case Data.DownloadStatus.Errored
+                '            Dim strErrorName As String = ""
+                '            Dim strErrorDetails As String = .DownloadErrorDetails(intEpID)
+
+                '            strActionString = "Retry,Cancel"
+
+                '            Select Case .DownloadErrorType(intEpID)
+                '                Case IRadioProvider.ErrorType.LocalProblem
+                '                    strErrorName = "Local problem"
+                '                Case IRadioProvider.ErrorType.ShorterThanExpected
+                '                    strErrorName = "Shorter than expected"
+                '                Case IRadioProvider.ErrorType.NotAvailable
+                '                    strErrorName = "Not available"
+                '                Case IRadioProvider.ErrorType.NotAvailableInLocation
+                '                    strErrorName = "Not available in your location"
+                '                Case IRadioProvider.ErrorType.NetworkProblem
+                '                    strErrorName = "Network problem"
+                '                Case IRadioProvider.ErrorType.UnknownError
+                '                    strErrorName = "Unknown error"
+                '                    strErrorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
+                '                    strActionString = "Retry,Cancel,ReportError"
+                '            End Select
+
+                '            strInfoBox = vbCrLf + vbCrLf + "Error: " + strErrorName
+                '            If strErrorDetails <> "" Then
+                '                strInfoBox += vbCrLf + vbCrLf + strErrorDetails
+                '            End If
+            Case Else
+                actionString = "Cancel"
+        End Select
+
+        Call SetSideBar(info.name, infoText, clsProgData.FetchEpisodeImage(epid))
+        Call SetToolbarButtons(actionString)
+    End Sub
+
+    Private Sub SetContextForSelectedDownload()
+
     End Sub
 
     Private Sub SetSideBar(ByVal strTitle As String, ByVal strDescription As String, ByVal bmpPicture As Bitmap)
@@ -524,20 +568,20 @@ Friend Class Main
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        Call clsProgData.CheckSubscriptions(lstDownloads)
+        'Call clsProgData.CheckSubscriptions(lstDownloads)
         tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
-        If clsProgData.FindAndDownload Then
-            Call clsProgData.UpdateDlList(lstDownloads)
+        'If clsProgData.FindAndDownload Then
+        '    'Call clsProgData.UpdateDlList(lstDownloads)
 
-            If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-                Call SetContextForSelectedDownload()
-            End If
-        End If
+        '    If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+        '        Call SetContextForSelectedDownload()
+        '    End If
+        'End If
 
-        tmrStartProcess.Enabled = False
+        'tmrStartProcess.Enabled = False
     End Sub
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
@@ -552,48 +596,71 @@ Friend Class Main
         Call SetView(MainTab.Downloads, View.Downloads, Nothing)
     End Sub
 
-    Private Sub clsProgData_DldError(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles clsProgData.DldError
-        ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated And Me.IsDisposed = False Then
-            Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {currentDldProgData, errorType, errorDetails, furtherDetails})
-        End If
+    Private Sub clsProgData_DownloadAdded(ByVal epid As Integer) Handles clsProgData.DownloadAdded
+        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
+
+        Dim addItem As New ListViewItem
+        addItem.Name = epid.ToString
+        addItem.Text = info.name
+        addItem.SubItems.Add(info.episodedate.ToShortDateString)
+
+        Select Case info.status
+            Case Data.DownloadStatus.Waiting
+                addItem.SubItems.Add("Waiting")
+                addItem.ImageKey = "waiting"
+            Case Data.DownloadStatus.Downloaded
+                addItem.SubItems.Add("Downloaded")
+                addItem.ImageKey = "downloaded"
+            Case Data.DownloadStatus.Errored
+                addItem.SubItems.Add("Error")
+                addItem.ImageKey = "error"
+        End Select
+
+        lstDownloads.Items.Add(addItem)
     End Sub
 
-    Private Sub clsProgData_DldError_FormThread(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
-        Try
-            If clsProgData.EpisodeExists(currentDldProgData.EpID) Then
-                If clsProgData.DownloadSetErrored(currentDldProgData.EpID, errorType, errorDetails, furtherDetails) Then
-                    If lstDownloads.Items.ContainsKey(CStr(currentDldProgData.EpID)) Then
-                        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-                            If lstDownloads.Items(CStr(currentDldProgData.EpID)).Selected Then
-                                ' The item that has just errored is selected, so update the information
-                                Call SetContextForSelectedDownload()
-                            End If
-                        End If
-                    End If
-                End If
+    'Private Sub clsProgData_DldError(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles clsProgData.DldError
+    '    ' Check if the form exists still before calling delegate
+    '    If Me.IsHandleCreated And Me.IsDisposed = False Then
+    '        Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
+    '        Call Me.Invoke(DelegateInst, New Object() {currentDldProgData, errorType, errorDetails, furtherDetails})
+    '    End If
+    'End Sub
 
-                If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-                    If lstDownloads.SelectedItems.Count = 0 Then
-                        ' No items are selected, so update the statistics
-                        Call SetViewDefaults()
-                    End If
-                End If
-            End If
+    'Private Sub clsProgData_DldError_FormThread(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
+    '    Try
+    '        If clsProgData.EpisodeExists(currentDldProgData.EpID) Then
+    '            If clsProgData.DownloadSetErrored(currentDldProgData.EpID, errorType, errorDetails, furtherDetails) Then
+    '                If lstDownloads.Items.ContainsKey(CStr(currentDldProgData.EpID)) Then
+    '                    If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+    '                        If lstDownloads.Items(CStr(currentDldProgData.EpID)).Selected Then
+    '                            ' The item that has just errored is selected, so update the information
+    '                            Call SetContextForSelectedDownload()
+    '                        End If
+    '                    End If
+    '                End If
+    '            End If
 
-            Call clsProgData.UpdateDlList(lstDownloads)
+    '            If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+    '                If lstDownloads.SelectedItems.Count = 0 Then
+    '                    ' No items are selected, so update the statistics
+    '                    Call SetViewDefaults()
+    '                End If
+    '            End If
+    '        End If
 
-            tmrStartProcess.Enabled = True
-        Catch expException As Exception
-            ' Errors in a sub called via a delegate are not caught in the right place
-            If ReportError.Visible = False Then
-                Dim clsReport As New ErrorReporting(expException)
-                ReportError.AssignReport(clsReport)
-                ReportError.ShowDialog()
-            End If
-        End Try
-    End Sub
+    '        'Call clsProgData.UpdateDlList(lstDownloads)
+
+    '        tmrStartProcess.Enabled = True
+    '    Catch expException As Exception
+    '        ' Errors in a sub called via a delegate are not caught in the right place
+    '        If ReportError.Visible = False Then
+    '            Dim clsReport As New ErrorReporting(expException)
+    '            ReportError.AssignReport(clsReport)
+    '            ReportError.ShowDialog()
+    '        End If
+    '    End Try
+    'End Sub
 
     Private Sub clsProgData_FindNewViewChange(ByVal objView As Object) Handles clsProgData.FindNewViewChange
         Dim ChangedView As ViewStore = viwBackData(viwBackData.GetUpperBound(0))
@@ -606,112 +673,112 @@ Friend Class Main
         Call UpdateNavCtrlState()
     End Sub
 
-    Private Sub clsProgData_Finished(ByVal currentDldProgData As DldProgData) Handles clsProgData.Finished
-        ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated And Me.IsDisposed = False Then
-            Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {currentDldProgData})
-        End If
-    End Sub
+    'Private Sub clsProgData_Finished(ByVal currentDldProgData As DldProgData) Handles clsProgData.Finished
+    '    ' Check if the form exists still before calling delegate
+    '    If Me.IsHandleCreated And Me.IsDisposed = False Then
+    '        Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
+    '        Call Me.Invoke(DelegateInst, New Object() {currentDldProgData})
+    '    End If
+    'End Sub
 
-    Private Sub clsProgData_Finished_FormThread(ByVal currentDldProgData As DldProgData)
-        Try
-            Call clsProgData.DownloadSetDownloaded(currentDldProgData.EpID, currentDldProgData.FinalName)
+    'Private Sub clsProgData_Finished_FormThread(ByVal currentDldProgData As DldProgData)
+    '    Try
+    '        Call clsProgData.DownloadSetDownloaded(currentDldProgData.EpID, currentDldProgData.FinalName)
 
-            Dim viwCurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
+    '        Dim viwCurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
 
-            If viwCurrentView = View.Downloads Then
-                If lstDownloads.Items(CStr(currentDldProgData.EpID)).Selected Then
-                    ' The item that has just finished downloading is selected, so update it.
-                    Call SetContextForSelectedDownload()
-                ElseIf lstDownloads.SelectedItems.Count = 0 Then
-                    ' No items are selected, so update the statistics
-                    Call SetViewDefaults()
-                End If
-            ElseIf viwCurrentView = View.Subscriptions Then
-                ' Return to the tab information for subscriptions, as the selection will be lost when we update 
-                ' the subscription list.
-                Call SetViewDefaults()
-            End If
+    '        If viwCurrentView = View.Downloads Then
+    '            If lstDownloads.Items(CStr(currentDldProgData.EpID)).Selected Then
+    '                ' The item that has just finished downloading is selected, so update it.
+    '                Call SetContextForSelectedDownload()
+    '            ElseIf lstDownloads.SelectedItems.Count = 0 Then
+    '                ' No items are selected, so update the statistics
+    '                Call SetViewDefaults()
+    '            End If
+    '        ElseIf viwCurrentView = View.Subscriptions Then
+    '            ' Return to the tab information for subscriptions, as the selection will be lost when we update 
+    '            ' the subscription list.
+    '            Call SetViewDefaults()
+    '        End If
 
-            Call clsProgData.UpdateDlList(lstDownloads)
-            Call clsProgData.UpdateSubscrList(lstSubscribed)
+    '        'Call clsProgData.UpdateDlList(lstDownloads)
+    '        'Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-            If My.Settings.RunAfterCommand <> "" Then
-                Try
-                    ' Environ("comspec") will give the path to cmd.exe or command.com
-                    Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", currentDldProgData.FinalName), AppWinStyle.NormalNoFocus)
-                Catch
-                    ' Just ignore the error, as it just means that something has gone wrong with the run after command.
-                End Try
-            End If
+    '        If My.Settings.RunAfterCommand <> "" Then
+    '            Try
+    '                ' Environ("comspec") will give the path to cmd.exe or command.com
+    '                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", currentDldProgData.FinalName), AppWinStyle.NormalNoFocus)
+    '            Catch
+    '                ' Just ignore the error, as it just means that something has gone wrong with the run after command.
+    '            End Try
+    '        End If
 
-            tmrStartProcess.Enabled = True
-        Catch expException As Exception
-            ' Errors in a sub called via a delegate are not caught in the right place
-            If ReportError.Visible = False Then
-                Dim clsReport As New ErrorReporting(expException)
-                ReportError.AssignReport(clsReport)
-                ReportError.ShowDialog()
-            End If
-        End Try
-    End Sub
+    '        tmrStartProcess.Enabled = True
+    '    Catch expException As Exception
+    '        ' Errors in a sub called via a delegate are not caught in the right place
+    '        If ReportError.Visible = False Then
+    '            Dim clsReport As New ErrorReporting(expException)
+    '            ReportError.AssignReport(clsReport)
+    '            ReportError.ShowDialog()
+    '        End If
+    '    End Try
+    'End Sub
 
     Private Sub clsProgData_FoundNew(ByVal intProgID As Integer) Handles clsProgData.FoundNew
         Call SetView(MainTab.FindProgramme, View.ProgEpisodes, intProgID)
     End Sub
 
-    Private Sub clsProgData_Progress(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
-        ' Check if the form exists still before calling delegate
-        If Me.IsHandleCreated And Me.IsDisposed = False Then
-            Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
-            Call Me.Invoke(DelegateInst, New Object() {currentDldProgData, intPercent, strStatusText, Icon})
-        End If
-    End Sub
+    'Private Sub clsProgData_Progress(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
+    '    ' Check if the form exists still before calling delegate
+    '    If Me.IsHandleCreated And Me.IsDisposed = False Then
+    '        Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
+    '        Call Me.Invoke(DelegateInst, New Object() {currentDldProgData, intPercent, strStatusText, Icon})
+    '    End If
+    'End Sub
 
-    Private Sub clsProgData_Progress_FormThread(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-        Try
-            Static intLastNum As Integer
+    'Private Sub clsProgData_Progress_FormThread(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
+    '    Try
+    '        Static intLastNum As Integer
 
-            If intLastNum = Nothing Then intLastNum = -1
-            If intLastNum = intPercent Then Exit Sub
-            If intPercent < 0 Then Exit Sub
-            If intPercent > 100 Then Exit Sub
+    '        If intLastNum = Nothing Then intLastNum = -1
+    '        If intLastNum = intPercent Then Exit Sub
+    '        If intPercent < 0 Then Exit Sub
+    '        If intPercent > 100 Then Exit Sub
 
-            intLastNum = intPercent
+    '        intLastNum = intPercent
 
-            If currentDldProgData IsNot Nothing Then
-                With currentDldProgData
-                    Dim lstItem As ListViewItem = lstDownloads.Items(CStr(.EpID))
+    '        If currentDldProgData IsNot Nothing Then
+    '            With currentDldProgData
+    '                Dim lstItem As ListViewItem = lstDownloads.Items(CStr(.EpID))
 
-                    If lstItem IsNot Nothing Then
-                        lstItem.SubItems(2).Text = strStatusText
-                        prgDldProg.Value = intPercent
+    '                If lstItem IsNot Nothing Then
+    '                    lstItem.SubItems(2).Text = strStatusText
+    '                    prgDldProg.Value = intPercent
 
-                        If lstDownloads.Controls.Count = 0 Then
-                            lstDownloads.AddProgressBar(prgDldProg, lstItem, 3)
-                        End If
+    '                    If lstDownloads.Controls.Count = 0 Then
+    '                        lstDownloads.AddProgressBar(prgDldProg, lstItem, 3)
+    '                    End If
 
-                        Select Case Icon
-                            Case IRadioProvider.ProgressIcon.Downloading
-                                lstItem.ImageKey = "downloading"
-                            Case IRadioProvider.ProgressIcon.Converting
-                                lstItem.ImageKey = "converting"
-                        End Select
-                    End If
-                End With
-            End If
+    '                    Select Case Icon
+    '                        Case IRadioProvider.ProgressIcon.Downloading
+    '                            lstItem.ImageKey = "downloading"
+    '                        Case IRadioProvider.ProgressIcon.Converting
+    '                            lstItem.ImageKey = "converting"
+    '                    End Select
+    '                End If
+    '            End With
+    '        End If
 
-            Call SetTrayStatus(True)
-        Catch expException As Exception
-            ' Errors in a sub called via a delegate are not caught in the right place
-            If ReportError.Visible = False Then
-                Dim clsReport As New ErrorReporting(expException)
-                ReportError.AssignReport(clsReport)
-                ReportError.ShowDialog()
-            End If
-        End Try
-    End Sub
+    '        Call SetTrayStatus(True)
+    '    Catch expException As Exception
+    '        ' Errors in a sub called via a delegate are not caught in the right place
+    '        If ReportError.Visible = False Then
+    '            Dim clsReport As New ErrorReporting(expException)
+    '            ReportError.AssignReport(clsReport)
+    '            ReportError.ShowDialog()
+    '        End If
+    '    End Try
+    'End Sub
 
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         For Each commandLineArg As String In Environment.GetCommandLineArgs
@@ -738,13 +805,13 @@ Friend Class Main
     Private Sub tbtSubscribe_Click()
         Dim intProgID As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
 
-        If clsProgData.IsSubscribed(intProgID) Then
-            Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation)
-        Else
-            clsProgData.AddSubscription(intProgID)
-            Call clsProgData.UpdateSubscrList(lstSubscribed)
-            Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
-        End If
+        'If clsProgData.IsSubscribed(intProgID) Then
+        '    Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation)
+        'Else
+        '    clsProgData.AddSubscription(intProgID)
+        '    'Call clsProgData.UpdateSubscrList(lstSubscribed)
+        '    Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
+        'End If
     End Sub
 
     Private Sub tbtUnsubscribe_Click()
@@ -759,108 +826,108 @@ Friend Class Main
         End Select
 
         If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-            Call clsProgData.RemoveSubscription(intProgID)
-            Call clsProgData.UpdateSubscrList(lstSubscribed)
+            'Call clsProgData.RemoveSubscription(intProgID)
+            ''Call clsProgData.UpdateSubscrList(lstSubscribed)
 
-            Select Case CurrentView
-                Case View.ProgEpisodes
-                    Call SetContextForSelectedEpisode()
-                Case View.Subscriptions
-                    Call SetViewDefaults()
-            End Select
+            'Select Case CurrentView
+            '    Case View.ProgEpisodes
+            '        Call SetContextForSelectedEpisode()
+            '    Case View.Subscriptions
+            '        Call SetViewDefaults()
+            'End Select
         End If
     End Sub
 
     Private Sub tbtCancel_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-            Dim clsCurrentProgInfo As DldProgData
-            clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
+        'If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+        '    Dim clsCurrentProgInfo As DldProgData
+        '    clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
 
-            If clsCurrentProgInfo IsNot Nothing Then
-                If clsCurrentProgInfo.EpID = intEpID Then
-                    ' The program is currently being downloaded
-                    clsProgData.AbortDownloadThread()
-                    tmrStartProcess.Enabled = True
-                End If
-            End If
+        '    If clsCurrentProgInfo IsNot Nothing Then
+        '        If clsCurrentProgInfo.EpID = intEpID Then
+        '            ' The program is currently being downloaded
+        '            clsProgData.AbortDownloadThread()
+        '            tmrStartProcess.Enabled = True
+        '        End If
+        '    End If
 
-            clsProgData.RemoveDownload(intEpID)
-            clsProgData.UpdateDlList(lstDownloads)
+        '    clsProgData.RemoveDownload(intEpID)
+        '    'clsProgData.UpdateDlList(lstDownloads)
 
-            ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
-            ' it doesn't just download it all over again
-            Call clsProgData.EpisodeSetAutoDownload(intEpID, False)
-        End If
+        '    ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
+        '    ' it doesn't just download it all over again
+        '    Call clsProgData.EpisodeSetAutoDownload(intEpID, False)
+        'End If
     End Sub
 
     Private Sub tbtPlay_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        If clsProgData.DownloadStatus(intEpID) = Data.Statuses.Downloaded Then
-            If File.Exists(clsProgData.DownloadPath(intEpID)) Then
-                Process.Start(clsProgData.DownloadPath(intEpID))
+        'If clsProgData.DownloadStatus(intEpID) = Data.Statuses.Downloaded Then
+        '    If File.Exists(clsProgData.DownloadPath(intEpID)) Then
+        '        Process.Start(clsProgData.DownloadPath(intEpID))
 
-                ' Bump the play count of this item up by one, and update the list so that the icon changes colour
-                clsProgData.DownloadBumpPlayCount(intEpID)
-                clsProgData.UpdateDlList(lstDownloads)
+        '        ' Bump the play count of this item up by one, and update the list so that the icon changes colour
+        '        clsProgData.DownloadBumpPlayCount(intEpID)
+        '        'clsProgData.UpdateDlList(lstDownloads)
 
-                ' Update the prog info pane to show the updated play count
-                Call SetContextForSelectedDownload()
-            End If
-        End If
+        '        ' Update the prog info pane to show the updated play count
+        '        Call SetContextForSelectedDownload()
+        '    End If
+        'End If
     End Sub
 
     Private Sub tbtDelete_Click()
-        Dim epID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-        Dim downloadPath As String = clsProgData.DownloadPath(epID)
-        Dim fileExists As Boolean = File.Exists(downloadPath)
-        Dim delQuestion As String = "Are you sure that you would like to delete this episode"
+        'Dim epID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
+        'Dim downloadPath As String = clsProgData.DownloadPath(epID)
+        'Dim fileExists As Boolean = File.Exists(downloadPath)
+        'Dim delQuestion As String = "Are you sure that you would like to delete this episode"
 
-        If fileExists Then
-            delQuestion += " and the associated audio file"
-        End If
+        'If fileExists Then
+        '    delQuestion += " and the associated audio file"
+        'End If
 
-        If MsgBox(delQuestion + "?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-            If fileExists Then
-                Try
-                    File.Delete(downloadPath)
-                Catch ioExp As IOException
-                    If MsgBox("There was a problem deleting the audio file for this episode, as the file is in use by another application." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation Or MsgBoxStyle.YesNo) = MsgBoxResult.No Then
-                        Exit Sub
-                    End If
-                End Try
-            End If
+        'If MsgBox(delQuestion + "?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+        '    If fileExists Then
+        '        Try
+        '            File.Delete(downloadPath)
+        '        Catch ioExp As IOException
+        '            If MsgBox("There was a problem deleting the audio file for this episode, as the file is in use by another application." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation Or MsgBoxStyle.YesNo) = MsgBoxResult.No Then
+        '                Exit Sub
+        '            End If
+        '        End Try
+        '    End If
 
-            clsProgData.RemoveDownload(epID)
-            clsProgData.UpdateDlList(lstDownloads)
+        '    clsProgData.RemoveDownload(epID)
+        '    'clsProgData.UpdateDlList(lstDownloads)
 
-            ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
-            ' it doesn't just download it all over again
-            Call clsProgData.EpisodeSetAutoDownload(epID, False)
-        End If
+        '    ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
+        '    ' it doesn't just download it all over again
+        '    Call clsProgData.EpisodeSetAutoDownload(epID, False)
+        'End If
     End Sub
 
     Private Sub tbtRetry_Click()
         Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        Call clsProgData.ResetDownload(intEpID, False)
-        Call SetContextForSelectedDownload() ' Update prog info pane
-        Call clsProgData.UpdateDlList(lstDownloads)
+        'Call clsProgData.ResetDownload(intEpID, False)
+        'Call SetContextForSelectedDownload() ' Update prog info pane
+        'Call clsProgData.UpdateDlList(lstDownloads)
         tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub tbtDownload_Click()
         Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
 
-        If clsProgData.AddDownload(intEpID) Then
-            Call clsProgData.UpdateDlList(lstDownloads)
-            Call SetView(MainTab.Downloads, View.Downloads, Nothing)
-            tmrStartProcess.Enabled = True
-        Else
-            Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
-        End If
+        'If clsProgData.AddDownload(intEpID) Then
+        '    'Call clsProgData.UpdateDlList(lstDownloads)
+        '    Call SetView(MainTab.Downloads, View.Downloads, Nothing)
+        '    tmrStartProcess.Enabled = True
+        'Else
+        '    Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
+        'End If
     End Sub
 
     Private Sub tbtCurrentEps_Click()
@@ -870,7 +937,7 @@ Friend Class Main
 
     Private Sub tbtReportError_Click()
         Dim episodeID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-        clsProgData.DownloadReportError(episodeID)
+        'clsProgData.DownloadReportError(episodeID)
     End Sub
 
     Private Sub tbtChooseProgramme_Click()
@@ -904,7 +971,7 @@ Friend Class Main
     Private Sub tbtCleanUp_Click()
         Call CleanUp.ShowDialog()
 
-        Call clsProgData.UpdateDlList(lstDownloads)
+        'Call clsProgData.UpdateDlList(lstDownloads)
 
         If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
             Call SetContextForSelectedDownload()
@@ -982,7 +1049,7 @@ Friend Class Main
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
                 RemoveHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
-                clsProgData.ListEpisodes(CInt(ViewData.ViewData), lstEpisodes)
+                'clsProgData.ListEpisodes(CInt(ViewData.ViewData), lstEpisodes)
             Case View.Subscriptions
                 lstSubscribed.Visible = True
                 Call SetContextForSelectedSubscription()
@@ -1006,21 +1073,21 @@ Friend Class Main
             Case View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
                 Call SetToolbarButtons("")
-                Call SetSideBar(clsProgData.ProviderName(FindViewData.ProviderID), clsProgData.ProviderDescription(FindViewData.ProviderID), Nothing)
+                '        Call SetSideBar(clsProgData.ProviderName(FindViewData.ProviderID), clsProgData.ProviderDescription(FindViewData.ProviderID), Nothing)
             Case View.ProgEpisodes
                 Dim intProgID As Integer = CInt(ViewData.ViewData)
 
-                If clsProgData.IsSubscribed(intProgID) Then
-                    Call SetToolbarButtons("Unsubscribe")
-                Else
-                    If clsProgData.ProgrammeIsSingleEpisode(intProgID) Then
-                        Call SetToolbarButtons("")
-                    Else
-                        Call SetToolbarButtons("Subscribe")
-                    End If
-                End If
+                '        If clsProgData.IsSubscribed(intProgID) Then
+                '            Call SetToolbarButtons("Unsubscribe")
+                '        Else
+                '            If clsProgData.ProgrammeIsSingleEpisode(intProgID) Then
+                Call SetToolbarButtons("")
+                '            Else
+                '                Call SetToolbarButtons("Subscribe")
+                '            End If
+                '        End If
 
-                Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
+                '        Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
             Case View.Subscriptions
                 Call SetToolbarButtons("")
                 Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + Plural(lstSubscribed.Items.Count), "", Nothing)
@@ -1028,8 +1095,8 @@ Friend Class Main
                 Call SetToolbarButtons("CleanUp")
 
                 Dim strDescription As String = ""
-                Dim intNew As Integer = clsProgData.CountDownloadsNew
-                Dim intErrored As Integer = clsProgData.CountDownloadsErrored
+                Dim intNew As Integer = 0 'clsProgData.CountDownloadsNew
+                Dim intErrored As Integer = 0 'clsProgData.CountDownloadsErrored
 
                 If intNew > 0 Then
                     strDescription += "Newly downloaded: " + CStr(intNew) + vbCrLf
