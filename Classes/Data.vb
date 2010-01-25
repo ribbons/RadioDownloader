@@ -35,8 +35,10 @@ Friend Class Data
         Dim name As String
         Dim description As String
         Dim duration As Integer
-        Dim episodedate As Date
+        Dim episodeDate As Date
         Dim status As DownloadStatus
+        Dim downloadPath As String
+        Dim playCount As Integer
     End Structure
 
     Private Shared clsDataInstance As New Data
@@ -60,7 +62,7 @@ Friend Class Data
     'Public Event SubscriptionUpdate(ByVal progId As Integer)
     Public Event DownloadAdded(ByVal epid As Integer)
     'Public Event DownloadRemoved(ByVal epid As Integer)
-    'Public Event DownloadUpdate(ByVal epid As Integer)
+    Public Event DownloadUpdate(ByVal epid As Integer)
 
     Public Shared Function GetInstance() As Data
         Return clsDataInstance
@@ -846,25 +848,15 @@ Friend Class Data
     '    Return ThisInstance.ProviderDescription
     'End Function
 
-    'Public Sub DownloadBumpPlayCount(ByVal intEpID As Integer)
-    '    Dim sqlCommand As New SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    sqlCommand.ExecuteNonQuery()
-    'End Sub
+    Public Sub DownloadBumpPlayCount(ByVal epid As Integer)
+        Using command As New SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@epid", epid))
+            command.ExecuteNonQuery()
+        End Using
 
-    'Public Function DownloadPlayCount(ByVal intEpID As Integer) As Integer
-    '    Dim sqlCommand As New SQLiteCommand("select playcount from downloads where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        DownloadPlayCount = sqlReader.GetInt32(sqlReader.GetOrdinal("playcount"))
-    '    Else
-    '        DownloadPlayCount = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
+        downloadSortCache = Nothing
+        RaiseEvent DownloadUpdate(epid)
+    End Sub
 
     'Public Function DownloadErrorType(ByVal intEpID As Integer) As IRadioProvider.ErrorType
     '    Dim sqlCommand As New SQLiteCommand("select errortype from downloads where epid=@epid", sqlConnection)
@@ -1480,7 +1472,7 @@ Friend Class Data
     End Sub
 
     Public Function FetchDownloadData(ByVal epid As Integer) As DownloadData
-        Using command As New SQLiteCommand("select name, description, date, duration, status from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn)
+        Using command As New SQLiteCommand("select name, description, date, duration, status, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
             Using reader As SQLiteDataReader = command.ExecuteReader
@@ -1489,6 +1481,7 @@ Friend Class Data
                 End If
 
                 Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
+                Dim filepathOrdinal As Integer = reader.GetOrdinal("filepath")
 
                 Dim info As New DownloadData
                 info.name = reader.GetString(reader.GetOrdinal("name"))
@@ -1497,9 +1490,15 @@ Friend Class Data
                     info.description = reader.GetString(descriptionOrdinal)
                 End If
 
-                info.episodedate = reader.GetDateTime(reader.GetOrdinal("date"))
+                info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
                 info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
                 info.status = DirectCast(reader.GetInt32(reader.GetOrdinal("status")), DownloadStatus)
+
+                If Not reader.IsDBNull(filepathOrdinal) Then
+                    info.downloadPath = reader.GetString(filepathOrdinal)
+                End If
+
+                info.playCount = reader.GetInt32(reader.GetOrdinal("playcount"))
 
                 Return info
             End Using

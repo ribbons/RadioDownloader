@@ -381,7 +381,7 @@ Friend Class Main
             infoText += info.description + Environment.NewLine + Environment.NewLine
         End If
 
-        infoText += "Date: " + info.episodedate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
+        infoText += "Date: " + info.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
 
         If info.duration <> Nothing Then
             infoText += Environment.NewLine + "Duration: "
@@ -405,13 +405,13 @@ Friend Class Main
 
         Select Case info.status
             Case Data.DownloadStatus.Downloaded
-                '            If File.Exists(.DownloadPath(intEpID)) Then
-                '                strActionString = "Play,Delete"
-                '            Else
-                actionString = "Delete"
-                '            End If
+                If File.Exists(info.downloadPath) Then
+                    actionString = "Play,Delete"
+                Else
+                    actionString = "Delete"
+                End If
 
-                'strInfoBox = vbCrLf + "Play count: " + CStr(.DownloadPlayCount(intEpID))
+                infoText += Environment.NewLine + "Play count: " + info.playCount.ToString
             Case Data.DownloadStatus.Errored
                 '            Dim strErrorName As String = ""
                 '            Dim strErrorDetails As String = .DownloadErrorDetails(intEpID)
@@ -596,27 +596,49 @@ Friend Class Main
         Call SetView(MainTab.Downloads, View.Downloads, Nothing)
     End Sub
 
-    Private Sub clsProgData_DownloadAdded(ByVal epid As Integer) Handles clsProgData.DownloadAdded
+    Private Sub DownloadListItem(ByVal epid As Integer, ByRef item As ListViewItem)
         Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
 
-        Dim addItem As New ListViewItem
-        addItem.Name = epid.ToString
-        addItem.Text = info.name
-        addItem.SubItems.Add(info.episodedate.ToShortDateString)
+        item.Name = epid.ToString
+        item.Text = info.name
+
+        item.SubItems(1).Text = info.episodeDate.ToShortDateString
 
         Select Case info.status
             Case Data.DownloadStatus.Waiting
-                addItem.SubItems.Add("Waiting")
-                addItem.ImageKey = "waiting"
+                item.SubItems(2).Text = "Waiting"
+                item.ImageKey = "waiting"
             Case Data.DownloadStatus.Downloaded
-                addItem.SubItems.Add("Downloaded")
-                addItem.ImageKey = "downloaded"
+                If info.playCount = 0 Then
+                    item.SubItems(2).Text = "Newly Downloaded"
+                    item.ImageKey = "downloaded_new"
+                Else
+                    item.SubItems(2).Text = "Downloaded"
+                    item.ImageKey = "downloaded"
+                End If
             Case Data.DownloadStatus.Errored
-                addItem.SubItems.Add("Error")
-                addItem.ImageKey = "error"
+                item.SubItems(2).Text = "Error"
+                item.ImageKey = "error"
         End Select
+    End Sub
 
+    Private Sub clsProgData_DownloadAdded(ByVal epid As Integer) Handles clsProgData.DownloadAdded
+        Dim addItem As New ListViewItem
+        addItem.SubItems.Add("")
+        addItem.SubItems.Add("")
+        addItem.SubItems.Add("")
+
+        DownloadListItem(epid, addItem)
         lstDownloads.Items.Add(addItem)
+    End Sub
+
+    Private Sub clsProgData_DownloadUpdate(ByVal epid As Integer) Handles clsProgData.DownloadUpdate
+        Dim item As ListViewItem = lstDownloads.Items(epid.ToString)
+        DownloadListItem(epid, item)
+
+        If lstDownloads.Items(epid.ToString).Selected Then
+            ShowDownloadInfo(epid)
+        End If
     End Sub
 
     'Private Sub clsProgData_DldError(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles clsProgData.DldError
@@ -863,20 +885,17 @@ Friend Class Main
     End Sub
 
     Private Sub tbtPlay_Click()
-        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
+        Dim epid As Integer = CInt(lstDownloads.SelectedItems(0).Name)
+        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
 
-        'If clsProgData.DownloadStatus(intEpID) = Data.Statuses.Downloaded Then
-        '    If File.Exists(clsProgData.DownloadPath(intEpID)) Then
-        '        Process.Start(clsProgData.DownloadPath(intEpID))
+        If info.status = Data.DownloadStatus.Downloaded Then
+            If File.Exists(info.downloadPath) Then
+                Process.Start(info.downloadPath)
 
-        '        ' Bump the play count of this item up by one, and update the list so that the icon changes colour
-        '        clsProgData.DownloadBumpPlayCount(intEpID)
-        '        'clsProgData.UpdateDlList(lstDownloads)
-
-        '        ' Update the prog info pane to show the updated play count
-        '        Call SetContextForSelectedDownload()
-        '    End If
-        'End If
+                ' Bump the play count of this item up by one
+                clsProgData.DownloadBumpPlayCount(epid)
+            End If
+        End If
     End Sub
 
     Private Sub tbtDelete_Click()
