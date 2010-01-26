@@ -50,7 +50,8 @@ Friend Class Data
     Private WithEvents DownloadPluginInst As IRadioProvider
     Private WithEvents FindNewPluginInst As IRadioProvider
 
-    Dim downloadSortCache As Dictionary(Of Integer, Integer)
+    Private downloadSortCache As Dictionary(Of Integer, Integer)
+    Private downloadSortCacheLock As New Object
 
     Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
@@ -61,8 +62,8 @@ Friend Class Data
     'Public Event SubscriptionRemoved(ByVal progId As Integer)
     'Public Event SubscriptionUpdate(ByVal progId As Integer)
     Public Event DownloadAdded(ByVal epid As Integer)
-    'Public Event DownloadRemoved(ByVal epid As Integer)
     Public Event DownloadUpdate(ByVal epid As Integer)
+    'Public Event DownloadRemoved(ByVal epid As Integer)
 
     Public Shared Function GetInstance() As Data
         Return clsDataInstance
@@ -849,12 +850,21 @@ Friend Class Data
     'End Function
 
     Public Sub DownloadBumpPlayCount(ByVal epid As Integer)
+        ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf DownloadBumpPlayCountAsync), epid)
+    End Sub
+
+    Private Sub DownloadBumpPlayCountAsync(ByVal epidObj As Object)
+        Dim epid As Integer = CInt(epidObj)
+
         Using command As New SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
             command.ExecuteNonQuery()
         End Using
 
-        downloadSortCache = Nothing
+        SyncLock downloadSortCacheLock
+            downloadSortCache = Nothing
+        End SyncLock
+
         RaiseEvent DownloadUpdate(epid)
     End Sub
 
@@ -1439,24 +1449,27 @@ Friend Class Data
     'End Function
 
     Public Function CompareDownloads(ByVal epid1 As Integer, ByVal epid2 As Integer) As Integer
-        If downloadSortCache Is Nothing Then
-            downloadSortCache = New Dictionary(Of Integer, Integer)
+        SyncLock downloadSortCacheLock
+            If downloadSortCache Is Nothing OrElse Not downloadSortCache.ContainsKey(epid1) OrElse Not downloadSortCache.ContainsKey(epid2) Then
+                ' The sort cache is either empty or missing one of the values that are required, so recreate it
+                downloadSortCache = New Dictionary(Of Integer, Integer)
 
-            Dim sort As Integer = 0
+                Dim sort As Integer = 0
 
-            Using command As New SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by date desc", FetchDbConn)
-                Using reader As SQLiteDataReader = command.ExecuteReader()
-                    Dim epidOrdinal As Integer = reader.GetOrdinal("epid")
+                Using command As New SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by date desc", FetchDbConn)
+                    Using reader As SQLiteDataReader = command.ExecuteReader()
+                        Dim epidOrdinal As Integer = reader.GetOrdinal("epid")
 
-                    Do While reader.Read
-                        downloadSortCache.Add(reader.GetInt32(epidOrdinal), sort)
-                        sort += 1
-                    Loop
+                        Do While reader.Read
+                            downloadSortCache.Add(reader.GetInt32(epidOrdinal), sort)
+                            sort += 1
+                        Loop
+                    End Using
                 End Using
-            End Using
-        End If
+            End If
 
-        Return downloadSortCache(epid1) - downloadSortCache(epid2)
+            Return downloadSortCache(epid1) - downloadSortCache(epid2)
+        End SyncLock
     End Function
 
     Public Sub InitDownloadList()

@@ -80,6 +80,7 @@ Friend Class Main
     Private Delegate Sub clsProgData_Progress_Delegate(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Private Delegate Sub clsProgData_DldError_Delegate(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
     Private Delegate Sub clsProgData_Finished_Delegate(ByVal currentDldProgData As DldProgData)
+    Private Delegate Sub clsProgData_DownloadUpdate_Delegate(ByVal epid As Integer)
 
     Public Sub SetTrayStatus(ByVal booActive As Boolean, Optional ByVal ErrorStatus As ErrorStatus = ErrorStatus.NoChange)
         Dim booErrorStatus As Boolean
@@ -633,6 +634,12 @@ Friend Class Main
     End Sub
 
     Private Sub clsProgData_DownloadUpdate(ByVal epid As Integer) Handles clsProgData.DownloadUpdate
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_DownloadUpdate_Delegate(AddressOf clsProgData_DownloadUpdate), epid)
+            Return
+        End If
+
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString)
         DownloadListItem(epid, item)
 
