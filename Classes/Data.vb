@@ -619,20 +619,6 @@ Friend Class Data
         End Using
     End Function
 
-    'Public Function EpisodeAutoDownload(ByVal intEpID As Integer) As Boolean
-    '    Dim sqlCommand As New SQLiteCommand("select autodownload from episodes where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        EpisodeAutoDownload = sqlReader.GetInt32(sqlReader.GetOrdinal("autodownload")) = 1
-    '    Else
-    '        EpisodeAutoDownload = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
     Private Sub EpisodeSetAutoDownloadAsync(ByVal epid As Integer, ByVal autoDownload As Boolean)
         Using command As New SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
@@ -716,36 +702,53 @@ Friend Class Data
     '    Next
     'End Sub
 
-    'Public Sub CheckSubscriptions(ByRef lstList As ExtListView)
-    '    Dim sqlCommand As New SQLiteCommand("select progid from subscriptions", sqlConnection)
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    Public Sub CheckSubscriptions()
+        ThreadPool.QueueUserWorkItem(AddressOf CheckSubscriptionsAsync)
+    End Sub
 
-    '    With sqlReader
-    '        Do While .Read()
-    '            Dim intAvailableEps() As Integer
-    '            intAvailableEps = GetAvailableEpisodes(.GetInt32(.GetOrdinal("progid")))
+    Private Sub CheckSubscriptionsAsync(ByVal dummy As Object)
+        Using getSubsCmd As New SQLiteCommand("select progid from subscriptions", FetchDbConn), _
+              autoDldCmd As New SQLiteCommand("select autodownload from episodes where epid=@epid", FetchDbConn), _
+              checkCmd As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
 
-    '            For Each intEpID As Integer In intAvailableEps
-    '                If EpisodeAutoDownload(intEpID) Then
-    '                    Dim sqlCheckCmd As New SQLiteCommand("select epid from downloads where epid=@epid", sqlConnection)
-    '                    sqlCheckCmd.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '                    Dim sqlCheckRdr As SQLiteDataReader = sqlCheckCmd.ExecuteReader
+            Dim epidParam As New SQLiteParameter("@epid")
 
-    '                    If sqlCheckRdr.Read = False Then
-    '                        Call AddDownload(intEpID)
-    '                        'Call UpdateDlList(lstList)
-    '                    End If
+            autoDldCmd.Parameters.Add(epidParam)
+            checkCmd.Parameters.Add(epidParam)
 
-    '                    sqlCheckRdr.Close()
-    '                End If
-    '            Next
-    '        Loop
-    '    End With
+            Using reader As SQLiteDataReader = getSubsCmd.ExecuteReader
+                With reader
+                    Dim progidOrdinal As Integer = .GetOrdinal("progid")
 
-    '    sqlReader.Close()
-    'End Sub
+                    Do While .Read()
+                        Dim intAvailableEps() As Integer
+                        intAvailableEps = GetAvailableEpisodes(.GetInt32(progidOrdinal))
 
-    'Public Function AddDownload(ByVal intEpID As Integer) As Boolean
+                        For Each intEpID As Integer In intAvailableEps
+                            Dim autoDownload As Boolean = True
+                            epidParam.Value = intEpID
+
+                            Using availReader As SQLiteDataReader = autoDldCmd.ExecuteReader
+                                If availReader.Read Then
+                                    autoDownload = availReader.GetInt32(availReader.GetOrdinal("autodownload")) = 1
+                                End If
+                            End Using
+
+                            If autoDownload Then
+                                Using sqlCheckRdr As SQLiteDataReader = checkCmd.ExecuteReader
+                                    If sqlCheckRdr.Read = False Then
+                                        Call AddDownloadAsync(intEpID)
+                                    End If
+                                End Using
+                            End If
+                        Next
+                    Loop
+                End With
+            End Using
+        End Using
+    End Sub
+
+    'Public Function AddDownload(ByVal epid As Integer) As Boolean
     '    Dim sqlCommand As New SQLiteCommand("select epid from downloads where epid=@epid", sqlConnection)
     '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
     '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
@@ -756,13 +759,18 @@ Friend Class Data
 
     '    sqlReader.Close()
 
-    '    sqlCommand = New SQLiteCommand("insert into downloads (epid, status) values (@epid, @status)", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Waiting))
-    '    Call sqlCommand.ExecuteNonQuery()
-
     '    Return True
     'End Function
+
+    Private Sub AddDownloadAsync(ByVal epid As Integer)
+        Using command As New SQLiteCommand("insert into downloads (epid, status) values (@epid, @status)", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@epid", epid))
+            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Waiting))
+            Call command.ExecuteNonQuery()
+        End Using
+
+        RaiseEvent DownloadAdded(epid)
+    End Sub
 
     'Public Function IsSubscribed(ByVal intProgID As Integer) As Boolean
     '    Dim sqlCommand As New SQLiteCommand("select progid from subscriptions where progid=@progid", sqlConnection)
@@ -826,7 +834,7 @@ Friend Class Data
 
     Private Sub DownloadRemoveAsync(ByVal epid As Integer)
         Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
-            Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn)
+            Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, trans)
                 command.Parameters.Add(New SQLiteParameter("@epid", epid))
                 command.ExecuteNonQuery()
             End Using
@@ -1346,124 +1354,136 @@ Friend Class Data
         Return Nothing
     End Function
 
-    'Private Function GetAvailableEpisodes(ByVal intProgID As Integer) As Integer()
-    '    Dim intEpisodeIDs(-1) As Integer
-    '    GetAvailableEpisodes = intEpisodeIDs
+    Private Function GetAvailableEpisodes(ByVal progid As Integer) As Integer()
+        Dim episodeIDs(-1) As Integer
+        GetAvailableEpisodes = episodeIDs
 
-    '    Dim sqlCommand As New SQLiteCommand("select pluginid, extid from programmes where progid=@progid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+        Dim providerId As Guid
+        Dim progExtId As String
 
-    '    If sqlReader.Read = False Then
-    '        Exit Function
-    '    End If
+        Using command As New SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-    '    Dim gidProviderID As New Guid(sqlReader.GetString(sqlReader.GetOrdinal("pluginid")))
-    '    Dim strProgExtID As String = sqlReader.GetString(sqlReader.GetOrdinal("extid"))
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read = False Then
+                    Exit Function
+                End If
 
-    '    sqlReader.Close()
+                providerId = New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
+                progExtId = reader.GetString(reader.GetOrdinal("extid"))
+            End Using
+        End Using
 
-    '    If clsPluginsInst.PluginExists(gidProviderID) = False Then
-    '        Exit Function
-    '    End If
+        If clsPluginsInst.PluginExists(providerId) = False Then
+            Exit Function
+        End If
 
-    '    Dim strEpisodeExtIDs As String()
-    '    Dim ThisInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(gidProviderID)
+        Dim episodeExtIDs As String()
+        Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(providerId)
 
-    '    Try
-    '        strEpisodeExtIDs = ThisInstance.GetAvailableEpisodeIDs(strProgExtID)
-    '    Catch expException As Exception
-    '        ' Catch any unhandled provider exceptions
-    '        Exit Function
-    '    End Try
+        Try
+            episodeExtIDs = providerInst.GetAvailableEpisodeIDs(progExtId)
+        Catch unhandled As Exception
+            ' Catch any unhandled provider exceptions
+            Exit Function
+        End Try
 
-    '    Dim episodeInfoReturn As IRadioProvider.GetEpisodeInfoReturn
+        Dim episodeInfoReturn As IRadioProvider.GetEpisodeInfoReturn
 
-    '    If strEpisodeExtIDs IsNot Nothing Then
-    '        ' Remove any duplicates, so that episodes don't get listed twice
-    '        Dim arlExtIDs As New ArrayList()
+        If episodeExtIDs IsNot Nothing Then
+            ' Remove any duplicates, so that episodes don't get listed twice
+            Dim extIds As New ArrayList()
 
-    '        For intRemoveDups As Integer = 0 To strEpisodeExtIDs.Length - 1
-    '            If arlExtIDs.Contains(strEpisodeExtIDs(intRemoveDups)) = False Then
-    '                arlExtIDs.Add(strEpisodeExtIDs(intRemoveDups))
-    '            End If
-    '        Next
+            For removeDups As Integer = 0 To episodeExtIDs.Length - 1
+                If extIds.Contains(episodeExtIDs(removeDups)) = False Then
+                    extIds.Add(episodeExtIDs(removeDups))
+                End If
+            Next
 
-    '        strEpisodeExtIDs = New String(arlExtIDs.Count - 1) {}
-    '        arlExtIDs.CopyTo(strEpisodeExtIDs)
+            episodeExtIDs = New String(extIds.Count - 1) {}
+            extIds.CopyTo(episodeExtIDs)
 
-    '        ' Reverse the array so that we fetch the oldest episodes first, and the older episodes
-    '        ' get added to the download list first if we are checking subscriptions
-    '        Array.Reverse(strEpisodeExtIDs)
+            ' Reverse the array so that we fetch the oldest episodes first, and the older episodes
+            ' get added to the download list first if we are checking subscriptions
+            Array.Reverse(episodeExtIDs)
 
-    '        Dim sqlFindCmd As New SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", sqlConnection)
-    '        Dim sqlAddEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", sqlConnection)
-    '        Dim sqlGetRowIDCmd As New SQLiteCommand("select last_insert_rowid()", sqlConnection)
-    '        Dim sqlAddExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", sqlConnection)
+            Using findCmd As New SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", FetchDbConn), _
+              addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn), _
+              getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn), _
+              addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn)
 
-    '        For Each strEpisodeExtID As String In strEpisodeExtIDs
-    '            With sqlFindCmd
-    '                .Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '                .Parameters.Add(New SQLiteParameter("@extid", strEpisodeExtID))
-    '                sqlReader = .ExecuteReader
-    '            End With
+                Dim progidParam As New SQLiteParameter("@progid")
+                Dim extidParam As New SQLiteParameter("@extid")
 
-    '            If sqlReader.Read Then
-    '                ReDim Preserve intEpisodeIDs(intEpisodeIDs.GetUpperBound(0) + 1)
-    '                intEpisodeIDs(intEpisodeIDs.GetUpperBound(0)) = sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))
-    '            Else
-    '                Try
-    '                    episodeInfoReturn = ThisInstance.GetEpisodeInfo(strProgExtID, strEpisodeExtID)
-    '                Catch expException As Exception
-    '                    ' Catch any unhandled provider exceptions
-    '                    sqlReader.Close()
-    '                    Continue For
-    '                End Try
+                findCmd.Parameters.Add(progidParam)
+                findCmd.Parameters.Add(extidParam)
 
-    '                If episodeInfoReturn.Success = False Then
-    '                    sqlReader.Close()
-    '                    Continue For
-    '                End If
+                For Each episodeExtId As String In episodeExtIDs
+                    progidParam.Value = progid
+                    extidParam.Value = episodeExtId
 
-    '                If episodeInfoReturn.EpisodeInfo.Name = "" Or episodeInfoReturn.EpisodeInfo.Date = Nothing Then
-    '                    sqlReader.Close()
-    '                    Continue For
-    '                End If
+                    Using reader As SQLiteDataReader = findCmd.ExecuteReader
+                        If reader.Read Then
+                            ReDim Preserve episodeIDs(episodeIDs.GetUpperBound(0) + 1)
+                            episodeIDs(episodeIDs.GetUpperBound(0)) = reader.GetInt32(reader.GetOrdinal("epid"))
+                        Else
+                            Try
+                                episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId)
+                            Catch unhandled As Exception
+                                ' Catch any unhandled provider exceptions
+                                Continue For
+                            End Try
 
-    '                With sqlAddEpisodeCmd
-    '                    .Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '                    .Parameters.Add(New SQLiteParameter("@extid", strEpisodeExtID))
-    '                    .Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
-    '                    .Parameters.Add(New SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description))
-    '                    .Parameters.Add(New SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs))
-    '                    .Parameters.Add(New SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date))
-    '                    .Parameters.Add(New SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)))
-    '                    .ExecuteNonQuery()
-    '                End With
+                            If episodeInfoReturn.Success = False Then
+                                Continue For
+                            End If
 
-    '                Dim intEpID As Integer = CInt(sqlGetRowIDCmd.ExecuteScalar)
+                            If episodeInfoReturn.EpisodeInfo.Name = "" Or episodeInfoReturn.EpisodeInfo.Date = Nothing Then
+                                Continue For
+                            End If
 
-    '                If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
-    '                    For Each kvpItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
-    '                        With sqlAddExtInfoCmd
-    '                            .Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '                            .Parameters.Add(New SQLiteParameter("@name", kvpItem.Key))
-    '                            .Parameters.Add(New SQLiteParameter("@value", kvpItem.Value))
-    '                            .ExecuteNonQuery()
-    '                        End With
-    '                    Next
-    '                End If
+                            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+                                With addEpisodeCmd
+                                    .Transaction = trans
+                                    .Parameters.Add(New SQLiteParameter("@progid", progid))
+                                    .Parameters.Add(New SQLiteParameter("@extid", episodeExtId))
+                                    .Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
+                                    .Parameters.Add(New SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description))
+                                    .Parameters.Add(New SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs))
+                                    .Parameters.Add(New SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date))
+                                    .Parameters.Add(New SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)))
+                                    .ExecuteNonQuery()
+                                End With
 
-    '                ReDim Preserve intEpisodeIDs(intEpisodeIDs.GetUpperBound(0) + 1)
-    '                intEpisodeIDs(intEpisodeIDs.GetUpperBound(0)) = intEpID
-    '            End If
+                                getRowIDCmd.Transaction = trans
+                                Dim epid As Integer = CInt(getRowIDCmd.ExecuteScalar)
 
-    '            sqlReader.Close()
-    '        Next
-    '    End If
+                                If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
+                                    addExtInfoCmd.Transaction = trans
 
-    '    Return intEpisodeIDs
-    'End Function
+                                    For Each extItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
+                                        With addExtInfoCmd
+                                            .Parameters.Add(New SQLiteParameter("@epid", epid))
+                                            .Parameters.Add(New SQLiteParameter("@name", extItem.Key))
+                                            .Parameters.Add(New SQLiteParameter("@value", extItem.Value))
+                                            .ExecuteNonQuery()
+                                        End With
+                                    Next
+                                End If
+
+                                ReDim Preserve episodeIDs(episodeIDs.GetUpperBound(0) + 1)
+                                episodeIDs(episodeIDs.GetUpperBound(0)) = epid
+
+                                trans.Commit()
+                            End Using
+                        End If
+                    End Using
+                Next
+            End Using
+        End If
+
+        Return episodeIDs
+    End Function
 
     Public Function CompareDownloads(ByVal epid1 As Integer, ByVal epid2 As Integer) As Integer
         SyncLock downloadSortCacheLock

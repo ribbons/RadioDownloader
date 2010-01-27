@@ -569,8 +569,7 @@ Friend Class Main
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        'Call clsProgData.CheckSubscriptions(lstDownloads)
-        tmrStartProcess.Enabled = True
+        Call clsProgData.CheckSubscriptions()
     End Sub
 
     Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
@@ -624,6 +623,12 @@ Friend Class Main
     End Sub
 
     Private Sub clsProgData_DownloadAdded(ByVal epid As Integer) Handles clsProgData.DownloadAdded
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_DownloadAction_Delegate(AddressOf clsProgData_DownloadAdded), epid)
+            Return
+        End If
+
         Dim addItem As New ListViewItem
         addItem.SubItems.Add("")
         addItem.SubItems.Add("")
