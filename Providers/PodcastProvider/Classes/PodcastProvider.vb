@@ -90,7 +90,7 @@ Public Class PodcastProvider
         Dim getProgInfo As New IRadioProvider.GetProgrammeInfoReturn
         getProgInfo.Success = False
 
-        Dim cachedWeb As New CachedWebClient
+        Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
         Dim strRSS As String
         Dim xmlRSS As New XmlDocument
         Dim xmlNamespaceMgr As XmlNamespaceManager
@@ -137,7 +137,7 @@ Public Class PodcastProvider
         Dim strEpisodeIDs(-1) As String
         GetAvailableEpisodeIDs = strEpisodeIDs
 
-        Dim cachedWeb As New CachedWebClient
+        Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
         Dim strRSS As String
         Dim xmlRSS As New XmlDocument
 
@@ -178,7 +178,7 @@ Public Class PodcastProvider
         Dim episodeInfoReturn As New IRadioProvider.GetEpisodeInfoReturn
         episodeInfoReturn.Success = False
 
-        Dim cachedWeb As New CachedWebClient
+        Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
         Dim strRSS As String
         Dim xmlRSS As New XmlDocument
         Dim xmlNamespaceMgr As XmlNamespaceManager
@@ -417,7 +417,7 @@ Public Class PodcastProvider
     End Function
 
     Private Function RSSNodeImage(ByVal xmlNode As XmlNode, ByVal xmlNamespaceMgr As XmlNamespaceManager) As Bitmap
-        Dim cachedWeb As New CachedWebClient
+        Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
 
         Try
             Dim xmlImageNode As XmlNode = xmlNode.SelectSingleNode("itunes:image", xmlNamespaceMgr)

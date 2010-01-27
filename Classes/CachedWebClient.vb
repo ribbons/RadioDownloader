@@ -15,6 +15,7 @@
 Option Strict On
 Option Explicit On
 
+Imports System.Data.SQLite
 Imports System.IO
 Imports System.Net
 Imports System.Runtime.Serialization.Formatters.Binary
@@ -29,23 +30,93 @@ Public Class CachedWebClient
         Dim Response As WebResponse
     End Structure
 
-    Private dataInst As Data
+    Private Shared instance As New CachedWebClient
 
-    Public Sub New()
-        Me.dataInst = Data.GetInstance
+    <ThreadStatic()> _
+    Private Shared dbConn As SQLiteConnection
+
+    Public Shared Function GetInstance() As CachedWebClient
+        Return instance
+    End Function
+
+    Private Function FetchDbConn() As SQLiteConnection
+        If dbConn Is Nothing Then
+            dbConn = New SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "httpcache.db") + ";Version=3")
+            dbConn.Open()
+        End If
+
+        Return dbConn
+    End Function
+
+    Private Sub New()
+        ' Create the table (and implicitly the database) for caching HTTP requests if it does not exist
+        Using command As New SQLiteCommand("create table if not exists httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", FetchDbConn)
+            command.ExecuteNonQuery()
+        End Using
+
+        ' Empty the table if it does exist
+        Using command As New SQLiteCommand("delete from httpcache", FetchDbConn)
+            command.ExecuteNonQuery()
+        End Using
     End Sub
+
+    Private Sub AddToHTTPCache(ByVal uri As String, ByVal requestSuccess As Boolean, ByVal data As Byte())
+        Using command As New SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@uri", uri))
+            command.Parameters.Add(New SQLiteParameter("@lastfetch", Now))
+            command.Parameters.Add(New SQLiteParameter("@success", requestSuccess))
+            command.Parameters.Add(New SQLiteParameter("@data", data))
+            command.ExecuteNonQuery()
+        End Using
+    End Sub
+
+    Private Function GetHTTPCacheLastUpdate(ByVal uri As String) As Date
+        Using command As New SQLiteCommand("select lastfetch from httpcache where uri=@uri", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@uri", uri))
+
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read Then
+                    Return reader.GetDateTime(reader.GetOrdinal("lastfetch"))
+                Else
+                    Return Nothing
+                End If
+            End Using
+        End Using
+    End Function
+
+    Private Function GetHTTPCacheContent(ByVal uri As String, ByRef requestSuccess As Boolean) As Byte()
+        Using command As New SQLiteCommand("select success, data from httpcache where uri=@uri", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@uri", uri))
+
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read Then
+                    requestSuccess = reader.GetBoolean(reader.GetOrdinal("success"))
+
+                    ' Get the length of the content by passing nothing to getbytes
+                    Dim contentLength As Integer = CInt(reader.GetBytes(reader.GetOrdinal("data"), 0, Nothing, 0, 0))
+
+                    Dim content(contentLength - 1) As Byte
+                    reader.GetBytes(reader.GetOrdinal("data"), 0, content, 0, contentLength)
+
+                    Return content
+                Else
+                    Return Nothing
+                End If
+            End Using
+        End Using
+    End Function
 
     Public Function DownloadData(ByVal uri As String, ByVal fetchIntervalHrs As Integer) As Byte()
         If fetchIntervalHrs = 0 Then
             Throw New ArgumentException("fetchIntervalHrs cannot be zero.", "fetchIntervalHrs")
         End If
 
-        Dim lastFetch As Date = dataInst.GetHTTPCacheLastUpdate(uri)
+        Dim lastFetch As Date = GetHTTPCacheLastUpdate(uri)
 
         If lastFetch <> Nothing Then
             If lastFetch.AddHours(fetchIntervalHrs) > Now Then
                 Dim requestSuccess As Boolean
-                Dim cacheData As Byte() = dataInst.GetHTTPCacheContent(uri, requestSuccess)
+                Dim cacheData As Byte() = GetHTTPCacheContent(uri, requestSuccess)
 
                 If cacheData IsNot Nothing Then
                     If requestSuccess Then
@@ -88,14 +159,14 @@ Public Class CachedWebClient
 
                 ' Serialise the CacheWebException and store it in the cache
                 formatter.Serialize(stream, cacheException)
-                dataInst.AddToHTTPCache(uri, False, stream.ToArray())
+                AddToHTTPCache(uri, False, stream.ToArray())
             End If
 
             ' Re-throw the WebException
             Throw
         End Try
 
-        dataInst.AddToHTTPCache(uri, True, data)
+        AddToHTTPCache(uri, True, data)
 
         Return data
     End Function

@@ -33,7 +33,7 @@ Friend Class FindNew
             Application.DoEvents()
 
             Dim strURL As String = txtFeedURL.Text
-            Dim cachedWeb As New CachedWebClient
+            Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
             Dim strRSS As String
             Dim xmlRSS As New XmlDocument
 

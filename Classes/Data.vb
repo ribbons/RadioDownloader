@@ -41,8 +41,10 @@ Friend Class Data
         Dim playCount As Integer
     End Structure
 
+    <ThreadStatic()> _
+    Private dbConn As SQLiteConnection
+
     Private Shared clsDataInstance As New Data
-    <ThreadStatic()> Private dbConnection As SQLiteConnection
 
     Private clsPluginsInst As Plugins
     Private clsCurDldProgData As DldProgData
@@ -70,12 +72,12 @@ Friend Class Data
     End Function
 
     Private Function FetchDbConn() As SQLiteConnection
-        If dbConnection Is Nothing Then
-            dbConnection = New SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False")
-            dbConnection.Open()
+        If dbConn Is Nothing Then
+            dbConn = New SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False")
+            dbConn.Open()
         End If
 
-        Return dbConnection
+        Return dbConn
     End Function
 
     Private Sub New()
@@ -83,10 +85,6 @@ Friend Class Data
 
         ' Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
         Call VacuumDatabase()
-
-        ' Create the temp table for caching HTTP requests
-        'Dim sqlCommand As New SQLiteCommand("create temporary table httpcache (uri varchar (1000), lastfetch datetime, success int, data blob)", sqlConnection)
-        'sqlCommand.ExecuteNonQuery()
 
         ' Setup an instance of the plugins class
         clsPluginsInst = New Plugins(My.Application.Info.DirectoryPath)
@@ -1303,56 +1301,6 @@ Friend Class Data
 
     '    sqlReader.Close()
     'End Function
-
-    Public Sub AddToHTTPCache(ByVal uri As String, ByVal requestSuccess As Boolean, ByVal data As Byte())
-        'Dim sqlCommand As New SQLiteCommand("delete from httpcache where uri=@uri", sqlConnection)
-        'sqlCommand.Parameters.Add(New SQLiteParameter("@uri", uri))
-        'sqlCommand.ExecuteNonQuery()
-
-        'sqlCommand = New SQLiteCommand("insert into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", sqlConnection)
-        'sqlCommand.Parameters.Add(New SQLiteParameter("@uri", uri))
-        'sqlCommand.Parameters.Add(New SQLiteParameter("@lastfetch", Now))
-        'sqlCommand.Parameters.Add(New SQLiteParameter("@success", requestSuccess))
-        'sqlCommand.Parameters.Add(New SQLiteParameter("@data", data))
-        'sqlCommand.ExecuteNonQuery()
-    End Sub
-
-    Public Function GetHTTPCacheLastUpdate(ByVal uri As String) As Date
-        'Dim sqlCommand As New SQLiteCommand("select lastfetch from httpcache where uri=@uri", sqlConnection)
-        'sqlCommand.Parameters.Add(New SQLiteParameter("@uri", uri))
-        'Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        'If sqlReader.Read Then
-        '    GetHTTPCacheLastUpdate = sqlReader.GetDateTime(sqlReader.GetOrdinal("lastfetch"))
-        'Else
-        '    GetHTTPCacheLastUpdate = Nothing
-        'End If
-
-        'sqlReader.Close()
-    End Function
-
-    Public Function GetHTTPCacheContent(ByVal uri As String, ByRef requestSuccess As Boolean) As Byte()
-        'Dim sqlCommand As New SQLiteCommand("select success, data from httpcache where uri=@uri", sqlConnection)
-        'sqlCommand.Parameters.Add(New SQLiteParameter("@uri", uri))
-        'Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-        'If sqlReader.Read Then
-        '    requestSuccess = sqlReader.GetBoolean(sqlReader.GetOrdinal("success"))
-
-        '    ' Get the length of the content by passing nothing to getbytes
-        '    Dim intContentLength As Integer = CInt(sqlReader.GetBytes(sqlReader.GetOrdinal("data"), 0, Nothing, 0, 0))
-        '    Dim bteContent(intContentLength - 1) As Byte
-
-        '    sqlReader.GetBytes(sqlReader.GetOrdinal("data"), 0, bteContent, 0, intContentLength)
-        '    GetHTTPCacheContent = bteContent
-        'Else
-        '    GetHTTPCacheContent = Nothing
-        'End If
-
-        'sqlReader.Close()
-
-        Return Nothing
-    End Function
 
     Private Function GetAvailableEpisodes(ByVal progid As Integer) As Integer()
         Dim episodeIDs(-1) As Integer
