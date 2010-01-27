@@ -80,7 +80,7 @@ Friend Class Main
     Private Delegate Sub clsProgData_Progress_Delegate(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
     Private Delegate Sub clsProgData_DldError_Delegate(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
     Private Delegate Sub clsProgData_Finished_Delegate(ByVal currentDldProgData As DldProgData)
-    Private Delegate Sub clsProgData_DownloadUpdate_Delegate(ByVal epid As Integer)
+    Private Delegate Sub clsProgData_DownloadAction_Delegate(ByVal epid As Integer)
 
     Public Sub SetTrayStatus(ByVal booActive As Boolean, Optional ByVal ErrorStatus As ErrorStatus = ErrorStatus.NoChange)
         Dim booErrorStatus As Boolean
@@ -633,10 +633,20 @@ Friend Class Main
         lstDownloads.Items.Add(addItem)
     End Sub
 
-    Private Sub clsProgData_DownloadUpdate(ByVal epid As Integer) Handles clsProgData.DownloadUpdate
+    Private Sub clsProgData_DownloadRemoved(ByVal epid As Integer) Handles clsProgData.DownloadRemoved
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_DownloadUpdate_Delegate(AddressOf clsProgData_DownloadUpdate), epid)
+            Me.BeginInvoke(New clsProgData_DownloadAction_Delegate(AddressOf clsProgData_DownloadRemoved), epid)
+            Return
+        End If
+
+        lstDownloads.Items(epid.ToString).Remove()
+    End Sub
+
+    Private Sub clsProgData_DownloadUpdated(ByVal epid As Integer) Handles clsProgData.DownloadUpdated
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_DownloadAction_Delegate(AddressOf clsProgData_DownloadUpdated), epid)
             Return
         End If
 
@@ -906,33 +916,29 @@ Friend Class Main
     End Sub
 
     Private Sub tbtDelete_Click()
-        'Dim epID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-        'Dim downloadPath As String = clsProgData.DownloadPath(epID)
-        'Dim fileExists As Boolean = File.Exists(downloadPath)
-        'Dim delQuestion As String = "Are you sure that you would like to delete this episode"
+        Dim epid As Integer = CInt(lstDownloads.SelectedItems(0).Name)
+        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
 
-        'If fileExists Then
-        '    delQuestion += " and the associated audio file"
-        'End If
+        Dim fileExists As Boolean = File.Exists(info.downloadPath)
+        Dim delQuestion As String = "Are you sure that you would like to delete this episode"
 
-        'If MsgBox(delQuestion + "?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-        '    If fileExists Then
-        '        Try
-        '            File.Delete(downloadPath)
-        '        Catch ioExp As IOException
-        '            If MsgBox("There was a problem deleting the audio file for this episode, as the file is in use by another application." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation Or MsgBoxStyle.YesNo) = MsgBoxResult.No Then
-        '                Exit Sub
-        '            End If
-        '        End Try
-        '    End If
+        If fileExists Then
+            delQuestion += " and the associated audio file"
+        End If
 
-        '    clsProgData.RemoveDownload(epID)
-        '    'clsProgData.UpdateDlList(lstDownloads)
+        If MsgBox(delQuestion + "?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            If fileExists Then
+                Try
+                    File.Delete(info.downloadPath)
+                Catch ioExp As IOException
+                    If MsgBox("There was a problem deleting the audio file for this episode, as the file is in use by another application." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation Or MsgBoxStyle.YesNo) = MsgBoxResult.No Then
+                        Exit Sub
+                    End If
+                End Try
+            End If
 
-        '    ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
-        '    ' it doesn't just download it all over again
-        '    Call clsProgData.EpisodeSetAutoDownload(epID, False)
-        'End If
+            clsProgData.DownloadRemove(epid)
+        End If
     End Sub
 
     Private Sub tbtRetry_Click()

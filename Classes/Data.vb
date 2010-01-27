@@ -62,8 +62,8 @@ Friend Class Data
     'Public Event SubscriptionRemoved(ByVal progId As Integer)
     'Public Event SubscriptionUpdate(ByVal progId As Integer)
     Public Event DownloadAdded(ByVal epid As Integer)
-    Public Event DownloadUpdate(ByVal epid As Integer)
-    'Public Event DownloadRemoved(ByVal epid As Integer)
+    Public Event DownloadUpdated(ByVal epid As Integer)
+    Public Event DownloadRemoved(ByVal epid As Integer)
 
     Public Shared Function GetInstance() As Data
         Return clsDataInstance
@@ -633,18 +633,13 @@ Friend Class Data
     '    sqlReader.Close()
     'End Function
 
-    'Public Sub EpisodeSetAutoDownload(ByVal intEpID As Integer, ByVal booAutoDownload As Boolean)
-    '    Dim intAutoDownload As Integer = 0
-
-    '    If booAutoDownload Then
-    '        intAutoDownload = 1
-    '    End If
-
-    '    Dim sqlCommand As New SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@autodownload", intAutoDownload))
-    '    sqlCommand.ExecuteNonQuery()
-    'End Sub
+    Private Sub EpisodeSetAutoDownloadAsync(ByVal epid As Integer, ByVal autoDownload As Boolean)
+        Using command As New SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@epid", epid))
+            command.Parameters.Add(New SQLiteParameter("@autodownload", If(autoDownload, 1, 0)))
+            command.ExecuteNonQuery()
+        End Using
+    End Sub
 
     'Public Function CountDownloadsNew() As Integer
     '    Dim sqlCommand As New SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", sqlConnection)
@@ -821,11 +816,29 @@ Friend Class Data
     '    End If
     'End Sub
 
-    'Public Sub RemoveDownload(ByVal intEpID As Integer)
-    '    Dim sqlCommand As New SQLiteCommand("delete from downloads where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Call sqlCommand.ExecuteNonQuery()
-    'End Sub
+    Public Sub DownloadRemove(ByVal epid As Integer)
+        ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf DownloadRemoveAsync), epid)
+    End Sub
+
+    Private Sub DownloadRemoveAsync(ByVal epidObj As Object)
+        Dim epid As Integer = CInt(epidObj)
+
+        Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+            Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                command.ExecuteNonQuery()
+            End Using
+
+            ' Unet the auto download flag, so if the user is subscribed it doesn't just download again
+            EpisodeSetAutoDownloadAsync(epid, False)
+
+            trans.Commit()
+        End Using
+
+        ' No need to clear the sort cache, as this will still work with the extra entry
+
+        RaiseEvent DownloadRemoved(epid)
+    End Sub
 
     'Public Function ProviderName(ByVal gidPluginID As Guid) As String
     '    If clsPluginsInst.PluginExists(gidPluginID) = False Then
@@ -865,7 +878,7 @@ Friend Class Data
             downloadSortCache = Nothing
         End SyncLock
 
-        RaiseEvent DownloadUpdate(epid)
+        RaiseEvent DownloadUpdated(epid)
     End Sub
 
     'Public Function DownloadErrorType(ByVal intEpID As Integer) As IRadioProvider.ErrorType
