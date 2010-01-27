@@ -37,6 +37,8 @@ Friend Class Data
         Dim duration As Integer
         Dim episodeDate As Date
         Dim status As DownloadStatus
+        Dim errorType As IRadioProvider.ErrorType
+        Dim errorDetails As String
         Dim downloadPath As String
         Dim playCount As Integer
     End Structure
@@ -891,46 +893,6 @@ Friend Class Data
         RaiseEvent DownloadUpdated(epid)
     End Sub
 
-    'Public Function DownloadErrorType(ByVal intEpID As Integer) As IRadioProvider.ErrorType
-    '    Dim sqlCommand As New SQLiteCommand("select errortype from downloads where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        Dim intErrorType As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("ErrorType"))
-
-    '        If intErrorType <> Nothing Then
-    '            DownloadErrorType = CType(intErrorType, IRadioProvider.ErrorType)
-    '        Else
-    '            DownloadErrorType = IRadioProvider.ErrorType.UnknownError
-    '        End If
-    '    Else
-    '        DownloadErrorType = IRadioProvider.ErrorType.UnknownError
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
-    'Public Function DownloadErrorDetails(ByVal intEpID As Integer) As String
-    '    Dim sqlCommand As New SQLiteCommand("select errordetails from downloads where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        Dim strErrorDetails As String = sqlReader.GetString(sqlReader.GetOrdinal("errordetails"))
-
-    '        If strErrorDetails IsNot Nothing Then
-    '            DownloadErrorDetails = strErrorDetails
-    '        Else
-    '            DownloadErrorDetails = ""
-    '        End If
-    '    Else
-    '        DownloadErrorDetails = ""
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
     'Public Sub DownloadReportError(ByVal episodeID As Integer)
     '    Dim errorText As String = String.Empty
     '    Dim extraDetailsString As String = DownloadErrorDetails(episodeID)
@@ -1470,7 +1432,7 @@ Friend Class Data
     End Sub
 
     Public Function FetchDownloadData(ByVal epid As Integer) As DownloadData
-        Using command As New SQLiteCommand("select name, description, date, duration, status, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn)
+        Using command As New SQLiteCommand("select name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
             Using reader As SQLiteDataReader = command.ExecuteReader
@@ -1491,6 +1453,14 @@ Friend Class Data
                 info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
                 info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
                 info.status = DirectCast(reader.GetInt32(reader.GetOrdinal("status")), DownloadStatus)
+
+                If info.status = DownloadStatus.Errored Then
+                    info.errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), IRadioProvider.ErrorType)
+
+                    If info.errorType <> IRadioProvider.ErrorType.UnknownError Then
+                        info.errorDetails = reader.GetString(reader.GetOrdinal("errordetails"))
+                    End If
+                End If
 
                 If Not reader.IsDBNull(filepathOrdinal) Then
                     info.downloadPath = reader.GetString(filepathOrdinal)

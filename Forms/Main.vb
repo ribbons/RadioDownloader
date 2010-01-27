@@ -414,32 +414,33 @@ Friend Class Main
 
                 infoText += Environment.NewLine + "Play count: " + info.playCount.ToString
             Case Data.DownloadStatus.Errored
-                '            Dim strErrorName As String = ""
-                '            Dim strErrorDetails As String = .DownloadErrorDetails(intEpID)
+                Dim errorName As String = ""
+                Dim errorDetails As String = info.errorDetails
 
-                '            strActionString = "Retry,Cancel"
+                actionString = "Retry,Cancel"
 
-                '            Select Case .DownloadErrorType(intEpID)
-                '                Case IRadioProvider.ErrorType.LocalProblem
-                '                    strErrorName = "Local problem"
-                '                Case IRadioProvider.ErrorType.ShorterThanExpected
-                '                    strErrorName = "Shorter than expected"
-                '                Case IRadioProvider.ErrorType.NotAvailable
-                '                    strErrorName = "Not available"
-                '                Case IRadioProvider.ErrorType.NotAvailableInLocation
-                '                    strErrorName = "Not available in your location"
-                '                Case IRadioProvider.ErrorType.NetworkProblem
-                '                    strErrorName = "Network problem"
-                '                Case IRadioProvider.ErrorType.UnknownError
-                '                    strErrorName = "Unknown error"
-                '                    strErrorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
-                '                    strActionString = "Retry,Cancel,ReportError"
-                '            End Select
+                Select Case info.errorType
+                    Case IRadioProvider.ErrorType.LocalProblem
+                        errorName = "Local problem"
+                    Case IRadioProvider.ErrorType.ShorterThanExpected
+                        errorName = "Shorter than expected"
+                    Case IRadioProvider.ErrorType.NotAvailable
+                        errorName = "Not available"
+                    Case IRadioProvider.ErrorType.NotAvailableInLocation
+                        errorName = "Not available in your location"
+                    Case IRadioProvider.ErrorType.NetworkProblem
+                        errorName = "Network problem"
+                    Case IRadioProvider.ErrorType.UnknownError
+                        errorName = "Unknown error"
+                        errorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
+                        actionString = "Retry,Cancel,ReportError"
+                End Select
 
-                '            strInfoBox = vbCrLf + vbCrLf + "Error: " + strErrorName
-                '            If strErrorDetails <> "" Then
-                '                strInfoBox += vbCrLf + vbCrLf + strErrorDetails
-                '            End If
+                infoText += Environment.NewLine + Environment.NewLine + "Error: " + errorName
+
+                If errorDetails <> "" Then
+                    infoText += Environment.NewLine + Environment.NewLine + errorDetails
+                End If
             Case Else
                 actionString = "Cancel"
         End Select
