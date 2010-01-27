@@ -821,8 +821,10 @@ Friend Class Data
     End Sub
 
     Private Sub DownloadRemoveAsync(ByVal epidObj As Object)
-        Dim epid As Integer = CInt(epidObj)
+        DownloadRemoveAsync(CInt(epidObj))
+    End Sub
 
+    Private Sub DownloadRemoveAsync(ByVal epid As Integer)
         Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
             Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn)
                 command.Parameters.Add(New SQLiteParameter("@epid", epid))
@@ -867,8 +869,10 @@ Friend Class Data
     End Sub
 
     Private Sub DownloadBumpPlayCountAsync(ByVal epidObj As Object)
-        Dim epid As Integer = CInt(epidObj)
+        DownloadBumpPlayCountAsync(CInt(epidObj))
+    End Sub
 
+    Private Sub DownloadBumpPlayCountAsync(ByVal epid As Integer)
         Using command As New SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
             command.ExecuteNonQuery()
