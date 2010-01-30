@@ -57,16 +57,17 @@ Friend Class Data
     Private downloadSortCache As Dictionary(Of Integer, Integer)
     Private downloadSortCacheLock As New Object
 
+    Private checkSubsLock As New Object
+    Private findDownloadLock As New Object
+
     Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
-    'Public Event Progress(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    'Public Event DldError(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
-    'Public Event Finished(ByVal currentDldProgData As DldProgData)
     'Public Event SubscriptionAdded(ByVal progId As Integer)
     'Public Event SubscriptionRemoved(ByVal progId As Integer)
     'Public Event SubscriptionUpdate(ByVal progId As Integer)
     Public Event DownloadAdded(ByVal epid As Integer)
     Public Event DownloadUpdated(ByVal epid As Integer)
+    Public Event DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
     Public Event DownloadRemoved(ByVal epid As Integer)
 
     Public Shared Function GetInstance() As Data
@@ -204,177 +205,156 @@ Friend Class Data
         MyBase.Finalize()
     End Sub
 
-    'Public Function DownloadSetErrored(ByVal intEpID As Integer, ByVal errType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) As Boolean
-    '    Select Case errType
-    '        Case IRadioProvider.ErrorType.RemoveFromList
-    '            Call RemoveDownload(intEpID)
-    '            Return False
-    '        Case IRadioProvider.ErrorType.UnknownError
-    '            furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
+    Public Sub StartDownload()
+        ThreadPool.QueueUserWorkItem(AddressOf StartDownloadAsync)
+    End Sub
 
-    '            Dim detailsStringWriter As New StringWriter(CultureInfo.InvariantCulture)
-    '            Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
-    '            detailsSerializer.Serialize(detailsStringWriter, furtherDetails)
-    '            errorDetails = detailsStringWriter.ToString
-    '    End Select
+    Private Sub StartDownloadAsync(ByVal dummy As Object)
+        Call StartDownloadAsync()
+    End Sub
 
-    '    Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Errored))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@errortype", errType))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    sqlCommand.ExecuteNonQuery()
+    Private Sub StartDownloadAsync()
+        SyncLock findDownloadLock
+            If thrDownloadThread Is Nothing Then
+                Using command As New SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid, dl.errorcount from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn)
+                    command.Parameters.Add(New SQLiteParameter("@statuswait", DownloadStatus.Waiting))
+                    command.Parameters.Add(New SQLiteParameter("@statuserr", DownloadStatus.Errored))
 
-    '    Return True
-    'End Function
+                    Using reader As SQLiteDataReader = command.ExecuteReader
+                        While thrDownloadThread Is Nothing
+                            If Not reader.Read Then
+                                Return
+                            End If
 
-    'Public Sub DownloadSetDownloaded(ByVal intEpID As Integer, ByVal strDownloadPath As String)
-    '    Dim sqlCommand As New SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@filepath", strDownloadPath))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    sqlCommand.ExecuteNonQuery()
-    'End Sub
+                            Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
+                            Dim epid As Integer = reader.GetInt32(reader.GetOrdinal("epid"))
 
-    'Public Function FindAndDownload() As Boolean
-    '    If thrDownloadThread Is Nothing Then
-    '        Dim sqlCommand As New SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid, dl.errorcount from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", sqlConnection)
-    '        sqlCommand.Parameters.Add(New SQLiteParameter("@statuswait", Statuses.Waiting))
-    '        sqlCommand.Parameters.Add(New SQLiteParameter("@statuserr", Statuses.Errored))
+                            If clsPluginsInst.PluginExists(pluginId) Then
+                                clsCurDldProgData = New DldProgData
 
-    '        Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+                                Dim progInfo As IRadioProvider.ProgrammeInfo
+                                If reader.IsDBNull(reader.GetOrdinal("progname")) Then
+                                    progInfo.Name = Nothing
+                                Else
+                                    progInfo.Name = reader.GetString(reader.GetOrdinal("progname"))
+                                End If
 
-    '        While thrDownloadThread Is Nothing
-    '            If sqlReader.Read Then
-    '                Dim gidPluginID As New Guid(sqlReader.GetString(sqlReader.GetOrdinal("pluginid")))
-    '                Dim intEpID As Integer = sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))
+                                If reader.IsDBNull(reader.GetOrdinal("progdesc")) Then
+                                    progInfo.Description = Nothing
+                                Else
+                                    progInfo.Description = reader.GetString(reader.GetOrdinal("progdesc"))
+                                End If
 
-    '                If clsPluginsInst.PluginExists(gidPluginID) Then
-    '                    clsCurDldProgData = New DldProgData
+                                If reader.IsDBNull(reader.GetOrdinal("progimg")) Then
+                                    progInfo.Image = Nothing
+                                Else
+                                    progInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")))
+                                End If
 
-    '                    Dim priProgInfo As IRadioProvider.ProgrammeInfo
-    '                    If sqlReader.IsDBNull(sqlReader.GetOrdinal("progname")) Then
-    '                        priProgInfo.Name = Nothing
-    '                    Else
-    '                        priProgInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("progname"))
-    '                    End If
+                                Dim epiEpInfo As IRadioProvider.EpisodeInfo
+                                If reader.IsDBNull(reader.GetOrdinal("epname")) Then
+                                    epiEpInfo.Name = Nothing
+                                Else
+                                    epiEpInfo.Name = reader.GetString(reader.GetOrdinal("epname"))
+                                End If
 
-    '                    If sqlReader.IsDBNull(sqlReader.GetOrdinal("progdesc")) Then
-    '                        priProgInfo.Description = Nothing
-    '                    Else
-    '                        priProgInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("progdesc"))
-    '                    End If
+                                If reader.IsDBNull(reader.GetOrdinal("epdesc")) Then
+                                    epiEpInfo.Description = Nothing
+                                Else
+                                    epiEpInfo.Description = reader.GetString(reader.GetOrdinal("epdesc"))
+                                End If
 
-    '                    If sqlReader.IsDBNull(sqlReader.GetOrdinal("progimg")) Then
-    '                        priProgInfo.Image = Nothing
-    '                    Else
-    '                        priProgInfo.Image = RetrieveImage(sqlReader.GetInt32(sqlReader.GetOrdinal("progimg")))
-    '                    End If
+                                If reader.IsDBNull(reader.GetOrdinal("duration")) Then
+                                    epiEpInfo.DurationSecs = Nothing
+                                Else
+                                    epiEpInfo.DurationSecs = reader.GetInt32(reader.GetOrdinal("duration"))
+                                End If
 
-    '                    Dim epiEpInfo As IRadioProvider.EpisodeInfo
-    '                    If sqlReader.IsDBNull(sqlReader.GetOrdinal("epname")) Then
-    '                        epiEpInfo.Name = Nothing
-    '                    Else
-    '                        epiEpInfo.Name = sqlReader.GetString(sqlReader.GetOrdinal("epname"))
-    '                    End If
+                                If reader.IsDBNull(reader.GetOrdinal("date")) Then
+                                    epiEpInfo.Date = Nothing
+                                Else
+                                    epiEpInfo.Date = reader.GetDateTime(reader.GetOrdinal("date"))
+                                End If
 
-    '                    If sqlReader.IsDBNull(sqlReader.GetOrdinal("epdesc")) Then
-    '                        epiEpInfo.Description = Nothing
-    '                    Else
-    '                        epiEpInfo.Description = sqlReader.GetString(sqlReader.GetOrdinal("epdesc"))
-    '                    End If
+                                If reader.IsDBNull(reader.GetOrdinal("epimg")) Then
+                                    epiEpInfo.Image = Nothing
+                                Else
+                                    epiEpInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")))
+                                End If
 
-    '                    If sqlReader.IsDBNull(sqlReader.GetOrdinal("duration")) Then
-    '                        epiEpInfo.DurationSecs = Nothing
-    '                    Else
-    '                        epiEpInfo.DurationSecs = sqlReader.GetInt32(sqlReader.GetOrdinal("duration"))
-    '                    End If
+                                epiEpInfo.ExtInfo = New Dictionary(Of String, String)
 
-    '                    If sqlReader.IsDBNull(sqlReader.GetOrdinal("date")) Then
-    '                        epiEpInfo.Date = Nothing
-    '                    Else
-    '                        epiEpInfo.Date = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
-    '                    End If
+                                Using extCommand As New SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn)
+                                    extCommand.Parameters.Add(New SQLiteParameter("@epid", reader.GetInt32(reader.GetOrdinal("epid"))))
+                                    Using extReader As SQLiteDataReader = extCommand.ExecuteReader
 
-    '                    If sqlReader.IsDBNull(sqlReader.GetOrdinal("epimg")) Then
-    '                        epiEpInfo.Image = Nothing
-    '                    Else
-    '                        epiEpInfo.Image = RetrieveImage(sqlReader.GetInt32(sqlReader.GetOrdinal("epimg")))
-    '                    End If
+                                        While extReader.Read
+                                            epiEpInfo.ExtInfo.Add(extReader.GetString(extReader.GetOrdinal("name")), extReader.GetString(extReader.GetOrdinal("value")))
+                                        End While
+                                    End Using
+                                End Using
 
-    '                    epiEpInfo.ExtInfo = New Dictionary(Of String, String)
+                                With clsCurDldProgData
+                                    .PluginID = pluginId
+                                    .ProgExtID = reader.GetString(reader.GetOrdinal("progextid"))
+                                    .EpID = epid
+                                    .EpisodeExtID = reader.GetString(reader.GetOrdinal("epextid"))
+                                    .ProgInfo = progInfo
+                                    .EpisodeInfo = epiEpInfo
+                                End With
 
-    '                    Dim sqlExtCommand As New SQLiteCommand("select name, value from episodeext where epid=@epid", sqlConnection)
-    '                    sqlExtCommand.Parameters.Add(New SQLiteParameter("@epid", sqlReader.GetInt32(sqlReader.GetOrdinal("epid"))))
-    '                    Dim sqlExtReader As SQLiteDataReader = sqlExtCommand.ExecuteReader
+                                If reader.GetInt32(reader.GetOrdinal("status")) = DownloadStatus.Errored Then
+                                    Call ResetDownloadAsync(epid, True)
+                                    clsCurDldProgData.AttemptNumber = reader.GetInt32(reader.GetOrdinal("errorcount")) + 1
+                                Else
+                                    clsCurDldProgData.AttemptNumber = 1
+                                End If
 
-    '                    While sqlExtReader.Read
-    '                        epiEpInfo.ExtInfo.Add(sqlExtReader.GetString(sqlExtReader.GetOrdinal("name")), sqlExtReader.GetString(sqlExtReader.GetOrdinal("value")))
-    '                    End While
+                                thrDownloadThread = New Thread(AddressOf DownloadProgThread)
+                                thrDownloadThread.Start()
 
-    '                    With clsCurDldProgData
-    '                        .PluginID = gidPluginID
-    '                        .ProgExtID = sqlReader.GetString(sqlReader.GetOrdinal("progextid"))
-    '                        .EpID = intEpID
-    '                        .EpisodeExtID = sqlReader.GetString(sqlReader.GetOrdinal("epextid"))
-    '                        .ProgInfo = priProgInfo
-    '                        .EpisodeInfo = epiEpInfo
-    '                    End With
+                                Return
+                            End If
+                        End While
+                    End Using
+                End Using
+            End If
+        End SyncLock
+    End Sub
 
-    '                    If sqlReader.GetInt32(sqlReader.GetOrdinal("status")) = Statuses.Errored Then
-    '                        Call ResetDownload(intEpID, True)
-    '                        clsCurDldProgData.AttemptNumber = sqlReader.GetInt32(sqlReader.GetOrdinal("errorcount")) + 1
-    '                    Else
-    '                        clsCurDldProgData.AttemptNumber = 1
-    '                    End If
+    Public Sub DownloadProgThread()
+        DownloadPluginInst = clsPluginsInst.GetPluginInstance(clsCurDldProgData.PluginID)
 
-    '                    thrDownloadThread = New Thread(AddressOf DownloadProgThread)
-    '                    thrDownloadThread.Start()
+        Try
+            ' Make sure that the temp folder still exists
+            Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath, "RadioDownloader"))
 
-    '                    FindAndDownload = True
-    '                End If
-    '            Else
-    '                Exit While
-    '            End If
-    '        End While
+            With clsCurDldProgData
+                Try
+                    clsCurDldProgData.FinalName = FileUtils.FindFreeSaveFileName(My.Settings.FileNameFormat, clsCurDldProgData.ProgInfo.Name, clsCurDldProgData.EpisodeInfo.Name, clsCurDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder())
+                Catch dirNotFoundExp As DirectoryNotFoundException
+                    Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", New List(Of DldErrorDataItem))
+                    Exit Sub
+                End Try
 
-    '        sqlReader.Close()
-    '    End If
-    'End Function
+                DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
+            End With
+        Catch unknownExp As Exception
+            Dim extraDetails As New List(Of DldErrorDataItem)
+            extraDetails.Add(New DldErrorDataItem("error", unknownExp.GetType.ToString + ": " + unknownExp.Message))
+            extraDetails.Add(New DldErrorDataItem("exceptiontostring", unknownExp.ToString))
 
-    'Public Sub DownloadProgThread()
-    '    DownloadPluginInst = clsPluginsInst.GetPluginInstance(clsCurDldProgData.PluginID)
+            If unknownExp.Data IsNot Nothing Then
+                For Each dataEntry As DictionaryEntry In unknownExp.Data
+                    If dataEntry.Key.GetType Is GetType(String) And dataEntry.Value.GetType Is GetType(String) Then
+                        extraDetails.Add(New DldErrorDataItem("expdata:Data:" + CStr(dataEntry.Key), CStr(dataEntry.Value)))
+                    End If
+                Next
+            End If
 
-    '    Try
-    '        ' Make sure that the temp folder still exists
-    '        Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath, "RadioDownloader"))
-
-    '        With clsCurDldProgData
-    '            Try
-    '                clsCurDldProgData.FinalName = FileUtils.FindFreeSaveFileName(My.Settings.FileNameFormat, clsCurDldProgData.ProgInfo.Name, clsCurDldProgData.EpisodeInfo.Name, clsCurDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder())
-    '            Catch dirNotFoundExp As DirectoryNotFoundException
-    '                Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", New List(Of DldErrorDataItem))
-    '                Exit Sub
-    '            End Try
-
-    '            DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
-    '        End With
-    '    Catch unknownExp As Exception
-    '        Dim extraDetails As New List(Of DldErrorDataItem)
-    '        extraDetails.Add(New DldErrorDataItem("error", unknownExp.GetType.ToString + ": " + unknownExp.Message))
-    '        extraDetails.Add(New DldErrorDataItem("exceptiontostring", unknownExp.ToString))
-
-    '        If unknownExp.Data IsNot Nothing Then
-    '            For Each dataEntry As DictionaryEntry In unknownExp.Data
-    '                If dataEntry.Key.GetType Is GetType(String) And dataEntry.Value.GetType Is GetType(String) Then
-    '                    extraDetails.Add(New DldErrorDataItem("expdata:Data:" + CStr(dataEntry.Key), CStr(dataEntry.Value)))
-    '                End If
-    '            Next
-    '        End If
-
-    '        Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, unknownExp.GetType.ToString + vbCrLf + unknownExp.StackTrace, extraDetails)
-    '    End Try
-    'End Sub
+            Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, unknownExp.GetType.ToString + vbCrLf + unknownExp.StackTrace, extraDetails)
+        End Try
+    End Sub
 
     'Public Function DownloadPath(ByVal intEpID As Integer) As String
     '    Dim sqlCommand As New SQLiteCommand("select filepath from downloads where epid=@epid", sqlConnection)
@@ -707,45 +687,47 @@ Friend Class Data
     End Sub
 
     Private Sub CheckSubscriptionsAsync(ByVal dummy As Object)
-        Using getSubsCmd As New SQLiteCommand("select progid from subscriptions", FetchDbConn), _
-              autoDldCmd As New SQLiteCommand("select autodownload from episodes where epid=@epid", FetchDbConn), _
-              checkCmd As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
+        SyncLock checkSubsLock
+            Using getSubsCmd As New SQLiteCommand("select progid from subscriptions", FetchDbConn), _
+                  autoDldCmd As New SQLiteCommand("select autodownload from episodes where epid=@epid", FetchDbConn), _
+                  checkCmd As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
 
-            Dim epidParam As New SQLiteParameter("@epid")
+                Dim epidParam As New SQLiteParameter("@epid")
 
-            autoDldCmd.Parameters.Add(epidParam)
-            checkCmd.Parameters.Add(epidParam)
+                autoDldCmd.Parameters.Add(epidParam)
+                checkCmd.Parameters.Add(epidParam)
 
-            Using reader As SQLiteDataReader = getSubsCmd.ExecuteReader
-                With reader
-                    Dim progidOrdinal As Integer = .GetOrdinal("progid")
+                Using reader As SQLiteDataReader = getSubsCmd.ExecuteReader
+                    With reader
+                        Dim progidOrdinal As Integer = .GetOrdinal("progid")
 
-                    Do While .Read()
-                        Dim intAvailableEps() As Integer
-                        intAvailableEps = GetAvailableEpisodes(.GetInt32(progidOrdinal))
+                        Do While .Read()
+                            Dim intAvailableEps() As Integer
+                            intAvailableEps = GetAvailableEpisodes(.GetInt32(progidOrdinal))
 
-                        For Each intEpID As Integer In intAvailableEps
-                            Dim autoDownload As Boolean = True
-                            epidParam.Value = intEpID
+                            For Each intEpID As Integer In intAvailableEps
+                                Dim autoDownload As Boolean = True
+                                epidParam.Value = intEpID
 
-                            Using availReader As SQLiteDataReader = autoDldCmd.ExecuteReader
-                                If availReader.Read Then
-                                    autoDownload = availReader.GetInt32(availReader.GetOrdinal("autodownload")) = 1
-                                End If
-                            End Using
-
-                            If autoDownload Then
-                                Using sqlCheckRdr As SQLiteDataReader = checkCmd.ExecuteReader
-                                    If sqlCheckRdr.Read = False Then
-                                        Call AddDownloadAsync(intEpID)
+                                Using availReader As SQLiteDataReader = autoDldCmd.ExecuteReader
+                                    If availReader.Read Then
+                                        autoDownload = availReader.GetInt32(availReader.GetOrdinal("autodownload")) = 1
                                     End If
                                 End Using
-                            End If
-                        Next
-                    Loop
-                End With
+
+                                If autoDownload Then
+                                    Using sqlCheckRdr As SQLiteDataReader = checkCmd.ExecuteReader
+                                        If sqlCheckRdr.Read = False Then
+                                            Call AddDownloadAsync(intEpID)
+                                        End If
+                                    End Using
+                                End If
+                            Next
+                        Loop
+                    End With
+                End Using
             End Using
-        End Using
+        End SyncLock
     End Sub
 
     'Public Function AddDownload(ByVal epid As Integer) As Boolean
@@ -811,18 +793,30 @@ Friend Class Data
     '    sqlReader.Close()
     'End Function
 
-    'Public Sub ResetDownload(ByVal intEpID As Integer, ByVal booAuto As Boolean)
-    '    Dim sqlCommand As New SQLiteCommand("update downloads set status=@status where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Waiting))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    sqlCommand.ExecuteNonQuery()
+    Private Sub ResetDownloadAsync(ByVal epid As Integer, ByVal auto As Boolean)
+        Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+            Using command As New SQLiteCommand("update downloads set status=@status where epid=@epid", FetchDbConn, trans)
+                command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Waiting))
+                command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                command.ExecuteNonQuery()
+            End Using
 
-    '    If booAuto = False Then
-    '        sqlCommand = New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", sqlConnection)
-    '        sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '        sqlCommand.ExecuteNonQuery()
-    '    End If
-    'End Sub
+            If auto = False Then
+                Using command As New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn, trans)
+                    command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                    command.ExecuteNonQuery()
+                End Using
+            End If
+
+            trans.Commit()
+        End Using
+
+        RaiseEvent DownloadUpdated(epid)
+
+        If auto = False Then
+            StartDownloadAsync()
+        End If
+    End Sub
 
     Public Sub DownloadRemove(ByVal epid As Integer)
         ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf DownloadRemoveAsync), epid)
@@ -951,23 +945,75 @@ Friend Class Data
     '    clsReport.SendReport(My.Settings.ErrorReportURL)
     'End Sub
 
-    'Private Sub DownloadPluginInst_DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles DownloadPluginInst.DldError
-    '    'RaiseEvent DldError(clsCurDldProgData, errorType, errorDetails, furtherDetails)
-    '    thrDownloadThread = Nothing
-    '    clsCurDldProgData = Nothing
-    'End Sub
+    Private Sub DownloadPluginInst_DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles DownloadPluginInst.DldError
+        Select Case errorType
+            Case IRadioProvider.ErrorType.RemoveFromList
+                Call DownloadRemoveAsync(clsCurDldProgData.EpID)
+                Return
+            Case IRadioProvider.ErrorType.UnknownError
+                furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
 
-    'Private Sub DownloadPluginInst_Finished(ByVal strFileExtension As String) Handles DownloadPluginInst.Finished
-    '    clsCurDldProgData.FinalName += "." + strFileExtension
+                Dim detailsStringWriter As New StringWriter(CultureInfo.InvariantCulture)
+                Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
+                detailsSerializer.Serialize(detailsStringWriter, furtherDetails)
+                errorDetails = detailsStringWriter.ToString
+        End Select
 
-    '    'RaiseEvent Finished(clsCurDldProgData)
-    '    thrDownloadThread = Nothing
-    '    clsCurDldProgData = Nothing
-    'End Sub
+        Using sqlCommand As New SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn)
+            sqlCommand.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Errored))
+            sqlCommand.Parameters.Add(New SQLiteParameter("@errortype", errorType))
+            sqlCommand.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
+            sqlCommand.Parameters.Add(New SQLiteParameter("@epid", clsCurDldProgData.EpID))
+            sqlCommand.ExecuteNonQuery()
+        End Using
 
-    'Private Sub DownloadPluginInst_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles DownloadPluginInst.Progress
-    '    'RaiseEvent Progress(clsCurDldProgData, intPercent, strStatusText, Icon)
-    'End Sub
+        RaiseEvent DownloadUpdated(clsCurDldProgData.EpID)
+
+        thrDownloadThread = Nothing
+        clsCurDldProgData = Nothing
+
+        Call StartDownloadAsync()
+    End Sub
+
+    Private Sub DownloadPluginInst_Finished(ByVal strFileExtension As String) Handles DownloadPluginInst.Finished
+        clsCurDldProgData.FinalName += "." + strFileExtension
+
+        Using command As New SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
+            command.Parameters.Add(New SQLiteParameter("@filepath", clsCurDldProgData.FinalName))
+            command.Parameters.Add(New SQLiteParameter("@epid", clsCurDldProgData.EpID))
+            command.ExecuteNonQuery()
+        End Using
+
+        RaiseEvent DownloadUpdated(clsCurDldProgData.EpID)
+
+        If My.Settings.RunAfterCommand <> "" Then
+            Try
+                ' Environ("comspec") will give the path to cmd.exe or command.com
+                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
+            Catch
+                ' Just ignore the error, as it just means that something has gone wrong with the run after command.
+            End Try
+        End If
+
+        thrDownloadThread = Nothing
+        clsCurDldProgData = Nothing
+
+        Call StartDownloadAsync()
+    End Sub
+
+    Private Sub DownloadPluginInst_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles DownloadPluginInst.Progress
+        Static lastNum As Integer = -1
+
+        ' Don't raise the progress event if the value is the same as last time, or is outside the range
+        If intPercent = lastNum OrElse intPercent < 0 OrElse intPercent > 100 Then
+            Exit Sub
+        End If
+
+        lastNum = intPercent
+
+        RaiseEvent DownloadProgress(clsCurDldProgData.EpID, intPercent, strStatusText, Icon)
+    End Sub
 
     'Public Sub AbortDownloadThread()
     '    If thrDownloadThread IsNot Nothing Then

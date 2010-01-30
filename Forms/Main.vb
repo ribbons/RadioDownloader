@@ -77,10 +77,10 @@ Friend Class Main
     Private clsDoDBUpdate As UpdateDB
     Private clsUpdate As UpdateCheck
 
-    Private Delegate Sub clsProgData_Progress_Delegate(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    Private Delegate Sub clsProgData_DldError_Delegate(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
-    Private Delegate Sub clsProgData_Finished_Delegate(ByVal currentDldProgData As DldProgData)
     Private Delegate Sub clsProgData_DownloadAction_Delegate(ByVal epid As Integer)
+    Private Delegate Sub clsProgData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
+
+    Private Const downloadProgCol As Integer = 3
 
     Public Sub SetTrayStatus(ByVal booActive As Boolean, Optional ByVal ErrorStatus As ErrorStatus = ErrorStatus.NoChange)
         Dim booErrorStatus As Boolean
@@ -266,7 +266,7 @@ Friend Class Main
         End If
 
         tmrCheckSub.Enabled = True
-        tmrStartProcess.Enabled = True
+        clsProgData.StartDownload()
         tmrCheckForUpdates.Enabled = True
     End Sub
 
@@ -573,18 +573,6 @@ Friend Class Main
         Call clsProgData.CheckSubscriptions()
     End Sub
 
-    Private Sub tmrStartProcess_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrStartProcess.Tick
-        'If clsProgData.FindAndDownload Then
-        '    'Call clsProgData.UpdateDlList(lstDownloads)
-
-        '    If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-        '        Call SetContextForSelectedDownload()
-        '    End If
-        'End If
-
-        'tmrStartProcess.Enabled = False
-    End Sub
-
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
     End Sub
@@ -597,9 +585,7 @@ Friend Class Main
         Call SetView(MainTab.Downloads, View.Downloads, Nothing)
     End Sub
 
-    Private Sub DownloadListItem(ByVal epid As Integer, ByRef item As ListViewItem)
-        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
-
+    Private Sub DownloadListItem(ByVal epid As Integer, ByVal info As Data.DownloadData, ByRef item As ListViewItem)
         item.Name = epid.ToString
         item.Text = info.name
 
@@ -630,13 +616,41 @@ Friend Class Main
             Return
         End If
 
+        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
+
         Dim addItem As New ListViewItem
         addItem.SubItems.Add("")
         addItem.SubItems.Add("")
         addItem.SubItems.Add("")
 
-        DownloadListItem(epid, addItem)
+        DownloadListItem(epid, info, addItem)
         lstDownloads.Items.Add(addItem)
+    End Sub
+
+    Private Sub clsProgData_DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon) Handles clsProgData.DownloadProgress
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_DownloadProgress_Delegate(AddressOf clsProgData_DownloadProgress), New Object() {epid, percent, statusText, icon})
+            Return
+        End If
+
+        Dim item As ListViewItem = lstDownloads.Items(CStr(epid))
+
+        item.SubItems(2).Text = statusText
+        prgDldProg.Value = percent
+
+        If lstDownloads.Controls.Count = 0 Then
+            lstDownloads.AddProgressBar(prgDldProg, item, downloadProgCol)
+        End If
+
+        Select Case icon
+            Case IRadioProvider.ProgressIcon.Downloading
+                item.ImageKey = "downloading"
+            Case IRadioProvider.ProgressIcon.Converting
+                item.ImageKey = "converting"
+        End Select
+
+        'Call SetTrayStatus(True)
     End Sub
 
     Private Sub clsProgData_DownloadRemoved(ByVal epid As Integer) Handles clsProgData.DownloadRemoved
@@ -646,7 +660,13 @@ Friend Class Main
             Return
         End If
 
-        lstDownloads.Items(epid.ToString).Remove()
+        Dim item As ListViewItem = lstDownloads.Items(epid.ToString)
+
+        If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
+            lstDownloads.RemoveProgressBar(prgDldProg)
+        End If
+
+        item.Remove()
     End Sub
 
     Private Sub clsProgData_DownloadUpdated(ByVal epid As Integer) Handles clsProgData.DownloadUpdated
@@ -656,56 +676,21 @@ Friend Class Main
             Return
         End If
 
+        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString)
-        DownloadListItem(epid, item)
+
+        DownloadListItem(epid, info, item)
+
+        If info.status = Data.DownloadStatus.Downloaded Then
+            If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
+                lstDownloads.RemoveProgressBar(prgDldProg)
+            End If
+        End If
 
         If lstDownloads.Items(epid.ToString).Selected Then
             ShowDownloadInfo(epid)
         End If
     End Sub
-
-    'Private Sub clsProgData_DldError(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles clsProgData.DldError
-    '    ' Check if the form exists still before calling delegate
-    '    If Me.IsHandleCreated And Me.IsDisposed = False Then
-    '        Dim DelegateInst As New clsProgData_DldError_Delegate(AddressOf clsProgData_DldError_FormThread)
-    '        Call Me.Invoke(DelegateInst, New Object() {currentDldProgData, errorType, errorDetails, furtherDetails})
-    '    End If
-    'End Sub
-
-    'Private Sub clsProgData_DldError_FormThread(ByVal currentDldProgData As DldProgData, ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
-    '    Try
-    '        If clsProgData.EpisodeExists(currentDldProgData.EpID) Then
-    '            If clsProgData.DownloadSetErrored(currentDldProgData.EpID, errorType, errorDetails, furtherDetails) Then
-    '                If lstDownloads.Items.ContainsKey(CStr(currentDldProgData.EpID)) Then
-    '                    If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-    '                        If lstDownloads.Items(CStr(currentDldProgData.EpID)).Selected Then
-    '                            ' The item that has just errored is selected, so update the information
-    '                            Call SetContextForSelectedDownload()
-    '                        End If
-    '                    End If
-    '                End If
-    '            End If
-
-    '            If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-    '                If lstDownloads.SelectedItems.Count = 0 Then
-    '                    ' No items are selected, so update the statistics
-    '                    Call SetViewDefaults()
-    '                End If
-    '            End If
-    '        End If
-
-    '        'Call clsProgData.UpdateDlList(lstDownloads)
-
-    '        tmrStartProcess.Enabled = True
-    '    Catch expException As Exception
-    '        ' Errors in a sub called via a delegate are not caught in the right place
-    '        If ReportError.Visible = False Then
-    '            Dim clsReport As New ErrorReporting(expException)
-    '            ReportError.AssignReport(clsReport)
-    '            ReportError.ShowDialog()
-    '        End If
-    '    End Try
-    'End Sub
 
     Private Sub clsProgData_FindNewViewChange(ByVal objView As Object) Handles clsProgData.FindNewViewChange
         Dim ChangedView As ViewStore = viwBackData(viwBackData.GetUpperBound(0))
@@ -718,112 +703,9 @@ Friend Class Main
         Call UpdateNavCtrlState()
     End Sub
 
-    'Private Sub clsProgData_Finished(ByVal currentDldProgData As DldProgData) Handles clsProgData.Finished
-    '    ' Check if the form exists still before calling delegate
-    '    If Me.IsHandleCreated And Me.IsDisposed = False Then
-    '        Dim DelegateInst As New clsProgData_Finished_Delegate(AddressOf clsProgData_Finished_FormThread)
-    '        Call Me.Invoke(DelegateInst, New Object() {currentDldProgData})
-    '    End If
-    'End Sub
-
-    'Private Sub clsProgData_Finished_FormThread(ByVal currentDldProgData As DldProgData)
-    '    Try
-    '        Call clsProgData.DownloadSetDownloaded(currentDldProgData.EpID, currentDldProgData.FinalName)
-
-    '        Dim viwCurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
-
-    '        If viwCurrentView = View.Downloads Then
-    '            If lstDownloads.Items(CStr(currentDldProgData.EpID)).Selected Then
-    '                ' The item that has just finished downloading is selected, so update it.
-    '                Call SetContextForSelectedDownload()
-    '            ElseIf lstDownloads.SelectedItems.Count = 0 Then
-    '                ' No items are selected, so update the statistics
-    '                Call SetViewDefaults()
-    '            End If
-    '        ElseIf viwCurrentView = View.Subscriptions Then
-    '            ' Return to the tab information for subscriptions, as the selection will be lost when we update 
-    '            ' the subscription list.
-    '            Call SetViewDefaults()
-    '        End If
-
-    '        'Call clsProgData.UpdateDlList(lstDownloads)
-    '        'Call clsProgData.UpdateSubscrList(lstSubscribed)
-
-    '        If My.Settings.RunAfterCommand <> "" Then
-    '            Try
-    '                ' Environ("comspec") will give the path to cmd.exe or command.com
-    '                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", currentDldProgData.FinalName), AppWinStyle.NormalNoFocus)
-    '            Catch
-    '                ' Just ignore the error, as it just means that something has gone wrong with the run after command.
-    '            End Try
-    '        End If
-
-    '        tmrStartProcess.Enabled = True
-    '    Catch expException As Exception
-    '        ' Errors in a sub called via a delegate are not caught in the right place
-    '        If ReportError.Visible = False Then
-    '            Dim clsReport As New ErrorReporting(expException)
-    '            ReportError.AssignReport(clsReport)
-    '            ReportError.ShowDialog()
-    '        End If
-    '    End Try
-    'End Sub
-
     Private Sub clsProgData_FoundNew(ByVal intProgID As Integer) Handles clsProgData.FoundNew
         Call SetView(MainTab.FindProgramme, View.ProgEpisodes, intProgID)
     End Sub
-
-    'Private Sub clsProgData_Progress(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles clsProgData.Progress
-    '    ' Check if the form exists still before calling delegate
-    '    If Me.IsHandleCreated And Me.IsDisposed = False Then
-    '        Dim DelegateInst As New clsProgData_Progress_Delegate(AddressOf clsProgData_Progress_FormThread)
-    '        Call Me.Invoke(DelegateInst, New Object() {currentDldProgData, intPercent, strStatusText, Icon})
-    '    End If
-    'End Sub
-
-    'Private Sub clsProgData_Progress_FormThread(ByVal currentDldProgData As DldProgData, ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon)
-    '    Try
-    '        Static intLastNum As Integer
-
-    '        If intLastNum = Nothing Then intLastNum = -1
-    '        If intLastNum = intPercent Then Exit Sub
-    '        If intPercent < 0 Then Exit Sub
-    '        If intPercent > 100 Then Exit Sub
-
-    '        intLastNum = intPercent
-
-    '        If currentDldProgData IsNot Nothing Then
-    '            With currentDldProgData
-    '                Dim lstItem As ListViewItem = lstDownloads.Items(CStr(.EpID))
-
-    '                If lstItem IsNot Nothing Then
-    '                    lstItem.SubItems(2).Text = strStatusText
-    '                    prgDldProg.Value = intPercent
-
-    '                    If lstDownloads.Controls.Count = 0 Then
-    '                        lstDownloads.AddProgressBar(prgDldProg, lstItem, 3)
-    '                    End If
-
-    '                    Select Case Icon
-    '                        Case IRadioProvider.ProgressIcon.Downloading
-    '                            lstItem.ImageKey = "downloading"
-    '                        Case IRadioProvider.ProgressIcon.Converting
-    '                            lstItem.ImageKey = "converting"
-    '                    End Select
-    '                End If
-    '            End With
-    '        End If
-
-    '        Call SetTrayStatus(True)
-    '    Catch expException As Exception
-    '        ' Errors in a sub called via a delegate are not caught in the right place
-    '        If ReportError.Visible = False Then
-    '            Dim clsReport As New ErrorReporting(expException)
-    '            ReportError.AssignReport(clsReport)
-    '            ReportError.ShowDialog()
-    '        End If
-    '    End Try
-    'End Sub
 
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         For Each commandLineArg As String In Environment.GetCommandLineArgs
@@ -953,7 +835,6 @@ Friend Class Main
         'Call clsProgData.ResetDownload(intEpID, False)
         'Call SetContextForSelectedDownload() ' Update prog info pane
         'Call clsProgData.UpdateDlList(lstDownloads)
-        tmrStartProcess.Enabled = True
     End Sub
 
     Private Sub tbtDownload_Click()
