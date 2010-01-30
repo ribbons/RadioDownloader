@@ -812,11 +812,7 @@ Friend Class Main
     End Sub
 
     Private Sub tbtRetry_Click()
-        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-
-        'Call clsProgData.ResetDownload(intEpID, False)
-        'Call SetContextForSelectedDownload() ' Update prog info pane
-        'Call clsProgData.UpdateDlList(lstDownloads)
+        Call clsProgData.ResetDownload(CInt(lstDownloads.SelectedItems(0).Name))
     End Sub
 
     Private Sub tbtDownload_Click()

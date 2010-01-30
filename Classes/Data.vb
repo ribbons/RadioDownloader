@@ -790,6 +790,14 @@ Friend Class Data
     '    sqlReader.Close()
     'End Function
 
+    Public Sub ResetDownload(ByVal epid As Integer)
+        ThreadPool.QueueUserWorkItem(AddressOf ResetDownloadAsync, epid)
+    End Sub
+
+    Private Sub ResetDownloadAsync(ByVal epidObj As Object)
+        ResetDownloadAsync(CInt(epidObj), False)
+    End Sub
+
     Private Sub ResetDownloadAsync(ByVal epid As Integer, ByVal auto As Boolean)
         Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
             Using command As New SQLiteCommand("update downloads set status=@status where epid=@epid", FetchDbConn, trans)
