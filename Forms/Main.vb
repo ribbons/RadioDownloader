@@ -77,6 +77,7 @@ Friend Class Main
     Private clsDoDBUpdate As UpdateDB
     Private clsUpdate As UpdateCheck
 
+    Private Delegate Sub clsProgData_SubscriptionAction_Delegate(ByVal progid As Integer)
     Private Delegate Sub clsProgData_DownloadAction_Delegate(ByVal epid As Integer)
     Private Delegate Sub clsProgData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
 
@@ -230,7 +231,7 @@ Friend Class Main
         'Call clsProgData.UpdateProviderList(lstProviders, imlProviders, mnuOptionsProviderOpts)
         Call clsProgData.InitDownloadList()
         lstDownloads.ListViewItemSorter = New ListComparer()
-        'Call clsProgData.UpdateSubscrList(lstSubscribed)
+        clsProgData.InitSubscriptionList()
 
         ' Set up and then show the system tray icon
         Call SetTrayStatus(False)
@@ -579,6 +580,44 @@ Friend Class Main
 
     Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
         Call SetView(MainTab.Downloads, View.Downloads, Nothing)
+    End Sub
+
+    Private Sub SubscriptionListItem(ByVal progid As Integer, ByVal info As Data.SubscriptionData, ByRef item As ListViewItem)
+        item.Name = progid.ToString
+        item.Text = info.name
+
+        If info.latestDownload = Nothing Then
+            item.SubItems(1).Text = "Never"
+        Else
+            item.SubItems(1).Text = info.latestDownload.ToShortDateString
+        End If
+
+        item.SubItems(2).Text = info.providerName
+        item.ImageKey = "subscribed"
+    End Sub
+
+    Private Sub clsProgData_SubscriptionAdded(ByVal progid As Integer) Handles clsProgData.SubscriptionAdded
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_SubscriptionAction_Delegate(AddressOf clsProgData_SubscriptionAdded), progid)
+            Return
+        End If
+
+        Dim info As Data.SubscriptionData = clsProgData.FetchSubscriptionData(progid)
+
+        Dim addItem As New ListViewItem
+        addItem.SubItems.Add("")
+        addItem.SubItems.Add("")
+
+        SubscriptionListItem(progid, info, addItem)
+        lstSubscribed.Items.Add(addItem)
+
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Subscriptions Then
+            If lstSubscribed.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
+        End If
     End Sub
 
     Private Sub DownloadListItem(ByVal epid As Integer, ByVal info As Data.DownloadData, ByRef item As ListViewItem)

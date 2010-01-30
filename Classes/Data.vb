@@ -31,6 +31,12 @@ Friend Class Data
         Errored = 2
     End Enum
 
+    Public Structure SubscriptionData
+        Dim name As String
+        Dim latestDownload As Date
+        Dim providerName As String
+    End Structure
+
     Public Structure DownloadData
         Dim name As String
         Dim description As String
@@ -62,9 +68,9 @@ Friend Class Data
 
     Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
-    'Public Event SubscriptionAdded(ByVal progId As Integer)
-    'Public Event SubscriptionRemoved(ByVal progId As Integer)
-    'Public Event SubscriptionUpdate(ByVal progId As Integer)
+    Public Event SubscriptionAdded(ByVal progid As Integer)
+    Public Event SubscriptionUpdated(ByVal progid As Integer)
+    Public Event SubscriptionRemoved(ByVal progid As Integer)
     Public Event DownloadAdded(ByVal epid As Integer)
     Public Event DownloadUpdated(ByVal epid As Integer)
     Public Event DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
@@ -628,40 +634,6 @@ Friend Class Data
     '    sqlReader.Close()
     'End Sub
 
-    'Public Sub UpdateSubscrList(ByRef lstListview As ExtListView)
-    '    Dim lstAdd As ListViewItem
-
-    '    Dim sqlCommand As New SQLiteCommand("select pluginid, name, subscriptions.progid from subscriptions, programmes where subscriptions.progid=programmes.progid order by name", sqlConnection)
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    lstListview.Items.Clear()
-
-    '    With sqlReader
-    '        Do While .Read()
-    '            Dim gidPluginID As New Guid(.GetString(.GetOrdinal("pluginid")))
-    '            lstAdd = New ListViewItem
-
-    '            lstAdd.Text = .GetString(.GetOrdinal("name"))
-
-    '            Dim dteLastDownload As Date = LatestDownloadDate(.GetInt32(.GetOrdinal("progid")))
-
-    '            If dteLastDownload = Nothing Then
-    '                lstAdd.SubItems.Add("Never")
-    '            Else
-    '                lstAdd.SubItems.Add(dteLastDownload.ToShortDateString)
-    '            End If
-
-    '            lstAdd.SubItems.Add(ProviderName(gidPluginID))
-    '            lstAdd.Tag = .GetInt32(.GetOrdinal("progid"))
-    '            lstAdd.ImageKey = "subscribed"
-
-    '            lstListview.Items.Add(lstAdd)
-    '        Loop
-    '    End With
-
-    '    sqlReader.Close()
-    'End Sub
-
     'Public Sub ListEpisodes(ByVal intProgID As Integer, ByRef lstListview As ExtListView)
     '    Dim intAvailable As Integer()
     '    intAvailable = GetAvailableEpisodes(intProgID)
@@ -777,20 +749,20 @@ Friend Class Data
     '    Call sqlCommand.ExecuteNonQuery()
     'End Sub
 
-    'Public Function LatestDownloadDate(ByVal intProgID As Integer) As DateTime
-    '    Dim sqlCommand As New SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    Private Function LatestDownloadDate(ByVal progid As Integer) As Date
+        Using command As New SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-    '    If sqlReader.Read = False Then
-    '        ' No downloads of this program, return nothing
-    '        LatestDownloadDate = Nothing
-    '    Else
-    '        LatestDownloadDate = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read = False Then
+                    ' No downloads of this program
+                    Return Nothing
+                Else
+                    Return reader.GetDateTime(reader.GetOrdinal("date"))
+                End If
+            End Using
+        End Using
+    End Function
 
     Public Sub ResetDownload(ByVal epid As Integer)
         ThreadPool.QueueUserWorkItem(AddressOf ResetDownloadAsync, epid)
@@ -864,16 +836,16 @@ Friend Class Data
         RaiseEvent DownloadRemoved(epid)
     End Sub
 
-    'Public Function ProviderName(ByVal gidPluginID As Guid) As String
-    '    If clsPluginsInst.PluginExists(gidPluginID) = False Then
-    '        Return ""
-    '    End If
+    Public Function ProviderName(ByVal pluginId As Guid) As String
+        If clsPluginsInst.PluginExists(pluginId) = False Then
+            Return ""
+        End If
 
-    '    Dim ThisInstance As IRadioProvider
-    '    ThisInstance = clsPluginsInst.GetPluginInstance(gidPluginID)
+        Dim pluginInstance As IRadioProvider
+        pluginInstance = clsPluginsInst.GetPluginInstance(pluginId)
 
-    '    Return ThisInstance.ProviderName
-    'End Function
+        Return pluginInstance.ProviderName
+    End Function
 
     'Public Function ProviderDescription(ByVal gidPluginID As Guid) As String
     '    If clsPluginsInst.PluginExists(gidPluginID) = False Then
@@ -1490,6 +1462,18 @@ Friend Class Data
         End Using
     End Sub
 
+    Public Sub InitSubscriptionList()
+        Using command As New SQLiteCommand("select progid from subscriptions", FetchDbConn)
+            Using reader As SQLiteDataReader = command.ExecuteReader()
+                Dim progidOrdinal As Integer = reader.GetOrdinal("progid")
+
+                Do While reader.Read
+                    RaiseEvent SubscriptionAdded(reader.GetInt32(progidOrdinal))
+                Loop
+            End Using
+        End Using
+    End Sub
+
     Public Function FetchDownloadData(ByVal epid As Integer) As DownloadData
         Using command As New SQLiteCommand("select name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
@@ -1526,6 +1510,34 @@ Friend Class Data
                 End If
 
                 info.playCount = reader.GetInt32(reader.GetOrdinal("playcount"))
+
+                Return info
+            End Using
+        End Using
+    End Function
+
+    Public Function FetchSubscriptionData(ByVal progid As Integer) As SubscriptionData
+        Using command As New SQLiteCommand("select name, pluginid from programmes where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read = False Then
+                    Return Nothing
+                End If
+
+                'Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
+
+                Dim info As New SubscriptionData
+                info.name = reader.GetString(reader.GetOrdinal("name"))
+
+                'If Not reader.IsDBNull(descriptionOrdinal) Then
+                '    info.description = reader.GetString(descriptionOrdinal)
+                'End If
+
+                info.latestDownload = LatestDownloadDate(progid)
+
+                Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
+                info.providerName = ProviderName(pluginId)
 
                 Return info
             End Using
