@@ -199,12 +199,6 @@ Friend Class Data
         Application.DoEvents()
     End Sub
 
-    Protected Overrides Sub Finalize()
-        'sqlConnection.Close()
-        'Call AbortDownloadThread()
-        MyBase.Finalize()
-    End Sub
-
     Public Sub StartDownload()
         ThreadPool.QueueUserWorkItem(AddressOf StartDownloadAsync)
     End Sub
@@ -311,6 +305,7 @@ Friend Class Data
                                 End If
 
                                 thrDownloadThread = New Thread(AddressOf DownloadProgThread)
+                                thrDownloadThread.IsBackground = True
                                 thrDownloadThread.Start()
 
                                 Return
@@ -832,7 +827,12 @@ Friend Class Data
         If clsCurDldProgData IsNot Nothing Then
             If clsCurDldProgData.EpID = epid Then
                 ' The program is currently being downloaded
-                AbortDownloadThread()
+
+                If thrDownloadThread IsNot Nothing Then
+                    thrDownloadThread.Abort()
+                    thrDownloadThread = Nothing
+                End If
+
                 StartDownload()
             End If
         End If
@@ -1023,13 +1023,6 @@ Friend Class Data
         lastNum = intPercent
 
         RaiseEvent DownloadProgress(clsCurDldProgData.EpID, intPercent, strStatusText, Icon)
-    End Sub
-
-    Private Sub AbortDownloadThread()
-        If thrDownloadThread IsNot Nothing Then
-            thrDownloadThread.Abort()
-            thrDownloadThread = Nothing
-        End If
     End Sub
 
     'Public Function GetCurrentDownloadInfo() As DldProgData
