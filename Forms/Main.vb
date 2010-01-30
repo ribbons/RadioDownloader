@@ -224,13 +224,13 @@ Friend Class Main
         Call lstDownloads.Columns.Add("Status", CInt(0.22 * lstDownloads.Width))
         Call lstDownloads.Columns.Add("Progress", CInt(0.179 * lstDownloads.Width))
 
+        Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
+
         clsProgData = Data.GetInstance
         'Call clsProgData.UpdateProviderList(lstProviders, imlProviders, mnuOptionsProviderOpts)
         Call clsProgData.InitDownloadList()
         lstDownloads.ListViewItemSorter = New ListComparer()
         'Call clsProgData.UpdateSubscrList(lstSubscribed)
-
-        Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
 
         ' Set up and then show the system tray icon
         Call SetTrayStatus(False)
@@ -622,9 +622,11 @@ Friend Class Main
         DownloadListItem(epid, info, addItem)
         lstDownloads.Items.Add(addItem)
 
-        If lstDownloads.SelectedItems.Count = 0 Then
-            ' Update the displayed statistics
-            SetViewDefaults()
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+            If lstDownloads.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
         End If
     End Sub
 
@@ -661,9 +663,11 @@ Friend Class Main
             Return
         End If
 
-        If lstDownloads.SelectedItems.Count = 0 Then
-            ' Update the displayed statistics
-            SetViewDefaults()
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+            If lstDownloads.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
         End If
 
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString)
@@ -691,11 +695,13 @@ Friend Class Main
             lstDownloads.RemoveProgressBar(prgDldProg)
         End If
 
-        If lstDownloads.Items(epid.ToString).Selected Then
-            ShowDownloadInfo(epid)
-        ElseIf lstDownloads.SelectedItems.Count = 0 Then
-            ' Update the displayed statistics
-            SetViewDefaults()
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+            If lstDownloads.Items(epid.ToString).Selected Then
+                ShowDownloadInfo(epid)
+            ElseIf lstDownloads.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
         End If
     End Sub
 
