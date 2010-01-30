@@ -339,6 +339,8 @@ Friend Class Data
 
                 DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
             End With
+        Catch threadAbortExp As ThreadAbortException
+            ' The download has been aborted, so ignore the exception
         Catch unknownExp As Exception
             Dim extraDetails As New List(Of DldErrorDataItem)
             extraDetails.Add(New DldErrorDataItem("error", unknownExp.GetType.ToString + ": " + unknownExp.Message))
@@ -827,6 +829,14 @@ Friend Class Data
     End Sub
 
     Private Sub DownloadRemoveAsync(ByVal epid As Integer)
+        If clsCurDldProgData IsNot Nothing Then
+            If clsCurDldProgData.EpID = epid Then
+                ' The program is currently being downloaded
+                AbortDownloadThread()
+                StartDownload()
+            End If
+        End If
+
         Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
             Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, trans)
                 command.Parameters.Add(New SQLiteParameter("@epid", epid))
@@ -1015,12 +1025,12 @@ Friend Class Data
         RaiseEvent DownloadProgress(clsCurDldProgData.EpID, intPercent, strStatusText, Icon)
     End Sub
 
-    'Public Sub AbortDownloadThread()
-    '    If thrDownloadThread IsNot Nothing Then
-    '        thrDownloadThread.Abort()
-    '        thrDownloadThread = Nothing
-    '    End If
-    'End Sub
+    Private Sub AbortDownloadThread()
+        If thrDownloadThread IsNot Nothing Then
+            thrDownloadThread.Abort()
+            thrDownloadThread = Nothing
+        End If
+    End Sub
 
     'Public Function GetCurrentDownloadInfo() As DldProgData
     '    Return clsCurDldProgData

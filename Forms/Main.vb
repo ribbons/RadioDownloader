@@ -766,27 +766,11 @@ Friend Class Main
     End Sub
 
     Private Sub tbtCancel_Click()
-        Dim intEpID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
+        Dim epid As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
-        'If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-        '    Dim clsCurrentProgInfo As DldProgData
-        '    clsCurrentProgInfo = clsProgData.GetCurrentDownloadInfo
-
-        '    If clsCurrentProgInfo IsNot Nothing Then
-        '        If clsCurrentProgInfo.EpID = intEpID Then
-        '            ' The program is currently being downloaded
-        '            clsProgData.AbortDownloadThread()
-        '            tmrStartProcess.Enabled = True
-        '        End If
-        '    End If
-
-        '    clsProgData.RemoveDownload(intEpID)
-        '    'clsProgData.UpdateDlList(lstDownloads)
-
-        '    ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
-        '    ' it doesn't just download it all over again
-        '    Call clsProgData.EpisodeSetAutoDownload(intEpID, False)
-        'End If
+        If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            clsProgData.DownloadRemove(epid)
+        End If
     End Sub
 
     Private Sub tbtPlay_Click()
