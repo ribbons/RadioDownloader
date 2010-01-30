@@ -681,10 +681,8 @@ Friend Class Main
 
         DownloadListItem(epid, info, item)
 
-        If info.status = Data.DownloadStatus.Downloaded Then
-            If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
-                lstDownloads.RemoveProgressBar(prgDldProg)
-            End If
+        If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
+            lstDownloads.RemoveProgressBar(prgDldProg)
         End If
 
         If lstDownloads.Items(epid.ToString).Selected Then
