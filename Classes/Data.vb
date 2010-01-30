@@ -604,17 +604,19 @@ Friend Class Data
         End Using
     End Sub
 
-    'Public Function CountDownloadsNew() As Integer
-    '    Dim sqlCommand As New SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
-    '    Return CInt(sqlCommand.ExecuteScalar())
-    'End Function
+    Public Function CountDownloadsNew() As Integer
+        Using command As New SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
+            Return CInt(command.ExecuteScalar())
+        End Using
+    End Function
 
-    'Public Function CountDownloadsErrored() As Integer
-    '    Dim sqlCommand As New SQLiteCommand("select count(epid) from downloads where status=@status", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Errored))
-    '    Return CInt(sqlCommand.ExecuteScalar())
-    'End Function
+    Public Function CountDownloadsErrored() As Integer
+        Using command As New SQLiteCommand("select count(epid) from downloads where status=@status", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Errored))
+            Return CInt(command.ExecuteScalar())
+        End Using
+    End Function
 
     'Public Sub UpdateDlList(ByRef lstListview As ExtListView)
     '    If booErrorStatus Then

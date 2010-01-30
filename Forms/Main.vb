@@ -621,6 +621,11 @@ Friend Class Main
 
         DownloadListItem(epid, info, addItem)
         lstDownloads.Items.Add(addItem)
+
+        If lstDownloads.SelectedItems.Count = 0 Then
+            ' Update the displayed statistics
+            SetViewDefaults()
+        End If
     End Sub
 
     Private Sub clsProgData_DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon) Handles clsProgData.DownloadProgress
@@ -656,6 +661,11 @@ Friend Class Main
             Return
         End If
 
+        If lstDownloads.SelectedItems.Count = 0 Then
+            ' Update the displayed statistics
+            SetViewDefaults()
+        End If
+
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString)
 
         If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
@@ -683,6 +693,9 @@ Friend Class Main
 
         If lstDownloads.Items(epid.ToString).Selected Then
             ShowDownloadInfo(epid)
+        ElseIf lstDownloads.SelectedItems.Count = 0 Then
+            ' Update the displayed statistics
+            SetViewDefaults()
         End If
     End Sub
 
@@ -986,19 +999,19 @@ Friend Class Main
             Case View.Downloads
                 Call SetToolbarButtons("CleanUp")
 
-                Dim strDescription As String = ""
-                Dim intNew As Integer = 0 'clsProgData.CountDownloadsNew
-                Dim intErrored As Integer = 0 'clsProgData.CountDownloadsErrored
+                Dim description As String = ""
+                Dim newCount As Integer = clsProgData.CountDownloadsNew
+                Dim errorCount As Integer = clsProgData.CountDownloadsErrored
 
-                If intNew > 0 Then
-                    strDescription += "Newly downloaded: " + CStr(intNew) + vbCrLf
+                If newCount > 0 Then
+                    description += "Newly downloaded: " + CStr(newCount) + Environment.NewLine
                 End If
 
-                If intErrored > 0 Then
-                    strDescription += "Errored: " + CStr(intErrored)
+                If errorCount > 0 Then
+                    description += "Errored: " + CStr(errorCount)
                 End If
 
-                Call SetSideBar(CStr(lstDownloads.Items.Count) + " download" + Plural(lstDownloads.Items.Count), strDescription, Nothing)
+                Call SetSideBar(CStr(lstDownloads.Items.Count) + " download" + Plural(lstDownloads.Items.Count), description, Nothing)
         End Select
     End Sub
 
