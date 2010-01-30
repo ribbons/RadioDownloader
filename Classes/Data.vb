@@ -33,6 +33,7 @@ Friend Class Data
 
     Public Structure SubscriptionData
         Dim name As String
+        Dim description As String
         Dim latestDownload As Date
         Dim providerName As String
     End Structure
@@ -1517,7 +1518,7 @@ Friend Class Data
     End Function
 
     Public Function FetchSubscriptionData(ByVal progid As Integer) As SubscriptionData
-        Using command As New SQLiteCommand("select name, pluginid from programmes where progid=@progid", FetchDbConn)
+        Using command As New SQLiteCommand("select name, description, pluginid from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
             Using reader As SQLiteDataReader = command.ExecuteReader
@@ -1525,14 +1526,14 @@ Friend Class Data
                     Return Nothing
                 End If
 
-                'Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
+                Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
 
                 Dim info As New SubscriptionData
                 info.name = reader.GetString(reader.GetOrdinal("name"))
 
-                'If Not reader.IsDBNull(descriptionOrdinal) Then
-                '    info.description = reader.GetString(descriptionOrdinal)
-                'End If
+                If Not reader.IsDBNull(descriptionOrdinal) Then
+                    info.description = reader.GetString(descriptionOrdinal)
+                End If
 
                 info.latestDownload = LatestDownloadDate(progid)
 

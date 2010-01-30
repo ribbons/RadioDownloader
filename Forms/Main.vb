@@ -342,18 +342,18 @@ Friend Class Main
     End Sub
 
     Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
-        Call SetContextForSelectedSubscription()
-    End Sub
-
-    Private Sub SetContextForSelectedSubscription()
         If lstSubscribed.SelectedItems.Count > 0 Then
-            Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
-
-            'Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
-            'Call SetToolbarButtons("Unsubscribe,CurrentEps")
+            Call ShowSubscriptionInfo(CInt(lstSubscribed.SelectedItems(0).Name))
         Else
             Call SetViewDefaults() ' Revert back to subscribed items view default sidebar and toolbar
         End If
+    End Sub
+
+    Private Sub ShowSubscriptionInfo(ByVal progid As Integer)
+        Dim info As Data.SubscriptionData = clsProgData.FetchSubscriptionData(progid)
+
+        Call SetSideBar(info.name, info.description, clsProgData.FetchProgrammeImage(progid))
+        Call SetToolbarButtons("Unsubscribe,CurrentEps")
     End Sub
 
     Private Sub lstDownloads_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstDownloads.ItemActivate
@@ -999,8 +999,11 @@ Friend Class Main
                 'clsProgData.ListEpisodes(CInt(ViewData.ViewData), lstEpisodes)
             Case View.Subscriptions
                 lstSubscribed.Visible = True
-                Call SetContextForSelectedSubscription()
                 lstSubscribed.Focus()
+
+                If lstSubscribed.SelectedItems.Count > 0 Then
+                    ShowSubscriptionInfo(CInt(lstSubscribed.SelectedItems(0).Name))
+                End If
             Case View.Downloads
                 lstDownloads.Visible = True
                 lstDownloads.Focus()
