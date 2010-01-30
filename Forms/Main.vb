@@ -449,10 +449,6 @@ Friend Class Main
         Call SetToolbarButtons(actionString)
     End Sub
 
-    Private Sub SetContextForSelectedDownload()
-
-    End Sub
-
     Private Sub SetSideBar(ByVal strTitle As String, ByVal strDescription As String, ByVal bmpPicture As Bitmap)
         lblSideMainTitle.Text = strTitle
 
@@ -869,10 +865,6 @@ Friend Class Main
         Call CleanUp.ShowDialog()
 
         'Call clsProgData.UpdateDlList(lstDownloads)
-
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-            Call SetContextForSelectedDownload()
-        End If
     End Sub
 
     Private Sub StoreView(ByVal ViewData As ViewStore)
@@ -953,8 +945,11 @@ Friend Class Main
                 lstSubscribed.Focus()
             Case View.Downloads
                 lstDownloads.Visible = True
-                Call SetContextForSelectedDownload()
                 lstDownloads.Focus()
+
+                If lstDownloads.SelectedItems.Count > 0 Then
+                    ShowDownloadInfo(CInt(lstDownloads.SelectedItems(0).Name))
+                End If
         End Select
     End Sub
 
