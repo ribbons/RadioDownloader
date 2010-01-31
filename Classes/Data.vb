@@ -362,34 +362,6 @@ Friend Class Data
         End Try
     End Sub
 
-    'Public Function DownloadPath(ByVal intEpID As Integer) As String
-    '    Dim sqlCommand As New SQLiteCommand("select filepath from downloads where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        DownloadPath = sqlReader.GetString(sqlReader.GetOrdinal("filepath"))
-    '    Else
-    '        DownloadPath = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
-    'Public Function DownloadStatus(ByVal intEpID As Integer) As Statuses
-    '    Dim sqlCommand As New SQLiteCommand("select status from downloads where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        DownloadStatus = DirectCast(sqlReader.GetInt32(sqlReader.GetOrdinal("status")), Statuses)
-    '    Else
-    '        DownloadStatus = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
     Public Sub UpdateProgInfoIfRequired(ByVal progid As Integer)
         ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf UpdateProgInfoIfRequiredAsync), progid)
     End Sub
