@@ -390,30 +390,36 @@ Friend Class Data
     '    sqlReader.Close()
     'End Function
 
-    'Private Function UpdateProgInfoAsRequired(ByVal intProgID As Integer) As Date
-    '    Dim sqlCommand As New SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    Public Sub UpdateProgInfoIfRequired(ByVal progid As Integer)
+        ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf UpdateProgInfoIfRequiredAsync), progid)
+    End Sub
 
-    '    If sqlReader.Read Then
-    '        Dim gidProviderID As New Guid(sqlReader.GetString(sqlReader.GetOrdinal("pluginid")))
+    Private Sub UpdateProgInfoIfRequiredAsync(ByVal progid As Object)
+        Call UpdateProgInfoIfRequiredAsync(CInt(progid))
+    End Sub
 
-    '        If clsPluginsInst.PluginExists(gidProviderID) Then
-    '            Dim ThisInstance As IRadioProvider
-    '            ThisInstance = clsPluginsInst.GetPluginInstance(gidProviderID)
+    Private Sub UpdateProgInfoIfRequiredAsync(ByVal progid As Integer)
+        Using command As New SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-    '            If sqlReader.GetDateTime(sqlReader.GetOrdinal("lastupdate")).AddDays(ThisInstance.ProgInfoUpdateFreqDays) < Now Then
-    '                Call StoreProgrammeInfo(gidProviderID, sqlReader.GetString(sqlReader.GetOrdinal("extid")), Nothing)
-    '            End If
-    '        End If
-    '    End If
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read Then
+                    Dim providerId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
 
-    '    sqlReader.Close()
-    'End Function
+                    If clsPluginsInst.PluginExists(providerId) Then
+                        Dim pluginInstance As IRadioProvider
+                        pluginInstance = clsPluginsInst.GetPluginInstance(providerId)
+
+                        If reader.GetDateTime(reader.GetOrdinal("lastupdate")).AddDays(pluginInstance.ProgInfoUpdateFreqDays) < Now Then
+                            Call StoreProgrammeInfo(providerId, reader.GetString(reader.GetOrdinal("extid")), Nothing)
+                        End If
+                    End If
+                End If
+            End Using
+        End Using
+    End Sub
 
     Public Function FetchProgrammeImage(ByVal progid As Integer) As Bitmap
-        'Call UpdateProgInfoAsRequired(intProgID)
-
         Using command As New SQLiteCommand("select image from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
@@ -761,6 +767,10 @@ Friend Class Data
             trans.Commit()
         End Using
 
+        SyncLock downloadSortCacheLock
+            downloadSortCache = Nothing
+        End SyncLock
+
         RaiseEvent DownloadUpdated(epid)
 
         If auto = False Then
@@ -930,6 +940,10 @@ Friend Class Data
             sqlCommand.ExecuteNonQuery()
         End Using
 
+        SyncLock downloadSortCacheLock
+            downloadSortCache = Nothing
+        End SyncLock
+
         RaiseEvent DownloadUpdated(clsCurDldProgData.EpID)
 
         thrDownloadThread = Nothing
@@ -947,6 +961,10 @@ Friend Class Data
             command.Parameters.Add(New SQLiteParameter("@epid", clsCurDldProgData.EpID))
             command.ExecuteNonQuery()
         End Using
+
+        SyncLock downloadSortCacheLock
+            downloadSortCache = Nothing
+        End SyncLock
 
         RaiseEvent DownloadUpdated(clsCurDldProgData.EpID)
 
@@ -1155,49 +1173,57 @@ Friend Class Data
     '    RaiseEvent FoundNew(intProgID)
     'End Sub
 
-    'Private Function StoreProgrammeInfo(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String, ByRef PluginException As Exception) As Boolean
-    '    If clsPluginsInst.PluginExists(gidPluginID) = False Then
-    '        Return False
-    '    End If
+    Private Function StoreProgrammeInfo(ByVal pluginId As System.Guid, ByVal progExtId As String, ByRef pluginExp As Exception) As Boolean
+        If clsPluginsInst.PluginExists(pluginId) = False Then
+            Return False
+        End If
 
-    '    Dim ThisInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(gidPluginID)
-    '    Dim getProgInfo As IRadioProvider.GetProgrammeInfoReturn
+        Dim pluginInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
+        Dim progInfo As IRadioProvider.GetProgrammeInfoReturn
 
-    '    Try
-    '        getProgInfo = ThisInstance.GetProgrammeInfo(strProgExtID)
-    '    Catch PluginException
-    '        ' Catch unhandled errors in the plugin
-    '        Return False
-    '    End Try
+        Try
+            progInfo = pluginInstance.GetProgrammeInfo(progExtId)
+        Catch pluginExp
+            ' Catch unhandled errors in the plugin
+            Return False
+        End Try
 
-    '    If getProgInfo.Success = False Then
-    '        Return False
-    '    End If
+        If progInfo.Success = False Then
+            Return False
+        End If
 
-    '    Dim intProgID As Integer = ExtIDToProgID(gidPluginID, strProgExtID)
-    '    Dim sqlCommand As SQLiteCommand
+        Dim progid As Integer = ExtIDToProgID(pluginId, progExtId)
 
-    '    If intProgID = Nothing Then
-    '        sqlCommand = New SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", sqlConnection)
-    '        sqlCommand.Parameters.Add(New SQLiteParameter("@pluginid", gidPluginID.ToString))
-    '        sqlCommand.Parameters.Add(New SQLiteParameter("@extid", strProgExtID))
-    '        sqlCommand.ExecuteNonQuery()
+        If progid = Nothing Then
+            Using command As New SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@pluginid", pluginId.ToString))
+                command.Parameters.Add(New SQLiteParameter("@extid", progExtId))
+                command.ExecuteNonQuery()
+            End Using
 
-    '        sqlCommand = New SQLiteCommand("select last_insert_rowid()", sqlConnection)
-    '        intProgID = CInt(sqlCommand.ExecuteScalar)
-    '    End If
+            Using command As New SQLiteCommand("select last_insert_rowid()", FetchDbConn)
+                progid = CInt(command.ExecuteScalar)
+            End Using
+        End If
 
-    '    sqlCommand = New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@name", getProgInfo.ProgrammeInfo.Name))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@description", getProgInfo.ProgrammeInfo.Description))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@image", StoreImage(getProgInfo.ProgrammeInfo.Image)))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@singleepisode", getProgInfo.ProgrammeInfo.SingleEpisode))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@lastupdate", Now))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    sqlCommand.ExecuteNonQuery()
+        Using command As New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@name", progInfo.ProgrammeInfo.Name))
+            command.Parameters.Add(New SQLiteParameter("@description", progInfo.ProgrammeInfo.Description))
+            command.Parameters.Add(New SQLiteParameter("@image", StoreImage(progInfo.ProgrammeInfo.Image)))
+            command.Parameters.Add(New SQLiteParameter("@singleepisode", progInfo.ProgrammeInfo.SingleEpisode))
+            command.Parameters.Add(New SQLiteParameter("@lastupdate", Now))
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+            command.ExecuteNonQuery()
+        End Using
 
-    '    Return True
-    'End Function
+        SyncLock downloadSortCacheLock
+            downloadSortCache = Nothing
+        End SyncLock
+
+        RaiseEvent SubscriptionUpdated(progid)
+
+        Return True
+    End Function
 
     Private Function StoreImage(ByVal image As Bitmap) As Integer
         If image Is Nothing Then
@@ -1251,20 +1277,20 @@ Friend Class Data
         End Using
     End Function
 
-    'Private Function ExtIDToProgID(ByVal gidPluginID As System.Guid, ByVal strProgExtID As String) As Integer
-    '    Dim sqlCommand As New SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@pluginid", gidPluginID.ToString))
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@extid", strProgExtID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    Private Function ExtIDToProgID(ByVal pluginID As System.Guid, ByVal progExtId As String) As Integer
+        Using command As New SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@pluginid", pluginID.ToString))
+            command.Parameters.Add(New SQLiteParameter("@extid", progExtId))
 
-    '    If sqlReader.Read Then
-    '        ExtIDToProgID = sqlReader.GetInt32(sqlReader.GetOrdinal("progid"))
-    '    Else
-    '        ExtIDToProgID = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read Then
+                    Return reader.GetInt32(reader.GetOrdinal("progid"))
+                Else
+                    Return Nothing
+                End If
+            End Using
+        End Using
+    End Function
 
     Private Function GetAvailableEpisodes(ByVal progid As Integer) As Integer()
         Dim episodeIDs(-1) As Integer
@@ -1512,8 +1538,6 @@ Friend Class Data
     End Function
 
     Public Function FetchSubscriptionData(ByVal progid As Integer) As SubscriptionData
-        'UpdateProgInfoAsRequired(intProgID)
-
         Using command As New SQLiteCommand("select name, description, pluginid from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 

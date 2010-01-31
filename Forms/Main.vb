@@ -358,7 +358,10 @@ Friend Class Main
 
     Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
         If lstSubscribed.SelectedItems.Count > 0 Then
-            Call ShowSubscriptionInfo(CInt(lstSubscribed.SelectedItems(0).Name))
+            Dim progid As Integer = CInt(lstSubscribed.SelectedItems(0).Name)
+
+            clsProgData.UpdateProgInfoIfRequired(progid)
+            Call ShowSubscriptionInfo(progid)
         Else
             Call SetViewDefaults() ' Revert back to subscribed items view default sidebar and toolbar
         End If
@@ -633,6 +636,45 @@ Friend Class Main
                 SetViewDefaults()
             End If
         End If
+    End Sub
+
+    Private Sub clsProgData_SubscriptionUpdated(ByVal progid As Integer) Handles clsProgData.SubscriptionUpdated
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_SubscriptionAction_Delegate(AddressOf clsProgData_SubscriptionUpdated), progid)
+            Return
+        End If
+
+        Dim info As Data.SubscriptionData = clsProgData.FetchSubscriptionData(progid)
+        Dim item As ListViewItem = lstSubscribed.Items(progid.ToString)
+
+        SubscriptionListItem(progid, info, item)
+
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Subscriptions Then
+            If lstSubscribed.Items(progid.ToString).Selected Then
+                ShowSubscriptionInfo(progid)
+            ElseIf lstSubscribed.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
+        End If
+    End Sub
+
+    Private Sub clsProgData_SubscriptionRemoved(ByVal progid As Integer) Handles clsProgData.SubscriptionRemoved
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_SubscriptionAction_Delegate(AddressOf clsProgData_SubscriptionRemoved), progid)
+            Return
+        End If
+
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Subscriptions Then
+            If lstSubscribed.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
+        End If
+
+        lstSubscribed.Items(progid.ToString).Remove()
     End Sub
 
     Private Sub DownloadListItem(ByVal epid As Integer, ByVal info As Data.DownloadData, ByRef item As ListViewItem)
