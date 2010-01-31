@@ -59,14 +59,28 @@ Friend Class Main
     Private Class ListComparer
         Implements IComparer
 
-        Private dataInstance As Data
+        Public Enum ListType
+            Subscription
+            Download
+        End Enum
 
-        Public Sub New()
+        Private dataInstance As Data
+        Private compareType As ListType
+
+        Public Sub New(ByVal compareType As ListType)
             dataInstance = Data.GetInstance
+            Me.compareType = compareType
         End Sub
 
         Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
-            Return dataInstance.CompareDownloads(CInt(CType(x, ListViewItem).Name), CInt(CType(y, ListViewItem).Name))
+            Select Case compareType
+                Case ListType.Subscription
+                    Return dataInstance.CompareSubscriptions(CInt(CType(x, ListViewItem).Name), CInt(CType(y, ListViewItem).Name))
+                Case ListType.Download
+                    Return dataInstance.CompareDownloads(CInt(CType(x, ListViewItem).Name), CInt(CType(y, ListViewItem).Name))
+                Case Else
+                    Throw New ArgumentException("compareType not a valid value", "compareType")
+            End Select
         End Function
     End Class
 
@@ -229,9 +243,10 @@ Friend Class Main
 
         clsProgData = Data.GetInstance
         'Call clsProgData.UpdateProviderList(lstProviders, imlProviders, mnuOptionsProviderOpts)
+        Call clsProgData.InitSubscriptionList()
+        lstSubscribed.ListViewItemSorter = New ListComparer(ListComparer.ListType.Subscription)
         Call clsProgData.InitDownloadList()
-        lstDownloads.ListViewItemSorter = New ListComparer()
-        clsProgData.InitSubscriptionList()
+        lstDownloads.ListViewItemSorter = New ListComparer(ListComparer.ListType.Download)
 
         ' Set up and then show the system tray icon
         Call SetTrayStatus(False)

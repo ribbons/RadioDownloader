@@ -61,6 +61,8 @@ Friend Class Data
     Private WithEvents DownloadPluginInst As IRadioProvider
     Private WithEvents FindNewPluginInst As IRadioProvider
 
+    Private subscriptionSortCache As Dictionary(Of Integer, Integer)
+    Private subscriptionSortCacheLock As New Object
     Private downloadSortCache As Dictionary(Of Integer, Integer)
     Private downloadSortCacheLock As New Object
 
@@ -404,38 +406,6 @@ Friend Class Data
     '                Call StoreProgrammeInfo(gidProviderID, sqlReader.GetString(sqlReader.GetOrdinal("extid")), Nothing)
     '            End If
     '        End If
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
-    'Public Function ProgrammeName(ByVal intProgID As Integer) As String
-    '    Call UpdateProgInfoAsRequired(intProgID)
-
-    '    Dim sqlCommand As New SQLiteCommand("select name from programmes where progid=@progid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        ProgrammeName = sqlReader.GetString(sqlReader.GetOrdinal("name"))
-    '    Else
-    '        ProgrammeName = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
-    'Public Function ProgrammeDescription(ByVal intProgID As Integer) As String
-    '    Call UpdateProgInfoAsRequired(intProgID)
-
-    '    Dim sqlCommand As New SQLiteCommand("select description from programmes where progid=@progid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        ProgrammeDescription = sqlReader.GetString(sqlReader.GetOrdinal("description"))
-    '    Else
-    '        ProgrammeDescription = Nothing
     '    End If
 
     '    sqlReader.Close()
@@ -1451,6 +1421,30 @@ Friend Class Data
         End SyncLock
     End Function
 
+    Public Function CompareSubscriptions(ByVal progid1 As Integer, ByVal progid2 As Integer) As Integer
+        SyncLock subscriptionSortCacheLock
+            If subscriptionSortCache Is Nothing OrElse Not subscriptionSortCache.ContainsKey(progid1) OrElse Not subscriptionSortCache.ContainsKey(progid2) Then
+                ' The sort cache is either empty or missing one of the values that are required, so recreate it
+                subscriptionSortCache = New Dictionary(Of Integer, Integer)
+
+                Dim sort As Integer = 0
+
+                Using command As New SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", FetchDbConn)
+                    Using reader As SQLiteDataReader = command.ExecuteReader()
+                        Dim progidOrdinal As Integer = reader.GetOrdinal("progid")
+
+                        Do While reader.Read
+                            subscriptionSortCache.Add(reader.GetInt32(progidOrdinal), sort)
+                            sort += 1
+                        Loop
+                    End Using
+                End Using
+            End If
+
+            Return subscriptionSortCache(progid1) - subscriptionSortCache(progid2)
+        End SyncLock
+    End Function
+
     Public Sub InitDownloadList()
         Using command As New SQLiteCommand("select epid from downloads", FetchDbConn)
             Using reader As SQLiteDataReader = command.ExecuteReader()
@@ -1518,6 +1512,8 @@ Friend Class Data
     End Function
 
     Public Function FetchSubscriptionData(ByVal progid As Integer) As SubscriptionData
+        'UpdateProgInfoAsRequired(intProgID)
+
         Using command As New SQLiteCommand("select name, description, pluginid from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
