@@ -91,6 +91,7 @@ Friend Class Main
     Private clsDoDBUpdate As UpdateDB
     Private clsUpdate As UpdateCheck
 
+    Private Delegate Sub clsProgData_ProviderAdded_Delegate(ByVal providerId As Guid)
     Private Delegate Sub clsProgData_SubscriptionAction_Delegate(ByVal progid As Integer)
     Private Delegate Sub clsProgData_DownloadAction_Delegate(ByVal epid As Integer)
     Private Delegate Sub clsProgData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
@@ -242,7 +243,7 @@ Friend Class Main
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
 
         clsProgData = Data.GetInstance
-        'Call clsProgData.UpdateProviderList(lstProviders, imlProviders, mnuOptionsProviderOpts)
+        Call clsProgData.InitProviderList()
         Call clsProgData.InitSubscriptionList()
         lstSubscribed.ListViewItemSorter = New ListComparer(ListComparer.ListType.Subscription)
         Call clsProgData.InitDownloadList()
@@ -598,6 +599,51 @@ Friend Class Main
 
     Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
         Call SetView(MainTab.Downloads, View.Downloads, Nothing)
+    End Sub
+
+    Private Sub clsProgData_ProviderAdded(ByVal providerId As System.Guid) Handles clsProgData.ProviderAdded
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_ProviderAdded_Delegate(AddressOf clsProgData_ProviderAdded), providerId)
+            Return
+        End If
+
+        Dim info As Data.ProviderData = clsProgData.FetchProviderData(providerId)
+
+        Dim addItem As New ListViewItem
+        addItem.Name = providerId.ToString
+        addItem.Text = info.name
+
+        If info.icon IsNot Nothing Then
+            imlProviders.Images.Add(providerId.ToString, info.icon)
+            addItem.ImageKey = providerId.ToString
+        Else
+            addItem.ImageKey = "default"
+        End If
+
+        lstProviders.Items.Add(addItem)
+
+        ' Hide the 'No providers' provider options menu item
+        If mnuOptionsProviderOptsNoProvs.Visible = True Then
+            mnuOptionsProviderOptsNoProvs.Visible = False
+        End If
+
+        Dim addMenuItem As New MenuItem(info.name + " Provider")
+
+        If info.showOptionsHandler IsNot Nothing Then
+            AddHandler addMenuItem.Click, info.showOptionsHandler
+        Else
+            addMenuItem.Enabled = False
+        End If
+
+        mnuOptionsProviderOpts.MenuItems.Add(addMenuItem)
+
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.FindNewChooseProvider Then
+            If lstProviders.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
+        End If
     End Sub
 
     Private Sub SubscriptionListItem(ByVal progid As Integer, ByVal info As Data.SubscriptionData, ByRef item As ListViewItem)

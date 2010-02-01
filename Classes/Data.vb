@@ -31,6 +31,12 @@ Friend Class Data
         Errored = 2
     End Enum
 
+    Public Structure ProviderData
+        Dim name As String
+        Dim icon As Bitmap
+        Dim showOptionsHandler As EventHandler
+    End Structure
+
     Public Structure SubscriptionData
         Dim name As String
         Dim description As String
@@ -69,6 +75,7 @@ Friend Class Data
     Private checkSubsLock As New Object
     Private findDownloadLock As New Object
 
+    Public Event ProviderAdded(ByVal providerId As Guid)
     Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
     Public Event SubscriptionAdded(ByVal progid As Integer)
@@ -968,55 +975,6 @@ Friend Class Data
         RaiseEvent DownloadProgress(clsCurDldProgData.EpID, intPercent, strStatusText, Icon)
     End Sub
 
-    'Public Function GetCurrentDownloadInfo() As DldProgData
-    '    Return clsCurDldProgData
-    'End Function
-
-    'Public Sub UpdateProviderList(ByVal providerList As ListView, ByVal providerIcons As ImageList, ByVal providerOptsMenu As MenuItem)
-    '    Dim pluginIDList() As Guid
-    '    pluginIDList = clsPluginsInst.GetPluginIdList
-
-    '    Dim providerInstance As IRadioProvider
-    '    Dim addListItem As ListViewItem
-    '    Dim addMenuItem As MenuItem
-
-    '    For Each pluginID As Guid In pluginIDList
-    '        providerInstance = clsPluginsInst.GetPluginInstance(pluginID)
-
-    '        addListItem = New ListViewItem
-    '        addListItem.Text = providerInstance.ProviderName
-    '        addListItem.Tag = pluginID
-
-    '        Dim providerIcon As Bitmap = providerInstance.ProviderIcon
-
-    '        If providerIcon IsNot Nothing Then
-    '            providerIcons.Images.Add(pluginID.ToString, providerIcon)
-    '            addListItem.ImageKey = pluginID.ToString
-    '        Else
-    '            addListItem.ImageKey = "default"
-    '        End If
-
-    '        providerList.Items.Add(addListItem)
-
-    '        addMenuItem = New MenuItem(providerInstance.ProviderName + " Provider")
-
-    '        If providerInstance.GetShowOptionsHandler IsNot Nothing Then
-    '            AddHandler addMenuItem.Click, providerInstance.GetShowOptionsHandler
-    '        Else
-    '            addMenuItem.Enabled = False
-    '        End If
-
-
-    '        providerOptsMenu.MenuItems.Add(addMenuItem)
-    '    Next
-
-    '    If providerOptsMenu.MenuItems.Count = 0 Then
-    '        addMenuItem = New MenuItem("No providers")
-    '        addMenuItem.Enabled = False
-    '        providerOptsMenu.MenuItems.Add(addMenuItem)
-    '    End If
-    'End Sub
-
     Public Sub PerformCleanup()
         '    Dim sqlCommand As New SQLiteCommand("select epid, filepath from downloads where status=@status", sqlConnection)
         '    sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
@@ -1443,6 +1401,15 @@ Friend Class Data
         End SyncLock
     End Function
 
+    Public Sub InitProviderList()
+        Dim pluginIdList() As Guid
+        pluginIdList = clsPluginsInst.GetPluginIdList
+
+        For Each pluginId As Guid In pluginIdList
+            RaiseEvent ProviderAdded(pluginId)
+        Next
+    End Sub
+
     Public Sub InitDownloadList()
         Using command As New SQLiteCommand("select epid from downloads", FetchDbConn)
             Using reader As SQLiteDataReader = command.ExecuteReader()
@@ -1535,5 +1502,16 @@ Friend Class Data
                 Return info
             End Using
         End Using
+    End Function
+
+    Public Function FetchProviderData(ByVal providerId As Guid) As ProviderData
+        Dim providerInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(providerId)
+
+        Dim info As New ProviderData
+        info.name = providerInstance.ProviderName
+        info.icon = providerInstance.ProviderIcon
+        info.showOptionsHandler = providerInstance.GetShowOptionsHandler
+
+        Return info
     End Function
 End Class
