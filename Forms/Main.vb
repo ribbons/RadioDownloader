@@ -303,18 +303,19 @@ Friend Class Main
     End Sub
 
     Private Sub lstProviders_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstProviders.SelectedIndexChanged
-        Call SetContextForSelectedProvider()
+        If lstProviders.SelectedItems.Count > 0 Then
+            Dim pluginId As Guid = New Guid(lstProviders.SelectedItems(0).Name)
+            ShowProviderInfo(pluginId)
+        Else
+            Call SetViewDefaults()
+        End If
     End Sub
 
-    Private Sub SetContextForSelectedProvider()
-        'If lstProviders.SelectedItems.Count > 0 Then
-        '    SetToolbarButtons("ChooseProgramme")
+    Private Sub ShowProviderInfo(ByVal providerId As Guid)
+        Dim info As Data.ProviderData = clsProgData.FetchProviderData(providerId)
 
-        '    Dim gidPluginID As Guid = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
-        '    Call SetSideBar(clsProgData.ProviderName(gidPluginID), clsProgData.ProviderDescription(gidPluginID), Nothing)
-        'Else
-        '    Call SetViewDefaults()
-        'End If
+        Call SetSideBar(info.name, info.description, Nothing)
+        SetToolbarButtons("ChooseProgramme")
     End Sub
 
     Private Sub lstProviders_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
@@ -1086,8 +1087,11 @@ Friend Class Main
         Select Case ViewData.View
             Case View.FindNewChooseProvider
                 lstProviders.Visible = True
-                Call SetContextForSelectedProvider()
                 lstProviders.Focus()
+
+                If lstProviders.SelectedItems.Count > 0 Then
+                    ShowProviderInfo(New Guid(lstProviders.SelectedItems(0).Name))
+                End If
             Case View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
 

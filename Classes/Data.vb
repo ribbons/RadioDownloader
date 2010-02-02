@@ -33,6 +33,7 @@ Friend Class Data
 
     Public Structure ProviderData
         Dim name As String
+        Dim description As String
         Dim icon As Bitmap
         Dim showOptionsHandler As EventHandler
     End Structure
@@ -1509,6 +1510,7 @@ Friend Class Data
 
         Dim info As New ProviderData
         info.name = providerInstance.ProviderName
+        info.description = providerInstance.ProviderDescription
         info.icon = providerInstance.ProviderIcon
         info.showOptionsHandler = providerInstance.GetShowOptionsHandler
 
