@@ -996,11 +996,11 @@ Friend Class Main
     End Sub
 
     Private Sub tbtChooseProgramme_Click()
-        Dim ViewData As FindNewViewData
-        ViewData.ProviderID = DirectCast(lstProviders.SelectedItems(0).Tag, Guid)
-        ViewData.View = Nothing
+        Dim viewData As FindNewViewData
+        viewData.ProviderID = New Guid(lstProviders.SelectedItems(0).Name)
+        viewData.View = Nothing
 
-        Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, ViewData)
+        Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, viewData)
     End Sub
 
     Private Sub mnuOptionsShowOpts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsShowOpts.Click
