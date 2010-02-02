@@ -38,6 +38,12 @@ Friend Class Data
         Dim showOptionsHandler As EventHandler
     End Structure
 
+    Public Structure EpisodeData
+        Dim name As String
+        Dim episodeDate As Date
+        Dim autoDownload As Boolean
+    End Structure
+
     Public Structure SubscriptionData
         Dim name As String
         Dim description As String
@@ -79,6 +85,8 @@ Friend Class Data
     Public Event ProviderAdded(ByVal providerId As Guid)
     Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
+    Public Event EpisodeAdded(ByVal epid As Integer)
+    'Public Event EpisodeUpdated(ByVal epid As Integer)
     Public Event SubscriptionAdded(ByVal progid As Integer)
     Public Event SubscriptionUpdated(ByVal progid As Integer)
     Public Event SubscriptionRemoved(ByVal progid As Integer)
@@ -591,25 +599,6 @@ Friend Class Data
     '    sqlReader.Close()
     'End Sub
 
-    'Public Sub ListEpisodes(ByVal intProgID As Integer, ByRef lstListview As ExtListView)
-    '    Dim intAvailable As Integer()
-    '    intAvailable = GetAvailableEpisodes(intProgID)
-    '    Array.Reverse(intAvailable)
-
-    '    lstListview.Items.Clear()
-
-    '    For Each intEpID As Integer In intAvailable
-    '        Dim lstAdd As New ListViewItem
-
-    '        lstAdd.Text = EpisodeDate(intEpID).ToShortDateString
-    '        lstAdd.SubItems.Add(EpisodeName(intEpID))
-    '        lstAdd.Checked = EpisodeAutoDownload(intEpID)
-    '        lstAdd.Tag = intEpID
-
-    '        lstListview.Items.Add(lstAdd)
-    '    Next
-    'End Sub
-
     Public Sub CheckSubscriptions()
         ThreadPool.QueueUserWorkItem(AddressOf CheckSubscriptionsAsync)
     End Sub
@@ -1082,27 +1071,27 @@ Friend Class Data
         RaiseEvent FindNewViewChange(objView)
     End Sub
 
-    'Private Sub FindNewPluginInst_FoundNew(ByVal strProgExtID As String) Handles FindNewPluginInst.FoundNew
-    '    Dim gidPluginID As Guid = FindNewPluginInst.ProviderID
-    '    Dim PluginException As Exception = Nothing
+    Private Sub FindNewPluginInst_FoundNew(ByVal progExtId As String) Handles FindNewPluginInst.FoundNew
+        Dim pluginId As Guid = FindNewPluginInst.ProviderID
+        Dim pluginExp As Exception = Nothing
 
-    '    If StoreProgrammeInfo(gidPluginID, strProgExtID, PluginException) = False Then
-    '        If PluginException IsNot Nothing Then
-    '            If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + vbCrLf + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
-    '                Dim clsReport As New ErrorReporting(PluginException)
-    '                clsReport.SendReport(My.Settings.ErrorReportURL)
-    '            End If
+        If StoreProgrammeInfo(pluginId, progExtId, pluginExp) = False Then
+            If pluginExp IsNot Nothing Then
+                If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + Environment.NewLine + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
+                    Dim clsReport As New ErrorReporting(pluginExp)
+                    clsReport.SendReport(My.Settings.ErrorReportURL)
+                End If
 
-    '            Exit Sub
-    '        Else
-    '            Call MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation)
-    '            Exit Sub
-    '        End If
-    '    End If
+                Exit Sub
+            Else
+                Call MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation)
+                Exit Sub
+            End If
+        End If
 
-    '    Dim intProgID As Integer = ExtIDToProgID(gidPluginID, strProgExtID)
-    '    RaiseEvent FoundNew(intProgID)
-    'End Sub
+        Dim progid As Integer = ExtIDToProgID(pluginId, progExtId)
+        RaiseEvent FoundNew(progid)
+    End Sub
 
     Private Function StoreProgrammeInfo(ByVal pluginId As System.Guid, ByVal progExtId As String, ByRef pluginExp As Exception) As Boolean
         If clsPluginsInst.PluginExists(pluginId) = False Then
@@ -1147,11 +1136,20 @@ Friend Class Data
             command.ExecuteNonQuery()
         End Using
 
-        SyncLock downloadSortCacheLock
-            downloadSortCache = Nothing
-        End SyncLock
+        ' If the programme is in the list of subscriptions, clear the sort cache and raise an updated event
+        Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-        RaiseEvent SubscriptionUpdated(progid)
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read Then
+                    SyncLock subscriptionSortCacheLock
+                        subscriptionSortCache = Nothing
+                    End SyncLock
+
+                    RaiseEvent SubscriptionUpdated(progid)
+                End If
+            End Using
+        End Using
 
         Return True
     End Function
@@ -1411,6 +1409,16 @@ Friend Class Data
         Next
     End Sub
 
+    Public Sub InitEpisodeList(ByVal progid As Integer)
+        Dim availableEps As Integer()
+        availableEps = GetAvailableEpisodes(progid)
+        Array.Reverse(availableEps)
+
+        For Each epid As Integer In availableEps
+            RaiseEvent EpisodeAdded(epid)
+        Next
+    End Sub
+
     Public Sub InitDownloadList()
         Using command As New SQLiteCommand("select epid from downloads", FetchDbConn)
             Using reader As SQLiteDataReader = command.ExecuteReader()
@@ -1499,6 +1507,33 @@ Friend Class Data
 
                 Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
                 info.providerName = ProviderName(pluginId)
+
+                Return info
+            End Using
+        End Using
+    End Function
+
+    Public Function FetchEpisodeData(ByVal epid As Integer) As EpisodeData
+        Using command As New SQLiteCommand("select name, description, date, autodownload from episodes where episodes.epid=@epid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@epid", epid))
+
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read = False Then
+                    Return Nothing
+                End If
+
+                Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
+
+                Dim info As New EpisodeData
+                info.name = reader.GetString(reader.GetOrdinal("name"))
+
+                'If Not reader.IsDBNull(descriptionOrdinal) Then
+                '    info.description = reader.GetString(descriptionOrdinal)
+                'End If
+
+                info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
+                'info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
+                info.autoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) = 1
 
                 Return info
             End Using

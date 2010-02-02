@@ -647,6 +647,23 @@ Friend Class Main
         End If
     End Sub
 
+    Private Sub EpisodeListItem(ByVal epid As Integer, ByVal info As Data.EpisodeData, ByRef item As ListViewItem)
+        item.Name = epid.ToString
+        item.Text = info.episodeDate.ToShortDateString
+        item.SubItems(1).Text = info.name
+        item.Checked = info.autoDownload
+    End Sub
+
+    Private Sub clsProgData_EpisodeAdded(ByVal epid As Integer) Handles clsProgData.EpisodeAdded
+        Dim info As Data.EpisodeData = clsProgData.FetchEpisodeData(epid)
+
+        Dim addItem As New ListViewItem
+        addItem.SubItems.Add("")
+
+        EpisodeListItem(epid, info, addItem)
+        lstEpisodes.Items.Add(addItem)
+    End Sub
+
     Private Sub SubscriptionListItem(ByVal progid As Integer, ByVal info As Data.SubscriptionData, ByRef item As ListViewItem)
         item.Name = progid.ToString
         item.Text = info.name
@@ -1103,7 +1120,8 @@ Friend Class Main
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
                 RemoveHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
-                'clsProgData.ListEpisodes(CInt(ViewData.ViewData), lstEpisodes)
+                lstEpisodes.Items.Clear()
+                clsProgData.InitEpisodeList(CInt(ViewData.ViewData))
             Case View.Subscriptions
                 lstSubscribed.Visible = True
                 lstSubscribed.Focus()
