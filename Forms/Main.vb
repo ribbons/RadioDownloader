@@ -1133,7 +1133,7 @@ Friend Class Main
             Case View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
                 Call SetToolbarButtons("")
-                '        Call SetSideBar(clsProgData.ProviderName(FindViewData.ProviderID), clsProgData.ProviderDescription(FindViewData.ProviderID), Nothing)
+                Call ShowProviderInfo(FindViewData.ProviderID)
             Case View.ProgEpisodes
                 Dim intProgID As Integer = CInt(ViewData.ViewData)
 
