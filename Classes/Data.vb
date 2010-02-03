@@ -40,8 +40,17 @@ Friend Class Data
 
     Public Structure EpisodeData
         Dim name As String
+        Dim description As String
         Dim episodeDate As Date
+        Dim duration As Integer
         Dim autoDownload As Boolean
+    End Structure
+
+    Public Structure ProgrammeData
+        Dim name As String
+        Dim description As String
+        Dim subscribed As Boolean
+        Dim singleEpisode As Boolean
     End Structure
 
     Public Structure SubscriptionData
@@ -441,29 +450,6 @@ Friend Class Data
         End Using
     End Function
 
-    'Public Function ProgrammeIsSingleEpisode(ByVal intProgID As Integer) As Boolean
-    '    Call UpdateProgInfoAsRequired(intProgID)
-
-    '    Dim sqlCommand As New SQLiteCommand("select singleepisode from programmes where progid=@progid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        ProgrammeIsSingleEpisode = sqlReader.GetBoolean(sqlReader.GetOrdinal("singleepisode"))
-    '    Else
-    '        ProgrammeIsSingleEpisode = False
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
-    'Public Function EpisodeExists(ByVal intEpID As Integer) As Boolean
-    '    Dim sqlCommand As New SQLiteCommand("select count(*) from episodes where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-
-    '    Return CInt(sqlCommand.ExecuteScalar) > 0
-    'End Function
-
     'Public Function EpisodeName(ByVal intEpID As Integer) As String
     '    Dim sqlCommand As New SQLiteCommand("select name, date from episodes where epid=@epid", sqlConnection)
     '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
@@ -490,52 +476,6 @@ Friend Class Data
     '        End If
     '    Else
     '        EpisodeName = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
-    'Public Function EpisodeDescription(ByVal intEpID As Integer) As String
-    '    Dim sqlCommand As New SQLiteCommand("select description from episodes where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        If sqlReader.IsDBNull(sqlReader.GetOrdinal("description")) Then
-    '            EpisodeDescription = Nothing
-    '        Else
-    '            EpisodeDescription = sqlReader.GetString(sqlReader.GetOrdinal("description"))
-    '        End If
-    '    Else
-    '        EpisodeDescription = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
-    'Public Function EpisodeDate(ByVal intEpID As Integer) As DateTime
-    '    Dim sqlCommand As New SQLiteCommand("select date from episodes where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        EpisodeDate = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
-    '    Else
-    '        EpisodeDate = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
-    'Public Function EpisodeDuration(ByVal intEpID As Integer) As Integer
-    '    Dim sqlCommand As New SQLiteCommand("select duration from episodes where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        EpisodeDuration = sqlReader.GetInt32(sqlReader.GetOrdinal("duration"))
-    '    Else
-    '        EpisodeDuration = Nothing
     '    End If
 
     '    sqlReader.Close()
@@ -1514,7 +1454,7 @@ Friend Class Data
     End Function
 
     Public Function FetchEpisodeData(ByVal epid As Integer) As EpisodeData
-        Using command As New SQLiteCommand("select name, description, date, autodownload from episodes where episodes.epid=@epid", FetchDbConn)
+        Using command As New SQLiteCommand("select name, description, date, duration, autodownload from episodes where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
             Using reader As SQLiteDataReader = command.ExecuteReader
@@ -1527,17 +1467,51 @@ Friend Class Data
                 Dim info As New EpisodeData
                 info.name = reader.GetString(reader.GetOrdinal("name"))
 
-                'If Not reader.IsDBNull(descriptionOrdinal) Then
-                '    info.description = reader.GetString(descriptionOrdinal)
-                'End If
+                If Not reader.IsDBNull(descriptionOrdinal) Then
+                    info.description = reader.GetString(descriptionOrdinal)
+                End If
 
                 info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
-                'info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
+                info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
                 info.autoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) = 1
 
                 Return info
             End Using
         End Using
+    End Function
+
+    Public Function FetchProgrammeData(ByVal progid As Integer) As ProgrammeData
+        Dim info As New ProgrammeData
+
+        Using command As New SQLiteCommand("select name, description, singleepisode from programmes where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read = False Then
+                    Return Nothing
+                End If
+
+                Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
+
+                info.name = reader.GetString(reader.GetOrdinal("name"))
+
+                If Not reader.IsDBNull(descriptionOrdinal) Then
+                    info.description = reader.GetString(descriptionOrdinal)
+                End If
+
+                info.singleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"))
+            End Using
+        End Using
+
+        Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                info.subscribed = reader.Read
+            End Using
+        End Using
+
+        Return info
     End Function
 
     Public Function FetchProviderData(ByVal providerId As Guid) As ProviderData

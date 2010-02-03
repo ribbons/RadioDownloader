@@ -332,29 +332,33 @@ Friend Class Main
     End Sub
 
     Private Sub lstEpisodes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
-        Call SetContextForSelectedEpisode()
-    End Sub
-
-    Private Sub SetContextForSelectedEpisode()
         If lstEpisodes.SelectedItems.Count > 0 Then
-            Dim intProgID As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
-            Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
+            Dim epid As Integer = CInt(lstEpisodes.SelectedItems(0).Name)
 
-            With clsProgData
-                'Call SetSideBar(.EpisodeName(intEpID), .EpisodeDetails(intEpID), .EpisodeImage(intEpID))
+            Dim progInfo As Data.ProgrammeData = clsProgData.FetchProgrammeData(CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData))
+            Dim epInfo As Data.EpisodeData = clsProgData.FetchEpisodeData(epid)
+            Dim infoText As String = ""
 
-                'If .IsSubscribed(intProgID) Then
-                '    Call SetToolbarButtons("Download,Unsubscribe")
-                'Else
-                '    If clsProgData.ProgrammeIsSingleEpisode(intProgID) Then
-                '        Call SetToolbarButtons("Download")
-                '    Else
-                '        Call SetToolbarButtons("Download,Subscribe")
-                '    End If
-                'End If
-            End With
+            If epInfo.description IsNot Nothing Then
+                infoText += epInfo.description + Environment.NewLine + Environment.NewLine
+            End If
+
+            infoText += "Date: " + epInfo.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
+            infoText += ReadableDuration(epInfo.duration)
+
+            Call SetSideBar(epInfo.name, infoText, clsProgData.FetchEpisodeImage(epid))
+
+            If progInfo.subscribed Then
+                Call SetToolbarButtons("Download,Unsubscribe")
+            Else
+                If progInfo.singleEpisode Then
+                    Call SetToolbarButtons("Download")
+                Else
+                    Call SetToolbarButtons("Download,Subscribe")
+                End If
+            End If
         Else
-            Call SetViewDefaults() ' Revert back to programme info in sidebar
+                Call SetViewDefaults() ' Revert back to programme info in sidebar
         End If
     End Sub
 
@@ -404,26 +408,7 @@ Friend Class Main
         End If
 
         infoText += "Date: " + info.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
-
-        If info.duration <> Nothing Then
-            infoText += Environment.NewLine + "Duration: "
-
-            Dim mins As Integer = info.duration \ 60
-            Dim hours As Integer = mins \ 60
-            mins = mins Mod 60
-
-            If hours > 0 Then
-                infoText += CStr(hours) + "hr" + Plural(hours)
-            End If
-
-            If hours > 0 And mins > 0 Then
-                infoText += " "
-            End If
-
-            If mins > 0 Then
-                infoText += CStr(mins) + "min"
-            End If
-        End If
+        infoText += ReadableDuration(info.duration)
 
         Select Case info.status
             Case Data.DownloadStatus.Downloaded
@@ -469,6 +454,32 @@ Friend Class Main
         Call SetSideBar(info.name, infoText, clsProgData.FetchEpisodeImage(epid))
         Call SetToolbarButtons(actionString)
     End Sub
+
+    Private Function ReadableDuration(ByVal duration As Integer) As String
+        Dim readable As String = ""
+
+        If duration <> 0 Then
+            readable += Environment.NewLine + "Duration: "
+
+            Dim mins As Integer = duration \ 60
+            Dim hours As Integer = mins \ 60
+            mins = mins Mod 60
+
+            If hours > 0 Then
+                readable += CStr(hours) + "hr" + Plural(hours)
+            End If
+
+            If hours > 0 And mins > 0 Then
+                readable += " "
+            End If
+
+            If mins > 0 Then
+                readable += CStr(mins) + "min"
+            End If
+        End If
+
+        Return readable
+    End Function
 
     Private Sub SetSideBar(ByVal strTitle As String, ByVal strDescription As String, ByVal bmpPicture As Bitmap)
         lblSideMainTitle.Text = strTitle
@@ -1153,19 +1164,20 @@ Friend Class Main
                 Call SetToolbarButtons("")
                 Call ShowProviderInfo(FindViewData.ProviderID)
             Case View.ProgEpisodes
-                Dim intProgID As Integer = CInt(ViewData.ViewData)
+                Dim progid As Integer = CInt(ViewData.ViewData)
+                Dim progInfo As Data.ProgrammeData = clsProgData.FetchProgrammeData(CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData))
 
-                '        If clsProgData.IsSubscribed(intProgID) Then
-                '            Call SetToolbarButtons("Unsubscribe")
-                '        Else
-                '            If clsProgData.ProgrammeIsSingleEpisode(intProgID) Then
-                Call SetToolbarButtons("")
-                '            Else
-                '                Call SetToolbarButtons("Subscribe")
-                '            End If
-                '        End If
+                If progInfo.subscribed Then
+                    Call SetToolbarButtons("Unsubscribe")
+                Else
+                    If progInfo.singleEpisode Then
+                        Call SetToolbarButtons("")
+                    Else
+                        Call SetToolbarButtons("Subscribe")
+                    End If
+                End If
 
-                '        Call SetSideBar(clsProgData.ProgrammeName(intProgID), clsProgData.ProgrammeDescription(intProgID), clsProgData.ProgrammeImage(intProgID))
+                Call SetSideBar(progInfo.name, progInfo.description, clsProgData.FetchProgrammeImage(progid))
             Case View.Subscriptions
                 Call SetToolbarButtons("")
                 Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + Plural(lstSubscribed.Items.Count), "", Nothing)
