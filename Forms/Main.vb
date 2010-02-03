@@ -1002,15 +1002,13 @@ Friend Class Main
     End Sub
 
     Private Sub tbtDownload_Click()
-        Dim intEpID As Integer = CInt(lstEpisodes.SelectedItems(0).Tag)
+        Dim epid As Integer = CInt(lstEpisodes.SelectedItems(0).Name)
 
-        'If clsProgData.AddDownload(intEpID) Then
-        '    'Call clsProgData.UpdateDlList(lstDownloads)
-        '    Call SetView(MainTab.Downloads, View.Downloads, Nothing)
-        '    tmrStartProcess.Enabled = True
-        'Else
-        '    Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
-        'End If
+        If clsProgData.AddDownload(epid) Then
+            Call SetView(MainTab.Downloads, View.Downloads, Nothing)
+        Else
+            Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
+        End If
     End Sub
 
     Private Sub tbtCurrentEps_Click()

@@ -587,19 +587,25 @@ Friend Class Data
         End SyncLock
     End Sub
 
-    'Public Function AddDownload(ByVal epid As Integer) As Boolean
-    '    Dim sqlCommand As New SQLiteCommand("select epid from downloads where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    Public Function AddDownload(ByVal epid As Integer) As Boolean
+        Using sqlCommand As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
+            sqlCommand.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-    '    If sqlReader.Read Then
-    '        Return False
-    '    End If
+            Using sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+                If sqlReader.Read Then
+                    Return False
+                End If
+            End Using
+        End Using
 
-    '    sqlReader.Close()
+        ThreadPool.QueueUserWorkItem(AddressOf AddDownloadAsync, epid)
 
-    '    Return True
-    'End Function
+        Return True
+    End Function
+
+    Private Sub AddDownloadAsync(ByVal epid As Object)
+        AddDownloadAsync(CInt(epid))
+    End Sub
 
     Private Sub AddDownloadAsync(ByVal epid As Integer)
         Using command As New SQLiteCommand("insert into downloads (epid, status) values (@epid, @status)", FetchDbConn)
@@ -609,6 +615,8 @@ Friend Class Data
         End Using
 
         RaiseEvent DownloadAdded(epid)
+
+        Call StartDownload()
     End Sub
 
     'Public Function IsSubscribed(ByVal intProgID As Integer) As Boolean
