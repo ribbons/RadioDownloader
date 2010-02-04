@@ -779,17 +779,6 @@ Friend Class Data
         Return pluginInstance.ProviderName
     End Function
 
-    'Public Function ProviderDescription(ByVal gidPluginID As Guid) As String
-    '    If clsPluginsInst.PluginExists(gidPluginID) = False Then
-    '        Return ""
-    '    End If
-
-    '    Dim ThisInstance As IRadioProvider
-    '    ThisInstance = clsPluginsInst.GetPluginInstance(gidPluginID)
-
-    '    Return ThisInstance.ProviderDescription
-    'End Function
-
     Public Sub DownloadBumpPlayCount(ByVal epid As Integer)
         ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf DownloadBumpPlayCountAsync), epid)
     End Sub
