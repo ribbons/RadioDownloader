@@ -328,7 +328,7 @@ Friend Class Main
     End Sub
 
     Private Sub lstEpisodes_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lstEpisodes.ItemCheck
-        'clsProgData.EpisodeSetAutoDownload(CInt(lstEpisodes.Items(e.Index).Tag), e.NewValue = CheckState.Checked)
+        clsProgData.EpisodeSetAutoDownload(CInt(lstEpisodes.Items(e.Index).Name), e.NewValue = CheckState.Checked)
     End Sub
 
     Private Sub ShowEpisodeInfo(ByVal epid As Integer)
@@ -712,7 +712,10 @@ Friend Class Main
         addItem.SubItems.Add("")
 
         EpisodeListItem(epid, info, addItem)
+
+        RemoveHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
         lstEpisodes.Items.Add(addItem)
+        AddHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
     End Sub
 
     Private Sub SubscriptionListItem(ByVal progid As Integer, ByVal info As Data.SubscriptionData, ByRef item As ListViewItem)
@@ -1157,7 +1160,6 @@ Friend Class Main
                 pnlPluginSpace.Controls(0).Focus()
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
-                RemoveHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
                 lstEpisodes.Items.Clear()
                 clsProgData.InitEpisodeList(CInt(ViewData.ViewData))
             Case View.Subscriptions

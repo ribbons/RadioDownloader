@@ -508,6 +508,15 @@ Friend Class Data
         End Using
     End Function
 
+    Public Sub EpisodeSetAutoDownload(ByVal epid As Integer, ByVal autoDownload As Boolean)
+        ThreadPool.QueueUserWorkItem(AddressOf EpisodeSetAutoDownloadAsync, New ArrayList(New Object() {epid, autoDownload}))
+    End Sub
+
+    Private Sub EpisodeSetAutoDownloadAsync(ByVal params As Object)
+        Dim paramList As ArrayList = DirectCast(params, ArrayList)
+        EpisodeSetAutoDownloadAsync(CInt(paramList(0)), CBool(paramList(1)))
+    End Sub
+
     Private Sub EpisodeSetAutoDownloadAsync(ByVal epid As Integer, ByVal autoDownload As Boolean)
         Using command As New SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
