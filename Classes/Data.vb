@@ -94,6 +94,7 @@ Friend Class Data
     Public Event ProviderAdded(ByVal providerId As Guid)
     Public Event FindNewViewChange(ByVal objView As Object)
     Public Event FoundNew(ByVal intProgID As Integer)
+    Public Event ProgrammeUpdated(ByVal progid As Integer)
     Public Event EpisodeAdded(ByVal epid As Integer)
     'Public Event EpisodeUpdated(ByVal epid As Integer)
     Public Event SubscriptionAdded(ByVal progid As Integer)
@@ -588,11 +589,11 @@ Friend Class Data
     End Sub
 
     Public Function AddDownload(ByVal epid As Integer) As Boolean
-        Using sqlCommand As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
-            sqlCommand.Parameters.Add(New SQLiteParameter("@epid", epid))
+        Using command As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-            Using sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-                If sqlReader.Read Then
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read Then
                     Return False
                 End If
             End Using
@@ -619,29 +620,53 @@ Friend Class Data
         Call StartDownload()
     End Sub
 
-    'Public Function IsSubscribed(ByVal intProgID As Integer) As Boolean
-    '    Dim sqlCommand As New SQLiteCommand("select progid from subscriptions where progid=@progid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
+    Public Function AddSubscription(ByVal progid As Integer) As Boolean
+        Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-    '    Return sqlReader.Read
-    'End Function
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read Then
+                    Return False
+                End If
+            End Using
+        End Using
 
-    'Public Sub AddSubscription(ByVal intProgID As Integer)
-    '    If IsSubscribed(intProgID) Then
-    '        Return
-    '    End If
+        ThreadPool.QueueUserWorkItem(AddressOf AddSubscriptionAsync, progid)
 
-    '    Dim sqlCommand As New SQLiteCommand("insert into subscriptions (progid) values (@progid)", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Call sqlCommand.ExecuteNonQuery()
-    'End Sub
+        Return True
+    End Function
 
-    'Public Sub RemoveSubscription(ByVal intProgID As Integer)
-    '    Dim sqlCommand As New SQLiteCommand("delete from subscriptions where progid=@progid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@progid", intProgID))
-    '    Call sqlCommand.ExecuteNonQuery()
-    'End Sub
+    Private Sub AddSubscriptionAsync(ByVal progid As Object)
+        AddSubscriptionAsync(CInt(progid))
+    End Sub
+
+    Private Sub AddSubscriptionAsync(ByVal progid As Integer)
+        Using command As New SQLiteCommand("insert into subscriptions (progid) values (@progid)", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+            Call command.ExecuteNonQuery()
+        End Using
+
+        RaiseEvent ProgrammeUpdated(progid)
+        RaiseEvent SubscriptionAdded(progid)
+    End Sub
+
+    Public Sub RemoveSubscription(ByVal progid As Integer)
+        ThreadPool.QueueUserWorkItem(AddressOf RemoveSubscriptionAsync, progid)
+    End Sub
+
+    Private Sub RemoveSubscriptionAsync(ByVal progid As Object)
+        RemoveSubscriptionAsync(CInt(progid))
+    End Sub
+
+    Private Sub RemoveSubscriptionAsync(ByVal progid As Integer)
+        Using command As New SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+            Call command.ExecuteNonQuery()
+        End Using
+
+        RaiseEvent ProgrammeUpdated(progid)
+        RaiseEvent SubscriptionRemoved(progid)
+    End Sub
 
     Private Function LatestDownloadDate(ByVal progid As Integer) As Date
         Using command As New SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", FetchDbConn)

@@ -92,8 +92,8 @@ Friend Class Main
     Private clsUpdate As UpdateCheck
 
     Private Delegate Sub clsProgData_ProviderAdded_Delegate(ByVal providerId As Guid)
-    Private Delegate Sub clsProgData_SubscriptionAction_Delegate(ByVal progid As Integer)
-    Private Delegate Sub clsProgData_DownloadAction_Delegate(ByVal epid As Integer)
+    Private Delegate Sub clsProgData_Programme_Delegate(ByVal progid As Integer)
+    Private Delegate Sub clsProgData_Episode_Delegate(ByVal epid As Integer)
     Private Delegate Sub clsProgData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
 
     Private Const downloadProgCol As Integer = 3
@@ -331,34 +331,37 @@ Friend Class Main
         'clsProgData.EpisodeSetAutoDownload(CInt(lstEpisodes.Items(e.Index).Tag), e.NewValue = CheckState.Checked)
     End Sub
 
+    Private Sub ShowEpisodeInfo(ByVal epid As Integer)
+        Dim progInfo As Data.ProgrammeData = clsProgData.FetchProgrammeData(CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData))
+        Dim epInfo As Data.EpisodeData = clsProgData.FetchEpisodeData(epid)
+        Dim infoText As String = ""
+
+        If epInfo.description IsNot Nothing Then
+            infoText += epInfo.description + Environment.NewLine + Environment.NewLine
+        End If
+
+        infoText += "Date: " + epInfo.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
+        infoText += ReadableDuration(epInfo.duration)
+
+        Call SetSideBar(epInfo.name, infoText, clsProgData.FetchEpisodeImage(epid))
+
+        If progInfo.subscribed Then
+            Call SetToolbarButtons("Download,Unsubscribe")
+        Else
+            If progInfo.singleEpisode Then
+                Call SetToolbarButtons("Download")
+            Else
+                Call SetToolbarButtons("Download,Subscribe")
+            End If
+        End If
+    End Sub
+
     Private Sub lstEpisodes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
         If lstEpisodes.SelectedItems.Count > 0 Then
             Dim epid As Integer = CInt(lstEpisodes.SelectedItems(0).Name)
-
-            Dim progInfo As Data.ProgrammeData = clsProgData.FetchProgrammeData(CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData))
-            Dim epInfo As Data.EpisodeData = clsProgData.FetchEpisodeData(epid)
-            Dim infoText As String = ""
-
-            If epInfo.description IsNot Nothing Then
-                infoText += epInfo.description + Environment.NewLine + Environment.NewLine
-            End If
-
-            infoText += "Date: " + epInfo.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
-            infoText += ReadableDuration(epInfo.duration)
-
-            Call SetSideBar(epInfo.name, infoText, clsProgData.FetchEpisodeImage(epid))
-
-            If progInfo.subscribed Then
-                Call SetToolbarButtons("Download,Unsubscribe")
-            Else
-                If progInfo.singleEpisode Then
-                    Call SetToolbarButtons("Download")
-                Else
-                    Call SetToolbarButtons("Download,Subscribe")
-                End If
-            End If
+            Call ShowEpisodeInfo(epid)
         Else
-                Call SetViewDefaults() ' Revert back to programme info in sidebar
+            Call SetViewDefaults() ' Revert back to programme info in sidebar
         End If
     End Sub
 
@@ -658,6 +661,43 @@ Friend Class Main
         End If
     End Sub
 
+    Private Sub clsProgData_ProgrammeUpdated(ByVal progid As Integer) Handles clsProgData.ProgrammeUpdated
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_Programme_Delegate(AddressOf clsProgData_ProgrammeUpdated), progid)
+            Return
+        End If
+
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.ProgEpisodes Then
+            If CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData) = progid Then
+                If lstEpisodes.SelectedItems.Count = 0 Then
+                    ' Update the displayed programme information
+                    Call ShowProgrammeInfo(progid)
+                Else
+                    ' Update the displayed episode information (in case the subscription status has changed)
+                    Dim epid As Integer = CInt(lstEpisodes.SelectedItems(0).Name)
+                    Call ShowEpisodeInfo(epid)
+                End If
+            End If
+        End If
+    End Sub
+
+    Private Sub ShowProgrammeInfo(ByVal progid As Integer)
+        Dim progInfo As Data.ProgrammeData = clsProgData.FetchProgrammeData(CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData))
+
+        If progInfo.subscribed Then
+            Call SetToolbarButtons("Unsubscribe")
+        Else
+            If progInfo.singleEpisode Then
+                Call SetToolbarButtons("")
+            Else
+                Call SetToolbarButtons("Subscribe")
+            End If
+        End If
+
+        Call SetSideBar(progInfo.name, progInfo.description, clsProgData.FetchProgrammeImage(progid))
+    End Sub
+
     Private Sub EpisodeListItem(ByVal epid As Integer, ByVal info As Data.EpisodeData, ByRef item As ListViewItem)
         item.Name = epid.ToString
         item.Text = info.episodeDate.ToShortDateString
@@ -692,7 +732,7 @@ Friend Class Main
     Private Sub clsProgData_SubscriptionAdded(ByVal progid As Integer) Handles clsProgData.SubscriptionAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_SubscriptionAction_Delegate(AddressOf clsProgData_SubscriptionAdded), progid)
+            Me.BeginInvoke(New clsProgData_Programme_Delegate(AddressOf clsProgData_SubscriptionAdded), progid)
             Return
         End If
 
@@ -716,7 +756,7 @@ Friend Class Main
     Private Sub clsProgData_SubscriptionUpdated(ByVal progid As Integer) Handles clsProgData.SubscriptionUpdated
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_SubscriptionAction_Delegate(AddressOf clsProgData_SubscriptionUpdated), progid)
+            Me.BeginInvoke(New clsProgData_Programme_Delegate(AddressOf clsProgData_SubscriptionUpdated), progid)
             Return
         End If
 
@@ -738,7 +778,7 @@ Friend Class Main
     Private Sub clsProgData_SubscriptionRemoved(ByVal progid As Integer) Handles clsProgData.SubscriptionRemoved
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_SubscriptionAction_Delegate(AddressOf clsProgData_SubscriptionRemoved), progid)
+            Me.BeginInvoke(New clsProgData_Programme_Delegate(AddressOf clsProgData_SubscriptionRemoved), progid)
             Return
         End If
 
@@ -779,7 +819,7 @@ Friend Class Main
     Private Sub clsProgData_DownloadAdded(ByVal epid As Integer) Handles clsProgData.DownloadAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_DownloadAction_Delegate(AddressOf clsProgData_DownloadAdded), epid)
+            Me.BeginInvoke(New clsProgData_Episode_Delegate(AddressOf clsProgData_DownloadAdded), epid)
             Return
         End If
 
@@ -830,7 +870,7 @@ Friend Class Main
     Private Sub clsProgData_DownloadRemoved(ByVal epid As Integer) Handles clsProgData.DownloadRemoved
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_DownloadAction_Delegate(AddressOf clsProgData_DownloadRemoved), epid)
+            Me.BeginInvoke(New clsProgData_Episode_Delegate(AddressOf clsProgData_DownloadRemoved), epid)
             Return
         End If
 
@@ -853,7 +893,7 @@ Friend Class Main
     Private Sub clsProgData_DownloadUpdated(ByVal epid As Integer) Handles clsProgData.DownloadUpdated
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_DownloadAction_Delegate(AddressOf clsProgData_DownloadUpdated), epid)
+            Me.BeginInvoke(New clsProgData_Episode_Delegate(AddressOf clsProgData_DownloadUpdated), epid)
             Return
         End If
 
@@ -914,38 +954,27 @@ Friend Class Main
     End Sub
 
     Private Sub tbtSubscribe_Click()
-        Dim intProgID As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
+        Dim progid As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
 
-        'If clsProgData.IsSubscribed(intProgID) Then
-        '    Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation)
-        'Else
-        '    clsProgData.AddSubscription(intProgID)
-        '    'Call clsProgData.UpdateSubscrList(lstSubscribed)
-        '    Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
-        'End If
+        If clsProgData.AddSubscription(progid) Then
+            Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
+        Else
+            Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation)
+        End If
     End Sub
 
     Private Sub tbtUnsubscribe_Click()
-        Dim CurrentView As View = viwBackData(viwBackData.GetUpperBound(0)).View
-        Dim intProgID As Integer
+        Dim progid As Integer
 
-        Select Case CurrentView
+        Select Case viwBackData(viwBackData.GetUpperBound(0)).View
             Case View.ProgEpisodes
-                intProgID = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
+                progid = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
             Case View.Subscriptions
-                intProgID = CInt(lstSubscribed.SelectedItems(0).Tag)
+                progid = CInt(lstSubscribed.SelectedItems(0).Name)
         End Select
 
-        If MsgBox("Are you sure that you would like to stop having this programme downloaded regularly?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-            'Call clsProgData.RemoveSubscription(intProgID)
-            ''Call clsProgData.UpdateSubscrList(lstSubscribed)
-
-            'Select Case CurrentView
-            '    Case View.ProgEpisodes
-            '        Call SetContextForSelectedEpisode()
-            '    Case View.Subscriptions
-            '        Call SetViewDefaults()
-            'End Select
+        If MsgBox("Are you sure you would like to stop having new episodes of this programme downloaded automatically?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            Call clsProgData.RemoveSubscription(progid)
         End If
     End Sub
 
@@ -1163,19 +1192,7 @@ Friend Class Main
                 Call ShowProviderInfo(FindViewData.ProviderID)
             Case View.ProgEpisodes
                 Dim progid As Integer = CInt(ViewData.ViewData)
-                Dim progInfo As Data.ProgrammeData = clsProgData.FetchProgrammeData(CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData))
-
-                If progInfo.subscribed Then
-                    Call SetToolbarButtons("Unsubscribe")
-                Else
-                    If progInfo.singleEpisode Then
-                        Call SetToolbarButtons("")
-                    Else
-                        Call SetToolbarButtons("Subscribe")
-                    End If
-                End If
-
-                Call SetSideBar(progInfo.name, progInfo.description, clsProgData.FetchProgrammeImage(progid))
+                Call ShowProgrammeInfo(progid)
             Case View.Subscriptions
                 Call SetToolbarButtons("")
                 Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + Plural(lstSubscribed.Items.Count), "", Nothing)
