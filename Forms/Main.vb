@@ -1044,8 +1044,8 @@ Friend Class Main
     End Sub
 
     Private Sub tbtCurrentEps_Click()
-        Dim intProgID As Integer = CInt(lstSubscribed.SelectedItems(0).Tag)
-        Call SetView(MainTab.Subscriptions, View.ProgEpisodes, intProgID)
+        Dim progid As Integer = CInt(lstSubscribed.SelectedItems(0).Name)
+        Call SetView(MainTab.Subscriptions, View.ProgEpisodes, progid)
     End Sub
 
     Private Sub tbtReportError_Click()
