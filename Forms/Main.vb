@@ -313,9 +313,11 @@ Friend Class Main
 
     Private Sub ShowProviderInfo(ByVal providerId As Guid)
         Dim info As Data.ProviderData = clsProgData.FetchProviderData(providerId)
-
         Call SetSideBar(info.name, info.description, Nothing)
-        SetToolbarButtons("ChooseProgramme")
+
+        If viwBackData(viwBackData.GetUpperBound(0)).View = View.FindNewChooseProvider Then
+            SetToolbarButtons("ChooseProgramme")
+        End If
     End Sub
 
     Private Sub lstProviders_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstProviders.ItemActivate
