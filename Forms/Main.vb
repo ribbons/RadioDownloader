@@ -1050,7 +1050,7 @@ Friend Class Main
 
     Private Sub tbtReportError_Click()
         Dim episodeID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-        'clsProgData.DownloadReportError(episodeID)
+        clsProgData.DownloadReportError(episodeID)
     End Sub
 
     Private Sub tbtChooseProgramme_Click()

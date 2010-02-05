@@ -768,17 +768,6 @@ Friend Class Data
         RaiseEvent DownloadRemoved(epid)
     End Sub
 
-    Public Function ProviderName(ByVal pluginId As Guid) As String
-        If clsPluginsInst.PluginExists(pluginId) = False Then
-            Return ""
-        End If
-
-        Dim pluginInstance As IRadioProvider
-        pluginInstance = clsPluginsInst.GetPluginInstance(pluginId)
-
-        Return pluginInstance.ProviderName
-    End Function
-
     Public Sub DownloadBumpPlayCount(ByVal epid As Integer)
         ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf DownloadBumpPlayCountAsync), epid)
     End Sub
@@ -800,63 +789,73 @@ Friend Class Data
         RaiseEvent DownloadUpdated(epid)
     End Sub
 
-    'Public Sub DownloadReportError(ByVal episodeID As Integer)
-    '    Dim errorText As String = String.Empty
-    '    Dim extraDetailsString As String = DownloadErrorDetails(episodeID)
-    '    Dim errorExtraDetails As New Dictionary(Of String, String)
+    Public Sub DownloadReportError(ByVal epid As Integer)
+        Dim errorType As IRadioProvider.ErrorType
+        Dim errorText As String = Nothing
+        Dim extraDetailsString As String
+        Dim errorExtraDetails As New Dictionary(Of String, String)
 
-    '    Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
+        Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
 
-    '    Try
-    '        Dim extraDetails As List(Of DldErrorDataItem)
-    '        extraDetails = DirectCast(detailsSerializer.Deserialize(New StringReader(extraDetailsString)), List(Of DldErrorDataItem))
+        Using command As New SQLiteCommand("select errortype, errordetails, ep.name as epname, ep.description as epdesc, date, duration, ep.extid as epextid, pr.name as progname, pr.description as progdesc, pr.extid as progextid, pluginid from downloads as dld, episodes as ep, programmes as pr where dld.epid=@epid and ep.epid=@epid and ep.progid=pr.progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-    '        For Each detailItem As DldErrorDataItem In extraDetails
-    '            Select Case detailItem.Name
-    '                Case "error"
-    '                    errorText = detailItem.Data
-    '                Case "details"
-    '                    extraDetailsString = detailItem.Data
-    '                Case Else
-    '                    errorExtraDetails.Add(detailItem.Name, detailItem.Data)
-    '            End Select
-    '        Next
-    '    Catch invalidOperationExp As InvalidOperationException
-    '        ' Do nothing, and fall back to reporting all the details as one string
-    '    Catch invalidCastExp As InvalidCastException
-    '        ' Do nothing, and fall back to reporting all the details as one string
-    '    End Try
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If Not reader.Read Then
+                    Throw New ArgumentException("Episode " + epid.ToString + " does not exit, or is not in the download list!", "epid")
+                End If
 
-    '    If errorText = String.Empty Then
-    '        errorText = DownloadErrorType(episodeID).ToString
-    '    End If
+                errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), IRadioProvider.ErrorType)
+                extraDetailsString = reader.GetString(reader.GetOrdinal("errordetails"))
 
-    '    Dim command As New SQLiteCommand("select ep.name as epname, ep.description as epdesc, date, duration, ep.extid as epextid, pr.name as progname, pr.description as progdesc, pr.extid as progextid, pluginid from episodes as ep, programmes as pr where epid=@epid and ep.progid=pr.progid", sqlConnection)
-    '    command.Parameters.Add(New SQLiteParameter("@epid", episodeID))
-    '    Dim reader As SQLiteDataReader = command.ExecuteReader
+                errorExtraDetails.Add("episode:name", reader.GetString(reader.GetOrdinal("epname")))
+                errorExtraDetails.Add("episode:description", reader.GetString(reader.GetOrdinal("epdesc")))
+                errorExtraDetails.Add("episode:date", reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture))
+                errorExtraDetails.Add("episode:duration", CStr(reader.GetInt32(reader.GetOrdinal("duration"))))
+                errorExtraDetails.Add("episode:extid", reader.GetString(reader.GetOrdinal("epextid")))
 
-    '    If reader.Read Then
-    '        errorExtraDetails.Add("episode:name", reader.GetString(reader.GetOrdinal("epname")))
-    '        errorExtraDetails.Add("episode:description", reader.GetString(reader.GetOrdinal("epdesc")))
-    '        errorExtraDetails.Add("episode:date", reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture))
-    '        errorExtraDetails.Add("episode:duration", CStr(reader.GetInt32(reader.GetOrdinal("duration"))))
-    '        errorExtraDetails.Add("episode:extid", reader.GetString(reader.GetOrdinal("epextid")))
+                errorExtraDetails.Add("programme:name", reader.GetString(reader.GetOrdinal("progname")))
+                errorExtraDetails.Add("programme:description", reader.GetString(reader.GetOrdinal("progdesc")))
+                errorExtraDetails.Add("programme:extid", reader.GetString(reader.GetOrdinal("progextid")))
 
-    '        errorExtraDetails.Add("programme:name", reader.GetString(reader.GetOrdinal("progname")))
-    '        errorExtraDetails.Add("programme:description", reader.GetString(reader.GetOrdinal("progdesc")))
-    '        errorExtraDetails.Add("programme:extid", reader.GetString(reader.GetOrdinal("progextid")))
+                Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
+                Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
 
-    '        Dim providerGuid As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
-    '        errorExtraDetails.Add("provider:id", reader.GetString(reader.GetOrdinal("pluginid")))
-    '        errorExtraDetails.Add("provider:name", ProviderName(providerGuid))
-    '        errorExtraDetails.Add("provider:description", ProviderDescription(providerGuid))
-    '    End If
+                errorExtraDetails.Add("provider:id", pluginId.ToString)
+                errorExtraDetails.Add("provider:name", providerInst.ProviderName)
+                errorExtraDetails.Add("provider:description", providerInst.ProviderDescription)
+            End Using
+        End Using
 
-    '    reader.Close()
+        If extraDetailsString IsNot Nothing Then
+            Try
+                Dim extraDetails As List(Of DldErrorDataItem)
+                extraDetails = DirectCast(detailsSerializer.Deserialize(New StringReader(extraDetailsString)), List(Of DldErrorDataItem))
 
-    '    Dim clsReport As New ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails)
-    '    clsReport.SendReport(My.Settings.ErrorReportURL)
-    'End Sub
+                For Each detailItem As DldErrorDataItem In extraDetails
+                    Select Case detailItem.Name
+                        Case "error"
+                            errorText = detailItem.Data
+                        Case "details"
+                            extraDetailsString = detailItem.Data
+                        Case Else
+                            errorExtraDetails.Add(detailItem.Name, detailItem.Data)
+                    End Select
+                Next
+            Catch invalidOperationExp As InvalidOperationException
+                ' Do nothing, and fall back to reporting all the details as one string
+            Catch invalidCastExp As InvalidCastException
+                ' Do nothing, and fall back to reporting all the details as one string
+            End Try
+        End If
+
+        If errorText Is Nothing OrElse errorText = String.Empty Then
+            errorText = errorType.ToString
+        End If
+
+        Dim report As New ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails)
+        report.SendReport(My.Settings.ErrorReportURL)
+    End Sub
 
     Private Sub DownloadPluginInst_DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles DownloadPluginInst.DldError
         Select Case errorType
@@ -1477,7 +1476,8 @@ Friend Class Data
                 info.latestDownload = LatestDownloadDate(progid)
 
                 Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
-                info.providerName = ProviderName(pluginId)
+                Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
+                info.providerName = providerInst.ProviderName
 
                 Return info
             End Using
