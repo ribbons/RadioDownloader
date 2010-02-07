@@ -1225,8 +1225,6 @@ Friend Class Data
             Exit Function
         End Try
 
-        Dim episodeInfoReturn As IRadioProvider.GetEpisodeInfoReturn
-
         If episodeExtIDs IsNot Nothing Then
             ' Remove any duplicates, so that episodes don't get listed twice
             Dim extIds As New ArrayList()
@@ -1244,11 +1242,7 @@ Friend Class Data
             ' get added to the download list first if we are checking subscriptions
             Array.Reverse(episodeExtIDs)
 
-            Using findCmd As New SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", FetchDbConn), _
-              addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn), _
-              getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn), _
-              addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn)
-
+            Using findCmd As New SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", FetchDbConn)
                 Dim progidParam As New SQLiteParameter("@progid")
                 Dim extidParam As New SQLiteParameter("@extid")
 
@@ -1264,55 +1258,14 @@ Friend Class Data
                             ReDim Preserve episodeIDs(episodeIDs.GetUpperBound(0) + 1)
                             episodeIDs(episodeIDs.GetUpperBound(0)) = reader.GetInt32(reader.GetOrdinal("epid"))
                         Else
-                            Try
-                                episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId)
-                            Catch unhandled As Exception
-                                ' Catch any unhandled provider exceptions
-                                Continue For
-                            End Try
+                            Dim epid As Integer = StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId)
 
-                            If episodeInfoReturn.Success = False Then
+                            If epid < 0 Then
                                 Continue For
                             End If
 
-                            If episodeInfoReturn.EpisodeInfo.Name = "" Or episodeInfoReturn.EpisodeInfo.Date = Nothing Then
-                                Continue For
-                            End If
-
-                            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
-                                With addEpisodeCmd
-                                    .Transaction = trans
-                                    .Parameters.Add(New SQLiteParameter("@progid", progid))
-                                    .Parameters.Add(New SQLiteParameter("@extid", episodeExtId))
-                                    .Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
-                                    .Parameters.Add(New SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description))
-                                    .Parameters.Add(New SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs))
-                                    .Parameters.Add(New SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date))
-                                    .Parameters.Add(New SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)))
-                                    .ExecuteNonQuery()
-                                End With
-
-                                getRowIDCmd.Transaction = trans
-                                Dim epid As Integer = CInt(getRowIDCmd.ExecuteScalar)
-
-                                If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
-                                    addExtInfoCmd.Transaction = trans
-
-                                    For Each extItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
-                                        With addExtInfoCmd
-                                            .Parameters.Add(New SQLiteParameter("@epid", epid))
-                                            .Parameters.Add(New SQLiteParameter("@name", extItem.Key))
-                                            .Parameters.Add(New SQLiteParameter("@value", extItem.Value))
-                                            .ExecuteNonQuery()
-                                        End With
-                                    Next
-                                End If
-
-                                ReDim Preserve episodeIDs(episodeIDs.GetUpperBound(0) + 1)
-                                episodeIDs(episodeIDs.GetUpperBound(0)) = epid
-
-                                trans.Commit()
-                            End Using
+                            ReDim Preserve episodeIDs(episodeIDs.GetUpperBound(0) + 1)
+                            episodeIDs(episodeIDs.GetUpperBound(0)) = epid
                         End If
                     End Using
                 Next
@@ -1320,6 +1273,61 @@ Friend Class Data
         End If
 
         Return episodeIDs
+    End Function
+
+    Private Function StoreEpisodeInfo(ByVal pluginId As Guid, ByVal progid As Integer, ByVal progExtId As String, ByVal episodeExtId As String) As Integer
+        Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
+        Dim episodeInfoReturn As IRadioProvider.GetEpisodeInfoReturn
+
+        Try
+            episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId)
+        Catch unhandled As Exception
+            ' Catch any unhandled provider exceptions
+            Return -1
+        End Try
+
+        If episodeInfoReturn.Success = False Then
+            Return -1
+        End If
+
+        If episodeInfoReturn.EpisodeInfo.Name = "" Or episodeInfoReturn.EpisodeInfo.Date = Nothing Then
+            Return -1
+        End If
+
+        Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+            Using addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn, trans)
+                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@progid", progid))
+                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@extid", episodeExtId))
+                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
+                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description))
+                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs))
+                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date))
+                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)))
+                addEpisodeCmd.ExecuteNonQuery()
+            End Using
+
+            Dim epid As Integer
+
+            Using getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn, trans)
+                epid = CInt(getRowIDCmd.ExecuteScalar)
+            End Using
+
+            If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
+                Using addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn, trans)
+                    For Each extItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
+                        With addExtInfoCmd
+                            .Parameters.Add(New SQLiteParameter("@epid", epid))
+                            .Parameters.Add(New SQLiteParameter("@name", extItem.Key))
+                            .Parameters.Add(New SQLiteParameter("@value", extItem.Value))
+                            .ExecuteNonQuery()
+                        End With
+                    Next
+                End Using
+            End If
+
+            trans.Commit()
+            Return epid
+        End Using
     End Function
 
     Public Function CompareDownloads(ByVal epid1 As Integer, ByVal epid2 As Integer) As Integer
