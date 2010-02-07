@@ -556,12 +556,15 @@ Friend Class Data
     Private Sub CheckSubscriptionsAsync(ByVal dummy As Object)
         SyncLock checkSubsLock
             Using getSubsCmd As New SQLiteCommand("select progid from subscriptions", FetchDbConn), _
-                  autoDldCmd As New SQLiteCommand("select autodownload from episodes where epid=@epid", FetchDbConn), _
-                  checkCmd As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
+                  checkCmd As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn), _
+                  findCmd As New SQLiteCommand("select epid, autodownload from episodes where progid=@progid and extid=@extid", FetchDbConn)
 
                 Dim epidParam As New SQLiteParameter("@epid")
+                Dim progidParam As New SQLiteParameter("@progid")
+                Dim extidParam As New SQLiteParameter("@extid")
 
-                autoDldCmd.Parameters.Add(epidParam)
+                findCmd.Parameters.Add(progidParam)
+                findCmd.Parameters.Add(extidParam)
                 checkCmd.Parameters.Add(epidParam)
 
                 Using reader As SQLiteDataReader = getSubsCmd.ExecuteReader
@@ -569,27 +572,70 @@ Friend Class Data
                         Dim progidOrdinal As Integer = .GetOrdinal("progid")
 
                         Do While .Read()
-                            Dim intAvailableEps() As Integer
-                            intAvailableEps = GetAvailableEpisodes(.GetInt32(progidOrdinal))
+                            Dim progid As Integer = reader.GetInt32(progidOrdinal)
 
-                            For Each intEpID As Integer In intAvailableEps
-                                Dim autoDownload As Boolean = True
-                                epidParam.Value = intEpID
+                            Dim providerId As Guid
+                            Dim progExtId As String
 
-                                Using availReader As SQLiteDataReader = autoDldCmd.ExecuteReader
-                                    If availReader.Read Then
-                                        autoDownload = availReader.GetInt32(availReader.GetOrdinal("autodownload")) = 1
+                            Using command As New SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn)
+                                command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+                                Using idReader As SQLiteDataReader = command.ExecuteReader
+                                    If idReader.Read = False Then
+                                        Continue Do
                                     End If
-                                End Using
 
-                                If autoDownload Then
-                                    Using sqlCheckRdr As SQLiteDataReader = checkCmd.ExecuteReader
-                                        If sqlCheckRdr.Read = False Then
-                                            Call AddDownloadAsync(intEpID)
+                                    providerId = New Guid(idReader.GetString(idReader.GetOrdinal("pluginid")))
+                                    progExtId = idReader.GetString(idReader.GetOrdinal("extid"))
+                                End Using
+                            End Using
+
+                            Dim episodeExtIds As List(Of String)
+
+                            Try
+                                episodeExtIds = GetAvailableEpisodes(providerId, progExtId)
+                            Catch unhandled As Exception
+                                ' Catch any unhandled provider exceptions
+                                Exit Sub
+                            End Try
+
+                            If episodeExtIds IsNot Nothing Then
+                                For Each episodeExtId As String In episodeExtIds
+                                    progidParam.Value = progid
+                                    extidParam.Value = episodeExtId
+
+                                    Dim epid As Integer
+                                    Dim autoDownload As Boolean = True
+
+                                    Using findReader As SQLiteDataReader = findCmd.ExecuteReader
+                                        If findReader.Read Then
+                                            epid = findReader.GetInt32(findReader.GetOrdinal("epid"))
+                                            autoDownload = findReader.GetInt32(findReader.GetOrdinal("autodownload")) = 1
+                                        Else
+                                            Try
+                                                epid = StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId)
+                                            Catch unhandled As Exception
+                                                ' Catch any unhandled provider exceptions
+                                                Continue For
+                                            End Try
+
+                                            If epid < 0 Then
+                                                Continue For
+                                            End If
                                         End If
                                     End Using
-                                End If
-                            Next
+
+                                    If autoDownload Then
+                                        epidParam.Value = epid
+
+                                        Using sqlCheckRdr As SQLiteDataReader = checkCmd.ExecuteReader
+                                            If sqlCheckRdr.Read = False Then
+                                                Call AddDownloadAsync(epid)
+                                            End If
+                                        End Using
+                                    End If
+                                Next
+                            End If
                         Loop
                     End With
                 End Using
@@ -1191,100 +1237,37 @@ Friend Class Data
         End Using
     End Function
 
-    Private Function GetAvailableEpisodes(ByVal progid As Integer) As Integer()
-        Dim episodeIDs(-1) As Integer
-        GetAvailableEpisodes = episodeIDs
-
-        Dim providerId As Guid
-        Dim progExtId As String
-
-        Using command As New SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@progid", progid))
-
-            Using reader As SQLiteDataReader = command.ExecuteReader
-                If reader.Read = False Then
-                    Exit Function
-                End If
-
-                providerId = New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
-                progExtId = reader.GetString(reader.GetOrdinal("extid"))
-            End Using
-        End Using
-
+    Private Function GetAvailableEpisodes(ByVal providerId As Guid, ByVal progExtId As String) As List(Of String)
         If clsPluginsInst.PluginExists(providerId) = False Then
-            Exit Function
+            Return Nothing
         End If
 
-        Dim episodeExtIDs As String()
+        Dim extIds As String()
         Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(providerId)
 
-        Try
-            episodeExtIDs = providerInst.GetAvailableEpisodeIDs(progExtId)
-        Catch unhandled As Exception
-            ' Catch any unhandled provider exceptions
-            Exit Function
-        End Try
+        extIds = providerInst.GetAvailableEpisodeIDs(progExtId)
 
-        If episodeExtIDs IsNot Nothing Then
-            ' Remove any duplicates, so that episodes don't get listed twice
-            Dim extIds As New ArrayList()
-
-            For removeDups As Integer = 0 To episodeExtIDs.Length - 1
-                If extIds.Contains(episodeExtIDs(removeDups)) = False Then
-                    extIds.Add(episodeExtIDs(removeDups))
-                End If
-            Next
-
-            episodeExtIDs = New String(extIds.Count - 1) {}
-            extIds.CopyTo(episodeExtIDs)
-
-            ' Reverse the array so that we fetch the oldest episodes first, and the older episodes
-            ' get added to the download list first if we are checking subscriptions
-            Array.Reverse(episodeExtIDs)
-
-            Using findCmd As New SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", FetchDbConn)
-                Dim progidParam As New SQLiteParameter("@progid")
-                Dim extidParam As New SQLiteParameter("@extid")
-
-                findCmd.Parameters.Add(progidParam)
-                findCmd.Parameters.Add(extidParam)
-
-                For Each episodeExtId As String In episodeExtIDs
-                    progidParam.Value = progid
-                    extidParam.Value = episodeExtId
-
-                    Using reader As SQLiteDataReader = findCmd.ExecuteReader
-                        If reader.Read Then
-                            ReDim Preserve episodeIDs(episodeIDs.GetUpperBound(0) + 1)
-                            episodeIDs(episodeIDs.GetUpperBound(0)) = reader.GetInt32(reader.GetOrdinal("epid"))
-                        Else
-                            Dim epid As Integer = StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId)
-
-                            If epid < 0 Then
-                                Continue For
-                            End If
-
-                            ReDim Preserve episodeIDs(episodeIDs.GetUpperBound(0) + 1)
-                            episodeIDs(episodeIDs.GetUpperBound(0)) = epid
-                        End If
-                    End Using
-                Next
-            End Using
+        If extIds Is Nothing Then
+            Return Nothing
         End If
 
-        Return episodeIDs
+        ' Remove any duplicates from the list of episodes
+        Dim extIdsUnique As New List(Of String)
+
+        For Each removeDups As String In extIds
+            If extIdsUnique.Contains(removeDups) = False Then
+                extIdsUnique.Add(removeDups)
+            End If
+        Next
+
+        Return extIdsUnique
     End Function
 
     Private Function StoreEpisodeInfo(ByVal pluginId As Guid, ByVal progid As Integer, ByVal progExtId As String, ByVal episodeExtId As String) As Integer
         Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
         Dim episodeInfoReturn As IRadioProvider.GetEpisodeInfoReturn
 
-        Try
-            episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId)
-        Catch unhandled As Exception
-            ' Catch any unhandled provider exceptions
-            Return -1
-        End Try
+        episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId)
 
         If episodeInfoReturn.Success = False Then
             Return -1
@@ -1388,13 +1371,54 @@ Friend Class Data
     End Sub
 
     Public Sub InitEpisodeList(ByVal progid As Integer)
-        Dim availableEps As Integer()
-        availableEps = GetAvailableEpisodes(progid)
-        Array.Reverse(availableEps)
+        Dim providerId As Guid
+        Dim progExtId As String
 
-        For Each epid As Integer In availableEps
-            RaiseEvent EpisodeAdded(epid)
-        Next
+        Using command As New SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read = False Then
+                    Exit Sub
+                End If
+
+                providerId = New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
+                progExtId = reader.GetString(reader.GetOrdinal("extid"))
+            End Using
+        End Using
+
+        Dim episodeExtIDs As List(Of String) = GetAvailableEpisodes(providerId, progExtId)
+
+        If episodeExtIDs IsNot Nothing Then
+            Using findCmd As New SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", FetchDbConn)
+                Dim progidParam As New SQLiteParameter("@progid")
+                Dim extidParam As New SQLiteParameter("@extid")
+
+                findCmd.Parameters.Add(progidParam)
+                findCmd.Parameters.Add(extidParam)
+
+                For Each episodeExtId As String In episodeExtIDs
+                    progidParam.Value = progid
+                    extidParam.Value = episodeExtId
+
+                    Using reader As SQLiteDataReader = findCmd.ExecuteReader
+                        Dim epid As Integer
+
+                        If reader.Read Then
+                            epid = reader.GetInt32(reader.GetOrdinal("epid"))
+                        Else
+                            epid = StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId)
+
+                            If epid < 0 Then
+                                Continue For
+                            End If
+                        End If
+
+                        RaiseEvent EpisodeAdded(epid)
+                    End Using
+                Next
+            End Using
+        End If
     End Sub
 
     Public Sub InitDownloadList()
