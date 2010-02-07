@@ -1273,8 +1273,12 @@ Friend Class Data
             Return -1
         End If
 
-        If episodeInfoReturn.EpisodeInfo.Name = "" Or episodeInfoReturn.EpisodeInfo.Date = Nothing Then
-            Return -1
+        If episodeInfoReturn.EpisodeInfo.Name Is Nothing OrElse episodeInfoReturn.EpisodeInfo.Name = String.Empty Then
+            Throw New InvalidDataException("Episode name cannot be nothing or an empty string")
+        End If
+
+        If episodeInfoReturn.EpisodeInfo.Date = Nothing Then
+            Throw New InvalidDataException("Episode date cannot be nothing or an empty string")
         End If
 
         Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
