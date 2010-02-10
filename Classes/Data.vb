@@ -542,16 +542,6 @@ Friend Class Data
         End Using
     End Function
 
-    'Public Sub UpdateDlList(ByRef lstListview As ExtListView)
-    '    If booErrorStatus Then
-    '        Main.SetTrayStatus(False, Main.ErrorStatus.Error)
-    '    Else
-    '        Main.SetTrayStatus(False, Main.ErrorStatus.Normal)
-    '    End If
-
-    '    sqlReader.Close()
-    'End Sub
-
     Public Sub CheckSubscriptions()
         ThreadPool.QueueUserWorkItem(AddressOf CheckSubscriptionsAsync)
     End Sub

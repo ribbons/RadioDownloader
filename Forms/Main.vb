@@ -23,12 +23,6 @@ Imports System.Windows.Forms.VisualStyles
 Friend Class Main
     Inherits System.Windows.Forms.Form
 
-    Public Enum ErrorStatus
-        NoChange
-        Normal
-        [Error]
-    End Enum
-
     Private Enum MainTab
         FindProgramme
         Favourites
@@ -98,20 +92,12 @@ Friend Class Main
 
     Private Const downloadProgCol As Integer = 3
 
-    Public Sub SetTrayStatus(ByVal booActive As Boolean, Optional ByVal ErrorStatus As ErrorStatus = ErrorStatus.NoChange)
-        Dim booErrorStatus As Boolean
-
-        If ErrorStatus = Main.ErrorStatus.Error Then
-            booErrorStatus = True
-        ElseIf ErrorStatus = Main.ErrorStatus.Normal Then
-            booErrorStatus = False
-        End If
-
-        If booErrorStatus = True Then
+    Public Sub UpdateTrayStatus(ByVal active As Boolean)
+        If clsProgData.CountDownloadsErrored > 0 Then
             nicTrayIcon.Icon = My.Resources.icon_error
             nicTrayIcon.Text = Me.Text + ": Error"
         Else
-            If booActive = True Then
+            If active = True Then
                 nicTrayIcon.Icon = My.Resources.icon_working
                 nicTrayIcon.Text = Me.Text + ": Downloading"
             Else
@@ -250,7 +236,7 @@ Friend Class Main
         lstDownloads.ListViewItemSorter = New ListComparer(ListComparer.ListType.Download)
 
         ' Set up and then show the system tray icon
-        Call SetTrayStatus(False)
+        Call UpdateTrayStatus(False)
         nicTrayIcon.Visible = True
 
         clsUpdate = New UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString)
@@ -875,7 +861,7 @@ Friend Class Main
                 item.ImageKey = "converting"
         End Select
 
-        'Call SetTrayStatus(True)
+        Call UpdateTrayStatus(True)
     End Sub
 
     Private Sub clsProgData_DownloadRemoved(ByVal epid As Integer) Handles clsProgData.DownloadRemoved
@@ -899,6 +885,8 @@ Friend Class Main
         End If
 
         item.Remove()
+
+        Call UpdateTrayStatus(False)
     End Sub
 
     Private Sub clsProgData_DownloadUpdated(ByVal epid As Integer) Handles clsProgData.DownloadUpdated
@@ -925,6 +913,8 @@ Friend Class Main
                 SetViewDefaults()
             End If
         End If
+
+        Call UpdateTrayStatus(False)
     End Sub
 
     Private Sub clsProgData_FindNewViewChange(ByVal objView As Object) Handles clsProgData.FindNewViewChange
