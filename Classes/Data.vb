@@ -78,6 +78,10 @@ Friend Class Data
     Private Shared clsDataInstance As New Data
 
     Private clsPluginsInst As Plugins
+
+    Private episodeListThread As Thread
+    Private episodeListThreadLock As New Object
+
     Private clsCurDldProgData As DldProgData
     Private thrDownloadThread As Thread
     Private WithEvents DownloadPluginInst As IRadioProvider
@@ -96,7 +100,6 @@ Friend Class Data
     Public Event FoundNew(ByVal intProgID As Integer)
     Public Event ProgrammeUpdated(ByVal progid As Integer)
     Public Event EpisodeAdded(ByVal epid As Integer)
-    'Public Event EpisodeUpdated(ByVal epid As Integer)
     Public Event SubscriptionAdded(ByVal progid As Integer)
     Public Event SubscriptionUpdated(ByVal progid As Integer)
     Public Event SubscriptionRemoved(ByVal progid As Integer)
@@ -1375,6 +1378,24 @@ Friend Class Data
     End Sub
 
     Public Sub InitEpisodeList(ByVal progid As Integer)
+        SyncLock episodeListThreadLock
+            episodeListThread = New Thread(New ParameterizedThreadStart(AddressOf InitEpisodeListThread))
+            episodeListThread.IsBackground = True
+            episodeListThread.Start(progid)
+        End SyncLock
+    End Sub
+
+    Public Sub CancelEpisodeListing()
+        SyncLock episodeListThreadLock
+            episodeListThread = Nothing
+        End SyncLock
+    End Sub
+
+    Private Sub InitEpisodeListThread(ByVal progid As Object)
+        Call InitEpisodeListThread(CInt(progid))
+    End Sub
+
+    Private Sub InitEpisodeListThread(ByVal progid As Integer)
         Dim providerId As Guid
         Dim progExtId As String
 
@@ -1418,7 +1439,13 @@ Friend Class Data
                             End If
                         End If
 
-                        RaiseEvent EpisodeAdded(epid)
+                        SyncLock episodeListThreadLock
+                            If Thread.CurrentThread IsNot episodeListThread Then
+                                Exit Sub
+                            End If
+
+                            RaiseEvent EpisodeAdded(epid)
+                        End SyncLock
                     End Using
                 Next
             End Using

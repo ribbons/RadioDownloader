@@ -708,6 +708,12 @@ Friend Class Main
     End Sub
 
     Private Sub clsProgData_EpisodeAdded(ByVal epid As Integer) Handles clsProgData.EpisodeAdded
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(New clsProgData_Episode_Delegate(AddressOf clsProgData_EpisodeAdded), epid)
+            Return
+        End If
+
         Dim info As Data.EpisodeData = clsProgData.FetchEpisodeData(epid)
 
         Dim addItem As New ListViewItem
@@ -1162,6 +1168,9 @@ Friend Class Main
                 pnlPluginSpace.Controls(0).Focus()
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
+                clsProgData.CancelEpisodeListing()
+                lstEpisodes.Items.Clear() ' Clear before DoEvents so that old items don't flash up on screen
+                Application.DoEvents() ' Give any queued BeginInvoke calls a chance to be processed
                 lstEpisodes.Items.Clear()
                 clsProgData.InitEpisodeList(CInt(ViewData.ViewData))
             Case View.Subscriptions
