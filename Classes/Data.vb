@@ -454,37 +454,6 @@ Friend Class Data
         End Using
     End Function
 
-    'Public Function EpisodeName(ByVal intEpID As Integer) As String
-    '    Dim sqlCommand As New SQLiteCommand("select name, date from episodes where epid=@epid", sqlConnection)
-    '    sqlCommand.Parameters.Add(New SQLiteParameter("@epid", intEpID))
-    '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader
-
-    '    If sqlReader.Read Then
-    '        If sqlReader.IsDBNull(sqlReader.GetOrdinal("name")) Then
-    '            EpisodeName = Nothing
-    '        Else
-    '            EpisodeName = sqlReader.GetString(sqlReader.GetOrdinal("name"))
-
-    '            If sqlReader.IsDBNull(sqlReader.GetOrdinal("date")) = False Then
-    '                Dim dteEpisodeDate As Date = sqlReader.GetDateTime(sqlReader.GetOrdinal("date"))
-
-    '                ' Use regex to remove a number of different date formats from programme titles.
-    '                ' Will only remove dates with the same month & year as the programme itself, but any day of the month
-    '                ' as there is sometimes a mismatch of a day or two between the date in a title and the publish date.
-    '                Dim regStripDate As New Regex("\A(" + dteEpisodeDate.ToString("yyyy", CultureInfo.InvariantCulture) + "/" + dteEpisodeDate.ToString("MM", CultureInfo.InvariantCulture) + "/\d{2} ?-? )?(?<name>.*?)( ?:? (\d{2}/" + dteEpisodeDate.ToString("MM", CultureInfo.InvariantCulture) + "/" + dteEpisodeDate.ToString("yyyy", CultureInfo.InvariantCulture) + "|((Mon|Tue|Wed|Thu|Fri) )?(\d{1,2}(st|nd|rd|th)? )?(" + dteEpisodeDate.ToString("MMMM", CultureInfo.InvariantCulture) + "|" + dteEpisodeDate.ToString("MMM", CultureInfo.InvariantCulture) + ")( \d{1,2}(st|nd|rd|th)?| (" + dteEpisodeDate.ToString("yy", CultureInfo.InvariantCulture) + "|" + dteEpisodeDate.ToString("yyyy", CultureInfo.InvariantCulture) + "))?))?\Z")
-
-    '                If regStripDate.IsMatch(EpisodeName) Then
-    '                    EpisodeName = regStripDate.Match(EpisodeName).Groups("name").ToString
-    '                End If
-    '            End If
-    '        End If
-    '    Else
-    '        EpisodeName = Nothing
-    '    End If
-
-    '    sqlReader.Close()
-    'End Function
-
     Public Function FetchEpisodeImage(ByVal epid As Integer) As Bitmap
         Using command As New SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
@@ -1479,13 +1448,13 @@ Friend Class Data
                 Dim filepathOrdinal As Integer = reader.GetOrdinal("filepath")
 
                 Dim info As New DownloadData
-                info.name = reader.GetString(reader.GetOrdinal("name"))
+                info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
+                info.name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.episodeDate)
 
                 If Not reader.IsDBNull(descriptionOrdinal) Then
                     info.description = reader.GetString(descriptionOrdinal)
                 End If
 
-                info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
                 info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
                 info.status = DirectCast(reader.GetInt32(reader.GetOrdinal("status")), DownloadStatus)
 
@@ -1549,13 +1518,13 @@ Friend Class Data
                 Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
 
                 Dim info As New EpisodeData
-                info.name = reader.GetString(reader.GetOrdinal("name"))
+                info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
+                info.name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.episodeDate)
 
                 If Not reader.IsDBNull(descriptionOrdinal) Then
                     info.description = reader.GetString(descriptionOrdinal)
                 End If
 
-                info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
                 info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
                 info.autoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) = 1
 
