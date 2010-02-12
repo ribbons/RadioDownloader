@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <MyType>WindowsForms</MyType>
@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\FileUtils.vb" />
+    <Compile Include="Classes\TextUtils.vb" />
     <Compile Include="Classes\UpdateCheck.vb" />
     <Compile Include="Classes\CachedWebClient.vb" />
     <Compile Include="Classes\DldProgData.vb" />
