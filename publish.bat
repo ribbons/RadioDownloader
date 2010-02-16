@@ -28,6 +28,13 @@ rem Sign Radio Downloader and the provider
 signtool sign /t %timestampserver% "bin\Radio Downloader.exe" "bin\PodcastProvider.dll"
 if ERRORLEVEL 1 set signfailed=1
 
+rem Unregister HKCU JScript and VBScript which cause problems with installer validation
+
+reg delete "HKCU\SOFTWARE\Classes\CLSID\{B54F3741-5B07-11CF-A4B0-00AA004A55E8}" /f
+reg delete "HKCU\SOFTWARE\Classes\CLSID\{F414C260-6AC0-11CF-B6D1-00AA00BBBB58}" /f
+reg delete "HKCU\SOFTWARE\Classes\Wow6432Node\CLSID\{B54F3741-5B07-11CF-A4B0-00AA004A55E8}" /f
+reg delete "HKCU\SOFTWARE\Classes\Wow6432Node\CLSID\{F414C260-6AC0-11CF-B6D1-00AA00BBBB58}" /f
+
 rem Clean and build the installer
 
 msbuild /p:Configuration=Release /t:Clean "installer/Radio Downloader.wixproj"
