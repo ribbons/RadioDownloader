@@ -18,7 +18,11 @@ Option Explicit On
 Imports System.Globalization
 Imports System.Text.RegularExpressions
 
-Public Class TextUtils
+Public NotInheritable Class TextUtils
+    Private Sub New()
+        ' Empty private constructor as the class just contains static methods
+    End Sub
+
     Public Shared Function StripDateFromName(ByVal name As String, ByVal stripDate As Date) As String
         ' Use regex to remove a number of different date formats from episode titles.
         ' Will only remove dates with the same month & year as the programme itself, but any day of the month
