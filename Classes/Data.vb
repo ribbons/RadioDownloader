@@ -590,8 +590,8 @@ Friend Class Data
                                     If autoDownload Then
                                         epidParam.Value = epid
 
-                                        Using sqlCheckRdr As SQLiteDataReader = checkCmd.ExecuteReader
-                                            If sqlCheckRdr.Read = False Then
+                                        Using checkRdr As SQLiteDataReader = checkCmd.ExecuteReader
+                                            If checkRdr.Read = False Then
                                                 Call AddDownloadAsync(epid)
                                             End If
                                         End Using
@@ -879,12 +879,12 @@ Friend Class Data
                 errorDetails = detailsStringWriter.ToString
         End Select
 
-        Using sqlCommand As New SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn)
-            sqlCommand.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Errored))
-            sqlCommand.Parameters.Add(New SQLiteParameter("@errortype", errorType))
-            sqlCommand.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
-            sqlCommand.Parameters.Add(New SQLiteParameter("@epid", clsCurDldProgData.EpID))
-            sqlCommand.ExecuteNonQuery()
+        Using command As New SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Errored))
+            command.Parameters.Add(New SQLiteParameter("@errortype", errorType))
+            command.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
+            command.Parameters.Add(New SQLiteParameter("@epid", clsCurDldProgData.EpID))
+            command.ExecuteNonQuery()
         End Using
 
         SyncLock downloadSortCacheLock
@@ -1142,9 +1142,9 @@ Friend Class Data
         Using command As New SQLiteCommand("select imgid from images where image=@image", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@image", imageAsBytes))
 
-            Using sqlReader As SQLiteDataReader = command.ExecuteReader
-                If sqlReader.Read() Then
-                    Return sqlReader.GetInt32(sqlReader.GetOrdinal("imgid"))
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read() Then
+                    Return reader.GetInt32(reader.GetOrdinal("imgid"))
                 End If
             End Using
         End Using
