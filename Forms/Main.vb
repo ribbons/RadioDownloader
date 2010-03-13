@@ -67,11 +67,14 @@ Friend Class Main
         End Sub
 
         Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
+            Dim itemXId As Integer = CInt(CType(x, ListViewItem).Name)
+            Dim itemYId As Integer = CInt(CType(y, ListViewItem).Name)
+
             Select Case compareType
                 Case ListType.Subscription
-                    Return dataInstance.CompareSubscriptions(CInt(CType(x, ListViewItem).Name), CInt(CType(y, ListViewItem).Name))
+                    Return dataInstance.CompareSubscriptions(itemXId, itemYId)
                 Case ListType.Download
-                    Return dataInstance.CompareDownloads(CInt(CType(x, ListViewItem).Name), CInt(CType(y, ListViewItem).Name))
+                    Return dataInstance.CompareDownloads(itemXId, itemYId)
                 Case Else
                     Throw New ArgumentException("compareType not a valid value", "compareType")
             End Select
