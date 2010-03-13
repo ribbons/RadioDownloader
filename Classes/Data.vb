@@ -810,7 +810,7 @@ Friend Class Data
 
             Using reader As SQLiteDataReader = command.ExecuteReader
                 If Not reader.Read Then
-                    Throw New ArgumentException("Episode " + epid.ToString + " does not exit, or is not in the download list!", "epid")
+                    Throw New ArgumentException("Episode " + epid.ToString(CultureInfo.InvariantCulture) + " does not exit, or is not in the download list!", "epid")
                 End If
 
                 errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), IRadioProvider.ErrorType)

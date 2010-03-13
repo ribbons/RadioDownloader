@@ -409,7 +409,7 @@ Friend Class Main
                     actionString = "Delete"
                 End If
 
-                infoText += Environment.NewLine + "Play count: " + info.playCount.ToString
+                infoText += Environment.NewLine + "Play count: " + info.playCount.ToString(CultureInfo.CurrentCulture)
             Case Data.DownloadStatus.Errored
                 Dim errorName As String = ""
                 Dim errorDetails As String = info.errorDetails
@@ -687,7 +687,7 @@ Friend Class Main
     End Sub
 
     Private Sub EpisodeListItem(ByVal epid As Integer, ByVal info As Data.EpisodeData, ByRef item As ListViewItem)
-        item.Name = epid.ToString
+        item.Name = epid.ToString(CultureInfo.InvariantCulture)
         item.Text = info.episodeDate.ToShortDateString
         item.SubItems(1).Text = info.name
         item.Checked = info.autoDownload
@@ -713,7 +713,7 @@ Friend Class Main
     End Sub
 
     Private Sub SubscriptionListItem(ByVal progid As Integer, ByVal info As Data.SubscriptionData, ByRef item As ListViewItem)
-        item.Name = progid.ToString
+        item.Name = progid.ToString(CultureInfo.InvariantCulture)
         item.Text = info.name
 
         If info.latestDownload = Nothing Then
@@ -758,12 +758,12 @@ Friend Class Main
         End If
 
         Dim info As Data.SubscriptionData = clsProgData.FetchSubscriptionData(progid)
-        Dim item As ListViewItem = lstSubscribed.Items(progid.ToString)
+        Dim item As ListViewItem = lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture))
 
         SubscriptionListItem(progid, info, item)
 
         If viwBackData(viwBackData.GetUpperBound(0)).View = View.Subscriptions Then
-            If lstSubscribed.Items(progid.ToString).Selected Then
+            If lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture)).Selected Then
                 ShowSubscriptionInfo(progid)
             ElseIf lstSubscribed.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
@@ -786,11 +786,11 @@ Friend Class Main
             End If
         End If
 
-        lstSubscribed.Items(progid.ToString).Remove()
+        lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture)).Remove()
     End Sub
 
     Private Sub DownloadListItem(ByVal epid As Integer, ByVal info As Data.DownloadData, ByRef item As ListViewItem)
-        item.Name = epid.ToString
+        item.Name = epid.ToString(CultureInfo.InvariantCulture)
         item.Text = info.name
 
         item.SubItems(1).Text = info.episodeDate.ToShortDateString
@@ -878,7 +878,7 @@ Friend Class Main
             End If
         End If
 
-        Dim item As ListViewItem = lstDownloads.Items(epid.ToString)
+        Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
 
         If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
             lstDownloads.RemoveProgressBar(prgDldProg)
@@ -897,7 +897,7 @@ Friend Class Main
         End If
 
         Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
-        Dim item As ListViewItem = lstDownloads.Items(epid.ToString)
+        Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
 
         DownloadListItem(epid, info, item)
 
@@ -906,7 +906,7 @@ Friend Class Main
         End If
 
         If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
-            If lstDownloads.Items(epid.ToString).Selected Then
+            If lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture)).Selected Then
                 ShowDownloadInfo(epid)
             ElseIf lstDownloads.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
