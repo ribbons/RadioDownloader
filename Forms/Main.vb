@@ -1084,8 +1084,6 @@ Friend Class Main
 
     Private Sub tbtCleanUp_Click()
         Call CleanUp.ShowDialog()
-
-        'Call clsProgData.UpdateDlList(lstDownloads)
     End Sub
 
     Private Sub StoreView(ByVal ViewData As ViewStore)

@@ -944,27 +944,22 @@ Friend Class Data
     End Sub
 
     Public Sub PerformCleanup()
-        '    Dim sqlCommand As New SQLiteCommand("select epid, filepath from downloads where status=@status", sqlConnection)
-        '    sqlCommand.Parameters.Add(New SQLiteParameter("@status", Statuses.Downloaded))
-        '    Dim sqlReader As SQLiteDataReader = sqlCommand.ExecuteReader()
+        Dim command As New SQLiteCommand("select epid, filepath from downloads where status=@status", FetchDbConn)
+        command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
+        Dim reader As SQLiteDataReader = command.ExecuteReader()
 
-        '    With sqlReader
-        '        Do While .Read
-        '            ' Remove programmes for which the associated audio file no longer exists
-        '            If Exists(.GetString(.GetOrdinal("filepath"))) = False Then
-        '                Dim intEpID As Integer = .GetInt32(.GetOrdinal("epid"))
+        Dim epidOrd As Integer = reader.GetOrdinal("epid")
+        Dim filepathOrd As Integer = reader.GetOrdinal("filepath")
 
-        '                ' Take the download out of the list
-        '                RemoveDownload(intEpID)
+        Do While reader.Read
+            ' Remove programmes for which the associated audio file no longer exists
+            If Exists(reader.GetString(filepathOrd)) = False Then
+                ' Take the download out of the list and set the auto download flag to false
+                DownloadRemoveAsync(reader.GetInt32(epidOrd))
+            End If
+        Loop
 
-        '                ' Set the auto download flag of this episode to false, so if we are subscribed to the programme
-        '                ' it doesn't just download it all over again
-        '                Call EpisodeSetAutoDownload(intEpID, False)
-        '            End If
-        '        Loop
-        '    End With
-
-        '    sqlReader.Close()
+        reader.Close()
     End Sub
 
     Private Sub SetDBSetting(ByVal propertyName As String, ByVal value As Object)
