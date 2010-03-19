@@ -5,10 +5,10 @@ Beta & Full Releases
 --------------------
 
  1. Update version number in application & providers
- 2. Run publish.bat to build & sign application, providers and installer
- 3. Test installer - major upgrade
- 4. Test installer - clean install
- 5. Commit version changes.
+ 2. Commit version changes.
+ 3. Run publish.bat to build & sign application, providers and installer
+ 4. Test installer - major upgrade
+ 5. Test installer - clean install
 
 Beta Release
 ------------
@@ -24,10 +24,11 @@ Full Release
 
  6. Create tag for release number in form radio_downloader/tags/releases/x.x
  7. Run zipped source creator batch file.
- 8. Move source and installer to local nerdoftheherd downloads folder.
- 9. Update local latestversion.txt with latest version number.
+ 8. Move source and installer to local nerdoftheherd downloads and sourceforge folders.
+ 9. Update nerdoftheherd.com properties file with latest version number.
 10. Add new version number into the Radio Downloader product in Bugzilla.
 11. Write news item.
-12. Upload source and installer to SourceForge.
-12. Upload files and news to website.
-13. Prevent errors from being submitted against previous version in error reporting.
+12. Upload source and installer to SourceForge
+13. Mark installer as Windows platform default on SourceForge
+14. Upload files and news to website.
+15. Prevent errors from being submitted against previous version in error reporting.
