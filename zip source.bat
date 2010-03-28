@@ -3,13 +3,26 @@ title Creating Zipped Source
 
 set tempfolder="%temp%\Radio Downloader"
 
-rem create the temp folder if it doesn't already exist
-if not exist %tempfolder% mkdir %tempfolder%
+rem Delete the temp folder if already exists
+if exist %tempfolder% rmdir /S /Q %tempfolder%
+if ERRORLEVEL 1 goto failed
 
-rem copy all of the files across that are needed, but try and miss out the files that can be easily re-created.
-robocopy .\ %tempfolder% /MIR /XD .svn obj /XF PodcastProvider.dll PodcastProvider.dll.config PodcastProvider.pdb PodcastProvider.xml "Radio Downloader.exe" "Radio Downloader.exe.config" "Radio Downloader.pdb" "Radio Downloader.vshost.exe" "Radio Downloader.vshost.exe.config" "Radio Downloader.vshost.exe.manifest" "Radio Downloader.xml" System.Data.SQLite.DLL System.Data.SQLite.xml "Radio Downloader.sln.cache" "Radio Downloader.suo" "Radio Downloader.msi" "Radio Downloader.wixobj" "Radio Downloader.wixpdb" "Radio Downloader.log" "*.vbproj.user"
+rem Copy the versioned files across to the temp folder
+svn export . %tempfolder%
+if ERRORLEVEL 1 goto failed
 
 rem make sure that 7za.exe is on the PATH.
 7za a -tzip "%userprofile%\Desktop\Radio Downloader Source.zip" %tempfolder%
+if ERRORLEVEL 1 goto failed
 
 rmdir /S /Q %tempfolder%
+if ERRORLEVEL 1 goto failed
+
+goto :EOF
+
+:failed
+
+echo.
+echo Source zipping failed - review above output for more details
+
+pause
