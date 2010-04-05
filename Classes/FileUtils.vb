@@ -62,6 +62,11 @@ Friend Class FileUtils
     End Function
 
     Public Shared Function CreateSaveFileName(ByVal formatString As String, ByVal programmeName As String, ByVal episodeName As String, ByVal episodeDate As Date) As String
+        If formatString = String.Empty Then
+            ' The format string is an empty string, so the output must be an empty string
+            Return String.Empty
+        End If
+
         Dim fileName As String = formatString
 
         ' Convert %title% -> %epname% for backwards compatability

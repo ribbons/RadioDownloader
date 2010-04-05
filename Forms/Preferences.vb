@@ -18,11 +18,9 @@ Option Explicit On
 Imports System.IO
 
 Friend Class Preferences
-	Inherits System.Windows.Forms.Form
-	
-	Private Sub cmdCancel_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdCancel.Click
-        Me.Close()
-    End Sub
+    Inherits System.Windows.Forms.Form
+
+    Private cancelClose As Boolean
 	
 	Private Sub cmdChangeFolder_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdChangeFolder.Click
         Dim BrowseDialog As New FolderBrowserDialog
@@ -35,11 +33,25 @@ Friend Class Preferences
 	End Sub
 	
 	Private Sub cmdOK_Click(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles cmdOK.Click
+        If txtFileNameFormat.Text = String.Empty Then
+            MsgBox("Please enter a value for the downloaded programme file name format.", MsgBoxStyle.Exclamation)
+            txtFileNameFormat.Focus()
+            cancelClose = True
+            Exit Sub
+        End If
+
         My.Settings.SaveFolder = txtSaveIn.Text
         My.Settings.FileNameFormat = txtFileNameFormat.Text
         My.Settings.RunAfterCommand = txtRunAfter.Text
         My.Settings.Save()
-        Me.Close()
+    End Sub
+
+    Private Sub Preferences_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+        If cancelClose Then
+            ' Prevent the form from being automatically closed if it failed validation
+            e.Cancel = True
+            cancelClose = False
+        End If
     End Sub
 
     Private Sub Preferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
