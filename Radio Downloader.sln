@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
+﻿Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Basic Express 2008
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Radio Downloader", "Radio Downloader.vbproj", "{0B79D58E-5E08-493F-AC06-CC4922583572}"
 EndProject
@@ -6,18 +6,38 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "PodcastProvider", "Provider
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|win32 = Debug|win32
+		Debug|win_x64 = Debug|win_x64
+		Debug|mono = Debug|mono
+		Release|win32 = Release|win32
+		Release|win_x64 = Release|win_x64
+		Release|mono = Release|mono
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|win32.ActiveCfg = Debug|x86
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|win32.Build.0 = Debug|x86
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|win_x64.ActiveCfg = Debug|x64
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|win_x64.Build.0 = Debug|x64
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|mono.ActiveCfg = Debug|Any CPU
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|mono.Build.0 = Debug|Any CPU
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|win32.ActiveCfg = Release|x86
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|win32.Build.0 = Release|x86
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|win_x64.ActiveCfg = Release|x64
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|win_x64.Build.0 = Release|x64
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|mono.ActiveCfg = Release|Any CPU
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|mono.Build.0 = Release|Any CPU
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|win32.ActiveCfg = Debug|x86
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|win32.Build.0 = Debug|x86
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|win_x64.ActiveCfg = Debug|x64
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|win_x64.Build.0 = Debug|x64
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|mono.ActiveCfg = Debug|Any CPU
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|mono.Build.0 = Debug|Any CPU
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|win32.ActiveCfg = Release|x86
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|win32.Build.0 = Release|x86
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|win_x64.ActiveCfg = Release|x64
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|win_x64.Build.0 = Release|x64
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|mono.ActiveCfg = Release|Any CPU
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|mono.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

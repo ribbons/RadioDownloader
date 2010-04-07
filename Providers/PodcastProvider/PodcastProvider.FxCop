@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <FxCopProject Version="1.36" Name="PodcastProvider">
  <ProjectOptions>
   <SharedProject>True</SharedProject>
@@ -21,12 +21,7 @@
   <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
   <TargetFrameworkVersion>2.0</TargetFrameworkVersion>
  </ProjectOptions>
- <Targets>
-  <AssemblyReferenceDirectories>
-   <Directory>$(ProjectDir)/bin/</Directory>
-  </AssemblyReferenceDirectories>
-  <Target Name="$(ProjectDir)/../../bin/PodcastProvider.dll" Analyze="True" AnalyzeAllChildren="True" />
- </Targets>
+ <Targets />
  <Rules>
   <RuleFiles>
    <RuleFile Name="$(FxCopDir)\Rules\DesignRules.dll" Enabled="True" AllRulesEnabled="False">

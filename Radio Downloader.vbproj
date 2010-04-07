@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <MyType>WindowsForms</MyType>
@@ -6,7 +6,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{0B79D58E-5E08-493F-AC06-CC4922583572}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <AssemblyName>Radio Downloader</AssemblyName>
     <OutputType>WinExe</OutputType>
     <StartupObject>RadioDld.My.MyApplication</StartupObject>
@@ -41,12 +41,13 @@
     <BootstrapperEnabled>false</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>.\bin\</OutputPath>
+    <OutputPath>bin\mono\</OutputPath>
     <DocumentationFile>Radio Downloader.xml</DocumentationFile>
     <DebugSymbols>True</DebugSymbols>
     <DefineDebug>True</DefineDebug>
     <DefineTrace>True</DefineTrace>
-    <DefineConstants>Win32=True</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
     <NoWarn>
     </NoWarn>
@@ -55,19 +56,66 @@
     <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>.\bin\</OutputPath>
+    <OutputPath>bin\mono\</OutputPath>
     <DocumentationFile>Radio Downloader.xml</DocumentationFile>
     <DebugSymbols>False</DebugSymbols>
     <DefineDebug>False</DefineDebug>
     <DefineTrace>True</DefineTrace>
     <Optimize>True</Optimize>
-    <DefineConstants>Win32=True</DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <PlatformTarget>x86</PlatformTarget>
     <NoWarn>
     </NoWarn>
     <DebugType>pdbonly</DebugType>
     <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
     <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win32\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win32\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win_x64\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win_x64\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -248,6 +296,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.vb</LastGenOutput>
     </None>
+    <None Include="store.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.VisualBasic.targets" />
   <PropertyGroup>
@@ -257,6 +308,6 @@
     </PostBuildEvent>
   </PropertyGroup>
   <Target Name="AfterBuild">
-    <Exec Command='"$(ProgramFiles)\Microsoft FxCop 1.36\FxCopCmd.exe" /project:"Radio Downloader.FxCop" /console'/>
+    <Exec Command="&quot;$(ProgramFiles)\Microsoft FxCop 1.36\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /project:&quot;Radio Downloader.FxCop&quot; /console" />
   </Target>
 </Project>

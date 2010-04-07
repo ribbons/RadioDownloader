@@ -17,15 +17,15 @@ if ERRORLEVEL 1 goto failed
 
 rem Clean and build Radio Downloader and the provider
 
-msbuild /p:Configuration=Release /t:Clean
+msbuild /p:Configuration=Release /p:Platform=win32 /t:Clean
 if ERRORLEVEL 1 goto failed
 
-msbuild /p:Configuration=Release
+msbuild /p:Configuration=Release /p:Platform=win32
 if ERRORLEVEL 1 goto failed
 
 rem Sign Radio Downloader and the provider
 
-signtool sign /t %timestampserver% "bin\Radio Downloader.exe" "bin\PodcastProvider.dll"
+signtool sign /t %timestampserver% "bin\win32\Radio Downloader.exe" "bin\win32\PodcastProvider.dll"
 if ERRORLEVEL 1 set signfailed=1
 
 rem Unregister HKCU JScript and VBScript which cause problems with installer validation
@@ -50,7 +50,7 @@ if ERRORLEVEL 1 set signfailed=1
 
 if not "%signfailed%" == "" goto signfailed
 
-goto exit
+goto :EOF
 
 :nosdk
 
@@ -59,7 +59,7 @@ echo Please install it and then try running this script again
 
 pause
 
-goto exit
+goto :EOF
 
 :signfailed
 
@@ -69,7 +69,7 @@ echo Check that you have a code signing certificate installed and try again.
 
 pause
 
-goto exit
+goto :EOF
 
 :failed
 
@@ -77,5 +77,3 @@ echo.
 echo Publish failed - review above output for more details
 
 pause
-
-:exit

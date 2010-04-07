@@ -21,9 +21,7 @@
   <IgnoreGeneratedCode>False</IgnoreGeneratedCode>
   <TargetFrameworkVersion>2.0</TargetFrameworkVersion>
  </ProjectOptions>
- <Targets>
-  <Target Name="$(ProjectDir)/bin/Radio Downloader.exe" Analyze="True" AnalyzeAllChildren="True" />
- </Targets>
+ <Targets />
  <Rules>
   <RuleFiles>
    <RuleFile Name="$(FxCopDir)\Rules\DesignRules.dll" Enabled="True" AllRulesEnabled="False">
