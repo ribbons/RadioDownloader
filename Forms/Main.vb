@@ -467,7 +467,7 @@ Friend Class Main
             mins = mins Mod 60
 
             If hours > 0 Then
-                readable += CStr(hours) + "hr" + Plural(hours)
+                readable += CStr(hours) + "hr" + If(hours = 1, "", "s")
             End If
 
             If hours > 0 And mins > 0 Then
@@ -1204,7 +1204,7 @@ Friend Class Main
         Select Case ViewData.View
             Case View.FindNewChooseProvider
                 Call SetToolbarButtons("")
-                Call SetSideBar(CStr(lstProviders.Items.Count) + " provider" + Plural(lstProviders.Items.Count), "", Nothing)
+                Call SetSideBar(CStr(lstProviders.Items.Count) + " provider" + If(lstProviders.Items.Count = 1, "", "s"), "", Nothing)
             Case View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
                 Call SetToolbarButtons("")
@@ -1214,7 +1214,7 @@ Friend Class Main
                 Call ShowProgrammeInfo(progid)
             Case View.Subscriptions
                 Call SetToolbarButtons("")
-                Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + Plural(lstSubscribed.Items.Count), "", Nothing)
+                Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + If(lstSubscribed.Items.Count = 1, "", "s"), "", Nothing)
             Case View.Downloads
                 Call SetToolbarButtons("CleanUp")
 
@@ -1230,17 +1230,9 @@ Friend Class Main
                     description += "Errored: " + CStr(errorCount)
                 End If
 
-                Call SetSideBar(CStr(lstDownloads.Items.Count) + " download" + Plural(lstDownloads.Items.Count), description, Nothing)
+                Call SetSideBar(CStr(lstDownloads.Items.Count) + " download" + If(lstDownloads.Items.Count = 1, "", "s"), description, Nothing)
         End Select
     End Sub
-
-    Private Function Plural(ByVal intNumber As Integer) As String
-        If intNumber = 1 Then
-            Return ""
-        Else
-            Return "s"
-        End If
-    End Function
 
     Private Sub tbtBack_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtBack.Click
         ReDim Preserve viwFwdData(viwFwdData.GetUpperBound(0) + 1)
