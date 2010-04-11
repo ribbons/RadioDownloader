@@ -76,7 +76,7 @@ Friend Class Main
                 Case ListType.Download
                     Return dataInstance.CompareDownloads(itemXId, itemYId)
                 Case Else
-                    Throw New ArgumentException("compareType not a valid value", "compareType")
+                    Throw New InvalidOperationException("Unknown compare type of " + compareType.ToString)
             End Select
         End Function
     End Class

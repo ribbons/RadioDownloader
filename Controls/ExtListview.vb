@@ -64,11 +64,11 @@ Friend Class ExtListView : Inherits ListView
         Return intOrder
     End Function
 
-    Private Function GetSubItemBounds(ByVal lstListItem As ListViewItem, ByVal intSubItem As Integer) As Rectangle
+    Private Function GetSubItemBounds(ByVal listItem As ListViewItem, ByVal intSubItem As Integer) As Rectangle
         Dim subItemRect As Rectangle = Rectangle.Empty
 
-        If lstListItem Is Nothing Then
-            Throw New ArgumentNullException("Item")
+        If listItem Is Nothing Then
+            Throw New ArgumentNullException("listItem")
         End If
 
         Dim intOrder() As Integer = GetColumnOrder()
@@ -83,7 +83,7 @@ Friend Class ExtListView : Inherits ListView
         End If
 
         ' Retrieve the bounds of the entire ListViewItem (all subitems)
-        Dim lviBounds As Rectangle = lstListItem.GetBounds(ItemBoundsPortion.Entire)
+        Dim lviBounds As Rectangle = listItem.GetBounds(ItemBoundsPortion.Entire)
 
         Dim subItemX As Integer = lviBounds.Left
 
@@ -112,39 +112,39 @@ Friend Class ExtListView : Inherits ListView
         Call AddProgressBar(prgProgress, lstParentItem, intCol, DockStyle.Fill)
     End Sub
 
-    Public Sub AddProgressBar(ByRef prgProgress As ProgressBar, ByVal lstParentItem As ListViewItem, ByVal intCol As Integer, ByVal dstDock As DockStyle)
-        If prgProgress Is Nothing Then
-            Throw New ArgumentNullException()
+    Public Sub AddProgressBar(ByRef progressBar As ProgressBar, ByVal lstParentItem As ListViewItem, ByVal column As Integer, ByVal dstDock As DockStyle)
+        If progressBar Is Nothing Then
+            Throw New ArgumentNullException("progressBar")
         End If
 
-        If intCol >= Columns.Count Then
-            Throw New ArgumentOutOfRangeException()
+        If column >= Columns.Count Then
+            Throw New ArgumentOutOfRangeException("column")
         End If
 
         Dim emcControl As EmbeddedProgress
 
-        emcControl.prgProgress = prgProgress
-        emcControl.intColumn = intCol
+        emcControl.prgProgress = progressBar
+        emcControl.intColumn = column
         emcControl.dstDock = dstDock
         emcControl.lstItem = lstParentItem
 
         embeddedControls.Add(emcControl)
 
         ' Add a Click event handler to select the ListView row when an embedded control is clicked
-        AddHandler prgProgress.Click, AddressOf embeddedControl_Click
+        AddHandler progressBar.Click, AddressOf embeddedControl_Click
 
-        Me.Controls.Add(prgProgress)
+        Me.Controls.Add(progressBar)
     End Sub
 
-    Public Sub RemoveProgressBar(ByRef prgProgress As ProgressBar)
-        If prgProgress Is Nothing Then
-            Throw New ArgumentNullException()
+    Public Sub RemoveProgressBar(ByRef progressBar As ProgressBar)
+        If progressBar Is Nothing Then
+            Throw New ArgumentNullException("progressBar")
         End If
 
         For intLoop As Integer = 0 To embeddedControls.Count - 1
-            If embeddedControls(intLoop).prgProgress.Equals(prgProgress) Then
-                RemoveHandler prgProgress.Click, AddressOf embeddedControl_Click
-                Me.Controls.Remove(prgProgress)
+            If embeddedControls(intLoop).prgProgress.Equals(progressBar) Then
+                RemoveHandler progressBar.Click, AddressOf embeddedControl_Click
+                Me.Controls.Remove(progressBar)
                 embeddedControls.RemoveAt(intLoop)
                 Exit Sub
             End If
