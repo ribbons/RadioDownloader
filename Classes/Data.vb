@@ -75,7 +75,8 @@ Friend Class Data
     <ThreadStatic()> _
     Private dbConn As SQLiteConnection
 
-    Private Shared clsDataInstance As New Data
+    Private Shared dataInstance As Data
+    Private Shared dataInstanceLock As New Object
 
     Private clsPluginsInst As Plugins
 
@@ -109,7 +110,15 @@ Friend Class Data
     Public Event DownloadRemoved(ByVal epid As Integer)
 
     Public Shared Function GetInstance() As Data
-        Return clsDataInstance
+        ' Need to use a lock instead of declaring the instance variable as New, as otherwise
+        ' on first run the constructor gets called before the template database is in place
+        SyncLock dataInstanceLock
+            If dataInstance Is Nothing Then
+                dataInstance = New Data
+            End If
+
+            Return dataInstance
+        End SyncLock
     End Function
 
     Private Function FetchDbConn() As SQLiteConnection
