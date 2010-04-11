@@ -114,6 +114,7 @@
     <Rule Name="DoNotMarkEnumsWithFlags" Enabled="True" />
     <Rule Name="DoNotMarkServicedComponentsWithWebMethod" Enabled="True" />
     <Rule Name="DoNotRaiseExceptionsInExceptionClauses" Enabled="True" />
+    <Rule Name="DoNotRaiseReservedExceptionTypes" Enabled="True" />
     <Rule Name="DoNotShipUnreleasedResourceFormats" Enabled="True" />
     <Rule Name="FinalizersShouldBeProtected" Enabled="True" />
     <Rule Name="FinalizersShouldCallBaseClassFinalizer" Enabled="True" />

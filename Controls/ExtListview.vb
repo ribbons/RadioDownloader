@@ -79,7 +79,7 @@ Friend Class ExtListView : Inherits ListView
         End If
 
         If intSubItem >= intOrder.Length Then
-            Throw New IndexOutOfRangeException("SubItem " + intSubItem.ToString(CultureInfo.InvariantCulture) + " out of range")
+            Throw New ArgumentOutOfRangeException("SubItem " + intSubItem.ToString(CultureInfo.InvariantCulture) + " out of range")
         End If
 
         ' Retrieve the bounds of the entire ListViewItem (all subitems)
@@ -150,7 +150,7 @@ Friend Class ExtListView : Inherits ListView
             End If
         Next
 
-        Throw New Exception("Control not found!")
+        Throw New ArgumentException("Progress bar not found!")
     End Sub
 
     Public Function GetProgressBar(ByVal lstParentItem As ListViewItem, ByVal intCol As Integer) As ProgressBar
