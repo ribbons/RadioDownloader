@@ -97,10 +97,7 @@
     <Rule Name="TestForEmptyStringsUsingStringLength" Enabled="True" />
     <Rule Name="UseLiteralsWhereAppropriate" Enabled="True" />
    </RuleFile>
-   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="False">
-    <Rule Name="UseOnlyApiFromTargetedFramework" Enabled="True" />
-    <Rule Name="ValueTypeFieldsShouldBePortable" Enabled="True" />
-   </RuleFile>
+   <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
    <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
    <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="False">
     <Rule Name="AttributeStringLiteralsShouldParseCorrectly" Enabled="True" />
