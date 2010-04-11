@@ -178,7 +178,7 @@ Friend Class ExtListView : Inherits ListView
     Protected Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case WM_CREATE
-                If IsXpOrLater() Then
+                If OsUtils.WinXpOrLater() Then
                     ' Set the theme of the control to "explorer", to give the 
                     ' correct styling under Vista.  This has no effect under XP.
                     SetWindowTheme(Me.Handle, "explorer", Nothing)
@@ -188,7 +188,7 @@ Friend Class ExtListView : Inherits ListView
                 ' form) if the last input event came from the mouse, or add them if it came from the keyboard.
                 SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), New IntPtr(0))
             Case LVM_SETEXTENDEDLISTVIEWSTYLE
-                If IsXpOrLater() Then
+                If OsUtils.WinXpOrLater() Then
                     Dim intStyles As Integer = CInt(m.LParam)
 
                     If (intStyles And LVS_EX_DOUBLEBUFFER) <> LVS_EX_DOUBLEBUFFER Then
@@ -250,16 +250,6 @@ Friend Class ExtListView : Inherits ListView
             End If
         Next
     End Sub
-
-    Private Function IsXpOrLater() As Boolean
-        Dim os As OperatingSystem = System.Environment.OSVersion
-
-        If os.Platform = PlatformID.Win32NT And (((os.Version.Major = 5) And (os.Version.Minor >= 1)) Or (os.Version.Major > 5)) Then
-            Return True
-        Else
-            Return False
-        End If
-    End Function
 
     Private Function MakeLParam(ByVal LoWord As Integer, ByVal HiWord As Integer) As IntPtr
         Dim IntPtrHiWord As New IntPtr(HiWord << 16)

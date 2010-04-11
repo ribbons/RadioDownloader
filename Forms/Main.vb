@@ -278,15 +278,22 @@ Friend Class Main
 
     Private Sub Main_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         If eventArgs.CloseReason = CloseReason.UserClosing Then
-            Call TrayAnimate(Me, True)
-            Me.Visible = False
-            eventArgs.Cancel = True
+            If OsUtils.WinSevenOrLater() Then
+                If Me.WindowState <> FormWindowState.Minimized Then
+                    Me.WindowState = FormWindowState.Minimized
+                    eventArgs.Cancel = True
+                End If
+            Else
+                Call TrayAnimate(Me, True)
+                Me.Visible = False
+                eventArgs.Cancel = True
 
-            If My.Settings.ShownTrayBalloon = False Then
-                nicTrayIcon.BalloonTipIcon = ToolTipIcon.Info
-                nicTrayIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + vbCrLf + "Click here to hide this message in future."
-                nicTrayIcon.BalloonTipTitle = "Radio Downloader is Still Running"
-                nicTrayIcon.ShowBalloonTip(30000)
+                If My.Settings.ShownTrayBalloon = False Then
+                    nicTrayIcon.BalloonTipIcon = ToolTipIcon.Info
+                    nicTrayIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + vbCrLf + "Click here to hide this message in future."
+                    nicTrayIcon.BalloonTipTitle = "Radio Downloader is Still Running"
+                    nicTrayIcon.ShowBalloonTip(30000)
+                End If
             End If
         End If
     End Sub
@@ -938,8 +945,12 @@ Friend Class Main
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
         For Each commandLineArg As String In Environment.GetCommandLineArgs
             If commandLineArg.ToUpperInvariant = "/HIDEMAINWINDOW" Then
-                Call TrayAnimate(Me, True)
-                Me.Visible = False
+                If OsUtils.WinSevenOrLater Then
+                    Me.WindowState = FormWindowState.Minimized
+                Else
+                    Call TrayAnimate(Me, True)
+                    Me.Visible = False
+                End If
             End If
         Next
     End Sub
