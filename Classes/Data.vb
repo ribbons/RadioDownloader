@@ -78,13 +78,13 @@ Friend Class Data
     Private Shared dataInstance As Data
     Private Shared dataInstanceLock As New Object
 
-    Private clsPluginsInst As Plugins
+    Private pluginsInst As Plugins
 
     Private episodeListThread As Thread
     Private episodeListThreadLock As New Object
 
-    Private clsCurDldProgData As DldProgData
-    Private thrDownloadThread As Thread
+    Private curDldProgData As DldProgData
+    Private downloadThread As Thread
     Private WithEvents DownloadPluginInst As IRadioProvider
     Private WithEvents FindNewPluginInst As IRadioProvider
 
@@ -97,8 +97,8 @@ Friend Class Data
     Private findDownloadLock As New Object
 
     Public Event ProviderAdded(ByVal providerId As Guid)
-    Public Event FindNewViewChange(ByVal objView As Object)
-    Public Event FoundNew(ByVal intProgID As Integer)
+    Public Event FindNewViewChange(ByVal view As Object)
+    Public Event FoundNew(ByVal progid As Integer)
     Public Event ProgrammeUpdated(ByVal progid As Integer)
     Public Event EpisodeAdded(ByVal epid As Integer)
     Public Event SubscriptionAdded(ByVal progid As Integer)
@@ -137,7 +137,7 @@ Friend Class Data
         Call VacuumDatabase()
 
         ' Setup an instance of the plugins class
-        clsPluginsInst = New Plugins(My.Application.Info.DirectoryPath)
+        pluginsInst = New Plugins(My.Application.Info.DirectoryPath)
 
         ' Fetch the version of the database
         Dim currentVer As Integer
@@ -256,13 +256,13 @@ Friend Class Data
 
     Private Sub StartDownloadAsync()
         SyncLock findDownloadLock
-            If thrDownloadThread Is Nothing Then
+            If downloadThread Is Nothing Then
                 Using command As New SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid, dl.errorcount from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn)
                     command.Parameters.Add(New SQLiteParameter("@statuswait", DownloadStatus.Waiting))
                     command.Parameters.Add(New SQLiteParameter("@statuserr", DownloadStatus.Errored))
 
                     Using reader As SQLiteDataReader = command.ExecuteReader
-                        While thrDownloadThread Is Nothing
+                        While downloadThread Is Nothing
                             If Not reader.Read Then
                                 Return
                             End If
@@ -270,8 +270,8 @@ Friend Class Data
                             Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
                             Dim epid As Integer = reader.GetInt32(reader.GetOrdinal("epid"))
 
-                            If clsPluginsInst.PluginExists(pluginId) Then
-                                clsCurDldProgData = New DldProgData
+                            If pluginsInst.PluginExists(pluginId) Then
+                                curDldProgData = New DldProgData
 
                                 Dim progInfo As IRadioProvider.ProgrammeInfo
                                 If reader.IsDBNull(reader.GetOrdinal("progname")) Then
@@ -335,25 +335,25 @@ Friend Class Data
                                     End Using
                                 End Using
 
-                                With clsCurDldProgData
-                                    .PluginID = pluginId
-                                    .ProgExtID = reader.GetString(reader.GetOrdinal("progextid"))
-                                    .EpID = epid
-                                    .EpisodeExtID = reader.GetString(reader.GetOrdinal("epextid"))
+                                With curDldProgData
+                                    .PluginId = pluginId
+                                    .ProgExtId = reader.GetString(reader.GetOrdinal("progextid"))
+                                    .EpId = epid
+                                    .EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"))
                                     .ProgInfo = progInfo
                                     .EpisodeInfo = epiEpInfo
                                 End With
 
                                 If reader.GetInt32(reader.GetOrdinal("status")) = DownloadStatus.Errored Then
                                     Call ResetDownloadAsync(epid, True)
-                                    clsCurDldProgData.AttemptNumber = reader.GetInt32(reader.GetOrdinal("errorcount")) + 1
+                                    curDldProgData.AttemptNumber = reader.GetInt32(reader.GetOrdinal("errorcount")) + 1
                                 Else
-                                    clsCurDldProgData.AttemptNumber = 1
+                                    curDldProgData.AttemptNumber = 1
                                 End If
 
-                                thrDownloadThread = New Thread(AddressOf DownloadProgThread)
-                                thrDownloadThread.IsBackground = True
-                                thrDownloadThread.Start()
+                                downloadThread = New Thread(AddressOf DownloadProgThread)
+                                downloadThread.IsBackground = True
+                                downloadThread.Start()
 
                                 Return
                             End If
@@ -365,21 +365,21 @@ Friend Class Data
     End Sub
 
     Public Sub DownloadProgThread()
-        DownloadPluginInst = clsPluginsInst.GetPluginInstance(clsCurDldProgData.PluginID)
+        DownloadPluginInst = pluginsInst.GetPluginInstance(curDldProgData.PluginId)
 
         Try
             ' Make sure that the temp folder still exists
             Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath, "RadioDownloader"))
 
-            With clsCurDldProgData
+            With curDldProgData
                 Try
-                    clsCurDldProgData.FinalName = FileUtils.FindFreeSaveFileName(My.Settings.FileNameFormat, clsCurDldProgData.ProgInfo.Name, clsCurDldProgData.EpisodeInfo.Name, clsCurDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder())
+                    curDldProgData.FinalName = FileUtils.FindFreeSaveFileName(My.Settings.FileNameFormat, curDldProgData.ProgInfo.Name, curDldProgData.EpisodeInfo.Name, curDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder())
                 Catch dirNotFoundExp As DirectoryNotFoundException
                     Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", New List(Of DldErrorDataItem))
                     Exit Sub
                 End Try
 
-                DownloadPluginInst.DownloadProgramme(.ProgExtID, .EpisodeExtID, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
+                DownloadPluginInst.DownloadProgramme(.ProgExtId, .EpisodeExtId, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
             End With
         Catch threadAbortExp As ThreadAbortException
             ' The download has been aborted, so ignore the exception
@@ -416,9 +416,9 @@ Friend Class Data
                 If reader.Read Then
                     Dim providerId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
 
-                    If clsPluginsInst.PluginExists(providerId) Then
+                    If pluginsInst.PluginExists(providerId) Then
                         Dim pluginInstance As IRadioProvider
-                        pluginInstance = clsPluginsInst.GetPluginInstance(providerId)
+                        pluginInstance = pluginsInst.GetPluginInstance(providerId)
 
                         If reader.GetDateTime(reader.GetOrdinal("lastupdate")).AddDays(pluginInstance.ProgInfoUpdateFreqDays) < Now Then
                             Call StoreProgrammeInfo(providerId, reader.GetString(reader.GetOrdinal("extid")), Nothing)
@@ -755,13 +755,13 @@ Friend Class Data
     End Sub
 
     Private Sub DownloadRemoveAsync(ByVal epid As Integer)
-        If clsCurDldProgData IsNot Nothing Then
-            If clsCurDldProgData.EpID = epid Then
+        If curDldProgData IsNot Nothing Then
+            If curDldProgData.EpId = epid Then
                 ' The program is currently being downloaded
 
-                If thrDownloadThread IsNot Nothing Then
-                    thrDownloadThread.Abort()
-                    thrDownloadThread = Nothing
+                If downloadThread IsNot Nothing Then
+                    downloadThread.Abort()
+                    downloadThread = Nothing
                 End If
 
                 StartDownload()
@@ -836,7 +836,7 @@ Friend Class Data
                 errorExtraDetails.Add("programme:extid", reader.GetString(reader.GetOrdinal("progextid")))
 
                 Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
-                Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
+                Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
 
                 errorExtraDetails.Add("provider:id", pluginId.ToString)
                 errorExtraDetails.Add("provider:name", providerInst.ProviderName)
@@ -877,7 +877,7 @@ Friend Class Data
     Private Sub DownloadPluginInst_DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles DownloadPluginInst.DldError
         Select Case errorType
             Case IRadioProvider.ErrorType.RemoveFromList
-                Call DownloadRemoveAsync(clsCurDldProgData.EpID)
+                Call DownloadRemoveAsync(curDldProgData.EpId)
                 Return
             Case IRadioProvider.ErrorType.UnknownError
                 furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
@@ -892,7 +892,7 @@ Friend Class Data
             command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Errored))
             command.Parameters.Add(New SQLiteParameter("@errortype", errorType))
             command.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
-            command.Parameters.Add(New SQLiteParameter("@epid", clsCurDldProgData.EpID))
+            command.Parameters.Add(New SQLiteParameter("@epid", curDldProgData.EpId))
             command.ExecuteNonQuery()
         End Using
 
@@ -900,21 +900,21 @@ Friend Class Data
             downloadSortCache = Nothing
         End SyncLock
 
-        RaiseEvent DownloadUpdated(clsCurDldProgData.EpID)
+        RaiseEvent DownloadUpdated(curDldProgData.EpId)
 
-        thrDownloadThread = Nothing
-        clsCurDldProgData = Nothing
+        downloadThread = Nothing
+        curDldProgData = Nothing
 
         Call StartDownloadAsync()
     End Sub
 
-    Private Sub DownloadPluginInst_Finished(ByVal strFileExtension As String) Handles DownloadPluginInst.Finished
-        clsCurDldProgData.FinalName += "." + strFileExtension
+    Private Sub DownloadPluginInst_Finished(ByVal fileExtension As String) Handles DownloadPluginInst.Finished
+        curDldProgData.FinalName += "." + fileExtension
 
         Using command As New SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
-            command.Parameters.Add(New SQLiteParameter("@filepath", clsCurDldProgData.FinalName))
-            command.Parameters.Add(New SQLiteParameter("@epid", clsCurDldProgData.EpID))
+            command.Parameters.Add(New SQLiteParameter("@filepath", curDldProgData.FinalName))
+            command.Parameters.Add(New SQLiteParameter("@epid", curDldProgData.EpId))
             command.ExecuteNonQuery()
         End Using
 
@@ -922,34 +922,34 @@ Friend Class Data
             downloadSortCache = Nothing
         End SyncLock
 
-        RaiseEvent DownloadUpdated(clsCurDldProgData.EpID)
+        RaiseEvent DownloadUpdated(curDldProgData.EpId)
 
         If My.Settings.RunAfterCommand <> "" Then
             Try
                 ' Environ("comspec") will give the path to cmd.exe or command.com
-                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", clsCurDldProgData.FinalName), AppWinStyle.NormalNoFocus)
+                Call Shell("""" + Environ("comspec") + """ /c " + My.Settings.RunAfterCommand.Replace("%file%", curDldProgData.FinalName), AppWinStyle.NormalNoFocus)
             Catch
                 ' Just ignore the error, as it just means that something has gone wrong with the run after command.
             End Try
         End If
 
-        thrDownloadThread = Nothing
-        clsCurDldProgData = Nothing
+        downloadThread = Nothing
+        curDldProgData = Nothing
 
         Call StartDownloadAsync()
     End Sub
 
-    Private Sub DownloadPluginInst_Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Handles DownloadPluginInst.Progress
+    Private Sub DownloadPluginInst_Progress(ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon) Handles DownloadPluginInst.Progress
         Static lastNum As Integer = -1
 
         ' Don't raise the progress event if the value is the same as last time, or is outside the range
-        If intPercent = lastNum OrElse intPercent < 0 OrElse intPercent > 100 Then
+        If percent = lastNum OrElse percent < 0 OrElse percent > 100 Then
             Exit Sub
         End If
 
-        lastNum = intPercent
+        lastNum = percent
 
-        RaiseEvent DownloadProgress(clsCurDldProgData.EpID, intPercent, strStatusText, Icon)
+        RaiseEvent DownloadProgress(curDldProgData.EpId, percent, statusText, icon)
     End Sub
 
     Public Sub PerformCleanup()
@@ -984,9 +984,9 @@ Friend Class Data
         End Using
     End Sub
 
-    Private Function GetDBSetting(ByVal strPropertyName As String) As Object
+    Private Function GetDBSetting(ByVal propertyName As String) As Object
         Using command As New SQLiteCommand("select value from settings where property=@property", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@property", strPropertyName))
+            command.Parameters.Add(New SQLiteParameter("@property", propertyName))
 
             Using reader As SQLiteDataReader = command.ExecuteReader()
                 If reader.Read = False Then
@@ -1027,10 +1027,10 @@ Friend Class Data
         End If
     End Sub
 
-    Public Function GetFindNewPanel(ByVal gidPluginID As Guid, ByVal objView As Object) As Panel
-        If clsPluginsInst.PluginExists(gidPluginID) Then
-            FindNewPluginInst = clsPluginsInst.GetPluginInstance(gidPluginID)
-            Return FindNewPluginInst.GetFindNewPanel(objView)
+    Public Function GetFindNewPanel(ByVal pluginID As Guid, ByVal view As Object) As Panel
+        If pluginsInst.PluginExists(pluginID) Then
+            FindNewPluginInst = pluginsInst.GetPluginInstance(pluginID)
+            Return FindNewPluginInst.GetFindNewPanel(view)
         Else
             Return New Panel
         End If
@@ -1049,8 +1049,8 @@ Friend Class Data
         End If
     End Sub
 
-    Private Sub FindNewPluginInst_FindNewViewChange(ByVal objView As Object) Handles FindNewPluginInst.FindNewViewChange
-        RaiseEvent FindNewViewChange(objView)
+    Private Sub FindNewPluginInst_FindNewViewChange(ByVal view As Object) Handles FindNewPluginInst.FindNewViewChange
+        RaiseEvent FindNewViewChange(view)
     End Sub
 
     Private Sub FindNewPluginInst_FoundNew(ByVal progExtId As String) Handles FindNewPluginInst.FoundNew
@@ -1060,8 +1060,8 @@ Friend Class Data
         If StoreProgrammeInfo(pluginId, progExtId, pluginExp) = False Then
             If pluginExp IsNot Nothing Then
                 If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + Environment.NewLine + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
-                    Dim clsReport As New ErrorReporting(pluginExp)
-                    clsReport.SendReport(My.Settings.ErrorReportURL)
+                    Dim report As New ErrorReporting(pluginExp)
+                    report.SendReport(My.Settings.ErrorReportURL)
                 End If
 
                 Exit Sub
@@ -1076,11 +1076,11 @@ Friend Class Data
     End Sub
 
     Private Function StoreProgrammeInfo(ByVal pluginId As System.Guid, ByVal progExtId As String, ByRef pluginExp As Exception) As Boolean
-        If clsPluginsInst.PluginExists(pluginId) = False Then
+        If pluginsInst.PluginExists(pluginId) = False Then
             Return False
         End If
 
-        Dim pluginInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
+        Dim pluginInstance As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
         Dim progInfo As IRadioProvider.GetProgrammeInfoReturn
 
         Try
@@ -1204,12 +1204,12 @@ Friend Class Data
     End Function
 
     Private Function GetAvailableEpisodes(ByVal providerId As Guid, ByVal progExtId As String) As List(Of String)
-        If clsPluginsInst.PluginExists(providerId) = False Then
+        If pluginsInst.PluginExists(providerId) = False Then
             Return Nothing
         End If
 
         Dim extIds As String()
-        Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(providerId)
+        Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(providerId)
 
         extIds = providerInst.GetAvailableEpisodeIDs(progExtId)
 
@@ -1230,7 +1230,7 @@ Friend Class Data
     End Function
 
     Private Function StoreEpisodeInfo(ByVal pluginId As Guid, ByVal progid As Integer, ByVal progExtId As String, ByVal episodeExtId As String) As Integer
-        Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
+        Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
         Dim episodeInfoReturn As IRadioProvider.GetEpisodeInfoReturn
 
         episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId)
@@ -1333,7 +1333,7 @@ Friend Class Data
 
     Public Sub InitProviderList()
         Dim pluginIdList() As Guid
-        pluginIdList = clsPluginsInst.GetPluginIdList
+        pluginIdList = pluginsInst.GetPluginIdList
 
         For Each pluginId As Guid In pluginIdList
             RaiseEvent ProviderAdded(pluginId)
@@ -1502,7 +1502,7 @@ Friend Class Data
                 info.latestDownload = LatestDownloadDate(progid)
 
                 Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
-                Dim providerInst As IRadioProvider = clsPluginsInst.GetPluginInstance(pluginId)
+                Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
                 info.providerName = providerInst.ProviderName
 
                 Return info
@@ -1572,7 +1572,7 @@ Friend Class Data
     End Function
 
     Public Function FetchProviderData(ByVal providerId As Guid) As ProviderData
-        Dim providerInstance As IRadioProvider = clsPluginsInst.GetPluginInstance(providerId)
+        Dim providerInstance As IRadioProvider = pluginsInst.GetPluginInstance(providerId)
 
         Dim info As New ProviderData
         info.name = providerInstance.ProviderName

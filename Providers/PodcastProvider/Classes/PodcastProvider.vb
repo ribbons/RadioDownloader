@@ -80,13 +80,13 @@ Public Class PodcastProvider
         Return Nothing
     End Function
 
-    Public Function GetFindNewPanel(ByVal objView As Object) As Panel Implements IRadioProvider.GetFindNewPanel
+    Public Function GetFindNewPanel(ByVal view As Object) As Panel Implements IRadioProvider.GetFindNewPanel
         Dim FindNewInst As New FindNew
         FindNewInst.clsPluginInst = Me
         Return FindNewInst.pnlFindNew
     End Function
 
-    Public Function GetProgrammeInfo(ByVal strProgExtID As String) As IRadioProvider.GetProgrammeInfoReturn Implements IRadioProvider.GetProgrammeInfo
+    Public Function GetProgrammeInfo(ByVal progExtID As String) As IRadioProvider.GetProgrammeInfoReturn Implements IRadioProvider.GetProgrammeInfo
         Dim getProgInfo As New IRadioProvider.GetProgrammeInfoReturn
         getProgInfo.Success = False
 
@@ -96,7 +96,7 @@ Public Class PodcastProvider
         Dim xmlNamespaceMgr As XmlNamespaceManager
 
         Try
-            strRSS = cachedWeb.DownloadString(strProgExtID, intCacheHTTPHours)
+            strRSS = cachedWeb.DownloadString(progExtID, intCacheHTTPHours)
         Catch expWeb As WebException
             Return getProgInfo
         End Try
@@ -133,7 +133,7 @@ Public Class PodcastProvider
         Return getProgInfo
     End Function
 
-    Public Function GetAvailableEpisodeIDs(ByVal strProgExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
+    Public Function GetAvailableEpisodeIDs(ByVal progExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
         Dim strEpisodeIDs(-1) As String
         GetAvailableEpisodeIDs = strEpisodeIDs
 
@@ -142,7 +142,7 @@ Public Class PodcastProvider
         Dim xmlRSS As New XmlDocument
 
         Try
-            strRSS = cachedWeb.DownloadString(strProgExtID, intCacheHTTPHours)
+            strRSS = cachedWeb.DownloadString(progExtID, intCacheHTTPHours)
         Catch expWeb As WebException
             Exit Function
         End Try
@@ -174,7 +174,7 @@ Public Class PodcastProvider
         Return strEpisodeIDs
     End Function
 
-    Function GetEpisodeInfo(ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As IRadioProvider.GetEpisodeInfoReturn Implements IRadioProvider.GetEpisodeInfo
+    Function GetEpisodeInfo(ByVal progExtID As String, ByVal episodeExtID As String) As IRadioProvider.GetEpisodeInfoReturn Implements IRadioProvider.GetEpisodeInfo
         Dim episodeInfoReturn As New IRadioProvider.GetEpisodeInfoReturn
         episodeInfoReturn.Success = False
 
@@ -184,7 +184,7 @@ Public Class PodcastProvider
         Dim xmlNamespaceMgr As XmlNamespaceManager
 
         Try
-            strRSS = cachedWeb.DownloadString(strProgExtID, intCacheHTTPHours)
+            strRSS = cachedWeb.DownloadString(progExtID, intCacheHTTPHours)
         Catch expWeb As WebException
             Return episodeInfoReturn
         End Try
@@ -213,7 +213,7 @@ Public Class PodcastProvider
         For Each xmlItem As XmlNode In xmlItems
             strItemID = ItemNodeToEpisodeID(xmlItem)
 
-            If strItemID = strEpisodeExtID Then
+            If strItemID = episodeExtID Then
                 Dim xmlTitle As XmlNode = xmlItem.SelectSingleNode("./title")
                 Dim xmlDescription As XmlNode = xmlItem.SelectSingleNode("./description")
                 Dim xmlPubDate As XmlNode = xmlItem.SelectSingleNode("./pubDate")
@@ -365,18 +365,18 @@ Public Class PodcastProvider
         Return episodeInfoReturn
     End Function
 
-    Public Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As IRadioProvider.ProgrammeInfo, ByVal EpInfo As IRadioProvider.EpisodeInfo, ByVal strFinalName As String, ByVal intAttempt As Integer) Implements IRadioProvider.DownloadProgramme
-        strProgDldUrl = EpInfo.ExtInfo("EnclosureURL")
+    Public Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As IRadioProvider.ProgrammeInfo, ByVal epInfo As IRadioProvider.EpisodeInfo, ByVal finalName As String, ByVal attempt As Integer) Implements IRadioProvider.DownloadProgramme
+        strProgDldUrl = epInfo.ExtInfo("EnclosureURL")
 
-        Dim intFileNamePos As Integer = strFinalName.LastIndexOf("\", StringComparison.Ordinal)
+        Dim intFileNamePos As Integer = finalName.LastIndexOf("\", StringComparison.Ordinal)
         Dim intExtensionPos As Integer = strProgDldUrl.LastIndexOf(".", StringComparison.Ordinal)
 
         If intExtensionPos > -1 Then
             strExtension = strProgDldUrl.Substring(intExtensionPos + 1)
         End If
 
-        strDownloadFileName = Path.Combine(System.IO.Path.GetTempPath, Path.Combine("RadioDownloader", strFinalName.Substring(intFileNamePos + 1) + "." + strExtension))
-        Me.strFinalName = strFinalName + "." + strExtension
+        strDownloadFileName = Path.Combine(System.IO.Path.GetTempPath, Path.Combine("RadioDownloader", finalName.Substring(intFileNamePos + 1) + "." + strExtension))
+        Me.strFinalName = finalName + "." + strExtension
 
         AddHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange
 

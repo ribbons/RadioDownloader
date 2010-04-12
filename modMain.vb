@@ -35,17 +35,17 @@ Friend Module modMain
     Private Declare Function GetClassName Lib "user32" Alias "GetClassNameA" (ByVal hWnd As IntPtr, ByVal lpClassName As String, ByVal nMaxCount As Integer) As Integer
     Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As IntPtr, ByRef lpRect As RECT) As Integer
 
-    Public Sub TrayAnimate(ByRef frmForm As System.Windows.Forms.Form, ByRef booDown As Boolean)
-        Dim rctWindow As RECT
-        Dim rctSystemTray As RECT
+    Public Sub TrayAnimate(ByRef form As System.Windows.Forms.Form, ByRef down As Boolean)
+        Dim window As RECT
+        Dim systemTray As RECT
 
-        rctSystemTray = GetSysTrayPos()
-        Call GetWindowRect(frmForm.Handle, rctWindow)
+        systemTray = GetSysTrayPos()
+        Call GetWindowRect(form.Handle, window)
 
-        If booDown = True Then
-            DrawAnimatedRects(frmForm.Handle, IDANI_CLOSE Or IDANI_CAPTION, rctWindow, rctSystemTray)
+        If down = True Then
+            DrawAnimatedRects(form.Handle, IDANI_CLOSE Or IDANI_CAPTION, window, systemTray)
         Else
-            DrawAnimatedRects(frmForm.Handle, IDANI_OPEN Or IDANI_CAPTION, rctSystemTray, rctWindow)
+            DrawAnimatedRects(form.Handle, IDANI_OPEN Or IDANI_CAPTION, systemTray, window)
         End If
     End Sub
 
@@ -68,11 +68,11 @@ Friend Module modMain
         Call GetWindowRect(trayHwnd, GetSysTrayPos)
     End Function
 
-    Private Function TrimNull(ByVal strString As String) As String
-        Dim lngPos As Integer
-        lngPos = InStr(strString, Chr(0))
+    Private Function TrimNull(ByVal trimStr As String) As String
+        Dim pos As Integer
+        pos = InStr(trimStr, Chr(0))
 
-        If lngPos > 0 Then strString = Left(strString, lngPos - 1)
-        TrimNull = strString
+        If pos > 0 Then trimStr = Left(trimStr, pos - 1)
+        TrimNull = trimStr
     End Function
 End Module

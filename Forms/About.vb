@@ -20,16 +20,16 @@ Imports System.Diagnostics.Process
 Friend NotInheritable Class About
     Private Sub About_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         ' Set the title of the form.
-        Dim ApplicationTitle As String
+        Dim applicationTitle As String
         If My.Application.Info.Title <> "" Then
-            ApplicationTitle = My.Application.Info.Title
+            applicationTitle = My.Application.Info.Title
         Else
-            ApplicationTitle = System.IO.Path.GetFileNameWithoutExtension(My.Application.Info.AssemblyName)
+            applicationTitle = System.IO.Path.GetFileNameWithoutExtension(My.Application.Info.AssemblyName)
         End If
 
         Me.Font = SystemFonts.MessageBoxFont
 
-        Me.Text = "About " + ApplicationTitle
+        Me.Text = "About " + applicationTitle
         Me.LabelNameAndVer.Text = My.Application.Info.ProductName + " " + My.Application.Info.Version.ToString
         Me.LabelCopyright.Text = My.Application.Info.Copyright
     End Sub

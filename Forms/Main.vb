@@ -81,22 +81,22 @@ Friend Class Main
         End Function
     End Class
 
-    Private viwBackData(-1) As ViewStore
-    Private viwFwdData(-1) As ViewStore
+    Private backData(-1) As ViewStore
+    Private fwdData(-1) As ViewStore
 
-    Private WithEvents clsProgData As Data
-    Private clsDoDBUpdate As UpdateDB
-    Private clsUpdate As UpdateCheck
+    Private WithEvents progData As Data
+    Private doDbUpdate As UpdateDB
+    Private checkUpdate As UpdateCheck
 
-    Private Delegate Sub clsProgData_ProviderAdded_Delegate(ByVal providerId As Guid)
-    Private Delegate Sub clsProgData_Programme_Delegate(ByVal progid As Integer)
-    Private Delegate Sub clsProgData_Episode_Delegate(ByVal epid As Integer)
-    Private Delegate Sub clsProgData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
+    Private Delegate Sub progData_ProviderAdded_Delegate(ByVal providerId As Guid)
+    Private Delegate Sub progData_Programme_Delegate(ByVal progid As Integer)
+    Private Delegate Sub progData_Episode_Delegate(ByVal epid As Integer)
+    Private Delegate Sub progData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
 
     Private Const downloadProgCol As Integer = 3
 
     Public Sub UpdateTrayStatus(ByVal active As Boolean)
-        If clsProgData.CountDownloadsErrored > 0 Then
+        If progData.CountDownloadsErrored > 0 Then
             nicTrayIcon.Icon = My.Resources.icon_error
             nicTrayIcon.Text = Me.Text + ": Error"
         Else
@@ -186,8 +186,8 @@ Friend Class Main
                 Exit Sub
             End Try
 
-            clsDoDBUpdate = New UpdateDB(Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"))
-            Call clsDoDBUpdate.UpdateStructure()
+            doDbUpdate = New UpdateDB(Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"))
+            Call doDbUpdate.UpdateStructure()
         End If
 
         imlListIcons.Images.Add("downloading", My.Resources.list_downloading)
@@ -231,18 +231,18 @@ Friend Class Main
 
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
 
-        clsProgData = Data.GetInstance
-        Call clsProgData.InitProviderList()
-        Call clsProgData.InitSubscriptionList()
+        progData = Data.GetInstance
+        Call progData.InitProviderList()
+        Call progData.InitSubscriptionList()
         lstSubscribed.ListViewItemSorter = New ListComparer(ListComparer.ListType.Subscription)
-        Call clsProgData.InitDownloadList()
+        Call progData.InitDownloadList()
         lstDownloads.ListViewItemSorter = New ListComparer(ListComparer.ListType.Download)
 
         ' Set up and then show the system tray icon
         Call UpdateTrayStatus(False)
         nicTrayIcon.Visible = True
 
-        clsUpdate = New UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString)
+        checkUpdate = New UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString)
 
         picSideBarBorder.Width = 2
 
@@ -272,7 +272,7 @@ Friend Class Main
         End If
 
         tmrCheckSub.Enabled = True
-        clsProgData.StartDownload()
+        progData.StartDownload()
         tmrCheckForUpdates.Enabled = True
     End Sub
 
@@ -308,10 +308,10 @@ Friend Class Main
     End Sub
 
     Private Sub ShowProviderInfo(ByVal providerId As Guid)
-        Dim info As Data.ProviderData = clsProgData.FetchProviderData(providerId)
+        Dim info As Data.ProviderData = progData.FetchProviderData(providerId)
         Call SetSideBar(info.name, info.description, Nothing)
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.FindNewChooseProvider Then
+        If backData(backData.GetUpperBound(0)).View = View.FindNewChooseProvider Then
             SetToolbarButtons("ChooseProgramme")
         End If
     End Sub
@@ -326,12 +326,12 @@ Friend Class Main
     End Sub
 
     Private Sub lstEpisodes_ItemCheck(ByVal sender As Object, ByVal e As System.Windows.Forms.ItemCheckEventArgs) Handles lstEpisodes.ItemCheck
-        clsProgData.EpisodeSetAutoDownload(CInt(lstEpisodes.Items(e.Index).Name), e.NewValue = CheckState.Checked)
+        progData.EpisodeSetAutoDownload(CInt(lstEpisodes.Items(e.Index).Name), e.NewValue = CheckState.Checked)
     End Sub
 
     Private Sub ShowEpisodeInfo(ByVal epid As Integer)
-        Dim progInfo As Data.ProgrammeData = clsProgData.FetchProgrammeData(CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData))
-        Dim epInfo As Data.EpisodeData = clsProgData.FetchEpisodeData(epid)
+        Dim progInfo As Data.ProgrammeData = progData.FetchProgrammeData(CInt(backData(backData.GetUpperBound(0)).ViewData))
+        Dim epInfo As Data.EpisodeData = progData.FetchEpisodeData(epid)
         Dim infoText As String = ""
 
         If epInfo.description IsNot Nothing Then
@@ -341,7 +341,7 @@ Friend Class Main
         infoText += "Date: " + epInfo.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
         infoText += ReadableDuration(epInfo.duration)
 
-        Call SetSideBar(epInfo.name, infoText, clsProgData.FetchEpisodeImage(epid))
+        Call SetSideBar(epInfo.name, infoText, progData.FetchEpisodeImage(epid))
 
         If progInfo.subscribed Then
             Call SetToolbarButtons("Download,Unsubscribe")
@@ -367,7 +367,7 @@ Friend Class Main
         If lstSubscribed.SelectedItems.Count > 0 Then
             Dim progid As Integer = CInt(lstSubscribed.SelectedItems(0).Name)
 
-            clsProgData.UpdateProgInfoIfRequired(progid)
+            progData.UpdateProgInfoIfRequired(progid)
             Call ShowSubscriptionInfo(progid)
         Else
             Call SetViewDefaults() ' Revert back to subscribed items view default sidebar and toolbar
@@ -375,9 +375,9 @@ Friend Class Main
     End Sub
 
     Private Sub ShowSubscriptionInfo(ByVal progid As Integer)
-        Dim info As Data.SubscriptionData = clsProgData.FetchSubscriptionData(progid)
+        Dim info As Data.SubscriptionData = progData.FetchSubscriptionData(progid)
 
-        Call SetSideBar(info.name, info.description, clsProgData.FetchProgrammeImage(progid))
+        Call SetSideBar(info.name, info.description, progData.FetchProgrammeImage(progid))
         Call SetToolbarButtons("Unsubscribe,CurrentEps")
     End Sub
 
@@ -399,7 +399,7 @@ Friend Class Main
     End Sub
 
     Private Sub ShowDownloadInfo(ByVal epid As Integer)
-        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
+        Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
 
         Dim actionString As String
         Dim infoText As String = ""
@@ -452,7 +452,7 @@ Friend Class Main
                 actionString = "Cancel"
         End Select
 
-        Call SetSideBar(info.name, infoText, clsProgData.FetchEpisodeImage(epid))
+        Call SetSideBar(info.name, infoText, progData.FetchEpisodeImage(epid))
         Call SetToolbarButtons(actionString)
     End Sub
 
@@ -482,41 +482,41 @@ Friend Class Main
         Return readable
     End Function
 
-    Private Sub SetSideBar(ByVal strTitle As String, ByVal strDescription As String, ByVal bmpPicture As Bitmap)
-        lblSideMainTitle.Text = strTitle
+    Private Sub SetSideBar(ByVal title As String, ByVal description As String, ByVal picture As Bitmap)
+        lblSideMainTitle.Text = title
 
-        txtSideDescript.Text = strDescription
+        txtSideDescript.Text = description
 
         ' Make sure the scrollbars update correctly
         txtSideDescript.ScrollBars = RichTextBoxScrollBars.None
         txtSideDescript.ScrollBars = RichTextBoxScrollBars.Both
 
-        If bmpPicture IsNot Nothing Then
-            If bmpPicture.Width > picSidebarImg.MaximumSize.Width Or bmpPicture.Height > picSidebarImg.MaximumSize.Height Then
-                Dim intNewWidth As Integer
-                Dim intNewHeight As Integer
+        If picture IsNot Nothing Then
+            If picture.Width > picSidebarImg.MaximumSize.Width Or picture.Height > picSidebarImg.MaximumSize.Height Then
+                Dim newWidth As Integer
+                Dim newHeight As Integer
 
-                If bmpPicture.Width > bmpPicture.Height Then
-                    intNewWidth = picSidebarImg.MaximumSize.Width
-                    intNewHeight = CInt((intNewWidth / bmpPicture.Width) * bmpPicture.Height)
+                If picture.Width > picture.Height Then
+                    newWidth = picSidebarImg.MaximumSize.Width
+                    newHeight = CInt((newWidth / picture.Width) * picture.Height)
                 Else
-                    intNewHeight = picSidebarImg.MaximumSize.Height
-                    intNewWidth = CInt((intNewHeight / bmpPicture.Height) * bmpPicture.Width)
+                    newHeight = picSidebarImg.MaximumSize.Height
+                    newWidth = CInt((newHeight / picture.Height) * picture.Width)
                 End If
 
-                Dim bmpOrigImg As Bitmap = bmpPicture
-                bmpPicture = New Bitmap(intNewWidth, intNewHeight)
-                Dim graGraphics As Graphics
+                Dim origImg As Bitmap = picture
+                picture = New Bitmap(newWidth, newHeight)
+                Dim graph As Graphics
 
-                graGraphics = Graphics.FromImage(bmpPicture)
-                graGraphics.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
+                graph = Graphics.FromImage(picture)
+                graph.InterpolationMode = Drawing2D.InterpolationMode.HighQualityBicubic
 
-                graGraphics.DrawImage(bmpOrigImg, 0, 0, intNewWidth, intNewHeight)
+                graph.DrawImage(origImg, 0, 0, newWidth, newHeight)
 
-                bmpOrigImg.Dispose()
+                origImg.Dispose()
             End If
 
-            picSidebarImg.Image = bmpPicture
+            picSidebarImg.Image = picture
             picSidebarImg.Visible = True
         Else
             picSidebarImg.Visible = False
@@ -599,7 +599,7 @@ Friend Class Main
     End Sub
 
     Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        Call clsProgData.CheckSubscriptions()
+        Call progData.CheckSubscriptions()
     End Sub
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
@@ -614,14 +614,14 @@ Friend Class Main
         Call SetView(MainTab.Downloads, View.Downloads, Nothing)
     End Sub
 
-    Private Sub clsProgData_ProviderAdded(ByVal providerId As System.Guid) Handles clsProgData.ProviderAdded
+    Private Sub progData_ProviderAdded(ByVal providerId As System.Guid) Handles progData.ProviderAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_ProviderAdded_Delegate(AddressOf clsProgData_ProviderAdded), providerId)
+            Me.BeginInvoke(New progData_ProviderAdded_Delegate(AddressOf progData_ProviderAdded), providerId)
             Return
         End If
 
-        Dim info As Data.ProviderData = clsProgData.FetchProviderData(providerId)
+        Dim info As Data.ProviderData = progData.FetchProviderData(providerId)
 
         Dim addItem As New ListViewItem
         addItem.Name = providerId.ToString
@@ -651,7 +651,7 @@ Friend Class Main
 
         mnuOptionsProviderOpts.MenuItems.Add(addMenuItem)
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.FindNewChooseProvider Then
+        If backData(backData.GetUpperBound(0)).View = View.FindNewChooseProvider Then
             If lstProviders.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -659,15 +659,15 @@ Friend Class Main
         End If
     End Sub
 
-    Private Sub clsProgData_ProgrammeUpdated(ByVal progid As Integer) Handles clsProgData.ProgrammeUpdated
+    Private Sub progData_ProgrammeUpdated(ByVal progid As Integer) Handles progData.ProgrammeUpdated
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_Programme_Delegate(AddressOf clsProgData_ProgrammeUpdated), progid)
+            Me.BeginInvoke(New progData_Programme_Delegate(AddressOf progData_ProgrammeUpdated), progid)
             Return
         End If
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.ProgEpisodes Then
-            If CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData) = progid Then
+        If backData(backData.GetUpperBound(0)).View = View.ProgEpisodes Then
+            If CInt(backData(backData.GetUpperBound(0)).ViewData) = progid Then
                 If lstEpisodes.SelectedItems.Count = 0 Then
                     ' Update the displayed programme information
                     Call ShowProgrammeInfo(progid)
@@ -681,7 +681,7 @@ Friend Class Main
     End Sub
 
     Private Sub ShowProgrammeInfo(ByVal progid As Integer)
-        Dim progInfo As Data.ProgrammeData = clsProgData.FetchProgrammeData(CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData))
+        Dim progInfo As Data.ProgrammeData = progData.FetchProgrammeData(CInt(backData(backData.GetUpperBound(0)).ViewData))
 
         If progInfo.subscribed Then
             Call SetToolbarButtons("Unsubscribe")
@@ -693,7 +693,7 @@ Friend Class Main
             End If
         End If
 
-        Call SetSideBar(progInfo.name, progInfo.description, clsProgData.FetchProgrammeImage(progid))
+        Call SetSideBar(progInfo.name, progInfo.description, progData.FetchProgrammeImage(progid))
     End Sub
 
     Private Sub EpisodeListItem(ByVal epid As Integer, ByVal info As Data.EpisodeData, ByRef item As ListViewItem)
@@ -703,14 +703,14 @@ Friend Class Main
         item.Checked = info.autoDownload
     End Sub
 
-    Private Sub clsProgData_EpisodeAdded(ByVal epid As Integer) Handles clsProgData.EpisodeAdded
+    Private Sub progData_EpisodeAdded(ByVal epid As Integer) Handles progData.EpisodeAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_Episode_Delegate(AddressOf clsProgData_EpisodeAdded), epid)
+            Me.BeginInvoke(New progData_Episode_Delegate(AddressOf progData_EpisodeAdded), epid)
             Return
         End If
 
-        Dim info As Data.EpisodeData = clsProgData.FetchEpisodeData(epid)
+        Dim info As Data.EpisodeData = progData.FetchEpisodeData(epid)
 
         Dim addItem As New ListViewItem
         addItem.SubItems.Add("")
@@ -736,14 +736,14 @@ Friend Class Main
         item.ImageKey = "subscribed"
     End Sub
 
-    Private Sub clsProgData_SubscriptionAdded(ByVal progid As Integer) Handles clsProgData.SubscriptionAdded
+    Private Sub progData_SubscriptionAdded(ByVal progid As Integer) Handles progData.SubscriptionAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_Programme_Delegate(AddressOf clsProgData_SubscriptionAdded), progid)
+            Me.BeginInvoke(New progData_Programme_Delegate(AddressOf progData_SubscriptionAdded), progid)
             Return
         End If
 
-        Dim info As Data.SubscriptionData = clsProgData.FetchSubscriptionData(progid)
+        Dim info As Data.SubscriptionData = progData.FetchSubscriptionData(progid)
 
         Dim addItem As New ListViewItem
         addItem.SubItems.Add("")
@@ -752,7 +752,7 @@ Friend Class Main
         SubscriptionListItem(progid, info, addItem)
         lstSubscribed.Items.Add(addItem)
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Subscriptions Then
+        If backData(backData.GetUpperBound(0)).View = View.Subscriptions Then
             If lstSubscribed.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -760,19 +760,19 @@ Friend Class Main
         End If
     End Sub
 
-    Private Sub clsProgData_SubscriptionUpdated(ByVal progid As Integer) Handles clsProgData.SubscriptionUpdated
+    Private Sub progData_SubscriptionUpdated(ByVal progid As Integer) Handles progData.SubscriptionUpdated
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_Programme_Delegate(AddressOf clsProgData_SubscriptionUpdated), progid)
+            Me.BeginInvoke(New progData_Programme_Delegate(AddressOf progData_SubscriptionUpdated), progid)
             Return
         End If
 
-        Dim info As Data.SubscriptionData = clsProgData.FetchSubscriptionData(progid)
+        Dim info As Data.SubscriptionData = progData.FetchSubscriptionData(progid)
         Dim item As ListViewItem = lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture))
 
         SubscriptionListItem(progid, info, item)
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Subscriptions Then
+        If backData(backData.GetUpperBound(0)).View = View.Subscriptions Then
             If lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture)).Selected Then
                 ShowSubscriptionInfo(progid)
             ElseIf lstSubscribed.SelectedItems.Count = 0 Then
@@ -782,14 +782,14 @@ Friend Class Main
         End If
     End Sub
 
-    Private Sub clsProgData_SubscriptionRemoved(ByVal progid As Integer) Handles clsProgData.SubscriptionRemoved
+    Private Sub progData_SubscriptionRemoved(ByVal progid As Integer) Handles progData.SubscriptionRemoved
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_Programme_Delegate(AddressOf clsProgData_SubscriptionRemoved), progid)
+            Me.BeginInvoke(New progData_Programme_Delegate(AddressOf progData_SubscriptionRemoved), progid)
             Return
         End If
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Subscriptions Then
+        If backData(backData.GetUpperBound(0)).View = View.Subscriptions Then
             If lstSubscribed.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -823,14 +823,14 @@ Friend Class Main
         End Select
     End Sub
 
-    Private Sub clsProgData_DownloadAdded(ByVal epid As Integer) Handles clsProgData.DownloadAdded
+    Private Sub progData_DownloadAdded(ByVal epid As Integer) Handles progData.DownloadAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_Episode_Delegate(AddressOf clsProgData_DownloadAdded), epid)
+            Me.BeginInvoke(New progData_Episode_Delegate(AddressOf progData_DownloadAdded), epid)
             Return
         End If
 
-        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
+        Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
 
         Dim addItem As New ListViewItem
         addItem.SubItems.Add("")
@@ -840,7 +840,7 @@ Friend Class Main
         DownloadListItem(epid, info, addItem)
         lstDownloads.Items.Add(addItem)
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+        If backData(backData.GetUpperBound(0)).View = View.Downloads Then
             If lstDownloads.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -848,10 +848,10 @@ Friend Class Main
         End If
     End Sub
 
-    Private Sub clsProgData_DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon) Handles clsProgData.DownloadProgress
+    Private Sub progData_DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon) Handles progData.DownloadProgress
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_DownloadProgress_Delegate(AddressOf clsProgData_DownloadProgress), New Object() {epid, percent, statusText, icon})
+            Me.BeginInvoke(New progData_DownloadProgress_Delegate(AddressOf progData_DownloadProgress), New Object() {epid, percent, statusText, icon})
             Return
         End If
 
@@ -874,14 +874,14 @@ Friend Class Main
         Call UpdateTrayStatus(True)
     End Sub
 
-    Private Sub clsProgData_DownloadRemoved(ByVal epid As Integer) Handles clsProgData.DownloadRemoved
+    Private Sub progData_DownloadRemoved(ByVal epid As Integer) Handles progData.DownloadRemoved
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_Episode_Delegate(AddressOf clsProgData_DownloadRemoved), epid)
+            Me.BeginInvoke(New progData_Episode_Delegate(AddressOf progData_DownloadRemoved), epid)
             Return
         End If
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+        If backData(backData.GetUpperBound(0)).View = View.Downloads Then
             If lstDownloads.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -899,14 +899,14 @@ Friend Class Main
         Call UpdateTrayStatus(False)
     End Sub
 
-    Private Sub clsProgData_DownloadUpdated(ByVal epid As Integer) Handles clsProgData.DownloadUpdated
+    Private Sub progData_DownloadUpdated(ByVal epid As Integer) Handles progData.DownloadUpdated
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New clsProgData_Episode_Delegate(AddressOf clsProgData_DownloadUpdated), epid)
+            Me.BeginInvoke(New progData_Episode_Delegate(AddressOf progData_DownloadUpdated), epid)
             Return
         End If
 
-        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
+        Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
 
         DownloadListItem(epid, info, item)
@@ -915,7 +915,7 @@ Friend Class Main
             lstDownloads.RemoveProgressBar(prgDldProg)
         End If
 
-        If viwBackData(viwBackData.GetUpperBound(0)).View = View.Downloads Then
+        If backData(backData.GetUpperBound(0)).View = View.Downloads Then
             If lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture)).Selected Then
                 ShowDownloadInfo(epid)
             ElseIf lstDownloads.SelectedItems.Count = 0 Then
@@ -927,19 +927,19 @@ Friend Class Main
         Call UpdateTrayStatus(False)
     End Sub
 
-    Private Sub clsProgData_FindNewViewChange(ByVal objView As Object) Handles clsProgData.FindNewViewChange
-        Dim ChangedView As ViewStore = viwBackData(viwBackData.GetUpperBound(0))
+    Private Sub progData_FindNewViewChange(ByVal view As Object) Handles progData.FindNewViewChange
+        Dim ChangedView As ViewStore = backData(backData.GetUpperBound(0))
         Dim FindViewData As FindNewViewData = DirectCast(ChangedView.ViewData, FindNewViewData)
 
-        FindViewData.View = objView
+        FindViewData.View = view
         ChangedView.ViewData = FindViewData
 
         Call StoreView(ChangedView)
         Call UpdateNavCtrlState()
     End Sub
 
-    Private Sub clsProgData_FoundNew(ByVal intProgID As Integer) Handles clsProgData.FoundNew
-        Call SetView(MainTab.FindProgramme, View.ProgEpisodes, intProgID)
+    Private Sub progData_FoundNew(ByVal progid As Integer) Handles progData.FoundNew
+        Call SetView(MainTab.FindProgramme, View.ProgEpisodes, progid)
     End Sub
 
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
@@ -956,7 +956,7 @@ Friend Class Main
     End Sub
 
     Private Sub tmrCheckForUpdates_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrCheckForUpdates.Tick
-        If clsUpdate.IsUpdateAvailable Then
+        If checkUpdate.IsUpdateAvailable Then
             If My.Settings.LastUpdatePrompt.AddDays(7) < Now Then
                 My.Settings.LastUpdatePrompt = Now
                 My.Settings.Save() ' Save the last prompt time in case of unexpected termination
@@ -969,9 +969,9 @@ Friend Class Main
     End Sub
 
     Private Sub tbtSubscribe_Click()
-        Dim progid As Integer = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
+        Dim progid As Integer = CInt(backData(backData.GetUpperBound(0)).ViewData)
 
-        If clsProgData.AddSubscription(progid) Then
+        If progData.AddSubscription(progid) Then
             Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
         Else
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation)
@@ -981,15 +981,15 @@ Friend Class Main
     Private Sub tbtUnsubscribe_Click()
         Dim progid As Integer
 
-        Select Case viwBackData(viwBackData.GetUpperBound(0)).View
+        Select Case backData(backData.GetUpperBound(0)).View
             Case View.ProgEpisodes
-                progid = CInt(viwBackData(viwBackData.GetUpperBound(0)).ViewData)
+                progid = CInt(backData(backData.GetUpperBound(0)).ViewData)
             Case View.Subscriptions
                 progid = CInt(lstSubscribed.SelectedItems(0).Name)
         End Select
 
         If MsgBox("Are you sure you would like to stop having new episodes of this programme downloaded automatically?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-            Call clsProgData.RemoveSubscription(progid)
+            Call progData.RemoveSubscription(progid)
         End If
     End Sub
 
@@ -997,27 +997,27 @@ Friend Class Main
         Dim epid As Integer = CInt(lstDownloads.SelectedItems(0).Name)
 
         If MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
-            clsProgData.DownloadRemove(epid)
+            progData.DownloadRemove(epid)
         End If
     End Sub
 
     Private Sub tbtPlay_Click()
         Dim epid As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
+        Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
 
         If info.status = Data.DownloadStatus.Downloaded Then
             If File.Exists(info.downloadPath) Then
                 Process.Start(info.downloadPath)
 
                 ' Bump the play count of this item up by one
-                clsProgData.DownloadBumpPlayCount(epid)
+                progData.DownloadBumpPlayCount(epid)
             End If
         End If
     End Sub
 
     Private Sub tbtDelete_Click()
         Dim epid As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-        Dim info As Data.DownloadData = clsProgData.FetchDownloadData(epid)
+        Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
 
         Dim fileExists As Boolean = File.Exists(info.downloadPath)
         Dim delQuestion As String = "Are you sure that you would like to delete this episode"
@@ -1041,18 +1041,18 @@ Friend Class Main
                 End Try
             End If
 
-            clsProgData.DownloadRemove(epid)
+            progData.DownloadRemove(epid)
         End If
     End Sub
 
     Private Sub tbtRetry_Click()
-        Call clsProgData.ResetDownload(CInt(lstDownloads.SelectedItems(0).Name))
+        Call progData.ResetDownload(CInt(lstDownloads.SelectedItems(0).Name))
     End Sub
 
     Private Sub tbtDownload_Click()
         Dim epid As Integer = CInt(lstEpisodes.SelectedItems(0).Name)
 
-        If clsProgData.AddDownload(epid) Then
+        If progData.AddDownload(epid) Then
             Call SetView(MainTab.Downloads, View.Downloads, Nothing)
         Else
             Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
@@ -1066,7 +1066,7 @@ Friend Class Main
 
     Private Sub tbtReportError_Click()
         Dim episodeID As Integer = CInt(lstDownloads.SelectedItems(0).Name)
-        clsProgData.DownloadReportError(episodeID)
+        progData.DownloadReportError(episodeID)
     End Sub
 
     Private Sub tbtChooseProgramme_Click()
@@ -1101,32 +1101,32 @@ Friend Class Main
         Call CleanUp.ShowDialog()
     End Sub
 
-    Private Sub StoreView(ByVal ViewData As ViewStore)
-        ReDim Preserve viwBackData(viwBackData.GetUpperBound(0) + 1)
-        viwBackData(viwBackData.GetUpperBound(0)) = ViewData
+    Private Sub StoreView(ByVal viewData As ViewStore)
+        ReDim Preserve backData(backData.GetUpperBound(0) + 1)
+        backData(backData.GetUpperBound(0)) = viewData
 
-        If viwFwdData.GetUpperBound(0) > -1 Then
-            ReDim viwFwdData(-1)
+        If fwdData.GetUpperBound(0) > -1 Then
+            ReDim fwdData(-1)
         End If
     End Sub
 
-    Private Sub SetView(ByVal Tab As MainTab, ByVal View As View, ByVal ViewData As Object)
+    Private Sub SetView(ByVal tab As MainTab, ByVal view As View, ByVal viewData As Object)
         Dim ViewDataStore As ViewStore
 
-        ViewDataStore.Tab = Tab
-        ViewDataStore.View = View
-        ViewDataStore.ViewData = ViewData
+        ViewDataStore.Tab = tab
+        ViewDataStore.View = view
+        ViewDataStore.ViewData = viewData
 
         Call StoreView(ViewDataStore)
         Call PerformViewChanges(ViewDataStore)
     End Sub
 
     Private Sub UpdateNavCtrlState()
-        tbtBack.Enabled = viwBackData.GetUpperBound(0) > 0
-        tbtForward.Enabled = viwFwdData.GetUpperBound(0) > -1
+        tbtBack.Enabled = backData.GetUpperBound(0) > 0
+        tbtForward.Enabled = fwdData.GetUpperBound(0) > -1
     End Sub
 
-    Private Sub PerformViewChanges(ByVal ViewData As ViewStore)
+    Private Sub PerformViewChanges(ByVal viewData As ViewStore)
         Call UpdateNavCtrlState()
 
         tbtFindNew.Checked = False
@@ -1134,7 +1134,7 @@ Friend Class Main
         tbtSubscriptions.Checked = False
         tbtDownloads.Checked = False
 
-        Select Case ViewData.Tab
+        Select Case viewData.Tab
             Case MainTab.FindProgramme
                 tbtFindNew.Checked = True
             Case MainTab.Favourites
@@ -1145,7 +1145,7 @@ Friend Class Main
                 tbtDownloads.Checked = True
         End Select
 
-        SetViewDefaults(ViewData)
+        SetViewDefaults(viewData)
 
         ' Set the focus to a control which does not show it, to prevent the toolbar momentarily showing focus
         lblSideMainTitle.Focus()
@@ -1156,7 +1156,7 @@ Friend Class Main
         lstSubscribed.Visible = False
         lstDownloads.Visible = False
 
-        Select Case ViewData.View
+        Select Case viewData.View
             Case View.FindNewChooseProvider
                 lstProviders.Visible = True
                 lstProviders.Focus()
@@ -1165,20 +1165,20 @@ Friend Class Main
                     ShowProviderInfo(New Guid(lstProviders.SelectedItems(0).Name))
                 End If
             Case View.FindNewProviderForm
-                Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
+                Dim FindViewData As FindNewViewData = DirectCast(viewData.ViewData, FindNewViewData)
 
                 pnlPluginSpace.Visible = True
                 pnlPluginSpace.Controls.Clear()
-                pnlPluginSpace.Controls.Add(clsProgData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View))
+                pnlPluginSpace.Controls.Add(progData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View))
                 pnlPluginSpace.Controls(0).Dock = DockStyle.Fill
                 pnlPluginSpace.Controls(0).Focus()
             Case View.ProgEpisodes
                 lstEpisodes.Visible = True
-                clsProgData.CancelEpisodeListing()
+                progData.CancelEpisodeListing()
                 lstEpisodes.Items.Clear() ' Clear before DoEvents so that old items don't flash up on screen
                 Application.DoEvents() ' Give any queued BeginInvoke calls a chance to be processed
                 lstEpisodes.Items.Clear()
-                clsProgData.InitEpisodeList(CInt(ViewData.ViewData))
+                progData.InitEpisodeList(CInt(viewData.ViewData))
             Case View.Subscriptions
                 lstSubscribed.Visible = True
                 lstSubscribed.Focus()
@@ -1197,20 +1197,20 @@ Friend Class Main
     End Sub
 
     Private Sub SetViewDefaults()
-        SetViewDefaults(viwBackData(viwBackData.GetUpperBound(0)))
+        SetViewDefaults(backData(backData.GetUpperBound(0)))
     End Sub
 
-    Private Sub SetViewDefaults(ByVal ViewData As ViewStore)
-        Select Case ViewData.View
+    Private Sub SetViewDefaults(ByVal viewData As ViewStore)
+        Select Case viewData.View
             Case View.FindNewChooseProvider
                 Call SetToolbarButtons("")
                 Call SetSideBar(CStr(lstProviders.Items.Count) + " provider" + If(lstProviders.Items.Count = 1, "", "s"), "", Nothing)
             Case View.FindNewProviderForm
-                Dim FindViewData As FindNewViewData = DirectCast(ViewData.ViewData, FindNewViewData)
+                Dim FindViewData As FindNewViewData = DirectCast(viewData.ViewData, FindNewViewData)
                 Call SetToolbarButtons("")
                 Call ShowProviderInfo(FindViewData.ProviderID)
             Case View.ProgEpisodes
-                Dim progid As Integer = CInt(ViewData.ViewData)
+                Dim progid As Integer = CInt(viewData.ViewData)
                 Call ShowProgrammeInfo(progid)
             Case View.Subscriptions
                 Call SetToolbarButtons("")
@@ -1219,8 +1219,8 @@ Friend Class Main
                 Call SetToolbarButtons("CleanUp")
 
                 Dim description As String = ""
-                Dim newCount As Integer = clsProgData.CountDownloadsNew
-                Dim errorCount As Integer = clsProgData.CountDownloadsErrored
+                Dim newCount As Integer = progData.CountDownloadsNew
+                Dim errorCount As Integer = progData.CountDownloadsErrored
 
                 If newCount > 0 Then
                     description += "Newly downloaded: " + CStr(newCount) + Environment.NewLine
@@ -1235,19 +1235,19 @@ Friend Class Main
     End Sub
 
     Private Sub tbtBack_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtBack.Click
-        ReDim Preserve viwFwdData(viwFwdData.GetUpperBound(0) + 1)
-        viwFwdData(viwFwdData.GetUpperBound(0)) = viwBackData(viwBackData.GetUpperBound(0))
-        ReDim Preserve viwBackData(viwBackData.GetUpperBound(0) - 1)
+        ReDim Preserve fwdData(fwdData.GetUpperBound(0) + 1)
+        fwdData(fwdData.GetUpperBound(0)) = backData(backData.GetUpperBound(0))
+        ReDim Preserve backData(backData.GetUpperBound(0) - 1)
 
-        Call PerformViewChanges(viwBackData(viwBackData.GetUpperBound(0)))
+        Call PerformViewChanges(backData(backData.GetUpperBound(0)))
     End Sub
 
     Private Sub tbtForward_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtForward.Click
-        ReDim Preserve viwBackData(viwBackData.GetUpperBound(0) + 1)
-        viwBackData(viwBackData.GetUpperBound(0)) = viwFwdData(viwFwdData.GetUpperBound(0))
-        ReDim Preserve viwFwdData(viwFwdData.GetUpperBound(0) - 1)
+        ReDim Preserve backData(backData.GetUpperBound(0) + 1)
+        backData(backData.GetUpperBound(0)) = fwdData(fwdData.GetUpperBound(0))
+        ReDim Preserve fwdData(fwdData.GetUpperBound(0) - 1)
 
-        Call PerformViewChanges(viwBackData(viwBackData.GetUpperBound(0)))
+        Call PerformViewChanges(backData(backData.GetUpperBound(0)))
     End Sub
 
     Private Sub tbrToolbar_ButtonClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ToolBarButtonClickEventArgs) Handles tbrToolbar.ButtonClick

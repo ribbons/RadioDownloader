@@ -148,27 +148,27 @@ Friend Class ErrorReporting
         End Try
     End Function
 
-    Public Sub SendReport(ByVal strSendUrl As String)
+    Public Sub SendReport(ByVal sendUrl As String)
         Try
-            Dim webSend As New WebClient()
-            webSend.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
+            Dim sendClient As New WebClient()
+            sendClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded")
 
-            Dim strPostData As String = ""
+            Dim postData As String = ""
 
             For Each reportField As KeyValuePair(Of String, String) In fields
-                strPostData += "&" + HttpUtility.UrlEncode(reportField.Key) + "=" + HttpUtility.UrlEncode(reportField.Value)
+                postData += "&" + HttpUtility.UrlEncode(reportField.Key) + "=" + HttpUtility.UrlEncode(reportField.Value)
             Next
 
-            strPostData = strPostData.Substring(1)
+            postData = postData.Substring(1)
 
-            Dim Result As Byte() = webSend.UploadData(strSendUrl, "POST", ASCII.GetBytes(strPostData))
-            Dim strReturnLines() As String = Split(ASCII.GetString(Result), vbLf)
+            Dim result As Byte() = sendClient.UploadData(sendUrl, "POST", ASCII.GetBytes(postData))
+            Dim returnLines() As String = Split(ASCII.GetString(result), vbLf)
 
-            If strReturnLines(0) = "success" Then
+            If returnLines(0) = "success" Then
                 MsgBox("Your error report was sent successfully.", MsgBoxStyle.Information)
 
-                If strReturnLines(1).StartsWith("http://", StringComparison.Ordinal) Or strReturnLines(1).StartsWith("https://", StringComparison.Ordinal) Then
-                    Process.Start(strReturnLines(1))
+                If returnLines(1).StartsWith("http://", StringComparison.Ordinal) Or returnLines(1).StartsWith("https://", StringComparison.Ordinal) Then
+                    Process.Start(returnLines(1))
                 End If
             End If
         Catch

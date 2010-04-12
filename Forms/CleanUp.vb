@@ -18,10 +18,10 @@ Option Explicit On
 Friend Class CleanUp 
     Inherits System.Windows.Forms.Form
 
-    Private clsProgData As Data
+    Private progData As Data
 
     Private Sub CleanUp_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        clsProgData = Data.GetInstance
+        progData = Data.GetInstance
         Me.Font = SystemFonts.MessageBoxFont
     End Sub
 
@@ -36,7 +36,7 @@ Friend Class CleanUp
         radType.Enabled = False
         lblExplainOrphan.Enabled = False
 
-        clsProgData.PerformCleanup()
+        progData.PerformCleanup()
 
         Me.Close()
         Me.Dispose()

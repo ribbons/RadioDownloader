@@ -44,8 +44,8 @@ Namespace My
 
         Private Sub MyApplication_UnhandledException(ByVal sender As Object, ByVal e As Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs) Handles Me.UnhandledException
             If ReportError.Visible = False Then
-                Dim clsReport As New ErrorReporting(e.Exception)
-                ReportError.AssignReport(clsReport)
+                Dim report As New ErrorReporting(e.Exception)
+                ReportError.AssignReport(report)
                 ReportError.ShowDialog()
             End If
         End Sub
@@ -62,8 +62,8 @@ Namespace My
             End Try
 
             If ReportError.Visible = False Then
-                Dim clsReport As New ErrorReporting(unhandledExp)
-                ReportError.AssignReport(clsReport)
+                Dim report As New ErrorReporting(unhandledExp)
+                ReportError.AssignReport(report)
                 ReportError.ShowDialog()
             End If
         End Sub

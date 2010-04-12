@@ -102,23 +102,23 @@ Public Interface IRadioProvider
     ReadOnly Property ProgInfoUpdateFreqDays() As Integer
 
     Function GetShowOptionsHandler() As EventHandler
-    Function GetFindNewPanel(ByVal objView As Object) As Panel
-    Function GetProgrammeInfo(ByVal strProgExtID As String) As GetProgrammeInfoReturn
-    Function GetAvailableEpisodeIDs(ByVal strProgExtID As String) As String()
-    Function GetEpisodeInfo(ByVal strProgExtID As String, ByVal strEpisodeExtID As String) As GetEpisodeInfoReturn
+    Function GetFindNewPanel(ByVal view As Object) As Panel
+    Function GetProgrammeInfo(ByVal progExtID As String) As GetProgrammeInfoReturn
+    Function GetAvailableEpisodeIDs(ByVal progExtID As String) As String()
+    Function GetEpisodeInfo(ByVal progExtID As String, ByVal episodeExtID As String) As GetEpisodeInfoReturn
 
-    Event FindNewViewChange(ByVal objView As Object)
-    Event FindNewException(ByVal exception As Exception, ByVal unhandled As Boolean)
-    Event FoundNew(ByVal strProgExtID As String)
-    Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon)
-    Event DldError(ByVal errorType As ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
-    Event Finished(ByVal strFileExtension As String)
+    Event FindNewViewChange(ByVal view As Object)
+    Event FindNewException(ByVal findExp As Exception, ByVal unhandled As Boolean)
+    Event FoundNew(ByVal progExtID As String)
+    Event Progress(ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon)
+    Event DldError(ByVal type As ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
+    Event Finished(ByVal fileExtension As String)
 
-    Sub DownloadProgramme(ByVal strProgExtID As String, ByVal strEpisodeExtID As String, ByVal ProgInfo As ProgrammeInfo, ByVal EpInfo As EpisodeInfo, ByVal strFinalName As String, ByVal intAttempt As Integer)
+    Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String, ByVal attempt As Integer)
 End Interface
 
 Friend Class Plugins
-    Private Const strInterfaceName As String = "IRadioProvider"
+    Private Const interfaceName As String = "IRadioProvider"
     Private availablePlugins As New Dictionary(Of Guid, AvailablePlugin)
 
     Private Structure AvailablePlugin
@@ -126,13 +126,13 @@ Friend Class Plugins
         Dim ClassName As String
     End Structure
 
-    Public Function PluginExists(ByVal gidPluginID As Guid) As Boolean
-        Return availablePlugins.ContainsKey(gidPluginID)
+    Public Function PluginExists(ByVal pluginID As Guid) As Boolean
+        Return availablePlugins.ContainsKey(pluginID)
     End Function
 
-    Public Function GetPluginInstance(ByVal gidPluginID As Guid) As IRadioProvider
-        If PluginExists(gidPluginID) Then
-            Return CreateInstance(availablePlugins.Item(gidPluginID))
+    Public Function GetPluginInstance(ByVal pluginID As Guid) As IRadioProvider
+        If PluginExists(pluginID) Then
+            Return CreateInstance(availablePlugins.Item(pluginID))
         Else
             Return Nothing
         End If
@@ -145,43 +145,49 @@ Friend Class Plugins
 
     ' Next three functions are based on code from http://www.developerfusion.co.uk/show/4371/3/
 
-    Public Sub New(ByVal strPath As String)
-        Dim strDLLs() As String, intIndex As Integer
-        Dim objDLL As Assembly
+    Public Sub New(ByVal path As String)
+        Dim dlls() As String
+        Dim thisDll As Assembly
 
-        'Go through all DLLs in the directory, attempting to load them
-        strDLLs = Directory.GetFileSystemEntries(strPath, "*.dll")
-        For intIndex = 0 To strDLLs.Length - 1
+        ' Go through the DLLs in the specified path and try to load them
+        dlls = Directory.GetFileSystemEntries(path, "*.dll")
+
+        For Each dll As String In dlls
             Try
-                objDLL = [Assembly].LoadFrom(strDLLs(intIndex))
-                ExamineAssembly(objDLL)
+                thisDll = [Assembly].LoadFrom(dll)
+                ExamineAssembly(thisDll)
             Catch
-                'Error loading DLL, we don't need to do anything special
+                ' Error loading DLL, we don't need to do anything special
             End Try
         Next
     End Sub
 
-    Private Sub ExamineAssembly(ByVal objDLL As Assembly)
-        Dim objType As Type
-        Dim objInterface As Type
-        Dim Plugin As AvailablePlugin
-        'Loop through each type in the DLL
-        For Each objType In objDLL.GetTypes
-            'Only look at public types
-            If objType.IsPublic = True Then
-                'Ignore abstract classes
-                If Not ((objType.Attributes And TypeAttributes.Abstract) = TypeAttributes.Abstract) Then
-                    'See if this type implements our interface
-                    objInterface = objType.GetInterface(strInterfaceName, True)
-                    If objInterface IsNot Nothing Then
-                        Plugin = New AvailablePlugin()
-                        Plugin.AssemblyPath = objDLL.Location
-                        Plugin.ClassName = objType.FullName
+    Private Sub ExamineAssembly(ByVal dll As Assembly)
+        Dim thisType As Type
+        Dim implInterface As Type
+        Dim pluginInfo As AvailablePlugin
+
+        ' Loop through each type in the assembly
+        For Each thisType In dll.GetTypes
+
+            ' Only look at public types
+            If thisType.IsPublic = True Then
+
+                ' Ignore abstract classes
+                If Not ((thisType.Attributes And TypeAttributes.Abstract) = TypeAttributes.Abstract) Then
+
+                    ' See if this type implements our interface
+                    implInterface = thisType.GetInterface(interfaceName, True)
+
+                    If implInterface IsNot Nothing Then
+                        pluginInfo = New AvailablePlugin()
+                        pluginInfo.AssemblyPath = dll.Location
+                        pluginInfo.ClassName = thisType.FullName
 
                         Try
-                            Dim objPlugin As IRadioProvider
-                            objPlugin = CreateInstance(Plugin)
-                            availablePlugins.Add(objPlugin.ProviderID, Plugin)
+                            Dim pluginInst As IRadioProvider
+                            pluginInst = CreateInstance(pluginInfo)
+                            availablePlugins.Add(pluginInst.ProviderID, pluginInfo)
                         Catch
                             Continue For
                         End Try
@@ -191,17 +197,19 @@ Friend Class Plugins
         Next
     End Sub
 
-    Private Function CreateInstance(ByVal Plugin As AvailablePlugin) As IRadioProvider
-        Dim objDLL As Assembly
-        Dim objPlugin As Object
+    Private Function CreateInstance(ByVal plugin As AvailablePlugin) As IRadioProvider
+        Dim dll As Assembly
+        Dim pluginInst As Object
 
         Try
-            'Load dll
-            objDLL = Assembly.LoadFrom(Plugin.AssemblyPath)
-            'Create and return class instance
-            objPlugin = objDLL.CreateInstance(Plugin.ClassName)
-            ' Cast to IRadioProvider and return
-            Return DirectCast(objPlugin, IRadioProvider)
+            ' Load the assembly
+            dll = Assembly.LoadFrom(plugin.AssemblyPath)
+
+            ' Create and return class instance
+            pluginInst = dll.CreateInstance(plugin.ClassName)
+
+            ' Cast to an IRadioProvider and return
+            Return DirectCast(pluginInst, IRadioProvider)
         Catch
             Return Nothing
         End Try

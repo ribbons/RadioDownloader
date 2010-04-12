@@ -20,94 +20,94 @@ Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
 Friend Class UpdateDB
-    Private sqlSpecConn As SQLiteConnection
-    Private sqlUpdConn As SQLiteConnection
+    Private specConn As SQLiteConnection
+    Private updateConn As SQLiteConnection
 
-    Public Sub New(ByVal strSpecDBPath As String, ByVal strUpdateDBPath As String)
+    Public Sub New(ByVal specDbPath As String, ByVal updateDbPath As String)
         MyBase.New()
 
-        sqlSpecConn = New SQLiteConnection("Data Source=" + strSpecDBPath + ";Version=3;New=False")
-        sqlSpecConn.Open()
+        specConn = New SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False")
+        specConn.Open()
 
-        sqlUpdConn = New SQLiteConnection("Data Source=" + strUpdateDBPath + ";Version=3;New=False")
-        sqlUpdConn.Open()
+        updateConn = New SQLiteConnection("Data Source=" + updateDbPath + ";Version=3;New=False")
+        updateConn.Open()
     End Sub
 
     Public Function UpdateStructure() As Boolean
-        Dim sqlSpecCommand As New SQLiteCommand("SELECT name, sql FROM sqlite_master WHERE type='table'", sqlSpecConn)
-        Dim sqlSpecReader As SQLiteDataReader = sqlSpecCommand.ExecuteReader
+        Dim specCommand As New SQLiteCommand("SELECT name, sql FROM sqlite_master WHERE type='table'", specConn)
+        Dim specReader As SQLiteDataReader = specCommand.ExecuteReader
 
-        Dim sqlUpdCommand As SQLiteCommand
-        Dim sqlUpdReader As SQLiteDataReader
+        Dim updateCommand As SQLiteCommand
+        Dim updateReader As SQLiteDataReader
 
-        With sqlSpecReader
+        With specReader
             While .Read()
-                sqlUpdCommand = New SQLiteCommand("SELECT sql FROM sqlite_master WHERE type='table' AND name='" + .GetString(.GetOrdinal("name")).Replace("'", "''") + "'", sqlUpdConn)
-                sqlUpdReader = sqlUpdCommand.ExecuteReader
+                updateCommand = New SQLiteCommand("SELECT sql FROM sqlite_master WHERE type='table' AND name='" + .GetString(.GetOrdinal("name")).Replace("'", "''") + "'", updateConn)
+                updateReader = updateCommand.ExecuteReader
 
-                If sqlUpdReader.Read Then
+                If updateReader.Read Then
                     ' The table exists in the database already, so check that it has the correct structure.
-                    If .GetString(.GetOrdinal("sql")) <> sqlUpdReader.GetString(sqlUpdReader.GetOrdinal("sql")) Then
+                    If .GetString(.GetOrdinal("sql")) <> updateReader.GetString(updateReader.GetOrdinal("sql")) Then
                         ' The structure of the table doesn't match, so update it
 
                         ' Store a list of common column names for transferring the data
-                        Dim strColNames As String = ColNames(.GetString(.GetOrdinal("name")))
+                        Dim columnNames As String = ColNames(.GetString(.GetOrdinal("name")))
 
-                        sqlUpdReader.Close()
+                        updateReader.Close()
 
                         ' Start a transaction, so we can roll back if there is an error
-                        sqlUpdCommand = New SQLiteCommand("BEGIN TRANSACTION", sqlUpdConn)
-                        sqlUpdCommand.ExecuteNonQuery()
+                        updateCommand = New SQLiteCommand("BEGIN TRANSACTION", updateConn)
+                        updateCommand.ExecuteNonQuery()
 
                         Try
                             ' Rename the existing table to table_name_old
-                            sqlUpdCommand = New SQLiteCommand("ALTER TABLE [" + .GetString(.GetOrdinal("name")) + "] RENAME TO [" + .GetString(.GetOrdinal("name")) + "_old]", sqlUpdConn)
-                            sqlUpdCommand.ExecuteNonQuery()
+                            updateCommand = New SQLiteCommand("ALTER TABLE [" + .GetString(.GetOrdinal("name")) + "] RENAME TO [" + .GetString(.GetOrdinal("name")) + "_old]", updateConn)
+                            updateCommand.ExecuteNonQuery()
 
                             ' Create the new table with the correct structure
-                            sqlUpdCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), sqlUpdConn)
-                            sqlUpdCommand.ExecuteNonQuery()
+                            updateCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), updateConn)
+                            updateCommand.ExecuteNonQuery()
 
                             ' Copy across the data
-                            If strColNames <> "" Then
-                                sqlUpdCommand = New SQLiteCommand("INSERT INTO [" + .GetString(.GetOrdinal("name")) + "] (" + strColNames + ") SELECT " + strColNames + " FROM [" + .GetString(.GetOrdinal("name")) + "_old]", sqlUpdConn)
-                                sqlUpdCommand.ExecuteNonQuery()
+                            If columnNames <> "" Then
+                                updateCommand = New SQLiteCommand("INSERT INTO [" + .GetString(.GetOrdinal("name")) + "] (" + columnNames + ") SELECT " + columnNames + " FROM [" + .GetString(.GetOrdinal("name")) + "_old]", updateConn)
+                                updateCommand.ExecuteNonQuery()
                             End If
-                            
+
                             ' Delete the old table
-                            sqlUpdCommand = New SQLiteCommand("DROP TABLE [" + .GetString(.GetOrdinal("name")) + "_old]", sqlUpdConn)
-                            sqlUpdCommand.ExecuteNonQuery()
+                            updateCommand = New SQLiteCommand("DROP TABLE [" + .GetString(.GetOrdinal("name")) + "_old]", updateConn)
+                            updateCommand.ExecuteNonQuery()
 
                             ' Commit the transaction
-                            sqlUpdCommand = New SQLiteCommand("COMMIT TRANSACTION", sqlUpdConn)
-                            sqlUpdCommand.ExecuteNonQuery()
+                            updateCommand = New SQLiteCommand("COMMIT TRANSACTION", updateConn)
+                            updateCommand.ExecuteNonQuery()
 
-                        Catch expException As SQLiteException
+                        Catch sqliteExp As SQLiteException
                             ' Roll back the transaction, to try and stop the database being corrupted
-                            sqlUpdCommand = New SQLiteCommand("ROLLBACK TRANSACTION", sqlUpdConn)
-                            sqlUpdCommand.ExecuteNonQuery()
+                            updateCommand = New SQLiteCommand("ROLLBACK TRANSACTION", updateConn)
+                            updateCommand.ExecuteNonQuery()
 
                             Throw
                         End Try
                     End If
                 Else
                     ' Create the table
-                    sqlUpdCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), sqlUpdConn)
-                    sqlUpdCommand.ExecuteNonQuery()
+                    updateCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), updateConn)
+                    updateCommand.ExecuteNonQuery()
                 End If
 
-                sqlUpdReader.Close()
+                updateReader.Close()
             End While
         End With
 
-        sqlSpecReader.Close()
+        specReader.Close()
 
         Return True
     End Function
 
     Private Function ColNames(ByVal tableName As String) As String
-        Dim fromCols As List(Of String) = ListTableColumns(sqlUpdConn, tableName)
-        Dim toCols As List(Of String) = ListTableColumns(sqlSpecConn, tableName)
+        Dim fromCols As List(Of String) = ListTableColumns(updateConn, tableName)
+        Dim toCols As List(Of String) = ListTableColumns(specConn, tableName)
         Dim resultCols As New List(Of String)
 
         ' Store an intersect of the from and to columns in resultCols
@@ -138,8 +138,8 @@ Friend Class UpdateDB
     End Function
 
     Protected Overrides Sub Finalize()
-        sqlSpecConn.Close()
-        sqlUpdConn.Close()
+        specConn.Close()
+        updateConn.Close()
 
         MyBase.Finalize()
     End Sub

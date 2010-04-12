@@ -18,16 +18,16 @@ Option Explicit On
 Imports System.Windows.Forms
 
 Friend Class ReportError
-    Private clsReport As ErrorReporting
+    Private report As ErrorReporting
 
-    Public Sub AssignReport(ByVal clsReport As ErrorReporting)
-        Me.clsReport = clsReport
+    Public Sub AssignReport(ByVal report As ErrorReporting)
+        Me.report = report
     End Sub
 
     Private Sub cmdSend_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSend.Click
         Try
             Me.Visible = False
-            clsReport.SendReport(My.Settings.ErrorReportURL)
+            report.SendReport(My.Settings.ErrorReportURL)
         Catch
             ' No way of reporting errors that have happened here, so just give up
         End Try
@@ -36,7 +36,7 @@ Friend Class ReportError
     End Sub
 
     Private Sub lnkWhatData_LinkClicked(ByVal sender As System.Object, ByVal e As System.Windows.Forms.LinkLabelLinkClickedEventArgs) Handles lnkWhatData.LinkClicked
-        Call MsgBox(clsReport.ToString)
+        Call MsgBox(report.ToString)
     End Sub
 
     Private Sub cmdDontSend_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdDontSend.Click

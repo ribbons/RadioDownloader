@@ -16,84 +16,84 @@ Option Strict On
 Option Explicit On
 
 Friend Class DldProgData
-    Private gidPluginID As Guid
-    Private strProgExtID As String
-    Private intEpID As Integer
-    Private strEpisodeExtID As String
-    Private priProgInfo As IRadioProvider.ProgrammeInfo
-    Private epiEpisodeInfo As IRadioProvider.EpisodeInfo
-    Private strFinalName As String
-    Private intAttemptNumber As Integer
+    Private _pluginId As Guid
+    Private _progExtId As String
+    Private _epId As Integer
+    Private _episodeExtId As String
+    Private _progInfo As IRadioProvider.ProgrammeInfo
+    Private _episodeInfo As IRadioProvider.EpisodeInfo
+    Private _finalName As String
+    Private _attemptNumber As Integer
 
-    Public Property PluginID() As Guid
+    Public Property PluginId() As Guid
         Get
-            Return gidPluginID
+            Return _pluginId
         End Get
-        Set(ByVal gidPluginID As Guid)
-            Me.gidPluginID = gidPluginID
+        Set(ByVal pluginId As Guid)
+            Me._pluginId = pluginId
         End Set
     End Property
 
-    Public Property ProgExtID() As String
+    Public Property ProgExtId() As String
         Get
-            Return strProgExtID
+            Return _progExtId
         End Get
-        Set(ByVal strProgExtID As String)
-            Me.strProgExtID = strProgExtID
+        Set(ByVal progExtId As String)
+            Me._progExtId = progExtId
         End Set
     End Property
 
-    Public Property EpID() As Integer
+    Public Property EpId() As Integer
         Get
-            Return intEpID
+            Return _epId
         End Get
-        Set(ByVal intEpID As Integer)
-            Me.intEpID = intEpID
+        Set(ByVal epId As Integer)
+            Me._epId = epId
         End Set
     End Property
 
-    Public Property EpisodeExtID() As String
+    Public Property EpisodeExtId() As String
         Get
-            Return strEpisodeExtID
+            Return _episodeExtId
         End Get
-        Set(ByVal strEpisodeExtID As String)
-            Me.strEpisodeExtID = strEpisodeExtID
+        Set(ByVal episodeExtId As String)
+            Me._episodeExtId = episodeExtId
         End Set
     End Property
 
     Public Property ProgInfo() As IRadioProvider.ProgrammeInfo
         Get
-            Return priProgInfo
+            Return _progInfo
         End Get
-        Set(ByVal priProgInfo As IRadioProvider.ProgrammeInfo)
-            Me.priProgInfo = priProgInfo
+        Set(ByVal progInfo As IRadioProvider.ProgrammeInfo)
+            Me._progInfo = progInfo
         End Set
     End Property
 
     Public Property EpisodeInfo() As IRadioProvider.EpisodeInfo
         Get
-            Return epiEpisodeInfo
+            Return _episodeInfo
         End Get
-        Set(ByVal epiEpisodeInfo As IRadioProvider.EpisodeInfo)
-            Me.epiEpisodeInfo = epiEpisodeInfo
+        Set(ByVal episodeInfo As IRadioProvider.EpisodeInfo)
+            Me._episodeInfo = episodeInfo
         End Set
     End Property
 
     Public Property FinalName() As String
         Get
-            Return strFinalName
+            Return _finalName
         End Get
-        Set(ByVal strFinalName As String)
-            Me.strFinalName = strFinalName
+        Set(ByVal finalName As String)
+            Me._finalName = finalName
         End Set
     End Property
 
     Public Property AttemptNumber() As Integer
         Get
-            Return intAttemptNumber
+            Return _attemptNumber
         End Get
-        Set(ByVal intAttemptNumber As Integer)
-            Me.intAttemptNumber = intAttemptNumber
+        Set(ByVal attemptNumber As Integer)
+            Me._attemptNumber = attemptNumber
         End Set
     End Property
 End Class
