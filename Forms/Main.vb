@@ -87,6 +87,7 @@ Friend Class Main
     Private WithEvents progData As Data
     Private doDbUpdate As UpdateDB
     Private checkUpdate As UpdateCheck
+    Private tbarNotif As TaskbarNotify
 
     Private Delegate Sub progData_ProviderAdded_Delegate(ByVal providerId As Guid)
     Private Delegate Sub progData_Programme_Delegate(ByVal progid As Integer)
@@ -96,16 +97,31 @@ Friend Class Main
     Private Const downloadProgCol As Integer = 3
 
     Public Sub UpdateTrayStatus(ByVal active As Boolean)
-        If progData.CountDownloadsErrored > 0 Then
-            nicTrayIcon.Icon = My.Resources.icon_error
-            nicTrayIcon.Text = Me.Text + ": Error"
-        Else
-            If active = True Then
-                nicTrayIcon.Icon = My.Resources.icon_working
-                nicTrayIcon.Text = Me.Text + ": Downloading"
+        If OsUtils.WinSevenOrLater Then
+            If progData.CountDownloadsErrored > 0 Then
+                tbarNotif.SetOverlayIcon(Me, Icon.FromHandle(My.Resources.list_error.GetHicon), "Error")
+                tbarNotif.SetThumbnailTooltip(Me, Me.Text + ": Error")
             Else
-                nicTrayIcon.Icon = My.Resources.icon_main
-                nicTrayIcon.Text = Me.Text
+                If active = True Then
+                    tbarNotif.SetOverlayIcon(Me, Icon.FromHandle(My.Resources.list_downloading.GetHicon), "Downloading")
+                    tbarNotif.SetThumbnailTooltip(Me, Me.Text + ": Downloading")
+                Else
+                    tbarNotif.SetOverlayIcon(Me, Nothing, String.Empty)
+                    tbarNotif.SetThumbnailTooltip(Me, Nothing)
+                End If
+            End If
+        Else
+            If progData.CountDownloadsErrored > 0 Then
+                nicTrayIcon.Icon = My.Resources.icon_error
+                nicTrayIcon.Text = Me.Text + ": Error"
+            Else
+                If active = True Then
+                    nicTrayIcon.Icon = My.Resources.icon_working
+                    nicTrayIcon.Text = Me.Text + ": Downloading"
+                Else
+                    nicTrayIcon.Icon = My.Resources.icon_main
+                    nicTrayIcon.Text = Me.Text
+                End If
             End If
         End If
     End Sub
@@ -238,9 +254,16 @@ Friend Class Main
         Call progData.InitDownloadList()
         lstDownloads.ListViewItemSorter = New ListComparer(ListComparer.ListType.Download)
 
-        ' Set up and then show the system tray icon
+        If OsUtils.WinSevenOrLater Then
+            ' New style taskbar - initialise the taskbar notification class
+            tbarNotif = New TaskbarNotify
+        Else
+            ' Show a standard system tray icon
+            nicTrayIcon.Visible = True
+        End If
+
+        ' Set up the initial notification status
         Call UpdateTrayStatus(False)
-        nicTrayIcon.Visible = True
 
         checkUpdate = New UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + My.Application.Info.Version.ToString)
 

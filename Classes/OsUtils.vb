@@ -15,6 +15,16 @@
 Option Strict On
 Option Explicit On
 
+Imports System.Runtime.InteropServices
+
+<StructLayout(LayoutKind.Sequential, Pack:=4)> _
+Public Structure RECT
+    Public left As Integer
+    Public top As Integer
+    Public right As Integer
+    Public bottom As Integer
+End Structure
+
 Friend Class OsUtils
     Public Shared Function WinSevenOrLater() As Boolean
         Dim curOs As OperatingSystem = System.Environment.OSVersion

@@ -16,13 +16,6 @@ Option Strict On
 Option Explicit On
 
 Friend Module modMain
-    Public Structure RECT
-        Dim left As Integer
-        Dim top As Integer
-        Dim right As Integer
-        Dim bottom As Integer
-    End Structure
-
     Private Const GW_CHILD As Short = 5
     Private Const GW_HWNDNEXT As Short = 2
     Private Const IDANI_OPEN As Short = &H1S
