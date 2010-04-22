@@ -33,7 +33,7 @@ Public Class CachedWebClient
     Private Shared instance As New CachedWebClient
 
     <ThreadStatic()> _
-    Private dbConn As SQLiteConnection
+    Private Shared dbConn As SQLiteConnection
 
     Public Shared Function GetInstance() As CachedWebClient
         Return instance

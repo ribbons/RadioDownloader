@@ -73,7 +73,7 @@ Friend Class Data
     End Structure
 
     <ThreadStatic()> _
-    Private dbConn As SQLiteConnection
+    Private Shared dbConn As SQLiteConnection
 
     Private Shared dataInstance As Data
     Private Shared dataInstanceLock As New Object
