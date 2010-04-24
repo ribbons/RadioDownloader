@@ -15,6 +15,7 @@
 Option Strict On
 Option Explicit On
 
+Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 
 <StructLayout(LayoutKind.Sequential, Pack:=4)> _
@@ -26,10 +27,32 @@ Public Structure RECT
 End Structure
 
 Friend Class OsUtils
+    <StructLayout(LayoutKind.Sequential)> _
+    Private Structure MARGINS
+        Public cxLeftWidth As Integer
+        Public cxRightWidth As Integer
+        Public cyTopHeight As Integer
+        Public cyButtomheight As Integer
+    End Structure
+
+    <DllImport("dwmapi.dll", SetLastError:=True)> _
+    Private Shared Function DwmExtendFrameIntoClientArea(ByVal hWnd As IntPtr, ByRef pMarinset As MARGINS) As Integer
+    End Function
+
     Public Shared Function WinSevenOrLater() As Boolean
         Dim curOs As OperatingSystem = System.Environment.OSVersion
 
         If curOs.Platform = PlatformID.Win32NT AndAlso (((curOs.Version.Major = 6) AndAlso (curOs.Version.Minor >= 1)) OrElse (curOs.Version.Major > 6)) Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
+    Public Shared Function WinVistaOrLater() As Boolean
+        Dim curOs As OperatingSystem = System.Environment.OSVersion
+
+        If curOs.Platform = PlatformID.Win32NT AndAlso (((curOs.Version.Major = 6) AndAlso (curOs.Version.Minor >= 0)) OrElse (curOs.Version.Major > 6)) Then
             Return True
         Else
             Return False
@@ -45,4 +68,17 @@ Friend Class OsUtils
             Return False
         End If
     End Function
+
+    Public Shared Sub ExtendFrameInfoClientArea(ByVal glassWin As Form, ByVal leftMargin As Integer, ByVal rightMargin As Integer, ByVal topMargin As Integer, ByVal bottomMargin As Integer)
+        Dim margins As MARGINS = New MARGINS
+
+        margins.cxLeftWidth = leftMargin
+        margins.cxRightWidth = rightMargin
+        margins.cyTopHeight = topMargin
+        margins.cyButtomheight = bottomMargin
+
+        If OsUtils.DwmExtendFrameIntoClientArea(glassWin.Handle, margins) <> 0 Then
+            Throw New Win32Exception()
+        End If
+    End Sub
 End Class

@@ -294,6 +294,11 @@ Friend Class Main
             tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right)
         End If
 
+        If OsUtils.WinVistaOrLater Then
+            OsUtils.ExtendFrameInfoClientArea(Me, 0, 0, tbrView.Height - 2, 0)
+            tbrView.BackColor = Color.Black
+        End If
+
         tmrCheckSub.Enabled = True
         progData.StartDownload()
         tmrCheckForUpdates.Enabled = True
