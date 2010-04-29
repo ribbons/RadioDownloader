@@ -89,6 +89,9 @@ Friend Class Main
     Private checkUpdate As UpdateCheck
     Private tbarNotif As TaskbarNotify
 
+    Private downloadColNames As New Dictionary(Of Integer, String)
+    Private downloadColOrder As New List(Of Data.DownloadCols)
+
     Private Delegate Sub progData_ProviderAdded_Delegate(ByVal providerId As Guid)
     Private Delegate Sub progData_Programme_Delegate(ByVal progid As Integer)
     Private Delegate Sub progData_Episode_Delegate(ByVal epid As Integer)
@@ -240,10 +243,13 @@ Friend Class Main
         Call lstSubscribed.Columns.Add("Programme Name", CInt(0.482 * lstSubscribed.Width))
         Call lstSubscribed.Columns.Add("Last Download", CInt(0.179 * lstSubscribed.Width))
         Call lstSubscribed.Columns.Add("Provider", CInt(0.304 * lstSubscribed.Width))
-        Call lstDownloads.Columns.Add("Episode Name", CInt(0.426 * lstDownloads.Width))
-        Call lstDownloads.Columns.Add("Date", CInt(0.14 * lstDownloads.Width))
-        Call lstDownloads.Columns.Add("Status", CInt(0.22 * lstDownloads.Width))
-        Call lstDownloads.Columns.Add("Progress", CInt(0.179 * lstDownloads.Width))
+
+        downloadColNames.Add(Data.DownloadCols.EpisodeDate, "Date")
+        downloadColNames.Add(Data.DownloadCols.EpisodeName, "Episode Name")
+        downloadColNames.Add(Data.DownloadCols.Progress, "Progress")
+        downloadColNames.Add(Data.DownloadCols.Status, "Status")
+
+        Call SetDownloadCols()
 
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
 
@@ -407,6 +413,10 @@ Friend Class Main
 
         Call SetSideBar(info.name, info.description, progData.FetchProgrammeImage(progid))
         Call SetToolbarButtons("Unsubscribe,CurrentEps")
+    End Sub
+
+    Private Sub lstDownloads_ColumnRightClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles lstDownloads.ColumnRightClick
+        mnuListHdrs.Show(lstDownloads, lstDownloads.PointToClient(Cursor.Position))
     End Sub
 
     Private Sub lstDownloads_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstDownloads.ItemActivate
@@ -829,24 +839,39 @@ Friend Class Main
 
     Private Sub DownloadListItem(ByVal epid As Integer, ByVal info As Data.DownloadData, ByRef item As ListViewItem)
         item.Name = epid.ToString(CultureInfo.InvariantCulture)
-        item.Text = info.name
 
-        item.SubItems(1).Text = info.episodeDate.ToShortDateString
+        For column As Integer = 0 To downloadColOrder.Count - 1
+            Select Case downloadColOrder(column)
+                Case Data.DownloadCols.EpisodeName
+                    item.SubItems(column).Text = info.name
+                Case Data.DownloadCols.EpisodeDate
+                    item.SubItems(column).Text = info.episodeDate.ToShortDateString
+                Case Data.DownloadCols.Status
+                    Select Case info.status
+                        Case Data.DownloadStatus.Waiting
+                            item.SubItems(column).Text = "Waiting"
+                        Case Data.DownloadStatus.Downloaded
+                            If info.playCount = 0 Then
+                                item.SubItems(column).Text = "Newly Downloaded"
+                            Else
+                                item.SubItems(column).Text = "Downloaded"
+                            End If
+                        Case Data.DownloadStatus.Errored
+                            item.SubItems(column).Text = "Error"
+                    End Select
+            End Select
+        Next
 
         Select Case info.status
             Case Data.DownloadStatus.Waiting
-                item.SubItems(2).Text = "Waiting"
                 item.ImageKey = "waiting"
             Case Data.DownloadStatus.Downloaded
                 If info.playCount = 0 Then
-                    item.SubItems(2).Text = "Newly Downloaded"
                     item.ImageKey = "downloaded_new"
                 Else
-                    item.SubItems(2).Text = "Downloaded"
                     item.ImageKey = "downloaded"
                 End If
             Case Data.DownloadStatus.Errored
-                item.SubItems(2).Text = "Error"
                 item.ImageKey = "error"
         End Select
     End Sub
@@ -1341,5 +1366,51 @@ Friend Class Main
 
     Private Sub picSideBarBorder_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles picSideBarBorder.Paint
         e.Graphics.DrawLine(New Pen(Color.FromArgb(255, 167, 186, 197)), 0, 0, 0, picSideBarBorder.Height)
+    End Sub
+
+    Private Sub mnuListHdrsColumns_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuListHdrsColumns.Click
+        Dim chooser As New ChooseCols
+        chooser.Columns = My.Settings.DownloadCols
+        chooser.StoreNameList(downloadColNames)
+
+        If chooser.ShowDialog(Me) = DialogResult.OK Then
+            My.Settings.DownloadCols = chooser.Columns
+            Call SetDownloadCols()
+
+            lstDownloads.BeginUpdate()
+            lstDownloads.ListViewItemSorter = Nothing
+            lstDownloads.Items.Clear()
+            progData.InitDownloadList()
+            lstDownloads.ListViewItemSorter = New ListComparer(ListComparer.ListType.Download)
+            lstDownloads.EndUpdate()
+        End If
+    End Sub
+
+    Private Sub SetDownloadCols()
+        downloadColOrder.Clear()
+        lstDownloads.Columns.Clear()
+
+        If My.Settings.DownloadCols <> String.Empty Then
+            Dim columns As String() = Split(My.Settings.DownloadCols, ",")
+
+            For Each column As String In columns
+                Dim colVal As Data.DownloadCols = CType(column, Data.DownloadCols)
+                Dim width As Integer
+
+                Select Case colVal
+                    Case Data.DownloadCols.EpisodeName
+                        width = CInt(0.426 * lstDownloads.Width)
+                    Case Data.DownloadCols.EpisodeDate
+                        width = CInt(0.14 * lstDownloads.Width)
+                    Case Data.DownloadCols.Status
+                        width = CInt(0.22 * lstDownloads.Width)
+                    Case Data.DownloadCols.Progress
+                        width = CInt(0.179 * lstDownloads.Width)
+                End Select
+
+                downloadColOrder.Add(colVal)
+                lstDownloads.Columns.Add(downloadColNames(colVal), width)
+            Next
+        End If
     End Sub
 End Class

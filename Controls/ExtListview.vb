@@ -26,6 +26,7 @@ Friend Class ExtListView : Inherits ListView
     Private Const WM_CREATE As Integer = &H1
     Private Const WM_SETFOCUS As Integer = &H7
     Private Const WM_PAINT As Integer = &HF
+    Private Const WM_NOTIFY As Integer = &H4E
     Private Const WM_CHANGEUISTATE As Integer = &H127
 
     ' WM_CHANGEUISTATE Parameters
@@ -38,6 +39,18 @@ Friend Class ExtListView : Inherits ListView
 
     ' Extended ListView Styles
     Private Const LVS_EX_DOUBLEBUFFER As Integer = &H10000
+
+    ' Notify messages
+    Private Const NM_FIRST As Integer = 0
+    Private Const NM_RCLICK As Integer = (NM_FIRST - 5)
+
+    ' API Structures
+    <StructLayout(LayoutKind.Sequential)> _
+    Private Structure NMHDR
+        Public hwndFrom As IntPtr
+        Public idFrom As UIntPtr
+        Public code As Integer
+    End Structure
 
     ' API Declarations
     Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
@@ -53,6 +66,9 @@ Friend Class ExtListView : Inherits ListView
 
     ' List to store the EmbeddedProgress structures
     Private embeddedControls As New List(Of EmbeddedProgress)
+
+    ' Extra events
+    Public Event ColumnRightClick As ColumnClickEventHandler
 
     Private Function GetColumnOrder() As Integer()
         Dim order(Me.Columns.Count) As Integer
@@ -199,7 +215,14 @@ Friend Class ExtListView : Inherits ListView
             Case WM_SETFOCUS
                 ' Remove the focus rectangle from the control (and as a side effect, all other controls on the
                 ' form) if the last input event came from the mouse, or add them if it came from the keyboard.
-                SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), New IntPtr(0))
+                SendMessage(Me.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), IntPtr.Zero)
+            Case WM_NOTIFY
+                ' Test to see if the notification was for a right-click in the header
+                If CType(m.GetLParam(GetType(NMHDR)), NMHDR).code = NM_RCLICK Then
+                    ' Fire an event to indicate the click has occurred.  Set the column number
+                    ' to -1 for all clicks, as this information isn't currently required.
+                    RaiseEvent ColumnRightClick(Me, New ColumnClickEventArgs(-1))
+                End If
             Case WM_PAINT
                 If View <> View.Details Then
                     Exit Select

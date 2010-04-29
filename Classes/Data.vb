@@ -31,6 +31,13 @@ Friend Class Data
         Errored = 2
     End Enum
 
+    Public Enum DownloadCols
+        EpisodeName = 0
+        EpisodeDate = 1
+        Status = 2
+        Progress = 3
+    End Enum
+
     Public Structure ProviderData
         Dim name As String
         Dim description As String
