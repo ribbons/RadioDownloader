@@ -97,8 +97,6 @@ Friend Class Main
     Private Delegate Sub progData_Episode_Delegate(ByVal epid As Integer)
     Private Delegate Sub progData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
 
-    Private Const downloadProgCol As Integer = 3
-
     Public Sub UpdateTrayStatus(ByVal active As Boolean)
         If OsUtils.WinSevenOrLater Then
             If progData.CountDownloadsErrored > 0 Then
@@ -922,11 +920,16 @@ Friend Class Main
 
         Dim item As ListViewItem = lstDownloads.Items(CStr(epid))
 
-        item.SubItems(2).Text = statusText
-        prgDldProg.Value = percent
+        If downloadColOrder.Contains(Data.DownloadCols.Status) Then
+            item.SubItems(downloadColOrder.IndexOf(Data.DownloadCols.Status)).Text = statusText
+        End If
 
-        If lstDownloads.Controls.Count = 0 Then
-            lstDownloads.AddProgressBar(prgDldProg, item, downloadProgCol)
+        If downloadColOrder.Contains(Data.DownloadCols.Progress) Then
+            prgDldProg.Value = percent
+
+            If lstDownloads.Controls.Count = 0 Then
+                lstDownloads.AddProgressBar(prgDldProg, item, downloadColOrder.IndexOf(Data.DownloadCols.Progress))
+            End If
         End If
 
         Select Case icon
@@ -955,8 +958,10 @@ Friend Class Main
 
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
 
-        If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
-            lstDownloads.RemoveProgressBar(prgDldProg)
+        If downloadColOrder.Contains(Data.DownloadCols.Progress) Then
+            If lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) IsNot Nothing Then
+                lstDownloads.RemoveProgressBar(prgDldProg)
+            End If
         End If
 
         item.Remove()
@@ -976,8 +981,10 @@ Friend Class Main
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
         DownloadListItem(info, item)
 
-        If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
-            lstDownloads.RemoveProgressBar(prgDldProg)
+        If downloadColOrder.Contains(Data.DownloadCols.Progress) Then
+            If lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) IsNot Nothing Then
+                lstDownloads.RemoveProgressBar(prgDldProg)
+            End If
         End If
 
         If backData(backData.GetUpperBound(0)).View = View.Downloads Then
@@ -1394,6 +1401,7 @@ Friend Class Main
     Private Sub InitDownloadList()
         downloadColOrder.Clear()
         lstDownloads.Clear()
+        lstDownloads.RemoveAllControls()
 
         ' Set up the columns specified in the DownloadCols setting
         If My.Settings.DownloadCols <> String.Empty Then
