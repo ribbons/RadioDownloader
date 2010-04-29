@@ -68,6 +68,7 @@ Friend Class Data
     End Structure
 
     Public Structure DownloadData
+        Dim epid As Integer
         Dim name As String
         Dim description As String
         Dim duration As Integer
@@ -1422,18 +1423,6 @@ Friend Class Data
         End If
     End Sub
 
-    Public Sub InitDownloadList()
-        Using command As New SQLiteCommand("select epid from downloads", FetchDbConn)
-            Using reader As SQLiteDataReader = command.ExecuteReader()
-                Dim epidOrdinal As Integer = reader.GetOrdinal("epid")
-
-                Do While reader.Read
-                    RaiseEvent DownloadAdded(reader.GetInt32(epidOrdinal))
-                Loop
-            End Using
-        End Using
-    End Sub
-
     Public Sub InitSubscriptionList()
         Using command As New SQLiteCommand("select progid from subscriptions", FetchDbConn)
             Using reader As SQLiteDataReader = command.ExecuteReader()
@@ -1446,6 +1435,22 @@ Friend Class Data
         End Using
     End Sub
 
+    Public Function FetchDownloadList() As List(Of DownloadData)
+        Dim downloadList As New List(Of DownloadData)
+
+        Using command As New SQLiteCommand("select downloads.epid, name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", FetchDbConn)
+            Using reader As SQLiteDataReader = command.ExecuteReader()
+                Dim epidOrdinal As Integer = reader.GetOrdinal("epid")
+
+                Do While reader.Read
+                    downloadList.Add(ReadDownloadData(reader.GetInt32(epidOrdinal), reader))
+                Loop
+            End Using
+        End Using
+
+        Return downloadList
+    End Function
+
     Public Function FetchDownloadData(ByVal epid As Integer) As DownloadData
         Using command As New SQLiteCommand("select name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
@@ -1455,37 +1460,42 @@ Friend Class Data
                     Return Nothing
                 End If
 
-                Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
-                Dim filepathOrdinal As Integer = reader.GetOrdinal("filepath")
-
-                Dim info As New DownloadData
-                info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
-                info.name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.episodeDate)
-
-                If Not reader.IsDBNull(descriptionOrdinal) Then
-                    info.description = reader.GetString(descriptionOrdinal)
-                End If
-
-                info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
-                info.status = DirectCast(reader.GetInt32(reader.GetOrdinal("status")), DownloadStatus)
-
-                If info.status = DownloadStatus.Errored Then
-                    info.errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), IRadioProvider.ErrorType)
-
-                    If info.errorType <> IRadioProvider.ErrorType.UnknownError Then
-                        info.errorDetails = reader.GetString(reader.GetOrdinal("errordetails"))
-                    End If
-                End If
-
-                If Not reader.IsDBNull(filepathOrdinal) Then
-                    info.downloadPath = reader.GetString(filepathOrdinal)
-                End If
-
-                info.playCount = reader.GetInt32(reader.GetOrdinal("playcount"))
-
-                Return info
+                Return ReadDownloadData(epid, reader)
             End Using
         End Using
+    End Function
+
+    Private Function ReadDownloadData(ByVal epid As Integer, ByRef reader As SQLiteDataReader) As DownloadData
+        Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
+        Dim filepathOrdinal As Integer = reader.GetOrdinal("filepath")
+
+        Dim info As New DownloadData
+        info.epid = epid
+        info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"))
+        info.name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.episodeDate)
+
+        If Not reader.IsDBNull(descriptionOrdinal) Then
+            info.description = reader.GetString(descriptionOrdinal)
+        End If
+
+        info.duration = reader.GetInt32(reader.GetOrdinal("duration"))
+        info.status = DirectCast(reader.GetInt32(reader.GetOrdinal("status")), DownloadStatus)
+
+        If info.status = DownloadStatus.Errored Then
+            info.errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), IRadioProvider.ErrorType)
+
+            If info.errorType <> IRadioProvider.ErrorType.UnknownError Then
+                info.errorDetails = reader.GetString(reader.GetOrdinal("errordetails"))
+            End If
+        End If
+
+        If Not reader.IsDBNull(filepathOrdinal) Then
+            info.downloadPath = reader.GetString(filepathOrdinal)
+        End If
+
+        info.playCount = reader.GetInt32(reader.GetOrdinal("playcount"))
+
+        Return info
     End Function
 
     Public Function FetchSubscriptionData(ByVal progid As Integer) As SubscriptionData

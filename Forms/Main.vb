@@ -249,15 +249,14 @@ Friend Class Main
         downloadColNames.Add(Data.DownloadCols.Progress, "Progress")
         downloadColNames.Add(Data.DownloadCols.Status, "Status")
 
-        Call SetDownloadCols()
-
         Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
 
         progData = Data.GetInstance
         Call progData.InitProviderList()
         Call progData.InitSubscriptionList()
         lstSubscribed.ListViewItemSorter = New ListComparer(ListComparer.ListType.Subscription)
-        Call progData.InitDownloadList()
+
+        Call InitDownloadList()
         lstDownloads.ListViewItemSorter = New ListComparer(ListComparer.ListType.Download)
 
         If OsUtils.WinSevenOrLater Then
@@ -837,8 +836,18 @@ Friend Class Main
         lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture)).Remove()
     End Sub
 
-    Private Sub DownloadListItem(ByVal epid As Integer, ByVal info As Data.DownloadData, ByRef item As ListViewItem)
-        item.Name = epid.ToString(CultureInfo.InvariantCulture)
+    Private Function DownloadListItem(ByVal info As Data.DownloadData, Optional ByRef item As ListViewItem = Nothing) As ListViewItem
+        If item Is Nothing Then
+            item = New ListViewItem
+        End If
+
+        item.Name = info.epid.ToString(CultureInfo.InvariantCulture)
+
+        If item.SubItems.Count < downloadColOrder.Count Then
+            For addCols As Integer = item.SubItems.Count To downloadColOrder.Count - 1
+                item.SubItems.Add("")
+            Next
+        End If
 
         For column As Integer = 0 To downloadColOrder.Count - 1
             Select Case downloadColOrder(column)
@@ -858,7 +867,13 @@ Friend Class Main
                             End If
                         Case Data.DownloadStatus.Errored
                             item.SubItems(column).Text = "Error"
+                        Case Else
+                            Throw New InvalidDataException("Unknown status of " + info.status.ToString)
                     End Select
+                Case Data.DownloadCols.Progress
+                    item.SubItems.Add("")
+                Case Else
+                    Throw New InvalidDataException("Unknown column type of " + downloadColOrder(column).ToString)
             End Select
         Next
 
@@ -873,8 +888,12 @@ Friend Class Main
                 End If
             Case Data.DownloadStatus.Errored
                 item.ImageKey = "error"
+            Case Else
+                Throw New InvalidDataException("Unknown status of " + info.status.ToString)
         End Select
-    End Sub
+
+        Return item
+    End Function
 
     Private Sub progData_DownloadAdded(ByVal epid As Integer) Handles progData.DownloadAdded
         If Me.InvokeRequired Then
@@ -884,14 +903,7 @@ Friend Class Main
         End If
 
         Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
-
-        Dim addItem As New ListViewItem
-        addItem.SubItems.Add("")
-        addItem.SubItems.Add("")
-        addItem.SubItems.Add("")
-
-        DownloadListItem(epid, info, addItem)
-        lstDownloads.Items.Add(addItem)
+        lstDownloads.Items.Add(DownloadListItem(info))
 
         If backData(backData.GetUpperBound(0)).View = View.Downloads Then
             If lstDownloads.SelectedItems.Count = 0 Then
@@ -960,9 +972,9 @@ Friend Class Main
         End If
 
         Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
-        Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
 
-        DownloadListItem(epid, info, item)
+        Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
+        DownloadListItem(info, item)
 
         If lstDownloads.GetProgressBar(item, downloadProgCol) IsNot Nothing Then
             lstDownloads.RemoveProgressBar(prgDldProg)
@@ -1375,21 +1387,15 @@ Friend Class Main
 
         If chooser.ShowDialog(Me) = DialogResult.OK Then
             My.Settings.DownloadCols = chooser.Columns
-            Call SetDownloadCols()
-
-            lstDownloads.BeginUpdate()
-            lstDownloads.ListViewItemSorter = Nothing
-            lstDownloads.Items.Clear()
-            progData.InitDownloadList()
-            lstDownloads.ListViewItemSorter = New ListComparer(ListComparer.ListType.Download)
-            lstDownloads.EndUpdate()
+            Call InitDownloadList()
         End If
     End Sub
 
-    Private Sub SetDownloadCols()
+    Private Sub InitDownloadList()
         downloadColOrder.Clear()
-        lstDownloads.Columns.Clear()
+        lstDownloads.Clear()
 
+        ' Set up the columns specified in the DownloadCols setting
         If My.Settings.DownloadCols <> String.Empty Then
             Dim columns As String() = Split(My.Settings.DownloadCols, ",")
 
@@ -1412,5 +1418,16 @@ Friend Class Main
                 lstDownloads.Columns.Add(downloadColNames(colVal), width)
             Next
         End If
+
+        ' Convert the list of DownloadData items to an array of ListItems
+        Dim initData As List(Of Data.DownloadData) = progData.FetchDownloadList
+        Dim initItems(initData.Count - 1) As ListViewItem
+
+        For convItems As Integer = 0 To initData.Count - 1
+            initItems(convItems) = DownloadListItem(initData(convItems))
+        Next
+
+        ' Add the whole array of ListItems at once
+        lstDownloads.Items.AddRange(initItems)
     End Sub
 End Class
