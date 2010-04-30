@@ -1424,6 +1424,10 @@ Friend Class Main
     End Sub
 
     Private Sub InitDownloadList()
+        If lstDownloads.SelectedItems.Count > 0 Then
+            Call SetViewDefaults() ' Revert back to default sidebar and toolbar
+        End If
+
         downloadColOrder.Clear()
         lstDownloads.Clear()
         lstDownloads.RemoveAllControls()
