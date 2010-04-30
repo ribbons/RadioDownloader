@@ -1442,6 +1442,13 @@ Friend Class Main
         End If
     End Sub
 
+    Private Sub mnuListHdrsReset_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuListHdrsReset.Click
+        My.Settings.DownloadCols = My.Settings.Properties.Item("DownloadCols").DefaultValue.ToString
+        My.Settings.DownloadColSizes = My.Settings.Properties.Item("DownloadColSizes").DefaultValue.ToString
+
+        Call InitDownloadList()
+    End Sub
+
     Private Sub InitDownloadList()
         If lstDownloads.SelectedItems.Count > 0 Then
             Call SetViewDefaults() ' Revert back to default sidebar and toolbar

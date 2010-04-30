@@ -82,6 +82,8 @@
         Me.tbtCleanUp = New System.Windows.Forms.ToolBarButton
         Me.tbrHelp = New RadioDld.ExtToolBar
         Me.tbtHelpMenu = New System.Windows.Forms.ToolBarButton
+        Me.mnuListHdrsSep = New System.Windows.Forms.MenuItem
+        Me.mnuListHdrsReset = New System.Windows.Forms.MenuItem
         Me.tbrView.SuspendLayout()
         Me.tblInfo.SuspendLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -388,15 +390,6 @@
         Me.picSideBarBorder.TabIndex = 22
         Me.picSideBarBorder.TabStop = False
         '
-        'mnuListHdrs
-        '
-        Me.mnuListHdrs.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.mnuListHdrsColumns})
-        '
-        'mnuListHdrsColumns
-        '
-        Me.mnuListHdrsColumns.Index = 0
-        Me.mnuListHdrsColumns.Text = "Columns..."
-        '
         'lstDownloads
         '
         Me.lstDownloads.AllowColumnReorder = True
@@ -568,6 +561,25 @@
         Me.tbtHelpMenu.Name = "tbtHelpMenu"
         Me.tbtHelpMenu.Text = "&Help"
         '
+        'mnuListHdrs
+        '
+        Me.mnuListHdrs.MenuItems.AddRange(New System.Windows.Forms.MenuItem() {Me.mnuListHdrsColumns, Me.mnuListHdrsSep, Me.mnuListHdrsReset})
+        '
+        'mnuListHdrsColumns
+        '
+        Me.mnuListHdrsColumns.Index = 0
+        Me.mnuListHdrsColumns.Text = "Choose Columns..."
+        '
+        'mnuListHdrsSep
+        '
+        Me.mnuListHdrsSep.Index = 1
+        Me.mnuListHdrsSep.Text = "-"
+        '
+        'mnuListHdrsReset
+        '
+        Me.mnuListHdrsReset.Index = 2
+        Me.mnuListHdrsReset.Text = "Reset"
+        '
         'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
@@ -662,5 +674,7 @@
     Friend WithEvents mnuOptionsProviderOptsNoProvs As System.Windows.Forms.MenuItem
     Friend WithEvents mnuListHdrs As System.Windows.Forms.ContextMenu
     Friend WithEvents mnuListHdrsColumns As System.Windows.Forms.MenuItem
+    Friend WithEvents mnuListHdrsReset As System.Windows.Forms.MenuItem
+    Friend WithEvents mnuListHdrsSep As System.Windows.Forms.MenuItem
 #End Region
 End Class
