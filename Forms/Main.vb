@@ -412,6 +412,31 @@ Friend Class Main
         Call SetToolbarButtons("Unsubscribe,CurrentEps")
     End Sub
 
+    Private Sub lstDownloads_ColumnReordered(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnReorderedEventArgs) Handles lstDownloads.ColumnReordered
+        Dim oldOrder(lstDownloads.Columns.Count - 1) As String
+
+        ' Fetch the pre-reorder column order
+        For Each col As ColumnHeader In lstDownloads.Columns
+            oldOrder(col.DisplayIndex) = CInt(downloadColOrder(col.Index)).ToString(CultureInfo.InvariantCulture)
+        Next
+
+        Dim newOrder As New List(Of String)(oldOrder)
+        Dim moveCol As String = newOrder(e.OldDisplayIndex)
+
+        ' Re-order the data to match the new column order
+        newOrder.RemoveAt(e.OldDisplayIndex)
+        newOrder.Insert(e.NewDisplayIndex, moveCol)
+
+        ' Save the new column order to the preference
+        My.Settings.DownloadCols = Join(newOrder.ToArray, ",")
+
+        If e.OldDisplayIndex = 0 OrElse e.NewDisplayIndex = 0 Then
+            ' The reorder involves column 0 which contains the icons, so re-initialise the list
+            e.Cancel = True
+            Call InitDownloadList()
+        End If
+    End Sub
+
     Private Sub lstDownloads_ColumnRightClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles lstDownloads.ColumnRightClick
         mnuListHdrs.Show(lstDownloads, lstDownloads.PointToClient(Cursor.Position))
     End Sub
