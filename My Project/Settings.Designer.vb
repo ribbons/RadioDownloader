@@ -158,6 +158,18 @@ Namespace My
                 Me("DownloadCols") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0,2.49|1,0.81|2,1.28|3,1.04")>  _
+        Public Property DownloadColSizes() As String
+            Get
+                Return CType(Me("DownloadColSizes"),String)
+            End Get
+            Set
+                Me("DownloadColSizes") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

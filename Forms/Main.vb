@@ -90,6 +90,7 @@ Friend Class Main
     Private tbarNotif As TaskbarNotify
 
     Private downloadColNames As New Dictionary(Of Integer, String)
+    Private downloadColSizes As New Dictionary(Of Integer, Integer)
     Private downloadColOrder As New List(Of Data.DownloadCols)
 
     Private Delegate Sub progData_ProviderAdded_Delegate(ByVal providerId As Guid)
@@ -439,6 +440,24 @@ Friend Class Main
 
     Private Sub lstDownloads_ColumnRightClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles lstDownloads.ColumnRightClick
         mnuListHdrs.Show(lstDownloads, lstDownloads.PointToClient(Cursor.Position))
+    End Sub
+
+    Private Sub lstDownloads_ColumnWidthChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnWidthChangedEventArgs) Handles lstDownloads.ColumnWidthChanged
+        ' Save the updated column's width
+        downloadColSizes(downloadColOrder(e.ColumnIndex)) = lstDownloads.Columns(e.ColumnIndex).Width
+
+        Dim saveColSizes As String = String.Empty
+
+        ' Convert the stored column widths back to a string to save to settings
+        For Each colSize As KeyValuePair(Of Integer, Integer) In downloadColSizes
+            If saveColSizes <> String.Empty Then
+                saveColSizes += "|"
+            End If
+
+            saveColSizes += colSize.Key.ToString(CultureInfo.InvariantCulture) + "," + (colSize.Value / Me.CurrentAutoScaleDimensions.Width).ToString(CultureInfo.InvariantCulture)
+        Next
+
+        My.Settings.DownloadColSizes = saveColSizes
     End Sub
 
     Private Sub lstDownloads_ItemActivate(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstDownloads.ItemActivate
@@ -1428,9 +1447,18 @@ Friend Class Main
             Call SetViewDefaults() ' Revert back to default sidebar and toolbar
         End If
 
+        downloadColSizes.Clear()
         downloadColOrder.Clear()
         lstDownloads.Clear()
         lstDownloads.RemoveAllControls()
+
+        ' Fetch the column sizes into downloadColSizes for ease of access
+        For Each sizePair As String In Split(My.Settings.DownloadColSizes, "|")
+            Dim splitPair As String() = Split(sizePair, ",")
+            Dim pixelSize As Integer = CInt(Single.Parse(splitPair(1), CultureInfo.InvariantCulture) * Me.CurrentAutoScaleDimensions.Width)
+
+            downloadColSizes.Add(Integer.Parse(splitPair(0), CultureInfo.InvariantCulture), pixelSize)
+        Next
 
         ' Set up the columns specified in the DownloadCols setting
         If My.Settings.DownloadCols <> String.Empty Then
@@ -1438,21 +1466,8 @@ Friend Class Main
 
             For Each column As String In columns
                 Dim colVal As Data.DownloadCols = CType(column, Data.DownloadCols)
-                Dim width As Integer
-
-                Select Case colVal
-                    Case Data.DownloadCols.EpisodeName
-                        width = CInt(0.426 * lstDownloads.Width)
-                    Case Data.DownloadCols.EpisodeDate
-                        width = CInt(0.14 * lstDownloads.Width)
-                    Case Data.DownloadCols.Status
-                        width = CInt(0.22 * lstDownloads.Width)
-                    Case Data.DownloadCols.Progress
-                        width = CInt(0.179 * lstDownloads.Width)
-                End Select
-
                 downloadColOrder.Add(colVal)
-                lstDownloads.Columns.Add(downloadColNames(colVal), width)
+                lstDownloads.Columns.Add(downloadColNames(colVal), downloadColSizes(colVal))
             Next
         End If
 
