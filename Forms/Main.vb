@@ -427,6 +427,9 @@ Friend Class Main
             progData.DownloadSortAscending = Not progData.DownloadSortAscending
         End If
 
+        ' Set the column header to display the new sort order
+        lstDownloads.ShowSortOnHeader(downloadColOrder.IndexOf(progData.DownloadSortByCol), If(progData.DownloadSortAscending, SortOrder.Ascending, SortOrder.Descending))
+
         ' Save the current sort
         My.Settings.DownloadColSortBy = progData.DownloadSortByCol
         My.Settings.DownloadColSortAsc = progData.DownloadSortAscending
@@ -1507,6 +1510,7 @@ Friend Class Main
         ' Apply the sort from the current settings
         progData.DownloadSortByCol = CType(My.Settings.DownloadColSortBy, Data.DownloadCols)
         progData.DownloadSortAscending = My.Settings.DownloadColSortAsc
+        lstDownloads.ShowSortOnHeader(downloadColOrder.IndexOf(progData.DownloadSortByCol), If(progData.DownloadSortAscending, SortOrder.Ascending, SortOrder.Descending))
 
         ' Convert the list of DownloadData items to an array of ListItems
         Dim initData As List(Of Data.DownloadData) = progData.FetchDownloadList

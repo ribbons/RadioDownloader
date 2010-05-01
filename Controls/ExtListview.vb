@@ -35,7 +35,18 @@ Friend Class ExtListView : Inherits ListView
 
     ' ListView messages
     Private Const LVM_FIRST As Integer = &H1000
-    Private Const LVM_SETEXTENDEDLISTVIEWSTYLE As Integer = (LVM_FIRST + 54)
+    Private Const LVM_GETHEADER As Integer = LVM_FIRST + 31
+    Private Const LVM_SETEXTENDEDLISTVIEWSTYLE As Integer = LVM_FIRST + 54
+
+    ' ListView header messages
+    Private Const HDM_FIRST As Integer = &H1200
+    Private Const HDM_GETITEM As Integer = HDM_FIRST + 11
+    Private Const HDM_SETITEM As Integer = HDM_FIRST + 12
+
+    ' ListView header info flags
+    Private Const HDI_FORMAT As Integer = &H4
+    Private Const HDF_SORTUP As Integer = &H400
+    Private Const HDF_SORTDOWN As Integer = &H200
 
     ' Extended ListView Styles
     Private Const LVS_EX_DOUBLEBUFFER As Integer = &H10000
@@ -52,8 +63,22 @@ Friend Class ExtListView : Inherits ListView
         Public code As Integer
     End Structure
 
+    <StructLayout(LayoutKind.Sequential)> _
+    Private Structure HDITEM
+        Public mask As Integer
+        Public cxy As Integer
+        <MarshalAs(UnmanagedType.LPTStr)> Public pszText As String
+        Public hbm As IntPtr
+        Public cchTextMax As Integer
+        Public fmt As Integer
+        Public lParam As Integer
+        Public iImage As Integer
+        Public iOrder As Integer
+    End Structure
+
     ' API Declarations
     Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
+    Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As HDITEM) As IntPtr
     Private Declare Unicode Function SetWindowTheme Lib "uxtheme" (ByVal hWnd As IntPtr, ByVal pszSubAppName As String, ByVal pszSubIdList As String) As Integer
 
     ' Data structure to store information about the controls
@@ -189,6 +214,32 @@ Friend Class ExtListView : Inherits ListView
         Next
 
         embeddedControls.Clear()
+    End Sub
+
+    Public Sub ShowSortOnHeader(ByVal column As Integer, ByVal order As SortOrder)
+        Dim headersHwnd As IntPtr = SendMessage(Me.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero)
+
+        For processCols As Integer = 0 To Me.Columns.Count
+            Dim headerInfo As New HDITEM
+            headerInfo.mask = HDI_FORMAT
+
+            SendMessage(headersHwnd, HDM_GETITEM, CType(processCols, IntPtr), headerInfo)
+
+            If order <> SortOrder.None AndAlso processCols = column Then
+                Select Case order
+                    Case SortOrder.Ascending
+                        headerInfo.fmt = headerInfo.fmt And Not HDF_SORTDOWN
+                        headerInfo.fmt = headerInfo.fmt Or HDF_SORTUP
+                    Case SortOrder.Descending
+                        headerInfo.fmt = headerInfo.fmt And Not HDF_SORTUP
+                        headerInfo.fmt = headerInfo.fmt Or HDF_SORTDOWN
+                End Select
+            Else
+                headerInfo.fmt = headerInfo.fmt And Not HDF_SORTDOWN And Not HDF_SORTUP
+            End If
+
+            SendMessage(headersHwnd, HDM_SETITEM, CType(processCols, IntPtr), headerInfo)
+        Next
     End Sub
 
     Protected Overrides Sub WndProc(ByRef m As Message)
