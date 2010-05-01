@@ -36,6 +36,7 @@ Friend Class Data
         EpisodeDate = 1
         Status = 2
         Progress = 3
+        Duration = 4
     End Enum
 
     Public Structure ProviderData
@@ -1313,6 +1314,8 @@ Friend Class Data
                         orderBy = "date" + If(downloadSortAsc, String.Empty, " desc")
                     Case DownloadCols.Status
                         orderBy = "status = 0" + If(downloadSortAsc, " desc", String.Empty) + ", status" + If(downloadSortAsc, " desc", String.Empty) + ", playcount > 0" + If(downloadSortAsc, String.Empty, " desc") + ", date" + If(downloadSortAsc, " desc", String.Empty)
+                    Case DownloadCols.Duration
+                        orderBy = "duration" + If(downloadSortAsc, String.Empty, " desc")
                     Case Else
                         Throw New InvalidDataException("Invalid column: " + downloadSortBy.ToString)
                 End Select

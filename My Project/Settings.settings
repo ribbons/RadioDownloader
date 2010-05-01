@@ -30,7 +30,7 @@
       <Value Profile="(Default)">0,1,2,3</Value>
     </Setting>
     <Setting Name="DownloadColSizes" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0,2.49|1,0.81|2,1.28|3,1.04</Value>
+      <Value Profile="(Default)">0,2.49|1,0.81|2,1.28|3,1.04|4,0.6</Value>
     </Setting>
     <Setting Name="DownloadColSortBy" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">1</Value>

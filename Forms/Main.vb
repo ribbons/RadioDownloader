@@ -243,7 +243,9 @@ Friend Class Main
         Call lstSubscribed.Columns.Add("Last Download", CInt(0.179 * lstSubscribed.Width))
         Call lstSubscribed.Columns.Add("Provider", CInt(0.304 * lstSubscribed.Width))
 
+        ' NB - these are defined in alphabetical order to save sorting later
         downloadColNames.Add(Data.DownloadCols.EpisodeDate, "Date")
+        downloadColNames.Add(Data.DownloadCols.Duration, "Duration")
         downloadColNames.Add(Data.DownloadCols.EpisodeName, "Episode Name")
         downloadColNames.Add(Data.DownloadCols.Progress, "Progress")
         downloadColNames.Add(Data.DownloadCols.Status, "Status")
@@ -371,7 +373,7 @@ Friend Class Main
         End If
 
         infoText += "Date: " + epInfo.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
-        infoText += ReadableDuration(epInfo.duration)
+        infoText += DescDuration(epInfo.duration)
 
         Call SetSideBar(epInfo.name, infoText, progData.FetchEpisodeImage(epid))
 
@@ -512,7 +514,7 @@ Friend Class Main
         End If
 
         infoText += "Date: " + info.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
-        infoText += ReadableDuration(info.duration)
+        infoText += DescDuration(info.duration)
 
         Select Case info.status
             Case Data.DownloadStatus.Downloaded
@@ -559,13 +561,13 @@ Friend Class Main
         Call SetToolbarButtons(actionString)
     End Sub
 
-    Private Function ReadableDuration(ByVal duration As Integer) As String
-        Dim readable As String = ""
+    Private Function DescDuration(ByVal duration As Integer) As String
+        Dim readable As String = String.Empty
 
         If duration <> 0 Then
             readable += Environment.NewLine + "Duration: "
 
-            Dim mins As Integer = duration \ 60
+            Dim mins As Integer = CInt(Math.Round(duration / 60, 0))
             Dim hours As Integer = mins \ 60
             mins = mins Mod 60
 
@@ -937,7 +939,19 @@ Friend Class Main
                             Throw New InvalidDataException("Unknown status of " + info.status.ToString)
                     End Select
                 Case Data.DownloadCols.Progress
-                    item.SubItems.Add("")
+                    item.SubItems(column).Text = ""
+                Case Data.DownloadCols.Duration
+                    Dim durationText As String = String.Empty
+
+                    If info.duration <> 0 Then
+                        Dim mins As Integer = CInt(Math.Round(info.duration / 60, 0))
+                        Dim hours As Integer = mins \ 60
+                        mins = mins Mod 60
+
+                        durationText = String.Format(CultureInfo.CurrentCulture, "{0}:{1:00}", hours, mins)
+                    End If
+
+                    item.SubItems(column).Text = durationText
                 Case Else
                     Throw New InvalidDataException("Unknown column type of " + downloadColOrder(column).ToString)
             End Select
@@ -1488,9 +1502,23 @@ Friend Class Main
         lstDownloads.Clear()
         lstDownloads.RemoveAllControls()
 
+        Dim newItems As String = String.Empty
+
+        ' Find any columns without widths defined in the current setting
+        For Each sizePair As String In Split(My.Settings.Properties.Item("DownloadColSizes").DefaultValue.ToString, "|")
+            If Not ("|" + My.Settings.DownloadColSizes).Contains("|" + Split(sizePair, ",")(0) + ",") Then
+                newItems += "|" + sizePair
+            End If
+        Next
+
+        ' Append the new column sizes to the end of the setting
+        If newItems <> String.Empty Then
+            My.Settings.DownloadColSizes += newItems
+        End If
+
         ' Fetch the column sizes into downloadColSizes for ease of access
         For Each sizePair As String In Split(My.Settings.DownloadColSizes, "|")
-            Dim splitPair As String() = Split(sizePair, ",")
+            Dim splitPair() As String = Split(sizePair, ",")
             Dim pixelSize As Integer = CInt(Single.Parse(splitPair(1), CultureInfo.InvariantCulture) * Me.CurrentAutoScaleDimensions.Width)
 
             downloadColSizes.Add(Integer.Parse(splitPair(0), CultureInfo.InvariantCulture), pixelSize)
