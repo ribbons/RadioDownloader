@@ -427,6 +427,10 @@ Friend Class Main
             progData.DownloadSortAscending = Not progData.DownloadSortAscending
         End If
 
+        ' Save the current sort
+        My.Settings.DownloadColSortBy = progData.DownloadSortByCol
+        My.Settings.DownloadColSortAsc = progData.DownloadSortAscending
+
         lstDownloads.Sort()
     End Sub
 
@@ -1465,6 +1469,8 @@ Friend Class Main
     Private Sub mnuListHdrsReset_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuListHdrsReset.Click
         My.Settings.DownloadCols = My.Settings.Properties.Item("DownloadCols").DefaultValue.ToString
         My.Settings.DownloadColSizes = My.Settings.Properties.Item("DownloadColSizes").DefaultValue.ToString
+        My.Settings.DownloadColSortBy = Integer.Parse(My.Settings.Properties.Item("DownloadColSortBy").DefaultValue.ToString, CultureInfo.InvariantCulture)
+        My.Settings.DownloadColSortAsc = CBool(My.Settings.Properties.Item("DownloadColSortAsc").DefaultValue)
 
         Call InitDownloadList()
     End Sub
@@ -1497,6 +1503,10 @@ Friend Class Main
                 lstDownloads.Columns.Add(downloadColNames(colVal), downloadColSizes(colVal))
             Next
         End If
+
+        ' Apply the sort from the current settings
+        progData.DownloadSortByCol = CType(My.Settings.DownloadColSortBy, Data.DownloadCols)
+        progData.DownloadSortAscending = My.Settings.DownloadColSortAsc
 
         ' Convert the list of DownloadData items to an array of ListItems
         Dim initData As List(Of Data.DownloadData) = progData.FetchDownloadList

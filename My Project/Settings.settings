@@ -32,5 +32,11 @@
     <Setting Name="DownloadColSizes" Type="System.String" Scope="User">
       <Value Profile="(Default)">0,2.49|1,0.81|2,1.28|3,1.04</Value>
     </Setting>
+    <Setting Name="DownloadColSortBy" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">1</Value>
+    </Setting>
+    <Setting Name="DownloadColSortAsc" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

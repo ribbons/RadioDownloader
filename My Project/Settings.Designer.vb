@@ -170,6 +170,30 @@ Namespace My
                 Me("DownloadColSizes") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("1")>  _
+        Public Property DownloadColSortBy() As Integer
+            Get
+                Return CType(Me("DownloadColSortBy"),Integer)
+            End Get
+            Set
+                Me("DownloadColSortBy") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("False")>  _
+        Public Property DownloadColSortAsc() As Boolean
+            Get
+                Return CType(Me("DownloadColSortAsc"),Boolean)
+            End Get
+            Set
+                Me("DownloadColSortAsc") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
