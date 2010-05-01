@@ -413,6 +413,23 @@ Friend Class Main
         Call SetToolbarButtons("Unsubscribe,CurrentEps")
     End Sub
 
+    Private Sub lstDownloads_ColumnClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles lstDownloads.ColumnClick
+        Dim clickedCol As Data.DownloadCols = downloadColOrder(e.Column)
+
+        If clickedCol = Data.DownloadCols.Progress Then
+            Return
+        End If
+
+        If progData.DownloadSortByCol <> clickedCol Then
+            progData.DownloadSortByCol = clickedCol
+            progData.DownloadSortAscending = True
+        Else
+            progData.DownloadSortAscending = Not progData.DownloadSortAscending
+        End If
+
+        lstDownloads.Sort()
+    End Sub
+
     Private Sub lstDownloads_ColumnReordered(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnReorderedEventArgs) Handles lstDownloads.ColumnReordered
         Dim oldOrder(lstDownloads.Columns.Count - 1) As String
 
@@ -1030,6 +1047,9 @@ Friend Class Main
                 lstDownloads.RemoveProgressBar(prgDldProg)
             End If
         End If
+
+        ' Update the downloads list sorting, as the order may now have changed
+        lstDownloads.Sort()
 
         If backData(backData.GetUpperBound(0)).View = View.Downloads Then
             If lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture)).Selected Then

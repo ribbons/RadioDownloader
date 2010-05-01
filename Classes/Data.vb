@@ -98,6 +98,9 @@ Friend Class Data
 
     Private subscriptionSortCache As Dictionary(Of Integer, Integer)
     Private subscriptionSortCacheLock As New Object
+
+    Private downloadSortBy As DownloadCols = DownloadCols.EpisodeDate
+    Private downloadSortAsc As Boolean
     Private downloadSortCache As Dictionary(Of Integer, Integer)
     Private downloadSortCacheLock As New Object
 
@@ -788,7 +791,10 @@ Friend Class Data
             trans.Commit()
         End Using
 
-        ' No need to clear the sort cache, as this will still work with the extra entry
+        SyncLock downloadSortCacheLock
+            ' No need to clear the sort cache, just remove this episodes entry
+            downloadSortCache.Remove(epid)
+        End SyncLock
 
         RaiseEvent DownloadRemoved(epid)
     End Sub
@@ -1298,8 +1304,20 @@ Friend Class Data
                 downloadSortCache = New Dictionary(Of Integer, Integer)
 
                 Dim sort As Integer = 0
+                Dim orderBy As String
 
-                Using command As New SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by date desc", FetchDbConn)
+                Select Case downloadSortBy
+                    Case DownloadCols.EpisodeName
+                        orderBy = "name" + If(downloadSortAsc, String.Empty, " desc")
+                    Case DownloadCols.EpisodeDate
+                        orderBy = "date" + If(downloadSortAsc, String.Empty, " desc")
+                    Case DownloadCols.Status
+                        orderBy = "status = 0" + If(downloadSortAsc, " desc", String.Empty) + ", status" + If(downloadSortAsc, " desc", String.Empty) + ", playcount > 0" + If(downloadSortAsc, String.Empty, " desc") + ", date" + If(downloadSortAsc, " desc", String.Empty)
+                    Case Else
+                        Throw New InvalidDataException("Invalid column: " + downloadSortBy.ToString)
+                End Select
+
+                Using command As New SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, FetchDbConn)
                     Using reader As SQLiteDataReader = command.ExecuteReader()
                         Dim epidOrdinal As Integer = reader.GetOrdinal("epid")
 
@@ -1599,4 +1617,34 @@ Friend Class Data
 
         Return info
     End Function
+
+    Public Property DownloadSortByCol() As DownloadCols
+        Get
+            Return downloadSortBy
+        End Get
+        Set(ByVal sortColumn As DownloadCols)
+            SyncLock downloadSortCacheLock
+                If sortColumn <> downloadSortBy Then
+                    downloadSortCache = Nothing
+                End If
+
+                downloadSortBy = sortColumn
+            End SyncLock
+        End Set
+    End Property
+
+    Public Property DownloadSortAscending() As Boolean
+        Get
+            Return downloadSortAsc
+        End Get
+        Set(ByVal sortAscending As Boolean)
+            SyncLock downloadSortCacheLock
+                If sortAscending <> downloadSortAsc Then
+                    downloadSortCache = Nothing
+                End If
+
+                downloadSortAsc = sortAscending
+            End SyncLock
+        End Set
+    End Property
 End Class
