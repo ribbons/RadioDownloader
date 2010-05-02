@@ -986,12 +986,7 @@ Friend Class Data
     End Sub
 
     Private Sub SetDBSetting(ByVal propertyName As String, ByVal value As Object)
-        Using command As New SQLiteCommand("delete from settings where property=@property", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@property", propertyName))
-            command.ExecuteNonQuery()
-        End Using
-
-        Using command As New SQLiteCommand("insert into settings (property, value) values (@property, @value)", FetchDbConn)
+        Using command As New SQLiteCommand("insert or replace into settings (property, value) values (@property, @value)", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@property", propertyName))
             command.Parameters.Add(New SQLiteParameter("@value", value))
             command.ExecuteNonQuery()
