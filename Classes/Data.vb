@@ -647,9 +647,8 @@ Friend Class Data
     End Sub
 
     Private Sub AddDownloadAsync(ByVal epid As Integer)
-        Using command As New SQLiteCommand("insert into downloads (epid, status) values (@epid, @status)", FetchDbConn)
+        Using command As New SQLiteCommand("insert into downloads (epid) values (@epid)", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
-            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Waiting))
             Call command.ExecuteNonQuery()
         End Using
 

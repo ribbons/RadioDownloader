@@ -1099,13 +1099,13 @@
             <dia:string>#integer#</dia:string>
           </dia:attribute>
           <dia:attribute name="comment">
-            <dia:string>##</dia:string>
+            <dia:string>#default 0#</dia:string>
           </dia:attribute>
           <dia:attribute name="primary_key">
             <dia:boolean val="false"/>
           </dia:attribute>
           <dia:attribute name="nullable">
-            <dia:boolean val="true"/>
+            <dia:boolean val="false"/>
           </dia:attribute>
           <dia:attribute name="unique">
             <dia:boolean val="false"/>
