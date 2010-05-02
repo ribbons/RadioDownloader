@@ -564,13 +564,7 @@
         <dia:real val="0"/>
       </dia:attribute>
       <dia:attribute name="end_arrow">
-        <dia:enum val="22"/>
-      </dia:attribute>
-      <dia:attribute name="end_arrow_length">
-        <dia:real val="0.5"/>
-      </dia:attribute>
-      <dia:attribute name="end_arrow_width">
-        <dia:real val="0.5"/>
+        <dia:enum val="0"/>
       </dia:attribute>
       <dia:attribute name="start_point_desc">
         <dia:string>#1#</dia:string>
@@ -760,13 +754,7 @@
         <dia:real val="0"/>
       </dia:attribute>
       <dia:attribute name="end_arrow">
-        <dia:enum val="22"/>
-      </dia:attribute>
-      <dia:attribute name="end_arrow_length">
-        <dia:real val="0.5"/>
-      </dia:attribute>
-      <dia:attribute name="end_arrow_width">
-        <dia:real val="0.5"/>
+        <dia:enum val="0"/>
       </dia:attribute>
       <dia:attribute name="start_point_desc">
         <dia:string>#1#</dia:string>
@@ -936,13 +924,7 @@
         <dia:real val="0"/>
       </dia:attribute>
       <dia:attribute name="end_arrow">
-        <dia:enum val="22"/>
-      </dia:attribute>
-      <dia:attribute name="end_arrow_length">
-        <dia:real val="0.5"/>
-      </dia:attribute>
-      <dia:attribute name="end_arrow_width">
-        <dia:real val="0.5"/>
+        <dia:enum val="0"/>
       </dia:attribute>
       <dia:attribute name="start_point_desc">
         <dia:string>#1#</dia:string>
@@ -1002,13 +984,7 @@
         <dia:real val="0"/>
       </dia:attribute>
       <dia:attribute name="end_arrow">
-        <dia:enum val="22"/>
-      </dia:attribute>
-      <dia:attribute name="end_arrow_length">
-        <dia:real val="0.5"/>
-      </dia:attribute>
-      <dia:attribute name="end_arrow_width">
-        <dia:real val="0.5"/>
+        <dia:enum val="0"/>
       </dia:attribute>
       <dia:attribute name="start_point_desc">
         <dia:string>#1#</dia:string>
@@ -1566,13 +1542,13 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="primary_key">
-            <dia:boolean val="false"/>
+            <dia:boolean val="true"/>
           </dia:attribute>
           <dia:attribute name="nullable">
             <dia:boolean val="false"/>
           </dia:attribute>
           <dia:attribute name="unique">
-            <dia:boolean val="false"/>
+            <dia:boolean val="true"/>
           </dia:attribute>
         </dia:composite>
         <dia:composite type="table_attribute">
