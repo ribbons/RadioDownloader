@@ -68,9 +68,9 @@ Friend Class UpdateDB
                             updateCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), updateConn)
                             updateCommand.ExecuteNonQuery()
 
-                            ' Copy across the data
+                            ' Copy across the data (discarding rows which violate any new constraints)
                             If columnNames <> "" Then
-                                updateCommand = New SQLiteCommand("INSERT INTO [" + .GetString(.GetOrdinal("name")) + "] (" + columnNames + ") SELECT " + columnNames + " FROM [" + .GetString(.GetOrdinal("name")) + "_old]", updateConn)
+                                updateCommand = New SQLiteCommand("INSERT OR IGNORE INTO [" + .GetString(.GetOrdinal("name")) + "] (" + columnNames + ") SELECT " + columnNames + " FROM [" + .GetString(.GetOrdinal("name")) + "_old]", updateConn)
                                 updateCommand.ExecuteNonQuery()
                             End If
 

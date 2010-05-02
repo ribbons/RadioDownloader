@@ -107,10 +107,10 @@
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="underline_primary_key">
-        <dia:boolean val="true"/>
+        <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="bold_primary_keys">
-        <dia:boolean val="false"/>
+        <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="normal_font">
         <dia:font family="monospace" style="0" name="Courier"/>
@@ -317,10 +317,10 @@
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="underline_primary_key">
-        <dia:boolean val="true"/>
+        <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="bold_primary_keys">
-        <dia:boolean val="false"/>
+        <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="normal_font">
         <dia:font family="monospace" style="0" name="Courier"/>
@@ -633,10 +633,10 @@
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="underline_primary_key">
-        <dia:boolean val="true"/>
+        <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="bold_primary_keys">
-        <dia:boolean val="false"/>
+        <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="normal_font">
         <dia:font family="monospace" style="0" name="Courier"/>
@@ -668,13 +668,13 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="primary_key">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-          <dia:attribute name="nullable">
             <dia:boolean val="true"/>
           </dia:attribute>
-          <dia:attribute name="unique">
+          <dia:attribute name="nullable">
             <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="unique">
+            <dia:boolean val="true"/>
           </dia:attribute>
         </dia:composite>
         <dia:composite type="table_attribute">
@@ -688,13 +688,13 @@
             <dia:string>##</dia:string>
           </dia:attribute>
           <dia:attribute name="primary_key">
-            <dia:boolean val="false"/>
-          </dia:attribute>
-          <dia:attribute name="nullable">
             <dia:boolean val="true"/>
           </dia:attribute>
-          <dia:attribute name="unique">
+          <dia:attribute name="nullable">
             <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="unique">
+            <dia:boolean val="true"/>
           </dia:attribute>
         </dia:composite>
         <dia:composite type="table_attribute">
@@ -829,10 +829,10 @@
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="underline_primary_key">
-        <dia:boolean val="true"/>
+        <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="bold_primary_keys">
-        <dia:boolean val="false"/>
+        <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="normal_font">
         <dia:font family="monospace" style="0" name="Courier"/>
@@ -1071,10 +1071,10 @@
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="underline_primary_key">
-        <dia:boolean val="true"/>
+        <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="bold_primary_keys">
-        <dia:boolean val="false"/>
+        <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="normal_font">
         <dia:font family="monospace" style="0" name="Courier"/>
@@ -1321,10 +1321,10 @@
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="underline_primary_key">
-        <dia:boolean val="true"/>
+        <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="bold_primary_keys">
-        <dia:boolean val="false"/>
+        <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="normal_font">
         <dia:font family="monospace" style="0" name="Courier"/>
@@ -1531,10 +1531,10 @@
         <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="underline_primary_key">
-        <dia:boolean val="true"/>
+        <dia:boolean val="false"/>
       </dia:attribute>
       <dia:attribute name="bold_primary_keys">
-        <dia:boolean val="false"/>
+        <dia:boolean val="true"/>
       </dia:attribute>
       <dia:attribute name="normal_font">
         <dia:font family="monospace" style="0" name="Courier"/>
