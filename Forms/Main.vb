@@ -1002,6 +1002,10 @@ Friend Class Main
 
         Dim item As ListViewItem = lstDownloads.Items(CStr(epid))
 
+        If item Is Nothing Then
+            Return
+        End If
+
         If downloadColOrder.Contains(Data.DownloadCols.Status) Then
             item.SubItems(downloadColOrder.IndexOf(Data.DownloadCols.Status)).Text = statusText
         End If
