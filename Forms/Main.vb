@@ -96,7 +96,7 @@ Friend Class Main
     Private Delegate Sub progData_ProviderAdded_Delegate(ByVal providerId As Guid)
     Private Delegate Sub progData_Programme_Delegate(ByVal progid As Integer)
     Private Delegate Sub progData_Episode_Delegate(ByVal epid As Integer)
-    Private Delegate Sub progData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
+    Private Delegate Sub progData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon)
 
     Public Sub UpdateTrayStatus(ByVal active As Boolean)
         If OsUtils.WinSevenOrLater Then
@@ -532,17 +532,17 @@ Friend Class Main
                 actionString = "Retry,Cancel"
 
                 Select Case info.errorType
-                    Case IRadioProvider.ErrorType.LocalProblem
+                    Case ErrorType.LocalProblem
                         errorName = "Local problem"
-                    Case IRadioProvider.ErrorType.ShorterThanExpected
+                    Case ErrorType.ShorterThanExpected
                         errorName = "Shorter than expected"
-                    Case IRadioProvider.ErrorType.NotAvailable
+                    Case ErrorType.NotAvailable
                         errorName = "Not available"
-                    Case IRadioProvider.ErrorType.NotAvailableInLocation
+                    Case ErrorType.NotAvailableInLocation
                         errorName = "Not available in your location"
-                    Case IRadioProvider.ErrorType.NetworkProblem
+                    Case ErrorType.NetworkProblem
                         errorName = "Network problem"
-                    Case IRadioProvider.ErrorType.UnknownError
+                    Case ErrorType.UnknownError
                         errorName = "Unknown error"
                         errorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
                         actionString = "Retry,Cancel,ReportError"
@@ -993,7 +993,7 @@ Friend Class Main
         End If
     End Sub
 
-    Private Sub progData_DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon) Handles progData.DownloadProgress
+    Private Sub progData_DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon) Handles progData.DownloadProgress
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
             Me.BeginInvoke(New progData_DownloadProgress_Delegate(AddressOf progData_DownloadProgress), New Object() {epid, percent, statusText, icon})
@@ -1019,9 +1019,9 @@ Friend Class Main
         End If
 
         Select Case icon
-            Case IRadioProvider.ProgressIcon.Downloading
+            Case ProgressIcon.Downloading
                 item.ImageKey = "downloading"
-            Case IRadioProvider.ProgressIcon.Converting
+            Case ProgressIcon.Converting
                 item.ImageKey = "converting"
         End Select
 

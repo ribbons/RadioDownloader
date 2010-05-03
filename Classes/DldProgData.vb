@@ -20,8 +20,8 @@ Friend Class DldProgData
     Private _progExtId As String
     Private _epId As Integer
     Private _episodeExtId As String
-    Private _progInfo As IRadioProvider.ProgrammeInfo
-    Private _episodeInfo As IRadioProvider.EpisodeInfo
+    Private _progInfo As ProgrammeInfo
+    Private _episodeInfo As EpisodeInfo
     Private _finalName As String
     Private _attemptNumber As Integer
 
@@ -61,20 +61,20 @@ Friend Class DldProgData
         End Set
     End Property
 
-    Public Property ProgInfo() As IRadioProvider.ProgrammeInfo
+    Public Property ProgInfo() As ProgrammeInfo
         Get
             Return _progInfo
         End Get
-        Set(ByVal progInfo As IRadioProvider.ProgrammeInfo)
+        Set(ByVal progInfo As ProgrammeInfo)
             Me._progInfo = progInfo
         End Set
     End Property
 
-    Public Property EpisodeInfo() As IRadioProvider.EpisodeInfo
+    Public Property EpisodeInfo() As EpisodeInfo
         Get
             Return _episodeInfo
         End Get
-        Set(ByVal episodeInfo As IRadioProvider.EpisodeInfo)
+        Set(ByVal episodeInfo As EpisodeInfo)
             Me._episodeInfo = episodeInfo
         End Set
     End Property

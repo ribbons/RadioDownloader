@@ -19,82 +19,39 @@ Imports System.IO
 Imports System.Reflection
 Imports System.Collections.Generic
 
-<Serializable()> _
-Public Class DldErrorDataItem
-    Private itemName As String
-    Private itemData As String
+Public Structure ProgrammeInfo
+    Dim Name As String
+    Dim Description As String
+    Dim Image As Bitmap
+    Dim SingleEpisode As Boolean
+End Structure
 
-    Public Property Name() As String
-        Get
-            Return itemName
-        End Get
-        Set(ByVal value As String)
-            itemName = value
-        End Set
-    End Property
+Public Structure GetProgrammeInfoReturn
+    Dim ProgrammeInfo As ProgrammeInfo
+    Dim Success As Boolean
+    Dim Exception As Exception
+End Structure
 
-    Public Property Data() As String
-        Get
-            Return itemData
-        End Get
-        Set(ByVal value As String)
-            itemData = value
-        End Set
-    End Property
+Public Structure EpisodeInfo
+    Dim Name As String
+    Dim Description As String
+    Dim DurationSecs As Integer
+    Dim [Date] As DateTime
+    Dim Image As Bitmap
+    Dim ExtInfo As Dictionary(Of String, String)
+End Structure
 
-    Protected Sub New()
-        ' Do nothing, just needed for deserialisation
-    End Sub
+Public Structure GetEpisodeInfoReturn
+    Dim EpisodeInfo As EpisodeInfo
+    Dim Success As Boolean
+End Structure
 
-    Public Sub New(ByVal name As String, ByVal data As String)
-        itemName = name
-        itemData = data
-    End Sub
-End Class
+Public Enum ProgressIcon
+    Downloading
+    Converting
+End Enum
 
 Public Interface IRadioProvider
-    Structure ProgrammeInfo
-        Dim Name As String
-        Dim Description As String
-        Dim Image As Bitmap
-        Dim SingleEpisode As Boolean
-    End Structure
-
-    Structure GetProgrammeInfoReturn
-        Dim ProgrammeInfo As ProgrammeInfo
-        Dim Success As Boolean
-        Dim Exception As Exception
-    End Structure
-
-    Structure EpisodeInfo
-        Dim Name As String
-        Dim Description As String
-        Dim DurationSecs As Integer
-        Dim [Date] As DateTime
-        Dim Image As Bitmap
-        Dim ExtInfo As Dictionary(Of String, String)
-    End Structure
-
-    Structure GetEpisodeInfoReturn
-        Dim EpisodeInfo As EpisodeInfo
-        Dim Success As Boolean
-    End Structure
-
-    Enum ProgressIcon
-        Downloading
-        Converting
-    End Enum
-
-    Enum ErrorType
-        UnknownError = 0
-        LocalProblem = 1
-        ShorterThanExpected = 2
-        NotAvailable = 3
-        RemoveFromList = 4
-        NotAvailableInLocation = 5
-        NetworkProblem = 6
-    End Enum
-
     ReadOnly Property ProviderID() As Guid
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderIcon() As Bitmap
@@ -111,7 +68,6 @@ Public Interface IRadioProvider
     Event FindNewException(ByVal findExp As Exception, ByVal unhandled As Boolean)
     Event FoundNew(ByVal progExtID As String)
     Event Progress(ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon)
-    Event DldError(ByVal type As ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
     Event Finished(ByVal fileExtension As String)
 
     Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String, ByVal attempt As Integer)

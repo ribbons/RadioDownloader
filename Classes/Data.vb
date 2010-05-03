@@ -75,7 +75,7 @@ Friend Class Data
         Dim duration As Integer
         Dim episodeDate As Date
         Dim status As DownloadStatus
-        Dim errorType As IRadioProvider.ErrorType
+        Dim errorType As ErrorType
         Dim errorDetails As String
         Dim downloadPath As String
         Dim playCount As Integer
@@ -118,7 +118,7 @@ Friend Class Data
     Public Event SubscriptionRemoved(ByVal progid As Integer)
     Public Event DownloadAdded(ByVal epid As Integer)
     Public Event DownloadUpdated(ByVal epid As Integer)
-    Public Event DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon)
+    Public Event DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon)
     Public Event DownloadRemoved(ByVal epid As Integer)
 
     Public Shared Function GetInstance() As Data
@@ -285,7 +285,7 @@ Friend Class Data
                             If pluginsInst.PluginExists(pluginId) Then
                                 curDldProgData = New DldProgData
 
-                                Dim progInfo As IRadioProvider.ProgrammeInfo
+                                Dim progInfo As ProgrammeInfo
                                 If reader.IsDBNull(reader.GetOrdinal("progname")) Then
                                     progInfo.Name = Nothing
                                 Else
@@ -304,7 +304,7 @@ Friend Class Data
                                     progInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")))
                                 End If
 
-                                Dim epiEpInfo As IRadioProvider.EpisodeInfo
+                                Dim epiEpInfo As EpisodeInfo
                                 If reader.IsDBNull(reader.GetOrdinal("epname")) Then
                                     epiEpInfo.Name = Nothing
                                 Else
@@ -387,7 +387,7 @@ Friend Class Data
                 Try
                     curDldProgData.FinalName = FileUtils.FindFreeSaveFileName(My.Settings.FileNameFormat, curDldProgData.ProgInfo.Name, curDldProgData.EpisodeInfo.Name, curDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder())
                 Catch dirNotFoundExp As DirectoryNotFoundException
-                    Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", New List(Of DldErrorDataItem))
+                    Call DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", Nothing)
                     Exit Sub
                 End Try
 
@@ -395,6 +395,8 @@ Friend Class Data
             End With
         Catch threadAbortExp As ThreadAbortException
             ' The download has been aborted, so ignore the exception
+        Catch downloadExp As DownloadException
+            Call DownloadError(downloadExp.TypeOfError, downloadExp.Message, downloadExp.ErrorExtraDetails)
         Catch unknownExp As Exception
             Dim extraDetails As New List(Of DldErrorDataItem)
             extraDetails.Add(New DldErrorDataItem("error", unknownExp.GetType.ToString + ": " + unknownExp.Message))
@@ -408,7 +410,7 @@ Friend Class Data
                 Next
             End If
 
-            Call DownloadPluginInst_DldError(IRadioProvider.ErrorType.UnknownError, unknownExp.GetType.ToString + vbCrLf + unknownExp.StackTrace, extraDetails)
+            Call DownloadError(ErrorType.UnknownError, unknownExp.GetType.ToString + Environment.NewLine + unknownExp.StackTrace, extraDetails)
         End Try
     End Sub
 
@@ -821,7 +823,7 @@ Friend Class Data
     End Sub
 
     Public Sub DownloadReportError(ByVal epid As Integer)
-        Dim errorType As IRadioProvider.ErrorType
+        Dim errorType As ErrorType
         Dim errorText As String = Nothing
         Dim extraDetailsString As String
         Dim errorExtraDetails As New Dictionary(Of String, String)
@@ -836,7 +838,7 @@ Friend Class Data
                     Throw New ArgumentException("Episode " + epid.ToString(CultureInfo.InvariantCulture) + " does not exit, or is not in the download list!", "epid")
                 End If
 
-                errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), IRadioProvider.ErrorType)
+                errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), ErrorType)
                 extraDetailsString = reader.GetString(reader.GetOrdinal("errordetails"))
 
                 errorExtraDetails.Add("episode:name", reader.GetString(reader.GetOrdinal("epname")))
@@ -888,13 +890,19 @@ Friend Class Data
         report.SendReport(My.Settings.ErrorReportURL)
     End Sub
 
-    Private Sub DownloadPluginInst_DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Handles DownloadPluginInst.DldError
+    Private Sub DownloadError(ByVal errorType As ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
         Select Case errorType
-            Case IRadioProvider.ErrorType.RemoveFromList
+            Case errorType.RemoveFromList
                 Call DownloadRemoveAsync(curDldProgData.EpId)
                 Return
-            Case IRadioProvider.ErrorType.UnknownError
-                furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
+            Case errorType.UnknownError
+                If furtherDetails Is Nothing Then
+                    furtherDetails = New List(Of DldErrorDataItem)
+                End If
+
+                If errorDetails IsNot Nothing Then
+                    furtherDetails.Add(New DldErrorDataItem("details", errorDetails))
+                End If
 
                 Dim detailsStringWriter As New StringWriter(CultureInfo.InvariantCulture)
                 Dim detailsSerializer As New XmlSerializer(GetType(List(Of DldErrorDataItem)))
@@ -953,7 +961,7 @@ Friend Class Data
         Call StartDownloadAsync()
     End Sub
 
-    Private Sub DownloadPluginInst_Progress(ByVal percent As Integer, ByVal statusText As String, ByVal icon As IRadioProvider.ProgressIcon) Handles DownloadPluginInst.Progress
+    Private Sub DownloadPluginInst_Progress(ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon) Handles DownloadPluginInst.Progress
         Static lastNum As Integer = -1
 
         ' Don't raise the progress event if the value is the same as last time, or is outside the range
@@ -1090,7 +1098,7 @@ Friend Class Data
         End If
 
         Dim pluginInstance As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
-        Dim progInfo As IRadioProvider.GetProgrammeInfoReturn
+        Dim progInfo As GetProgrammeInfoReturn
 
         Try
             progInfo = pluginInstance.GetProgrammeInfo(progExtId)
@@ -1240,7 +1248,7 @@ Friend Class Data
 
     Private Function StoreEpisodeInfo(ByVal pluginId As Guid, ByVal progid As Integer, ByVal progExtId As String, ByVal episodeExtId As String) As Integer
         Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
-        Dim episodeInfoReturn As IRadioProvider.GetEpisodeInfoReturn
+        Dim episodeInfoReturn As GetEpisodeInfoReturn
 
         episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId)
 
@@ -1497,9 +1505,9 @@ Friend Class Data
         info.status = DirectCast(reader.GetInt32(reader.GetOrdinal("status")), DownloadStatus)
 
         If info.status = DownloadStatus.Errored Then
-            info.errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), IRadioProvider.ErrorType)
+            info.errorType = CType(reader.GetInt32(reader.GetOrdinal("errortype")), ErrorType)
 
-            If info.errorType <> IRadioProvider.ErrorType.UnknownError Then
+            If info.errorType <> ErrorType.UnknownError Then
                 info.errorDetails = reader.GetString(reader.GetOrdinal("errordetails"))
             End If
         End If

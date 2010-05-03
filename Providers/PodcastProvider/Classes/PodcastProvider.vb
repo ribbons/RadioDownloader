@@ -32,8 +32,7 @@ Public Class PodcastProvider
     Public Event FindNewViewChange(ByVal objView As Object) Implements IRadioProvider.FindNewViewChange
     Public Event FindNewException(ByVal exception As Exception, ByVal unhandled As Boolean) Implements IRadioProvider.FindNewException
     Public Event FoundNew(ByVal strProgExtID As String) Implements IRadioProvider.FoundNew
-    Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As IRadioProvider.ProgressIcon) Implements IRadioProvider.Progress
-    Public Event DldError(ByVal errorType As IRadioProvider.ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem)) Implements IRadioProvider.DldError
+    Public Event Progress(ByVal intPercent As Integer, ByVal strStatusText As String, ByVal Icon As ProgressIcon) Implements IRadioProvider.Progress
     Public Event Finished(ByVal strFileExtension As String) Implements IRadioProvider.Finished
 
     Friend Const intCacheHTTPHours As Integer = 2
@@ -86,8 +85,8 @@ Public Class PodcastProvider
         Return FindNewInst.pnlFindNew
     End Function
 
-    Public Function GetProgrammeInfo(ByVal progExtID As String) As IRadioProvider.GetProgrammeInfoReturn Implements IRadioProvider.GetProgrammeInfo
-        Dim getProgInfo As New IRadioProvider.GetProgrammeInfoReturn
+    Public Function GetProgrammeInfo(ByVal progExtID As String) As GetProgrammeInfoReturn Implements IRadioProvider.GetProgrammeInfo
+        Dim getProgInfo As New GetProgrammeInfoReturn
         getProgInfo.Success = False
 
         Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
@@ -174,8 +173,8 @@ Public Class PodcastProvider
         Return strEpisodeIDs
     End Function
 
-    Function GetEpisodeInfo(ByVal progExtID As String, ByVal episodeExtID As String) As IRadioProvider.GetEpisodeInfoReturn Implements IRadioProvider.GetEpisodeInfo
-        Dim episodeInfoReturn As New IRadioProvider.GetEpisodeInfoReturn
+    Function GetEpisodeInfo(ByVal progExtID As String, ByVal episodeExtID As String) As GetEpisodeInfoReturn Implements IRadioProvider.GetEpisodeInfo
+        Dim episodeInfoReturn As New GetEpisodeInfoReturn
         episodeInfoReturn.Success = False
 
         Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
@@ -365,7 +364,7 @@ Public Class PodcastProvider
         Return episodeInfoReturn
     End Function
 
-    Public Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As IRadioProvider.ProgrammeInfo, ByVal epInfo As IRadioProvider.EpisodeInfo, ByVal finalName As String, ByVal attempt As Integer) Implements IRadioProvider.DownloadProgramme
+    Public Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String, ByVal attempt As Integer) Implements IRadioProvider.DownloadProgramme
         strProgDldUrl = epInfo.ExtInfo("EnclosureURL")
 
         Dim intFileNamePos As Integer = finalName.LastIndexOf("\", StringComparison.Ordinal)
@@ -501,14 +500,12 @@ Public Class PodcastProvider
                     Dim webExp As WebException = CType(e.Error, WebException)
 
                     If webExp.Status = WebExceptionStatus.NameResolutionFailure Then
-                        RaiseEvent DldError(IRadioProvider.ErrorType.NetworkProblem, "Unable to resolve the domain to download this episode from.  Check your internet connection, or try again later.", New List(Of DldErrorDataItem))
-                        Exit Sub
+                        Throw New DownloadException(ErrorType.NetworkProblem, "Unable to resolve the domain to download this episode from.  Check your internet connection, or try again later.")
                     ElseIf TypeOf webExp.Response Is HttpWebResponse Then
                         Dim webErrorResponse As HttpWebResponse = CType(webExp.Response, HttpWebResponse)
 
                         If webErrorResponse.StatusCode = HttpStatusCode.NotFound Then
-                            RaiseEvent DldError(IRadioProvider.ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.", New List(Of DldErrorDataItem))
-                            Exit Sub
+                            Throw New DownloadException(ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.")
                         End If
                     End If
                 End If
@@ -517,9 +514,9 @@ Public Class PodcastProvider
                 extraDetails.Add(New DldErrorDataItem("error", e.Error.GetType.ToString + ": " + e.Error.Message))
                 extraDetails.Add(New DldErrorDataItem("exceptiontostring", e.Error.ToString))
 
-                RaiseEvent DldError(IRadioProvider.ErrorType.UnknownError, e.Error.GetType.ToString + vbCrLf + e.Error.StackTrace, extraDetails)
+                Throw New DownloadException(ErrorType.UnknownError, e.Error.GetType.ToString + Environment.NewLine + e.Error.StackTrace, extraDetails)
             Else
-                RaiseEvent Progress(100, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
+                RaiseEvent Progress(100, "Downloading...", ProgressIcon.Downloading)
                 Call File.Move(strDownloadFileName, strFinalName)
                 RaiseEvent Finished(strExtension)
             End If
@@ -533,6 +530,6 @@ Public Class PodcastProvider
             intPercent = 99
         End If
 
-        RaiseEvent Progress(intPercent, "Downloading...", IRadioProvider.ProgressIcon.Downloading)
+        RaiseEvent Progress(intPercent, "Downloading...", ProgressIcon.Downloading)
     End Sub
 End Class
