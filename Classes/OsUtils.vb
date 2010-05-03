@@ -17,6 +17,7 @@ Option Explicit On
 
 Imports System.ComponentModel
 Imports System.Runtime.InteropServices
+Imports System.Text
 
 <StructLayout(LayoutKind.Sequential, Pack:=4)> _
 Friend Structure RECT
@@ -27,32 +28,36 @@ Friend Structure RECT
 End Structure
 
 Friend Class OsUtils
-    <StructLayout(LayoutKind.Sequential)> _
-    Private Structure MARGINS
-        Public cxLeftWidth As Integer
-        Public cxRightWidth As Integer
-        Public cyTopHeight As Integer
-        Public cyButtomheight As Integer
-    End Structure
+    Private Const GW_CHILD As Short = 5
+    Private Const GW_HWNDNEXT As Short = 2
+    Private Const IDANI_OPEN As Short = &H1S
+    Private Const IDANI_CLOSE As Short = &H2S
+    Private Const IDANI_CAPTION As Short = &H3S
 
-    <DllImport("dwmapi.dll", SetLastError:=True)> _
-    Private Shared Function DwmExtendFrameIntoClientArea(ByVal hWnd As IntPtr, ByRef pMarinset As MARGINS) As Integer
+    <DllImport("user32.dll", SetLastError:=True)> _
+    Private Shared Function DrawAnimatedRects(ByVal hWnd As IntPtr, ByVal idAni As Integer, ByRef lprcFrom As RECT, ByRef lprcTo As RECT) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+
+    <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Ansi, BestFitMapping:=False, ThrowOnUnmappableChar:=True)> _
+    Private Shared Function FindWindow(ByVal lpClassName As String, ByVal lpWindowName As String) As IntPtr
+    End Function
+
+    <DllImport("user32.dll", SetLastError:=True)> _
+    Private Shared Function GetWindow(ByVal hWnd As IntPtr, ByVal wCmd As Integer) As IntPtr
+    End Function
+
+    <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Auto, BestFitMapping:=False, ThrowOnUnmappableChar:=True)> _
+    Private Shared Function GetClassName(ByVal hWnd As System.IntPtr, ByVal lpClassName As StringBuilder, ByVal nMaxCount As Integer) As Integer
+    End Function
+
+    <DllImport("user32.dll", SetLastError:=True)> _
+    Private Shared Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
     Public Shared Function WinSevenOrLater() As Boolean
         Dim curOs As OperatingSystem = System.Environment.OSVersion
 
         If curOs.Platform = PlatformID.Win32NT AndAlso (((curOs.Version.Major = 6) AndAlso (curOs.Version.Minor >= 1)) OrElse (curOs.Version.Major > 6)) Then
-            Return True
-        Else
-            Return False
-        End If
-    End Function
-
-    Public Shared Function WinVistaOrLater() As Boolean
-        Dim curOs As OperatingSystem = System.Environment.OSVersion
-
-        If curOs.Platform = PlatformID.Win32NT AndAlso (((curOs.Version.Major = 6) AndAlso (curOs.Version.Minor >= 0)) OrElse (curOs.Version.Major > 6)) Then
             Return True
         Else
             Return False
@@ -69,16 +74,59 @@ Friend Class OsUtils
         End If
     End Function
 
-    Public Shared Sub ExtendFrameInfoClientArea(ByVal glassWin As Form, ByVal leftMargin As Integer, ByVal rightMargin As Integer, ByVal topMargin As Integer, ByVal bottomMargin As Integer)
-        Dim margins As MARGINS = New MARGINS
+    Public Shared Sub TrayAnimate(ByRef form As Form, ByRef down As Boolean)
+        Dim className As New StringBuilder(255)
+        Dim taskbarHwnd As IntPtr
+        Dim trayHwnd As IntPtr
 
-        margins.cxLeftWidth = leftMargin
-        margins.cxRightWidth = rightMargin
-        margins.cyTopHeight = topMargin
-        margins.cyButtomheight = bottomMargin
+        'Get taskbar handle
+        taskbarHwnd = FindWindow("Shell_traywnd", Nothing)
 
-        If OsUtils.DwmExtendFrameIntoClientArea(glassWin.Handle, margins) <> 0 Then
-            Throw New Win32Exception()
+        If taskbarHwnd = IntPtr.Zero Then
+            Throw New Win32Exception
+        End If
+
+        'Get system tray handle
+        trayHwnd = GetWindow(taskbarHwnd, GW_CHILD)
+
+        Do
+            If trayHwnd = IntPtr.Zero Then
+                Throw New Win32Exception
+            End If
+
+            If GetClassName(trayHwnd, className, className.Capacity) = 0 Then
+                Throw New Win32Exception
+            End If
+
+            If className.ToString = "TrayNotifyWnd" Then
+                Exit Do
+            End If
+
+            trayHwnd = GetWindow(trayHwnd, GW_HWNDNEXT)
+        Loop
+
+        Dim systray As RECT
+        Dim window As RECT
+
+        ' Fetch the location of the systray from its window handle
+        If GetWindowRect(trayHwnd, systray) = False Then
+            Throw New Win32Exception
+        End If
+
+        ' Fetch the location of the window from its window handle
+        If GetWindowRect(form.Handle, window) = False Then
+            Throw New Win32Exception
+        End If
+
+        ' Perform the animation
+        If down = True Then
+            If DrawAnimatedRects(form.Handle, IDANI_CLOSE Or IDANI_CAPTION, window, systray) = False Then
+                Throw New Win32Exception
+            End If
+        Else
+            If DrawAnimatedRects(form.Handle, IDANI_OPEN Or IDANI_CAPTION, systray, window) = False Then
+                Throw New Win32Exception
+            End If
         End If
     End Sub
 End Class

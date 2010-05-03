@@ -318,7 +318,7 @@ Friend Class Main
                     eventArgs.Cancel = True
                 End If
             Else
-                Call TrayAnimate(Me, True)
+                Call OsUtils.TrayAnimate(Me, True)
                 Me.Visible = False
                 eventArgs.Cancel = True
 
@@ -673,7 +673,7 @@ Friend Class Main
 
     Public Sub mnuTrayShow_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuTrayShow.Click
         If Me.Visible = False Then
-            Call TrayAnimate(Me, False)
+            Call OsUtils.TrayAnimate(Me, False)
             Me.Visible = True
         End If
 
@@ -1109,7 +1109,7 @@ Friend Class Main
                 If OsUtils.WinSevenOrLater Then
                     Me.WindowState = FormWindowState.Minimized
                 Else
-                    Call TrayAnimate(Me, True)
+                    Call OsUtils.TrayAnimate(Me, True)
                     Me.Visible = False
                 End If
             End If
