@@ -19,7 +19,7 @@ Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 
 <StructLayout(LayoutKind.Sequential, Pack:=4)> _
-Public Structure RECT
+Friend Structure RECT
     Public left As Integer
     Public top As Integer
     Public right As Integer

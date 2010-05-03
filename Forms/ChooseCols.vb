@@ -18,7 +18,7 @@ Option Explicit On
 Imports System.Collections.Generic
 Imports System.Globalization
 
-Public Class ChooseCols
+Friend Class ChooseCols
     Private columnOrder As List(Of Integer)
     Private columnNames As Dictionary(Of Integer, String)
 
