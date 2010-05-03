@@ -23,7 +23,6 @@ Friend Class DldProgData
     Private _progInfo As ProgrammeInfo
     Private _episodeInfo As EpisodeInfo
     Private _finalName As String
-    Private _attemptNumber As Integer
 
     Public Property PluginId() As Guid
         Get
@@ -85,15 +84,6 @@ Friend Class DldProgData
         End Get
         Set(ByVal finalName As String)
             Me._finalName = finalName
-        End Set
-    End Property
-
-    Public Property AttemptNumber() As Integer
-        Get
-            Return _attemptNumber
-        End Get
-        Set(ByVal attemptNumber As Integer)
-            Me._attemptNumber = attemptNumber
         End Set
     End Property
 End Class

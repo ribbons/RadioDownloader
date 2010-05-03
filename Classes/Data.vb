@@ -269,7 +269,7 @@ Friend Class Data
     Private Sub StartDownloadAsync()
         SyncLock findDownloadLock
             If downloadThread Is Nothing Then
-                Using command As New SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid, dl.errorcount from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn)
+                Using command As New SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn)
                     command.Parameters.Add(New SQLiteParameter("@statuswait", DownloadStatus.Waiting))
                     command.Parameters.Add(New SQLiteParameter("@statuserr", DownloadStatus.Errored))
 
@@ -358,9 +358,6 @@ Friend Class Data
 
                                 If reader.GetInt32(reader.GetOrdinal("status")) = DownloadStatus.Errored Then
                                     Call ResetDownloadAsync(epid, True)
-                                    curDldProgData.AttemptNumber = reader.GetInt32(reader.GetOrdinal("errorcount")) + 1
-                                Else
-                                    curDldProgData.AttemptNumber = 1
                                 End If
 
                                 downloadThread = New Thread(AddressOf DownloadProgThread)
@@ -391,7 +388,7 @@ Friend Class Data
                     Exit Sub
                 End Try
 
-                DownloadPluginInst.DownloadProgramme(.ProgExtId, .EpisodeExtId, .ProgInfo, .EpisodeInfo, .FinalName, .AttemptNumber)
+                DownloadPluginInst.DownloadProgramme(.ProgExtId, .EpisodeExtId, .ProgInfo, .EpisodeInfo, .FinalName)
             End With
         Catch threadAbortExp As ThreadAbortException
             ' The download has been aborted, so ignore the exception

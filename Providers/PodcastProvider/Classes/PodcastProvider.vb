@@ -364,7 +364,7 @@ Public Class PodcastProvider
         Return episodeInfoReturn
     End Function
 
-    Public Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String, ByVal attempt As Integer) Implements IRadioProvider.DownloadProgramme
+    Public Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String) Implements IRadioProvider.DownloadProgramme
         strProgDldUrl = epInfo.ExtInfo("EnclosureURL")
 
         Dim intFileNamePos As Integer = finalName.LastIndexOf("\", StringComparison.Ordinal)

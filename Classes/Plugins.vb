@@ -70,7 +70,7 @@ Public Interface IRadioProvider
     Event Progress(ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon)
     Event Finished(ByVal fileExtension As String)
 
-    Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String, ByVal attempt As Integer)
+    Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String)
 End Interface
 
 Friend Class Plugins
