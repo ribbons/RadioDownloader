@@ -48,7 +48,9 @@ Friend Class ExtToolBar : Inherits ToolBar
     End Structure
 
     ' API Declarations
-    Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As TBBUTTONINFO) As IntPtr
+    <DllImport("user32.dll", SetLastError:=True)> _
+    Private Shared Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As TBBUTTONINFO) As IntPtr
+    End Function
 
     ' Variables
     Private wholeDropDownButtons As New List(Of ToolBarButton)

@@ -16,6 +16,7 @@ Option Strict On
 Option Explicit On
 
 Imports System.Collections.Generic
+Imports System.ComponentModel
 Imports System.Globalization
 Imports System.Runtime.InteropServices
 
@@ -77,9 +78,17 @@ Friend Class ExtListView : Inherits ListView
     End Structure
 
     ' API Declarations
-    Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
-    Private Declare Auto Function SendMessage Lib "user32" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As HDITEM) As IntPtr
-    Private Declare Unicode Function SetWindowTheme Lib "uxtheme" (ByVal hWnd As IntPtr, ByVal pszSubAppName As String, ByVal pszSubIdList As String) As Integer
+    <DllImport("user32.dll", SetLastError:=True)> _
+    Private Shared Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
+    End Function
+
+    <DllImport("user32.dll", SetLastError:=True)> _
+    Private Shared Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByRef lParam As HDITEM) As IntPtr
+    End Function
+
+    <DllImport("uxtheme.dll", SetLastError:=True, CharSet:=CharSet.Unicode)> _
+    Private Shared Function SetWindowTheme(ByVal hWnd As IntPtr, ByVal pszSubAppName As String, ByVal pszSubIdList As String) As Integer
+    End Function
 
     ' Data structure to store information about the controls
     Private Structure EmbeddedProgress
@@ -248,7 +257,9 @@ Friend Class ExtListView : Inherits ListView
                 If OsUtils.WinXpOrLater() Then
                     ' Set the theme of the control to "explorer", to give the 
                     ' correct styling under Vista.  This has no effect under XP.
-                    SetWindowTheme(Me.Handle, "explorer", Nothing)
+                    If SetWindowTheme(Me.Handle, "explorer", Nothing) <> 0 Then
+                        Throw New Win32Exception
+                    End If
                 End If
 
                 ' Remove the focus rectangle from the control (and as a side effect, all other controls on the

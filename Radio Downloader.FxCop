@@ -99,46 +99,7 @@
    </RuleFile>
    <RuleFile Name="$(FxCopDir)\Rules\PortabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
    <RuleFile Name="$(FxCopDir)\Rules\SecurityRules.dll" Enabled="True" AllRulesEnabled="True" />
-   <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="False">
-    <Rule Name="AttributeStringLiteralsShouldParseCorrectly" Enabled="True" />
-    <Rule Name="CallBaseClassMethodsOnISerializableTypes" Enabled="True" />
-    <Rule Name="CallGCSuppressFinalizeCorrectly" Enabled="True" />
-    <Rule Name="CollectionPropertiesShouldBeReadOnly" Enabled="True" />
-    <Rule Name="DisposableFieldsShouldBeDisposed" Enabled="True" />
-    <Rule Name="DisposableTypesShouldDeclareFinalizer" Enabled="True" />
-    <Rule Name="DoNotCallOverridableMethodsInConstructors" Enabled="True" />
-    <Rule Name="DoNotDecreaseInheritedMemberVisibility" Enabled="True" />
-    <Rule Name="DoNotMarkEnumsWithFlags" Enabled="True" />
-    <Rule Name="DoNotMarkServicedComponentsWithWebMethod" Enabled="True" />
-    <Rule Name="DoNotRaiseExceptionsInExceptionClauses" Enabled="True" />
-    <Rule Name="DoNotRaiseReservedExceptionTypes" Enabled="True" />
-    <Rule Name="DoNotShipUnreleasedResourceFormats" Enabled="True" />
-    <Rule Name="FinalizersShouldBeProtected" Enabled="True" />
-    <Rule Name="FinalizersShouldCallBaseClassFinalizer" Enabled="True" />
-    <Rule Name="ImplementISerializableCorrectly" Enabled="True" />
-    <Rule Name="ImplementSerializationConstructors" Enabled="True" />
-    <Rule Name="ImplementSerializationMethodsCorrectly" Enabled="True" />
-    <Rule Name="InitializeValueTypeStaticFieldsInline" Enabled="True" />
-    <Rule Name="InstantiateArgumentExceptionsCorrectly" Enabled="True" />
-    <Rule Name="MarkAllNonSerializableFields" Enabled="True" />
-    <Rule Name="MarkISerializableTypesWithSerializable" Enabled="True" />
-    <Rule Name="MarkWindowsFormsEntryPointsWithStaThread" Enabled="True" />
-    <Rule Name="MembersShouldDifferByMoreThanReturnType" Enabled="True" />
-    <Rule Name="NonConstantFieldsShouldNotBeVisible" Enabled="True" />
-    <Rule Name="OperationsShouldNotOverflow" Enabled="True" />
-    <Rule Name="OperatorOverloadsHaveNamedAlternates" Enabled="True" />
-    <Rule Name="OperatorsShouldHaveSymmetricalOverloads" Enabled="True" />
-    <Rule Name="OverloadOperatorEqualsOnOverridingValueTypeEquals" Enabled="True" />
-    <Rule Name="OverrideEqualsOnOverloadingOperatorEquals" Enabled="True" />
-    <Rule Name="OverrideGetHashCodeOnOverridingEquals" Enabled="True" />
-    <Rule Name="PassSystemUriObjectsInsteadOfStrings" Enabled="True" />
-    <Rule Name="ProvideDeserializationMethodsForOptionalFields" Enabled="True" />
-    <Rule Name="RethrowToPreserveStackDetails" Enabled="True" />
-    <Rule Name="ReviewUnusedParameters" Enabled="True" />
-    <Rule Name="TestForNaNCorrectly" Enabled="True" />
-    <Rule Name="UseManagedEquivalentsOfWin32Api" Enabled="True" />
-    <Rule Name="UseParamsForVariableArguments" Enabled="True" />
-   </RuleFile>
+   <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="True" />
   </RuleFiles>
   <Groups />
   <Settings />
