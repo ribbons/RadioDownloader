@@ -2,6 +2,7 @@ Imports System
 Imports System.Reflection
 Imports System.Resources
 Imports System.Runtime.InteropServices
+Imports System.Security
 
 <Assembly: AssemblyTitle("Radio Downloader")> 
 <Assembly: AssemblyDescription("Utility to automatically download radio programmes made available online, using a plugin framework for provider specific implementation.")> 
@@ -15,3 +16,4 @@ Imports System.Runtime.InteropServices
 <Assembly: CLSCompliant(True)> 
 <Assembly: ComVisible(False)> 
 <Assembly: NeutralResourcesLanguageAttribute("en-GB")> 
+<Assembly: SecurityTransparentAttribute()> 

@@ -2,6 +2,7 @@ Imports System
 Imports System.Reflection
 Imports System.Resources
 Imports System.Runtime.InteropServices
+Imports System.Security
 
 <Assembly: AssemblyTitle("Podcast Plugin")> 
 <Assembly: AssemblyDescription("Plugin to support downloading podcasts within Radio Downloader.")> 
@@ -14,3 +15,4 @@ Imports System.Runtime.InteropServices
 <Assembly: CLSCompliant(True)> 
 <Assembly: ComVisible(False)> 
 <Assembly: NeutralResourcesLanguageAttribute("en-GB")> 
+<Assembly: SecurityTransparentAttribute()> 
