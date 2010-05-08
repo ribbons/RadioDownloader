@@ -186,8 +186,8 @@ Friend Class Main
         If fileExits.Exists = False Then
             Try
                 IO.File.Copy(Path.Combine(My.Application.Info.DirectoryPath, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"))
-            Catch expFileNotFound As FileNotFoundException
-                Call MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(My.Application.Info.DirectoryPath, "store.db") + "'." + vbCrLf + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical)
+            Catch fileNotFoundExp As FileNotFoundException
+                Call MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(My.Application.Info.DirectoryPath, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical)
                 Me.Close()
                 Me.Dispose()
                 Exit Sub
@@ -197,8 +197,13 @@ Friend Class Main
             ' and then make sure that the current db's structure matches it.
             Try
                 IO.File.Copy(Path.Combine(My.Application.Info.DirectoryPath, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), True)
-            Catch expFileNotFound As FileNotFoundException
-                Call MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(My.Application.Info.DirectoryPath, "store.db") + "'." + vbCrLf + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical)
+            Catch fileNotFoundExp As FileNotFoundException
+                Call MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(My.Application.Info.DirectoryPath, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical)
+                Me.Close()
+                Me.Dispose()
+                Exit Sub
+            Catch unauthorizedAccessExp As UnauthorizedAccessException
+                Call MsgBox("Access was denied when attempting to copy the Radio Downloader template database." + Environment.NewLine + Environment.NewLine + "Check that you have read access to '" + Path.Combine(My.Application.Info.DirectoryPath, "store.db") + "' and write access to '" + Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db") + "'.", MsgBoxStyle.Critical)
                 Me.Close()
                 Me.Dispose()
                 Exit Sub
