@@ -15,16 +15,17 @@
 Option Strict On
 Option Explicit On
 
-Imports RadioDld
-Imports System.IO
-Imports System.Xml
-Imports System.Net
-Imports System.Web
 Imports System.Drawing
-Imports Microsoft.Win32
 Imports System.Globalization
-Imports System.Windows.Forms
+Imports System.IO
+Imports System.Net
 Imports System.Text.RegularExpressions
+Imports System.Threading
+Imports System.Web
+Imports System.Windows.Forms
+Imports System.Xml
+
+Imports RadioDld
 
 Public Class PodcastProvider
     Implements IRadioProvider
@@ -37,12 +38,7 @@ Public Class PodcastProvider
 
     Friend Const intCacheHTTPHours As Integer = 2
 
-    Private WithEvents webDownload As WebClient
-
-    Private strDownloadFileName As String
-    Private strProgDldUrl As String
-    Private strFinalName As String
-    Private strExtension As String = ""
+    Private WithEvents doDownload As DownloadWrapper
 
     Public ReadOnly Property ProviderID() As Guid Implements IRadioProvider.ProviderID
         Get
@@ -365,23 +361,47 @@ Public Class PodcastProvider
     End Function
 
     Public Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String) Implements IRadioProvider.DownloadProgramme
-        strProgDldUrl = epInfo.ExtInfo("EnclosureURL")
+        Dim downloadUrl As Uri = New Uri(epInfo.ExtInfo("EnclosureURL"))
 
-        Dim intFileNamePos As Integer = finalName.LastIndexOf("\", StringComparison.Ordinal)
-        Dim intExtensionPos As Integer = strProgDldUrl.LastIndexOf(".", StringComparison.Ordinal)
+        Dim fileNamePos As Integer = finalName.LastIndexOf("\", StringComparison.Ordinal)
+        Dim extensionPos As Integer = downloadUrl.AbsolutePath.LastIndexOf(".", StringComparison.Ordinal)
+        Dim extension As String = "mp3"
 
-        If intExtensionPos > -1 Then
-            strExtension = strProgDldUrl.Substring(intExtensionPos + 1)
+        If extensionPos > -1 Then
+            extension = downloadUrl.AbsolutePath.Substring(extensionPos + 1)
         End If
 
-        strDownloadFileName = Path.Combine(System.IO.Path.GetTempPath, Path.Combine("RadioDownloader", finalName.Substring(intFileNamePos + 1) + "." + strExtension))
-        Me.strFinalName = finalName + "." + strExtension
+        Dim downloadFileName As String = Path.Combine(System.IO.Path.GetTempPath, Path.Combine("RadioDownloader", finalName.Substring(fileNamePos + 1) + "." + extension))
+        finalName += "." + extension
 
-        AddHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange
+        dodownload = New DownloadWrapper(downloadUrl, downloadFileName)
+        doDownload.Download()
 
-        webDownload = New WebClient
-        webDownload.Headers.Add("user-agent", My.Application.Info.AssemblyName + " " + My.Application.Info.Version.ToString)
-        webDownload.DownloadFileAsync(New Uri(strProgDldUrl), strDownloadFileName)
+        While (Not doDownload.Complete) And doDownload.Error Is Nothing
+            Thread.Sleep(500)
+        End While
+
+        If doDownload.Error IsNot Nothing Then
+            If TypeOf doDownload.Error Is WebException Then
+                Dim webExp As WebException = CType(doDownload.Error, WebException)
+
+                If webExp.Status = WebExceptionStatus.NameResolutionFailure Then
+                    Throw New DownloadException(ErrorType.NetworkProblem, "Unable to resolve the domain to download this episode from.  Check your internet connection, or try again later.")
+                ElseIf TypeOf webExp.Response Is HttpWebResponse Then
+                    Dim webErrorResponse As HttpWebResponse = CType(webExp.Response, HttpWebResponse)
+
+                    If webErrorResponse.StatusCode = HttpStatusCode.NotFound Then
+                        Throw New DownloadException(ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.")
+                    End If
+                End If
+            End If
+
+            Throw doDownload.Error
+        End If
+
+        RaiseEvent Progress(100, "Downloading...", ProgressIcon.Downloading)
+        Call File.Move(downloadFileName, finalName)
+        RaiseEvent Finished(extension)
     End Sub
 
     Friend Sub RaiseFindNewException(ByVal expException As Exception)
@@ -477,53 +497,7 @@ Public Class PodcastProvider
         Return nsManager
     End Function
 
-    Private Sub PowerModeChange(ByVal sender As Object, ByVal e As PowerModeChangedEventArgs)
-        If e.Mode = PowerModes.Resume Then
-            ' Restart the download, as it is quite likely to have hung during the suspend / hibernate
-            If webDownload.IsBusy Then
-                webDownload.CancelAsync()
-
-                ' Pause for 30 seconds to be give the pc a chance to settle down after the suspend. 
-                Threading.Thread.Sleep(30000)
-
-                webDownload.DownloadFileAsync(New Uri(strProgDldUrl), strDownloadFileName)
-            End If
-        End If
-    End Sub
-
-    Private Sub webDownload_DownloadFileCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.AsyncCompletedEventArgs) Handles webDownload.DownloadFileCompleted
-        If e.Cancelled = False Then
-            RemoveHandler SystemEvents.PowerModeChanged, AddressOf PowerModeChange
-
-            If e.Error IsNot Nothing Then
-                If TypeOf e.Error Is WebException Then
-                    Dim webExp As WebException = CType(e.Error, WebException)
-
-                    If webExp.Status = WebExceptionStatus.NameResolutionFailure Then
-                        Throw New DownloadException(ErrorType.NetworkProblem, "Unable to resolve the domain to download this episode from.  Check your internet connection, or try again later.")
-                    ElseIf TypeOf webExp.Response Is HttpWebResponse Then
-                        Dim webErrorResponse As HttpWebResponse = CType(webExp.Response, HttpWebResponse)
-
-                        If webErrorResponse.StatusCode = HttpStatusCode.NotFound Then
-                            Throw New DownloadException(ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.")
-                        End If
-                    End If
-                End If
-
-                Dim extraDetails As New List(Of DldErrorDataItem)
-                extraDetails.Add(New DldErrorDataItem("error", e.Error.GetType.ToString + ": " + e.Error.Message))
-                extraDetails.Add(New DldErrorDataItem("exceptiontostring", e.Error.ToString))
-
-                Throw New DownloadException(ErrorType.UnknownError, e.Error.GetType.ToString + Environment.NewLine + e.Error.StackTrace, extraDetails)
-            Else
-                RaiseEvent Progress(100, "Downloading...", ProgressIcon.Downloading)
-                Call File.Move(strDownloadFileName, strFinalName)
-                RaiseEvent Finished(strExtension)
-            End If
-        End If
-    End Sub
-
-    Private Sub webDownload_DownloadProgressChanged(ByVal sender As Object, ByVal e As System.Net.DownloadProgressChangedEventArgs) Handles webDownload.DownloadProgressChanged
+    Private Sub doDownload_DownloadProgress(ByVal sender As Object, ByVal e As System.Net.DownloadProgressChangedEventArgs) Handles doDownload.DownloadProgress
         Dim intPercent As Integer = e.ProgressPercentage
 
         If intPercent > 99 Then
