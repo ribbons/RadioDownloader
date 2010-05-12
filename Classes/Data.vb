@@ -943,6 +943,21 @@ Friend Class Data
 
         RaiseEvent DownloadUpdated(curDldProgData.EpId)
 
+        ' If the episode's programme is a subscription, clear the sort cache and raise an updated event
+        Using command As New SQLiteCommand("select subscriptions.progid from episodes, subscriptions where epid=@epid and subscriptions.progid = episodes.progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@epid", curDldProgData.EpId))
+
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                If reader.Read() Then
+                    SyncLock subscriptionSortCacheLock
+                        subscriptionSortCache = Nothing
+                    End SyncLock
+
+                    RaiseEvent SubscriptionUpdated(reader.GetInt32(reader.GetOrdinal("progid")))
+                End If
+            End Using
+        End Using
+
         If My.Settings.RunAfterCommand <> "" Then
             Try
                 ' Environ("comspec") will give the path to cmd.exe or command.com
