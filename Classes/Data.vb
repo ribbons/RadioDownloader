@@ -761,31 +761,20 @@ Friend Class Data
     End Sub
 
     Private Sub DownloadRemoveAsync(ByVal epidObj As Object)
-        DownloadRemoveAsync(CInt(epidObj))
+        DownloadRemoveAsync(CInt(epidObj), False)
     End Sub
 
-    Private Sub DownloadRemoveAsync(ByVal epid As Integer)
-        If curDldProgData IsNot Nothing Then
-            If curDldProgData.EpId = epid Then
-                ' The program is currently being downloaded
-
-                If downloadThread IsNot Nothing Then
-                    downloadThread.Abort()
-                    downloadThread = Nothing
-                End If
-
-                StartDownload()
-            End If
-        End If
-
+    Private Sub DownloadRemoveAsync(ByVal epid As Integer, ByVal auto As Boolean)
         Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
             Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, trans)
                 command.Parameters.Add(New SQLiteParameter("@epid", epid))
                 command.ExecuteNonQuery()
             End Using
 
-            ' Unet the auto download flag, so if the user is subscribed it doesn't just download again
-            EpisodeSetAutoDownloadAsync(epid, False)
+            If auto = False Then
+                ' Unet the auto download flag, so if the user is subscribed it doesn't just download again
+                EpisodeSetAutoDownloadAsync(epid, False)
+            End If
 
             trans.Commit()
         End Using
@@ -796,6 +785,23 @@ Friend Class Data
         End SyncLock
 
         RaiseEvent DownloadRemoved(epid)
+
+        If curDldProgData IsNot Nothing Then
+            If curDldProgData.EpId = epid Then
+                ' This episode is currently being downloaded
+
+                If downloadThread IsNot Nothing Then
+                    If auto = False Then
+                        ' This is called by the download thread if it is an automatic removal
+                        downloadThread.Abort()
+                    End If
+
+                    downloadThread = Nothing
+                End If
+            End If
+
+            StartDownload()
+        End If
     End Sub
 
     Public Sub DownloadBumpPlayCount(ByVal epid As Integer)
@@ -890,7 +896,7 @@ Friend Class Data
     Private Sub DownloadError(ByVal errorType As ErrorType, ByVal errorDetails As String, ByVal furtherDetails As List(Of DldErrorDataItem))
         Select Case errorType
             Case errorType.RemoveFromList
-                Call DownloadRemoveAsync(curDldProgData.EpId)
+                Call DownloadRemoveAsync(curDldProgData.EpId, True)
                 Return
             Case errorType.UnknownError
                 If furtherDetails Is Nothing Then
