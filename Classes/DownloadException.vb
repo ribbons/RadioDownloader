@@ -60,6 +60,7 @@ Public Enum ErrorType
     RemoveFromList = 4
     NotAvailableInLocation = 5
     NetworkProblem = 6
+    RemoteProblem = 7
 End Enum
 
 <Serializable()> _

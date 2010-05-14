@@ -547,6 +547,8 @@ Friend Class Main
                         errorName = "Not available in your location"
                     Case ErrorType.NetworkProblem
                         errorName = "Network problem"
+                    Case ErrorType.RemoteProblem
+                        errorName = "Remote problem"
                     Case ErrorType.UnknownError
                         errorName = "Unknown error"
                         errorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
