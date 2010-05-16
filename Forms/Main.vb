@@ -310,7 +310,6 @@ Friend Class Main
             tbrView.BackColor = Color.Black
         End If
 
-        tmrCheckSub.Enabled = True
         progData.StartDownload()
         tmrCheckForUpdates.Enabled = True
     End Sub
@@ -708,10 +707,6 @@ Friend Class Main
 
     Private Sub nicTrayIcon_MouseDoubleClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles nicTrayIcon.MouseDoubleClick
         Call mnuTrayShow_Click(sender, e)
-    End Sub
-
-    Private Sub tmrCheckSub_Tick(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles tmrCheckSub.Tick
-        Call progData.CheckSubscriptions()
     End Sub
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click

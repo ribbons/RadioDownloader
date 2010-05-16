@@ -16,14 +16,12 @@
 	End Sub
 	'Required by the Windows Form Designer
 	Private components As System.ComponentModel.IContainer
-    Public WithEvents tmrCheckSub As System.Windows.Forms.Timer
     'NOTE: The following procedure is required by the Windows Form Designer
     'It can be modified using the Windows Form Designer.
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
-        Me.tmrCheckSub = New System.Windows.Forms.Timer(Me.components)
         Me.tbrView = New System.Windows.Forms.ToolStrip
         Me.tbtBack = New System.Windows.Forms.ToolStripButton
         Me.tbtForward = New System.Windows.Forms.ToolStripButton
@@ -90,10 +88,6 @@
         Me.tblToolbars.SuspendLayout()
         CType(Me.picSideBarBorder, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
-        '
-        'tmrCheckSub
-        '
-        Me.tmrCheckSub.Interval = 600000
         '
         'tbrView
         '
