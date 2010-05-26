@@ -306,8 +306,8 @@ Friend Class Main
         End If
 
         If OsUtils.WinVistaOrLater Then
-            OsUtils.ExtendFrameInfoClientArea(Me, 0, 0, tbrView.Height - 2, 0)
-            tbrView.BackColor = Color.Black
+            OsUtils.ExtendFrameInfoClientArea(Me, 0, 0, tbrView.Height, 0)
+            tbrView.Renderer = New TabBarRenderer
         End If
 
         progData.StartDownload()
