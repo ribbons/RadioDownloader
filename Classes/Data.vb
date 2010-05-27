@@ -789,7 +789,9 @@ Friend Class Data
 
         SyncLock downloadSortCacheLock
             ' No need to clear the sort cache, just remove this episodes entry
-            downloadSortCache.Remove(epid)
+            If downloadSortCache IsNot Nothing Then
+                downloadSortCache.Remove(epid)
+            End If
         End SyncLock
 
         RaiseEvent DownloadRemoved(epid)
@@ -1012,7 +1014,7 @@ Friend Class Data
             ' Remove programmes for which the associated audio file no longer exists
             If Exists(reader.GetString(filepathOrd)) = False Then
                 ' Take the download out of the list and set the auto download flag to false
-                DownloadRemoveAsync(reader.GetInt32(epidOrd))
+                DownloadRemoveAsync(reader.GetInt32(epidOrd), False)
             End If
         Loop
 
