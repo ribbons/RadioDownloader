@@ -15,10 +15,97 @@
 Option Strict On
 Option Explicit On
 
+Imports System.ComponentModel
 Imports System.Drawing.Drawing2D
+Imports System.Windows.Forms.VisualStyles
+Imports System.Runtime.InteropServices
 
 Friend Class TabBarRenderer
     Inherits ToolStripSystemRenderer
+
+    <DllImport("gdi32.dll", SetLastError:=True)> _
+    Public Shared Function CreateCompatibleDC(ByVal hdc As IntPtr) As IntPtr
+    End Function
+
+    <DllImport("gdi32.dll", SetLastError:=True)> _
+    Private Shared Function SelectObject(ByVal hdc As IntPtr, ByVal hgdiobj As IntPtr) As IntPtr
+    End Function
+
+    <DllImport("gdi32.dll", SetLastError:=True)> _
+    Private Shared Function CreateDIBSection(ByVal hdc As IntPtr, <[In]()> ByRef lpbmi As BITMAPINFO, ByVal usage As UInteger, ByRef ppvBits As IntPtr, ByVal hSection As IntPtr, ByVal offset As UInteger) As IntPtr
+    End Function
+
+    <DllImport("gdi32.dll", SetLastError:=True)> _
+    Private Shared Function DeleteObject(ByVal ho As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+
+    <DllImport("gdi32.dll", SetLastError:=True)> _
+    Private Shared Function DeleteDC(ByVal hdc As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+
+    <DllImport("UxTheme.dll", SetLastError:=True)> _
+    Private Shared Function DrawThemeTextEx(ByVal hTheme As IntPtr, ByVal hdc As IntPtr, ByVal iPartId As Integer, ByVal iStateId As Integer, <MarshalAs(UnmanagedType.LPWStr)> ByVal pszText As String, ByVal iCharCount As Integer, ByVal dwFlags As UInteger, ByRef pRect As RECT, <[In]()> ByRef pOptions As DTTOPTS) As Integer
+    End Function
+
+    <DllImport("msimg32.dll", SetLastError:=True)> _
+    Private Shared Function AlphaBlend(ByVal hdcDest As IntPtr, ByVal xoriginDest As Integer, ByVal yoriginDest As Integer, ByVal wDest As Integer, ByVal hDest As Integer, ByVal hdcSrc As IntPtr, ByVal xoriginSrc As Integer, ByVal yoriginSrc As Integer, ByVal wSrc As Integer, ByVal hSrc As Integer, ByVal ftn As BLENDFUNCTION) As <MarshalAs(UnmanagedType.Bool)> Boolean
+    End Function
+
+    <StructLayout(LayoutKind.Sequential)> _
+    Private Structure BLENDFUNCTION
+        Public BlendOp As Byte
+        Public BlendFlags As Byte
+        Public SourceConstantAlpha As Byte
+        Public AlphaFormat As Byte
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential)> _
+    Private Structure BITMAPINFO
+        Public biSize As UInteger
+        Public biWidth As Integer
+        Public biHeight As Integer
+        Public biPlanes As UShort
+        Public biBitCount As UShort
+        Public biCompression As UInteger
+        Public biSizeImage As UInteger
+        Public biXPelsPerMeter As Integer
+        Public biYPelsPerMeter As Integer
+        Public biClrUsed As UInteger
+        Public biClrImportant As UInteger
+        Public rgbBlue As Byte
+        Public rgbGreen As Byte
+        Public rgbRed As Byte
+        Public rgbReserved As Byte
+    End Structure
+
+    <StructLayout(LayoutKind.Sequential)> _
+    Private Structure DTTOPTS
+        Public dwSize As UInteger
+        Public dwFlags As UInteger
+        Public crText As UInteger
+        Public crBorder As UInteger
+        Public crShadow As UInteger
+        Public iTextShadowType As Integer
+        Public ptShadowOffset As Point
+        Public iBorderSize As Integer
+        Public iFontPropId As Integer
+        Public iColorPropId As Integer
+        Public iStateId As Integer
+        <MarshalAs(UnmanagedType.Bool)> _
+        Public fApplyOverlay As Boolean
+        Public iGlowSize As Integer
+        Public pfnDrawTextCallback As Integer
+        Public lParam As Integer
+    End Structure
+
+    Private Const BI_RGB As Integer = 0
+
+    Private Const DTT_COMPOSITED As Integer = 8192
+    Private Const DTT_GLOWSIZE As Integer = 2048
+    Private Const DTT_TEXTCOLOR As Integer = 1
+
+    Private Const AC_SRC_OVER As Integer = 0
+    Private Const AC_SRC_ALPHA As Integer = 1
 
     Private Const tabSeparation As Integer = 3
 
@@ -65,12 +152,97 @@ Friend Class TabBarRenderer
     End Sub
 
     Protected Overrides Sub OnRenderItemText(ByVal e As System.Windows.Forms.ToolStripItemTextRenderEventArgs)
-        ' Temporary workaround for transparent text
-        Using path As New GraphicsPath()
-            path.AddString(e.Text.Replace("&", ""), e.TextFont.FontFamily, e.TextFont.Style, e.TextFont.Size + 2, e.TextRectangle.Location, New StringFormat())
-            e.Graphics.SmoothingMode = SmoothingMode.HighQuality
-            e.Graphics.FillPath(Brushes.Black, path)
-        End Using
+        ' Drawing text on glass is a bit of a pain - text generated with GDI (e.g. standard
+        ' controls) ends up being transparent as GDI doesn't understand alpha transparency.
+        ' GDI+ is fine drawing text on glass but it doesn't use ClearType, so the text ends
+        ' up looking out of place, ugly or both.  The proper way is using DrawThemeTextEx,
+        ' which works fine, but requires a top-down DIB to draw to, rather than the bottom
+        ' up ones that GDI normally uses.  Hence; create top-down DIB, draw text to it and
+        ' then AlphaBlend it in to the graphics object that we are rendering to.
+
+        ' Get the rendering HDC, and create a compatible one for drawing the text to
+        Dim renderHdc As IntPtr = e.Graphics.GetHdc()
+        Dim memoryHdc As IntPtr = CreateCompatibleDC(renderHdc)
+
+        If memoryHdc = IntPtr.Zero Then ' NULL Pointer
+            Throw New Win32Exception
+        End If
+
+        Dim info As BITMAPINFO
+        info.biSize = CUInt(Marshal.SizeOf(GetType(BITMAPINFO)))
+        info.biWidth = e.TextRectangle.Width
+        info.biHeight = -e.TextRectangle.Height ' Negative = top-down
+        info.biPlanes = 1
+        info.biBitCount = 32
+        info.biCompression = BI_RGB
+
+        ' Create the top-down DIB
+        Dim dib As IntPtr = CreateDIBSection(renderHdc, info, 0, IntPtr.Zero, IntPtr.Zero, 0)
+
+        If dib = IntPtr.Zero Then ' NULL Pointer
+            Throw New Win32Exception
+        End If
+
+        ' Select the created DIB into our memory DC for use
+        If SelectObject(memoryHdc, dib) = IntPtr.Zero Then ' NULL Pointer
+            Throw New Win32Exception
+        End If
+
+        ' Create a font we can use with GetThemeTextEx
+        Dim hFont As IntPtr = e.TextFont.ToHfont()
+
+        ' And select it into the DC as well
+        If SelectObject(memoryHdc, hFont) = IntPtr.Zero Then ' NULL Pointer
+            Throw New Win32Exception
+        End If
+
+        ' Fetch a VisualStyleRenderer suitable for toolbar text
+        Dim renderer As New VisualStyleRenderer(VisualStyleElement.ToolBar.Button.Normal)
+
+        ' Set up a RECT for the area to draw the text in
+        Dim textRect As RECT
+        textRect.left = 0
+        textRect.top = 0
+        textRect.right = e.TextRectangle.Width
+        textRect.bottom = e.TextRectangle.Height
+
+        ' Options for GetThemeTextEx
+        Dim opts As DTTOPTS
+        opts.dwSize = CUInt(Marshal.SizeOf(opts))
+        opts.dwFlags = DTT_COMPOSITED Or DTT_TEXTCOLOR ' Draw alpha blended text of the colour specified
+        opts.crText = CUInt(ColorTranslator.ToWin32(e.TextColor))
+
+        ' Paint the text
+        If DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, CUInt(e.TextFormat), textRect, opts) <> 0 Then
+            Throw New Win32Exception
+        End If
+
+        ' Set up the AlphaBlend copy
+        Dim blendFunc As BLENDFUNCTION
+        blendFunc.BlendOp = AC_SRC_OVER
+        blendFunc.SourceConstantAlpha = 255 ' Per-pixel alpha only
+        blendFunc.AlphaFormat = AC_SRC_ALPHA
+
+        ' Blend the painted text into the render DC
+        If AlphaBlend(renderHdc, e.TextRectangle.Left, e.TextRectangle.Top, e.TextRectangle.Width, e.TextRectangle.Height, memoryHdc, 0, 0, e.TextRectangle.Width, e.TextRectangle.Height, blendFunc) = False Then
+            Throw New Win32Exception
+        End If
+
+        ' Clean up the GDI objects
+
+        If DeleteObject(hFont) = False Then
+            Throw New Win32Exception
+        End If
+
+        If DeleteObject(dib) = False Then
+            Throw New Win32Exception
+        End If
+
+        If DeleteDC(memoryHdc) = False Then
+            Throw New Win32Exception
+        End If
+
+        e.Graphics.ReleaseHdc()
     End Sub
 
     Protected Overrides Sub OnRenderSeparator(ByVal e As System.Windows.Forms.ToolStripSeparatorRenderEventArgs)
