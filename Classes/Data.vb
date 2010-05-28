@@ -595,43 +595,48 @@ Friend Class Data
                     episodeExtIds = GetAvailableEpisodes(providerId, progExtId)
                 Catch unhandled As Exception
                     ' Catch any unhandled provider exceptions
-                    Exit Sub
+                    Continue For
                 End Try
 
                 If episodeExtIds IsNot Nothing Then
                     For Each episodeExtId As String In episodeExtIds
                         extidParam.Value = episodeExtId
 
+                        Dim needEpInfo As Boolean = True
                         Dim epid As Integer
-                        Dim autoDownload As Boolean = True
 
                         Using findReader As SQLiteDataReader = findCmd.ExecuteReader
                             If findReader.Read Then
+                                needEpInfo = False
                                 epid = findReader.GetInt32(findReader.GetOrdinal("epid"))
-                                autoDownload = findReader.GetInt32(findReader.GetOrdinal("autodownload")) = 1
-                            Else
-                                Try
-                                    epid = StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId)
-                                Catch
-                                    ' Catch any unhandled provider exceptions
-                                    Continue For
-                                End Try
 
-                                If epid < 0 Then
+                                If findReader.GetInt32(findReader.GetOrdinal("autodownload")) <> 1 Then
+                                    ' Don't download the episode automatically, skip to the next one
                                     Continue For
                                 End If
                             End If
                         End Using
 
-                        If autoDownload Then
-                            epidParam.Value = epid
+                        If needEpInfo Then
+                            Try
+                                epid = StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId)
+                            Catch
+                                ' Catch any unhandled provider exceptions
+                                Continue For
+                            End Try
 
-                            Using checkRdr As SQLiteDataReader = checkCmd.ExecuteReader
-                                If checkRdr.Read = False Then
-                                    Call AddDownloadAsync(epid)
-                                End If
-                            End Using
+                            If epid < 0 Then
+                                Continue For
+                            End If
                         End If
+
+                        epidParam.Value = epid
+
+                        Using checkRdr As SQLiteDataReader = checkCmd.ExecuteReader
+                            If checkRdr.Read = False Then
+                                Call AddDownloadAsync(epid)
+                            End If
+                        End Using
                     Next
                 End If
             Next
@@ -1457,27 +1462,31 @@ Friend Class Data
                     progidParam.Value = progid
                     extidParam.Value = episodeExtId
 
+                    Dim needEpInfo As Boolean = True
+                    Dim epid As Integer
+
                     Using reader As SQLiteDataReader = findCmd.ExecuteReader
-                        Dim epid As Integer
-
                         If reader.Read Then
+                            needEpInfo = False
                             epid = reader.GetInt32(reader.GetOrdinal("epid"))
-                        Else
-                            epid = StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId)
+                        End If
+                    End Using
 
-                            If epid < 0 Then
-                                Continue For
-                            End If
+                    If needEpInfo Then
+                        epid = StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId)
+
+                        If epid < 0 Then
+                            Continue For
+                        End If
+                    End If
+
+                    SyncLock episodeListThreadLock
+                        If Thread.CurrentThread IsNot episodeListThread Then
+                            Exit Sub
                         End If
 
-                        SyncLock episodeListThreadLock
-                            If Thread.CurrentThread IsNot episodeListThread Then
-                                Exit Sub
-                            End If
-
-                            RaiseEvent EpisodeAdded(epid)
-                        End SyncLock
-                    End Using
+                        RaiseEvent EpisodeAdded(epid)
+                    End SyncLock
                 Next
             End Using
         End If
