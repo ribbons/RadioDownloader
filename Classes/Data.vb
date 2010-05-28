@@ -422,24 +422,33 @@ Friend Class Data
     End Sub
 
     Private Sub UpdateProgInfoIfRequiredAsync(ByVal progid As Integer)
+        Dim providerId As Guid = Nothing
+        Dim updateExtid As String = Nothing
+
+        ' Test to see if an update is required, and then free up the database
         Using command As New SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
             Using reader As SQLiteDataReader = command.ExecuteReader
                 If reader.Read Then
-                    Dim providerId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
+                    providerId = New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
 
                     If pluginsInst.PluginExists(providerId) Then
                         Dim pluginInstance As IRadioProvider
                         pluginInstance = pluginsInst.GetPluginInstance(providerId)
 
                         If reader.GetDateTime(reader.GetOrdinal("lastupdate")).AddDays(pluginInstance.ProgInfoUpdateFreqDays) < Now Then
-                            Call StoreProgrammeInfo(providerId, reader.GetString(reader.GetOrdinal("extid")), Nothing)
+                            updateExtid = reader.GetString(reader.GetOrdinal("extid"))
                         End If
                     End If
                 End If
             End Using
         End Using
+
+        ' Now perform the update if required
+        If updateExtid IsNot Nothing Then
+            Call StoreProgrammeInfo(providerId, updateExtid, Nothing)
+        End If
     End Sub
 
     Public Function FetchProgrammeImage(ByVal progid As Integer) As Bitmap
