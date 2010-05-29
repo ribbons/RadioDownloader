@@ -88,6 +88,8 @@ Friend Class Data
     Private Shared dataInstanceLock As New Object
 
     Private insertRowIdLock As New Object
+    Private addSubscriptionLock As New Object
+    Private addDownloadLock As New Object
 
     Private pluginsInst As Plugins
 
@@ -670,10 +672,24 @@ Friend Class Data
     End Sub
 
     Private Sub AddDownloadAsync(ByVal epid As Integer)
-        Using command As New SQLiteCommand("insert into downloads (epid) values (@epid)", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@epid", epid))
-            Call command.ExecuteNonQuery()
-        End Using
+        SyncLock addDownloadLock
+            ' Check again that the download doesn't exist, as it may have been
+            ' added while this call was waiting in the thread pool
+            Using command As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@epid", epid))
+
+                Using reader As SQLiteDataReader = command.ExecuteReader
+                    If reader.Read Then
+                        Return
+                    End If
+                End Using
+            End Using
+
+            Using command As New SQLiteCommand("insert into downloads (epid) values (@epid)", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                Call command.ExecuteNonQuery()
+            End Using
+        End SyncLock
 
         RaiseEvent DownloadAdded(epid)
 
@@ -701,10 +717,24 @@ Friend Class Data
     End Sub
 
     Private Sub AddSubscriptionAsync(ByVal progid As Integer)
-        Using command As New SQLiteCommand("insert into subscriptions (progid) values (@progid)", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@progid", progid))
-            Call command.ExecuteNonQuery()
-        End Using
+        SyncLock addSubscriptionLock
+            ' Check again that the subscription doesn't exist, as it may have been
+            ' added while this call was waiting in the thread pool
+            Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+                Using reader As SQLiteDataReader = command.ExecuteReader
+                    If reader.Read Then
+                        Return
+                    End If
+                End Using
+            End Using
+
+            Using command As New SQLiteCommand("insert into subscriptions (progid) values (@progid)", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@progid", progid))
+                Call command.ExecuteNonQuery()
+            End Using
+        End SyncLock
 
         RaiseEvent ProgrammeUpdated(progid)
         RaiseEvent SubscriptionAdded(progid)
