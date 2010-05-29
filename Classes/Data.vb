@@ -87,6 +87,8 @@ Friend Class Data
     Private Shared dataInstance As Data
     Private Shared dataInstanceLock As New Object
 
+    Private insertRowIdLock As New Object
+
     Private pluginsInst As Plugins
 
     Private episodeListThread As Thread
@@ -1153,29 +1155,37 @@ Friend Class Data
             Return False
         End If
 
-        Dim progid As Integer = ExtIDToProgID(pluginId, progExtId)
+        Dim progid As Integer
 
-        If progid = Nothing Then
-            Using command As New SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn)
-                command.Parameters.Add(New SQLiteParameter("@pluginid", pluginId.ToString))
-                command.Parameters.Add(New SQLiteParameter("@extid", progExtId))
-                command.ExecuteNonQuery()
+        SyncLock insertRowIdLock
+            progid = ExtIDToProgID(pluginId, progExtId)
+
+            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+                If progid = Nothing Then
+                    Using command As New SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn)
+                        command.Parameters.Add(New SQLiteParameter("@pluginid", pluginId.ToString))
+                        command.Parameters.Add(New SQLiteParameter("@extid", progExtId))
+                        command.ExecuteNonQuery()
+                    End Using
+
+                    Using command As New SQLiteCommand("select last_insert_rowid()", FetchDbConn)
+                        progid = CInt(command.ExecuteScalar)
+                    End Using
+                End If
+
+                Using command As New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn)
+                    command.Parameters.Add(New SQLiteParameter("@name", progInfo.ProgrammeInfo.Name))
+                    command.Parameters.Add(New SQLiteParameter("@description", progInfo.ProgrammeInfo.Description))
+                    command.Parameters.Add(New SQLiteParameter("@image", StoreImage(progInfo.ProgrammeInfo.Image)))
+                    command.Parameters.Add(New SQLiteParameter("@singleepisode", progInfo.ProgrammeInfo.SingleEpisode))
+                    command.Parameters.Add(New SQLiteParameter("@lastupdate", Now))
+                    command.Parameters.Add(New SQLiteParameter("@progid", progid))
+                    command.ExecuteNonQuery()
+                End Using
+
+                trans.Commit()
             End Using
-
-            Using command As New SQLiteCommand("select last_insert_rowid()", FetchDbConn)
-                progid = CInt(command.ExecuteScalar)
-            End Using
-        End If
-
-        Using command As New SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@name", progInfo.ProgrammeInfo.Name))
-            command.Parameters.Add(New SQLiteParameter("@description", progInfo.ProgrammeInfo.Description))
-            command.Parameters.Add(New SQLiteParameter("@image", StoreImage(progInfo.ProgrammeInfo.Image)))
-            command.Parameters.Add(New SQLiteParameter("@singleepisode", progInfo.ProgrammeInfo.SingleEpisode))
-            command.Parameters.Add(New SQLiteParameter("@lastupdate", Now))
-            command.Parameters.Add(New SQLiteParameter("@progid", progid))
-            command.ExecuteNonQuery()
-        End Using
+        End SyncLock
 
         ' If the programme is in the list of subscriptions, clear the sort cache and raise an updated event
         Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
@@ -1207,25 +1217,26 @@ Friend Class Data
         memstream.Position = 0
         memstream.Read(imageAsBytes, 0, CInt(memstream.Length))
 
-        Using command As New SQLiteCommand("select imgid from images where image=@image", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@image", imageAsBytes))
+        SyncLock insertRowIdLock
+            Using command As New SQLiteCommand("select imgid from images where image=@image", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@image", imageAsBytes))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
-                If reader.Read() Then
-                    Return reader.GetInt32(reader.GetOrdinal("imgid"))
-                End If
+                Using reader As SQLiteDataReader = command.ExecuteReader
+                    If reader.Read() Then
+                        Return reader.GetInt32(reader.GetOrdinal("imgid"))
+                    End If
+                End Using
             End Using
-        End Using
 
+            Using command As New SQLiteCommand("insert into images (image) values (@image)", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@image", imageAsBytes))
+                command.ExecuteNonQuery()
+            End Using
 
-        Using command As New SQLiteCommand("insert into images (image) values (@image)", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@image", imageAsBytes))
-            command.ExecuteNonQuery()
-        End Using
-
-        Using command As New SQLiteCommand("select last_insert_rowid()", FetchDbConn)
-            Return CInt(command.ExecuteScalar)
-        End Using
+            Using command As New SQLiteCommand("select last_insert_rowid()", FetchDbConn)
+                Return CInt(command.ExecuteScalar)
+            End Using
+        End SyncLock
     End Function
 
     Private Function RetrieveImage(ByVal imgid As Integer) As Bitmap
@@ -1306,40 +1317,42 @@ Friend Class Data
             Throw New InvalidDataException("Episode date cannot be nothing or an empty string")
         End If
 
-        Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
-            Using addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn, trans)
-                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@progid", progid))
-                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@extid", episodeExtId))
-                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
-                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description))
-                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs))
-                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date))
-                addEpisodeCmd.Parameters.Add(New SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)))
-                addEpisodeCmd.ExecuteNonQuery()
-            End Using
+        SyncLock insertRowIdLock
+            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+                Dim epid As Integer
 
-            Dim epid As Integer
-
-            Using getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn, trans)
-                epid = CInt(getRowIDCmd.ExecuteScalar)
-            End Using
-
-            If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
-                Using addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn, trans)
-                    For Each extItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
-                        With addExtInfoCmd
-                            .Parameters.Add(New SQLiteParameter("@epid", epid))
-                            .Parameters.Add(New SQLiteParameter("@name", extItem.Key))
-                            .Parameters.Add(New SQLiteParameter("@value", extItem.Value))
-                            .ExecuteNonQuery()
-                        End With
-                    Next
+                Using addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn, trans)
+                    addEpisodeCmd.Parameters.Add(New SQLiteParameter("@progid", progid))
+                    addEpisodeCmd.Parameters.Add(New SQLiteParameter("@extid", episodeExtId))
+                    addEpisodeCmd.Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
+                    addEpisodeCmd.Parameters.Add(New SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description))
+                    addEpisodeCmd.Parameters.Add(New SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs))
+                    addEpisodeCmd.Parameters.Add(New SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date))
+                    addEpisodeCmd.Parameters.Add(New SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)))
+                    addEpisodeCmd.ExecuteNonQuery()
                 End Using
-            End If
 
-            trans.Commit()
-            Return epid
-        End Using
+                Using getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn, trans)
+                    epid = CInt(getRowIDCmd.ExecuteScalar)
+                End Using
+
+                If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
+                    Using addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn, trans)
+                        For Each extItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
+                            With addExtInfoCmd
+                                .Parameters.Add(New SQLiteParameter("@epid", epid))
+                                .Parameters.Add(New SQLiteParameter("@name", extItem.Key))
+                                .Parameters.Add(New SQLiteParameter("@value", extItem.Value))
+                                .ExecuteNonQuery()
+                            End With
+                        Next
+                    End Using
+                End If
+
+                trans.Commit()
+                Return epid
+            End Using
+        End SyncLock
     End Function
 
     Public Function CompareDownloads(ByVal epid1 As Integer, ByVal epid2 As Integer) As Integer
