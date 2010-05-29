@@ -1046,13 +1046,15 @@ Friend Class Main
 
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
 
-        If downloadColOrder.Contains(Data.DownloadCols.Progress) Then
-            If lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) IsNot Nothing Then
-                lstDownloads.RemoveProgressBar(prgDldProg)
+        If item IsNot Nothing Then
+            If downloadColOrder.Contains(Data.DownloadCols.Progress) Then
+                If lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) IsNot Nothing Then
+                    lstDownloads.RemoveProgressBar(prgDldProg)
+                End If
             End If
-        End If
 
-        item.Remove()
+            item.Remove()
+        End If
 
         Call UpdateTrayStatus(False)
     End Sub
