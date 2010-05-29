@@ -1079,7 +1079,7 @@ Friend Class Main
         lstDownloads.Sort()
 
         If backData(backData.GetUpperBound(0)).View = View.Downloads Then
-            If lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture)).Selected Then
+            If item.Selected Then
                 ShowDownloadInfo(epid)
             ElseIf lstDownloads.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
