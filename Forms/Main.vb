@@ -16,6 +16,7 @@ Option Strict On
 Option Explicit On
 
 Imports System.Collections.Generic
+Imports System.Configuration
 Imports System.Globalization
 Imports System.IO
 Imports System.Windows.Forms.VisualStyles
@@ -170,11 +171,35 @@ Friend Class Main
 
     Private Sub Main_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         ' If this is the first run of a new version of the application, then upgrade the settings from the old version.
-        If My.Settings.UpgradeSettings Then
-            My.Settings.Upgrade()
-            My.Settings.UpgradeSettings = False
-            My.Settings.Save()
-        End If
+        Try
+            If My.Settings.UpgradeSettings Then
+                My.Settings.Upgrade()
+                My.Settings.UpgradeSettings = False
+                My.Settings.Save()
+            End If
+        Catch configErrorExp As ConfigurationErrorsException
+            Dim fileName As String = Nothing
+
+            If configErrorExp.Filename IsNot Nothing Then
+                fileName = configErrorExp.Filename
+            ElseIf configErrorExp.InnerException IsNot Nothing AndAlso TypeOf configErrorExp.InnerException Is ConfigurationErrorsException Then
+                Dim innerExp As ConfigurationErrorsException = CType(configErrorExp.InnerException, ConfigurationErrorsException)
+
+                If innerExp.Filename IsNot Nothing Then
+                    fileName = innerExp.Filename
+                End If
+            End If
+
+            If fileName IsNot Nothing Then
+                File.Delete(fileName)
+                MsgBox("Your Radio Downloader configuration file has been reset as it was corrupt.  This only affects your settings and columns, not your subscriptions or downloads." + Environment.NewLine + Environment.NewLine + "You will need to start Radio Downloader again after closing this message.", MsgBoxStyle.Information)
+                Me.Close()
+                Me.Dispose()
+                Exit Sub
+            Else
+                Throw
+            End If
+        End Try
 
         ' Make sure that the temp and application data folders exist
         Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath, "RadioDownloader"))
