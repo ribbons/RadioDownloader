@@ -32,29 +32,26 @@ Friend Class FindNew
 
             Application.DoEvents()
 
-            Dim strURL As String = txtFeedURL.Text
-            Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
-            Dim strRSS As String
-            Dim xmlRSS As New XmlDocument
+            Dim feedUrl As Uri
+            Dim xmlRSS As XmlDocument
 
-            ' First test that we can load something from the specified URL
             Try
-                strRSS = cachedWeb.DownloadString(strURL, PodcastProvider.intCacheHTTPHours)
-            Catch expArgument As ArgumentException
+                feedUrl = New Uri(txtFeedURL.Text)
+            Catch argumentExp As UriFormatException
                 lblResult.Text = "The specified URL was not valid."
-                lblResult.ForeColor = Drawing.Color.Red
-                cmdViewEps.Enabled = True
-                Exit Sub
-            Catch expWeb As WebException
-                lblResult.Text = "There was a problem requesting the feed from the specified URL."
                 lblResult.ForeColor = Drawing.Color.Red
                 cmdViewEps.Enabled = True
                 Exit Sub
             End Try
 
-            ' Now check that it is a valid XML document
+            ' Test that we can load something from the URL, and it is valid XML
             Try
-                xmlRSS.LoadXml(strRSS)
+                xmlRSS = clsPluginInst.LoadFeedXml(feedUrl)
+            Catch expWeb As WebException
+                lblResult.Text = "There was a problem requesting the feed from the specified URL."
+                lblResult.ForeColor = Drawing.Color.Red
+                cmdViewEps.Enabled = True
+                Exit Sub
             Catch expXML As XmlException
                 lblResult.Text = "The data returned from the specified URL was not a valid RSS feed."
                 lblResult.ForeColor = Drawing.Color.Red
@@ -76,7 +73,7 @@ Friend Class FindNew
             lblResult.Text = "Loading information..."
             Application.DoEvents()
 
-            clsPluginInst.RaiseFoundNew(strURL)
+            clsPluginInst.RaiseFoundNew(feedUrl.ToString)
 
             lblResult.Text = ""
             cmdViewEps.Enabled = True

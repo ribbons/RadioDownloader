@@ -19,6 +19,7 @@ Imports System.Drawing
 Imports System.Globalization
 Imports System.IO
 Imports System.Net
+Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
 Imports System.Web
@@ -85,19 +86,13 @@ Public Class PodcastProvider
         Dim getProgInfo As New GetProgrammeInfoReturn
         getProgInfo.Success = False
 
-        Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
-        Dim strRSS As String
-        Dim xmlRSS As New XmlDocument
+        Dim xmlRSS As XmlDocument
         Dim xmlNamespaceMgr As XmlNamespaceManager
 
         Try
-            strRSS = cachedWeb.DownloadString(progExtID, intCacheHTTPHours)
+            xmlRSS = LoadFeedXml(New Uri(progExtID))
         Catch expWeb As WebException
             Return getProgInfo
-        End Try
-
-        Try
-            xmlRSS.LoadXml(strRSS)
         Catch expXML As XmlException
             Return getProgInfo
         End Try
@@ -132,18 +127,12 @@ Public Class PodcastProvider
         Dim strEpisodeIDs(-1) As String
         GetAvailableEpisodeIDs = strEpisodeIDs
 
-        Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
-        Dim strRSS As String
-        Dim xmlRSS As New XmlDocument
+        Dim xmlRSS As XmlDocument
 
         Try
-            strRSS = cachedWeb.DownloadString(progExtID, intCacheHTTPHours)
+            xmlRSS = LoadFeedXml(New Uri(progExtID))
         Catch expWeb As WebException
             Exit Function
-        End Try
-
-        Try
-            xmlRSS.LoadXml(strRSS)
         Catch expXML As XmlException
             Exit Function
         End Try
@@ -173,19 +162,13 @@ Public Class PodcastProvider
         Dim episodeInfoReturn As New GetEpisodeInfoReturn
         episodeInfoReturn.Success = False
 
-        Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
-        Dim strRSS As String
-        Dim xmlRSS As New XmlDocument
+        Dim xmlRSS As XmlDocument
         Dim xmlNamespaceMgr As XmlNamespaceManager
 
         Try
-            strRSS = cachedWeb.DownloadString(progExtID, intCacheHTTPHours)
+            xmlRSS = LoadFeedXml(New Uri(progExtID))
         Catch expWeb As WebException
             Return episodeInfoReturn
-        End Try
-
-        Try
-            xmlRSS.LoadXml(strRSS)
         Catch expXML As XmlException
             Return episodeInfoReturn
         End Try
@@ -411,6 +394,25 @@ Public Class PodcastProvider
     Friend Sub RaiseFoundNew(ByVal strExtID As String)
         RaiseEvent FoundNew(strExtID)
     End Sub
+
+    Friend Function LoadFeedXml(ByVal url As Uri) As XmlDocument
+        Dim feedXml As New XmlDocument
+        Dim cachedWeb As CachedWebClient = CachedWebClient.GetInstance
+
+        Dim feedString As String = cachedWeb.DownloadString(url.ToString, PodcastProvider.intCacheHTTPHours)
+
+        ' The LoadXml method of XmlDocument doesn't work correctly all of the time,
+        ' so convert the string to a UTF-8 byte array
+        Dim encodedString As Byte() = Encoding.UTF8.GetBytes(feedString)
+
+        ' And then load this into the XmlDocument via a stream
+        Dim feedStream As New MemoryStream(encodedString)
+        feedStream.Flush()
+        feedStream.Position = 0
+
+        feedXml.Load(feedStream)
+        Return feedXml
+    End Function
 
     Private Function ItemNodeToEpisodeID(ByVal xmlItem As XmlNode) As String
         Dim strItemID As String = ""
