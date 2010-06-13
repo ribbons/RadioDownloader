@@ -345,8 +345,8 @@ Friend Class Data
 
                                 Using extCommand As New SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn)
                                     extCommand.Parameters.Add(New SQLiteParameter("@epid", reader.GetInt32(reader.GetOrdinal("epid"))))
-                                    Using extReader As SQLiteDataReader = extCommand.ExecuteReader
 
+                                    Using extReader As SQLiteDataReader = extCommand.ExecuteReader
                                         While extReader.Read
                                             epiEpInfo.ExtInfo.Add(extReader.GetString(extReader.GetOrdinal("name")), extReader.GetString(extReader.GetOrdinal("value")))
                                         End While
@@ -460,7 +460,6 @@ Friend Class Data
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
             Using reader As SQLiteDataReader = command.ExecuteReader
-
                 If reader.Read Then
                     Dim imgid As Integer = reader.GetInt32(reader.GetOrdinal("image"))
 
@@ -1049,22 +1048,22 @@ Friend Class Data
     End Sub
 
     Public Sub PerformCleanup()
-        Dim command As New SQLiteCommand("select epid, filepath from downloads where status=@status", FetchDbConn)
-        command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
-        Dim reader As SQLiteDataReader = command.ExecuteReader()
+        Using command As New SQLiteCommand("select epid, filepath from downloads where status=@status", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
 
-        Dim epidOrd As Integer = reader.GetOrdinal("epid")
-        Dim filepathOrd As Integer = reader.GetOrdinal("filepath")
+            Using reader As SQLiteDataReader = command.ExecuteReader
+                Dim epidOrd As Integer = reader.GetOrdinal("epid")
+                Dim filepathOrd As Integer = reader.GetOrdinal("filepath")
 
-        Do While reader.Read
-            ' Remove programmes for which the associated audio file no longer exists
-            If Exists(reader.GetString(filepathOrd)) = False Then
-                ' Take the download out of the list and set the auto download flag to false
-                DownloadRemoveAsync(reader.GetInt32(epidOrd), False)
-            End If
-        Loop
-
-        reader.Close()
+                Do While reader.Read
+                    ' Remove programmes for which the associated audio file no longer exists
+                    If Exists(reader.GetString(filepathOrd)) = False Then
+                        ' Take the download out of the list and set the auto download flag to false
+                        DownloadRemoveAsync(reader.GetInt32(epidOrd), False)
+                    End If
+                Loop
+            End Using
+        End Using
     End Sub
 
     Private Sub SetDBSetting(ByVal propertyName As String, ByVal value As Object)
