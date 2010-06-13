@@ -69,6 +69,7 @@
     <Rule Name="StaticHolderTypesShouldNotHaveConstructors" Enabled="True" />
     <Rule Name="StringUriOverloadsCallSystemUriOverloads" Enabled="True" />
     <Rule Name="TypesShouldNotExtendCertainBaseTypes" Enabled="True" />
+    <Rule Name="TypesThatOwnDisposableFieldsShouldBeDisposable" Enabled="True" />
     <Rule Name="TypesThatOwnNativeResourcesShouldBeDisposable" Enabled="True" />
     <Rule Name="UriPropertiesShouldNotBeStrings" Enabled="True" />
     <Rule Name="UriReturnValuesShouldNotBeStrings" Enabled="True" />

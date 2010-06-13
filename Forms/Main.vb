@@ -86,7 +86,6 @@ Friend Class Main
     Private fwdData(-1) As ViewStore
 
     Private WithEvents progData As Data
-    Private doDbUpdate As UpdateDB
     Private checkUpdate As UpdateCheck
     Private tbarNotif As TaskbarNotify
 
@@ -234,8 +233,9 @@ Friend Class Main
                 Exit Sub
             End Try
 
-            doDbUpdate = New UpdateDB(Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"))
-            Call doDbUpdate.UpdateStructure()
+            Using doDbUpdate As New UpdateDB(Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"))
+                Call doDbUpdate.UpdateStructure()
+            End Using
         End If
 
         imlListIcons.Images.Add("downloading", My.Resources.list_downloading)

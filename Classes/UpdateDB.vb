@@ -20,8 +20,18 @@ Imports System.Data.SQLite
 Imports System.Text.RegularExpressions
 
 Friend Class UpdateDB
+    Implements IDisposable
+
+    Private isDisposed As Boolean
+
     Private specConn As SQLiteConnection
     Private updateConn As SQLiteConnection
+
+    Private Enum UpdateType
+        None
+        Create
+        Update
+    End Enum
 
     Public Sub New(ByVal specDbPath As String, ByVal updateDbPath As String)
         MyBase.New()
@@ -34,73 +44,83 @@ Friend Class UpdateDB
     End Sub
 
     Public Function UpdateStructure() As Boolean
-        Dim specCommand As New SQLiteCommand("SELECT name, sql FROM sqlite_master WHERE type='table'", specConn)
-        Dim specReader As SQLiteDataReader = specCommand.ExecuteReader
+        Dim updateReqd As UpdateType
 
-        Dim updateCommand As SQLiteCommand
-        Dim updateReader As SQLiteDataReader
+        Using specCommand As New SQLiteCommand("select name, sql from sqlite_master where type='table'", specConn), _
+              checkUpdateCmd As New SQLiteCommand("select sql from sqlite_master where type='table' and name=@name", updateConn)
 
-        With specReader
-            While .Read()
-                updateCommand = New SQLiteCommand("SELECT sql FROM sqlite_master WHERE type='table' AND name='" + .GetString(.GetOrdinal("name")).Replace("'", "''") + "'", updateConn)
-                updateReader = updateCommand.ExecuteReader
+            Dim nameParam As New SQLiteParameter("@name")
+            checkUpdateCmd.Parameters.Add(nameParam)
 
-                If updateReader.Read Then
-                    ' The table exists in the database already, so check that it has the correct structure.
-                    If .GetString(.GetOrdinal("sql")) <> updateReader.GetString(updateReader.GetOrdinal("sql")) Then
-                        ' The structure of the table doesn't match, so update it
+            Using specReader As SQLiteDataReader = specCommand.ExecuteReader
+                Dim nameOrd As Integer = specReader.GetOrdinal("name")
+                Dim sqlOrd As Integer = specReader.GetOrdinal("sql")
 
-                        ' Store a list of common column names for transferring the data
-                        Dim columnNames As String = ColNames(.GetString(.GetOrdinal("name")))
+                While specReader.Read
+                    Dim specName As String = specReader.GetString(nameOrd)
+                    Dim specSql As String = specReader.GetString(sqlOrd)
 
-                        updateReader.Close()
+                    nameParam.Value = specName
+
+                    Using checkUpdateRdr As SQLiteDataReader = checkUpdateCmd.ExecuteReader
+                        If checkUpdateRdr.Read = False Then
+                            ' The table doesn't exist
+                            updateReqd = UpdateType.Create
+                        Else
+                            If specSql = checkUpdateRdr.GetString(checkUpdateRdr.GetOrdinal("sql")) Then
+                                ' The table does not require an update
+                                updateReqd = UpdateType.None
+                            Else
+                                ' The structure of the table doesn't match, so update it
+                                updateReqd = UpdateType.Update
+                            End If
+                        End If
+                    End Using
+
+                    If updateReqd = UpdateType.Create Then
+                        ' Create the table
+                        Using updateCommand As New SQLiteCommand(specSql, updateConn)
+                            updateCommand.ExecuteNonQuery()
+                        End Using
+                    ElseIf updateReqd = UpdateType.Update Then
+                        ' Fetch a list of common column names for transferring the data
+                        Dim columnNames As String = ColNames(specName)
 
                         ' Start a transaction, so we can roll back if there is an error
-                        updateCommand = New SQLiteCommand("BEGIN TRANSACTION", updateConn)
-                        updateCommand.ExecuteNonQuery()
+                        Using trans As SQLiteTransaction = updateConn.BeginTransaction
+                            Try
+                                ' Rename the existing table to table_name_old
+                                Using updateCommand As New SQLiteCommand("alter table [" + specName + "] rename to [" + specName + "_old]", updateConn, trans)
+                                    updateCommand.ExecuteNonQuery()
+                                End Using
 
-                        Try
-                            ' Rename the existing table to table_name_old
-                            updateCommand = New SQLiteCommand("ALTER TABLE [" + .GetString(.GetOrdinal("name")) + "] RENAME TO [" + .GetString(.GetOrdinal("name")) + "_old]", updateConn)
-                            updateCommand.ExecuteNonQuery()
+                                ' Create the new table with the correct structure
+                                Using updateCommand As New SQLiteCommand(specSql, updateConn, trans)
+                                    updateCommand.ExecuteNonQuery()
+                                End Using
 
-                            ' Create the new table with the correct structure
-                            updateCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), updateConn)
-                            updateCommand.ExecuteNonQuery()
+                                ' Copy across the data (discarding rows which violate any new constraints)
+                                If columnNames <> "" Then
+                                    Using updateCommand As New SQLiteCommand("insert or ignore into [" + specName + "] (" + columnNames + ") select " + columnNames + " from [" + specName + "_old]", updateConn, trans)
+                                        updateCommand.ExecuteNonQuery()
+                                    End Using
+                                End If
 
-                            ' Copy across the data (discarding rows which violate any new constraints)
-                            If columnNames <> "" Then
-                                updateCommand = New SQLiteCommand("INSERT OR IGNORE INTO [" + .GetString(.GetOrdinal("name")) + "] (" + columnNames + ") SELECT " + columnNames + " FROM [" + .GetString(.GetOrdinal("name")) + "_old]", updateConn)
-                                updateCommand.ExecuteNonQuery()
-                            End If
+                                ' Delete the old table
+                                Using updateCommand As New SQLiteCommand("drop table [" + specName + "_old]", updateConn, trans)
+                                    updateCommand.ExecuteNonQuery()
+                                End Using
+                            Catch sqliteExp As SQLiteException
+                                trans.Rollback()
+                                Throw
+                            End Try
 
-                            ' Delete the old table
-                            updateCommand = New SQLiteCommand("DROP TABLE [" + .GetString(.GetOrdinal("name")) + "_old]", updateConn)
-                            updateCommand.ExecuteNonQuery()
-
-                            ' Commit the transaction
-                            updateCommand = New SQLiteCommand("COMMIT TRANSACTION", updateConn)
-                            updateCommand.ExecuteNonQuery()
-
-                        Catch sqliteExp As SQLiteException
-                            ' Roll back the transaction, to try and stop the database being corrupted
-                            updateCommand = New SQLiteCommand("ROLLBACK TRANSACTION", updateConn)
-                            updateCommand.ExecuteNonQuery()
-
-                            Throw
-                        End Try
+                            trans.Commit()
+                        End Using
                     End If
-                Else
-                    ' Create the table
-                    updateCommand = New SQLiteCommand(.GetString(.GetOrdinal("sql")), updateConn)
-                    updateCommand.ExecuteNonQuery()
-                End If
-
-                updateReader.Close()
-            End While
-        End With
-
-        specReader.Close()
+                End While
+            End Using
+        End Using
 
         Return True
     End Function
@@ -137,10 +157,24 @@ Friend Class UpdateDB
         Return returnList
     End Function
 
-    Protected Overrides Sub Finalize()
-        specConn.Close()
-        updateConn.Close()
+    Private Sub Dispose(ByVal disposing As Boolean)
+        If Not Me.isDisposed Then
+            If disposing Then
+                specConn.Dispose()
+                updateConn.Dispose()
+            End If
 
+            Me.isDisposed = True
+        End If
+    End Sub
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+        Dispose(True)
+        GC.SuppressFinalize(Me)
+    End Sub
+
+    Protected Overrides Sub Finalize()
+        Dispose(False)
         MyBase.Finalize()
     End Sub
 End Class
