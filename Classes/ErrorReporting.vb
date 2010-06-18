@@ -73,6 +73,12 @@ Friend Class ErrorReporting
         Me.New(uncaughtException.GetType.ToString + ": " + uncaughtException.Message, uncaughtException.GetType.ToString + vbCrLf + uncaughtException.StackTrace)
 
         Try
+            If uncaughtException.GetType Is GetType(System.Data.SQLite.SQLiteException) Then
+                ' Add extra information to the exception to help debug sqlite concurrency
+                uncaughtException = SQLiteMonDataReader.AddReadersInfo(uncaughtException)
+                uncaughtException = SQLiteMonTransaction.AddTransactionsInfo(uncaughtException)
+            End If
+
             fields.Add("exceptiontostring", uncaughtException.ToString())
 
             ' Set up a list of types which do not need to be serialized

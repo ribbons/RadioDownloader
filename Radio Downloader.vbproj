@@ -152,6 +152,8 @@
     <Compile Include="Classes\FileUtils.vb" />
     <Compile Include="Classes\TabBarRenderer.vb" />
     <Compile Include="Classes\OsUtils.vb" />
+    <Compile Include="Classes\SQLiteMonDataReader.vb" />
+    <Compile Include="Classes\SQLiteMonTransaction.vb" />
     <Compile Include="Classes\TaskbarNotify.vb" />
     <Compile Include="Classes\TextUtils.vb" />
     <Compile Include="Classes\UpdateCheck.vb" />

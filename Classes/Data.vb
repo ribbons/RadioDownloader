@@ -211,7 +211,7 @@ Friend Class Data
         Dim compressImages As New List(Of Integer)
 
         Using command As New SQLiteCommand("select imgid from images", FetchDbConn)
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 While reader.Read
                     compressImages.Add(reader.GetInt32(reader.GetOrdinal("imgid")))
                 End While
@@ -279,7 +279,7 @@ Friend Class Data
                     command.Parameters.Add(New SQLiteParameter("@statuswait", DownloadStatus.Waiting))
                     command.Parameters.Add(New SQLiteParameter("@statuserr", DownloadStatus.Errored))
 
-                    Using reader As SQLiteDataReader = command.ExecuteReader
+                    Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                         While downloadThread Is Nothing
                             If Not reader.Read Then
                                 Return
@@ -346,7 +346,7 @@ Friend Class Data
                                 Using extCommand As New SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn)
                                     extCommand.Parameters.Add(New SQLiteParameter("@epid", reader.GetInt32(reader.GetOrdinal("epid"))))
 
-                                    Using extReader As SQLiteDataReader = extCommand.ExecuteReader
+                                    Using extReader As New SQLiteMonDataReader(extCommand.ExecuteReader)
                                         While extReader.Read
                                             epiEpInfo.ExtInfo.Add(extReader.GetString(extReader.GetOrdinal("name")), extReader.GetString(extReader.GetOrdinal("value")))
                                         End While
@@ -433,7 +433,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read Then
                     providerId = New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
 
@@ -459,7 +459,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select image from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read Then
                     Dim imgid As Integer = reader.GetInt32(reader.GetOrdinal("image"))
 
@@ -468,7 +468,7 @@ Friend Class Data
                         Using latestCmd As New SQLiteCommand("select image from episodes where progid=@progid and image notnull order by date desc limit 1", FetchDbConn)
                             latestCmd.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-                            Using latestRdr As SQLiteDataReader = latestCmd.ExecuteReader
+                            Using latestRdr As New SQLiteMonDataReader(latestCmd.ExecuteReader)
                                 If latestRdr.Read Then
                                     imgid = latestRdr.GetInt32(reader.GetOrdinal("image"))
                                 End If
@@ -492,7 +492,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read Then
                     Dim imgid As Integer = reader.GetInt32(reader.GetOrdinal("image"))
 
@@ -554,7 +554,7 @@ Friend Class Data
         ' Fetch the current subscriptions into a list, so that the reader doesn't remain open while
         ' checking all of the subscriptions, as this blocks writes to the database from other threads
         Using command As New SQLiteCommand("select progid from subscriptions", FetchDbConn)
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 Dim progidOrdinal As Integer = reader.GetOrdinal("progid")
 
                 Do While reader.Read()
@@ -583,7 +583,7 @@ Friend Class Data
 
                 progidParam.Value = progid
 
-                Using progInfReader As SQLiteDataReader = progInfCmd.ExecuteReader
+                Using progInfReader As New SQLiteMonDataReader(progInfCmd.ExecuteReader)
                     If progInfReader.Read = False Then
                         Continue For
                     End If
@@ -608,7 +608,7 @@ Friend Class Data
                         Dim needEpInfo As Boolean = True
                         Dim epid As Integer
 
-                        Using findReader As SQLiteDataReader = findCmd.ExecuteReader
+                        Using findReader As New SQLiteMonDataReader(findCmd.ExecuteReader)
                             If findReader.Read Then
                                 needEpInfo = False
                                 epid = findReader.GetInt32(findReader.GetOrdinal("epid"))
@@ -635,7 +635,7 @@ Friend Class Data
 
                         epidParam.Value = epid
 
-                        Using checkRdr As SQLiteDataReader = checkCmd.ExecuteReader
+                        Using checkRdr As New SQLiteMonDataReader(checkCmd.ExecuteReader)
                             If checkRdr.Read = False Then
                                 Call AddDownloadAsync(epid)
                             End If
@@ -654,7 +654,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read Then
                     Return False
                 End If
@@ -677,7 +677,7 @@ Friend Class Data
             Using command As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
                 command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-                Using reader As SQLiteDataReader = command.ExecuteReader
+                Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                     If reader.Read Then
                         Return
                     End If
@@ -699,7 +699,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read Then
                     Return False
                 End If
@@ -722,7 +722,7 @@ Friend Class Data
             Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
                 command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-                Using reader As SQLiteDataReader = command.ExecuteReader
+                Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                     If reader.Read Then
                         Return
                     End If
@@ -761,7 +761,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read = False Then
                     ' No downloads of this program
                     Return Nothing
@@ -781,21 +781,21 @@ Friend Class Data
     End Sub
 
     Private Sub ResetDownloadAsync(ByVal epid As Integer, ByVal auto As Boolean)
-        Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
-            Using command As New SQLiteCommand("update downloads set status=@status where epid=@epid", FetchDbConn, trans)
+        Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
+            Using command As New SQLiteCommand("update downloads set status=@status where epid=@epid", FetchDbConn, transMon.trans)
                 command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Waiting))
                 command.Parameters.Add(New SQLiteParameter("@epid", epid))
                 command.ExecuteNonQuery()
             End Using
 
             If auto = False Then
-                Using command As New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn, trans)
+                Using command As New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn, transMon.trans)
                     command.Parameters.Add(New SQLiteParameter("@epid", epid))
                     command.ExecuteNonQuery()
                 End Using
             End If
 
-            trans.Commit()
+            transMon.trans.Commit()
         End Using
 
         SyncLock downloadSortCacheLock
@@ -818,8 +818,8 @@ Friend Class Data
     End Sub
 
     Private Sub DownloadRemoveAsync(ByVal epid As Integer, ByVal auto As Boolean)
-        Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
-            Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, trans)
+        Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
+            Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, transMon.trans)
                 command.Parameters.Add(New SQLiteParameter("@epid", epid))
                 command.ExecuteNonQuery()
             End Using
@@ -829,7 +829,7 @@ Friend Class Data
                 EpisodeSetAutoDownloadAsync(epid, False)
             End If
 
-            trans.Commit()
+            transMon.trans.Commit()
         End Using
 
         SyncLock downloadSortCacheLock
@@ -891,7 +891,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select errortype, errordetails, ep.name as epname, ep.description as epdesc, date, duration, ep.extid as epextid, pr.name as progname, pr.description as progdesc, pr.extid as progextid, pluginid from downloads as dld, episodes as ep, programmes as pr where dld.epid=@epid and ep.epid=@epid and ep.progid=pr.progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If Not reader.Read Then
                     Throw New ArgumentException("Episode " + epid.ToString(CultureInfo.InvariantCulture) + " does not exit, or is not in the download list!", "epid")
                 End If
@@ -1008,7 +1008,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select subscriptions.progid from episodes, subscriptions where epid=@epid and subscriptions.progid = episodes.progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", curDldProgData.EpId))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read() Then
                     SyncLock subscriptionSortCacheLock
                         subscriptionSortCache = Nothing
@@ -1051,7 +1051,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select epid, filepath from downloads where status=@status", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 Dim epidOrd As Integer = reader.GetOrdinal("epid")
                 Dim filepathOrd As Integer = reader.GetOrdinal("filepath")
 
@@ -1078,7 +1078,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select value from settings where property=@property", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@property", propertyName))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader()
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read = False Then
                     Return Nothing
                 End If
@@ -1189,7 +1189,7 @@ Friend Class Data
         SyncLock insertRowIdLock
             progid = ExtIDToProgID(pluginId, progExtId)
 
-            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+            Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
                 If progid = Nothing Then
                     Using command As New SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn)
                         command.Parameters.Add(New SQLiteParameter("@pluginid", pluginId.ToString))
@@ -1212,7 +1212,7 @@ Friend Class Data
                     command.ExecuteNonQuery()
                 End Using
 
-                trans.Commit()
+                transMon.trans.Commit()
             End Using
         End SyncLock
 
@@ -1220,7 +1220,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read Then
                     SyncLock subscriptionSortCacheLock
                         subscriptionSortCache = Nothing
@@ -1250,7 +1250,7 @@ Friend Class Data
             Using command As New SQLiteCommand("select imgid from images where image=@image", FetchDbConn)
                 command.Parameters.Add(New SQLiteParameter("@image", imageAsBytes))
 
-                Using reader As SQLiteDataReader = command.ExecuteReader
+                Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                     If reader.Read() Then
                         Return reader.GetInt32(reader.GetOrdinal("imgid"))
                     End If
@@ -1272,7 +1272,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select image from images where imgid=@imgid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@imgid", imgid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If Not reader.Read Then
                     Return Nothing
                 End If
@@ -1292,7 +1292,7 @@ Friend Class Data
             command.Parameters.Add(New SQLiteParameter("@pluginid", pluginID.ToString))
             command.Parameters.Add(New SQLiteParameter("@extid", progExtId))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read Then
                     Return reader.GetInt32(reader.GetOrdinal("progid"))
                 Else
@@ -1347,10 +1347,10 @@ Friend Class Data
         End If
 
         SyncLock insertRowIdLock
-            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+            Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
                 Dim epid As Integer
 
-                Using addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn, trans)
+                Using addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn, transMon.trans)
                     addEpisodeCmd.Parameters.Add(New SQLiteParameter("@progid", progid))
                     addEpisodeCmd.Parameters.Add(New SQLiteParameter("@extid", episodeExtId))
                     addEpisodeCmd.Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
@@ -1361,12 +1361,12 @@ Friend Class Data
                     addEpisodeCmd.ExecuteNonQuery()
                 End Using
 
-                Using getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn, trans)
+                Using getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn, transMon.trans)
                     epid = CInt(getRowIDCmd.ExecuteScalar)
                 End Using
 
                 If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
-                    Using addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn, trans)
+                    Using addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn, transMon.trans)
                         For Each extItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
                             With addExtInfoCmd
                                 .Parameters.Add(New SQLiteParameter("@epid", epid))
@@ -1378,7 +1378,7 @@ Friend Class Data
                     End Using
                 End If
 
-                trans.Commit()
+                transMon.trans.Commit()
                 Return epid
             End Using
         End SyncLock
@@ -1407,7 +1407,7 @@ Friend Class Data
                 End Select
 
                 Using command As New SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, FetchDbConn)
-                    Using reader As SQLiteDataReader = command.ExecuteReader()
+                    Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                         Dim epidOrdinal As Integer = reader.GetOrdinal("epid")
 
                         Do While reader.Read
@@ -1431,7 +1431,7 @@ Friend Class Data
                 Dim sort As Integer = 0
 
                 Using command As New SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", FetchDbConn)
-                    Using reader As SQLiteDataReader = command.ExecuteReader()
+                    Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                         Dim progidOrdinal As Integer = reader.GetOrdinal("progid")
 
                         Do While reader.Read
@@ -1480,7 +1480,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read = False Then
                     Exit Sub
                 End If
@@ -1507,7 +1507,7 @@ Friend Class Data
                     Dim needEpInfo As Boolean = True
                     Dim epid As Integer
 
-                    Using reader As SQLiteDataReader = findCmd.ExecuteReader
+                    Using reader As New SQLiteMonDataReader(findCmd.ExecuteReader)
                         If reader.Read Then
                             needEpInfo = False
                             epid = reader.GetInt32(reader.GetOrdinal("epid"))
@@ -1536,7 +1536,7 @@ Friend Class Data
 
     Public Sub InitSubscriptionList()
         Using command As New SQLiteCommand("select progid from subscriptions", FetchDbConn)
-            Using reader As SQLiteDataReader = command.ExecuteReader()
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 Dim progidOrdinal As Integer = reader.GetOrdinal("progid")
 
                 Do While reader.Read
@@ -1550,7 +1550,7 @@ Friend Class Data
         Dim downloadList As New List(Of DownloadData)
 
         Using command As New SQLiteCommand("select downloads.epid, name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", FetchDbConn)
-            Using reader As SQLiteDataReader = command.ExecuteReader()
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 Dim epidOrdinal As Integer = reader.GetOrdinal("epid")
 
                 Do While reader.Read
@@ -1566,7 +1566,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read = False Then
                     Return Nothing
                 End If
@@ -1576,7 +1576,7 @@ Friend Class Data
         End Using
     End Function
 
-    Private Function ReadDownloadData(ByVal epid As Integer, ByRef reader As SQLiteDataReader) As DownloadData
+    Private Function ReadDownloadData(ByVal epid As Integer, ByRef reader As SQLiteMonDataReader) As DownloadData
         Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
         Dim filepathOrdinal As Integer = reader.GetOrdinal("filepath")
 
@@ -1613,7 +1613,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select name, description, pluginid from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read = False Then
                     Return Nothing
                 End If
@@ -1642,7 +1642,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select name, description, date, duration, autodownload from episodes where epid=@epid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@epid", epid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read = False Then
                     Return Nothing
                 End If
@@ -1671,7 +1671,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select name, description, singleepisode from programmes where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 If reader.Read = False Then
                     Return Nothing
                 End If
@@ -1691,7 +1691,7 @@ Friend Class Data
         Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
 
-            Using reader As SQLiteDataReader = command.ExecuteReader
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 info.subscribed = reader.Read
             End Using
         End Using
