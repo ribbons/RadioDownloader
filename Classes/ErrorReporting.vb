@@ -90,9 +90,11 @@ Friend Class ErrorReporting
             Dim baseExceptionProperties() As PropertyInfo = GetType(Exception).GetProperties
 
             Dim extraProperty As Boolean
+            Dim overloadedProp As Boolean
 
             For Each thisExpProperty As PropertyInfo In exceptionType.GetProperties
                 extraProperty = True
+                overloadedProp = False
 
                 ' Check if this property exists in the base exception class: if not then add it to the report
                 For Each baseProperty As PropertyInfo In baseExceptionProperties
@@ -102,8 +104,30 @@ Friend Class ErrorReporting
                     End If
                 Next
 
+                ' Test to see if this property is overloaded
+                For Each overloadChkProp As PropertyInfo In exceptionType.GetProperties
+                    If overloadChkProp.Equals(thisExpProperty) = False Then
+                        If overloadChkProp.Name = thisExpProperty.Name Then
+                            overloadedProp = True
+                            Exit For
+                        End If
+                    End If
+                Next
+
                 If extraProperty Then
+                    Dim fieldName As String = "expdata:" + thisExpProperty.Name
                     Dim propertyValue As Object = thisExpProperty.GetValue(uncaughtException, Nothing)
+
+                    If overloadedProp Then
+                        Dim typeName As String = propertyValue.GetType.ToString
+                        Dim dotPos As Integer = typeName.LastIndexOf(".", StringComparison.Ordinal)
+
+                        If dotPos >= 0 Then
+                            typeName = typeName.Substring(dotPos + 1)
+                        End If
+
+                        fieldName += ":" + typeName
+                    End If
 
                     If propertyValue IsNot Nothing AndAlso propertyValue.ToString <> "" Then
                         If notSerialize.Contains(propertyValue.GetType) = False Then
@@ -114,7 +138,7 @@ Friend Class ErrorReporting
                                     Dim valueSerializer As New XmlSerializer(propertyValue.GetType)
 
                                     valueSerializer.Serialize(valueStringWriter, propertyValue)
-                                    fields.Add("expdata:" + thisExpProperty.Name, valueStringWriter.ToString)
+                                    fields.Add(fieldName, valueStringWriter.ToString)
 
                                     Continue For
                                 Catch notSupported As NotSupportedException
@@ -125,7 +149,7 @@ Friend Class ErrorReporting
                             End If
                         End If
 
-                        fields.Add("expdata:" + thisExpProperty.Name, propertyValue.ToString)
+                        fields.Add(fieldName, propertyValue.ToString)
                     End If
                 End If
             Next
