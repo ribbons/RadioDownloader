@@ -11,7 +11,7 @@ Imports System.Security
 <Assembly: AssemblyCopyright("Copyright © 2007-2010 Matt Robinson")> 
 <Assembly: AssemblyTrademark("")> 
 <Assembly: AssemblyCulture("")> 
-<Assembly: AssemblyVersion("0.14.1.2")> 
+<Assembly: AssemblyVersion("0.14.2.0")> 
 
 <Assembly: CLSCompliant(True)> 
 <Assembly: ComVisible(False)> 
