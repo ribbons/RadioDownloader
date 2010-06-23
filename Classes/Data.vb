@@ -87,9 +87,7 @@ Friend Class Data
     Private Shared dataInstance As Data
     Private Shared dataInstanceLock As New Object
 
-    Private insertRowIdLock As New Object
-    Private addSubscriptionLock As New Object
-    Private addDownloadLock As New Object
+    Private dbUpdateLock As New Object
 
     Private pluginsInst As Plugins
 
@@ -196,9 +194,11 @@ Friend Class Data
             Status.ProgressBarValue = count
             Application.DoEvents()
 
-            Using command As New SQLiteCommand("drop table if exists " + unusedTable, FetchDbConn)
-                command.ExecuteNonQuery()
-            End Using
+            SyncLock dbUpdateLock
+                Using command As New SQLiteCommand("drop table if exists " + unusedTable, FetchDbConn)
+                    command.ExecuteNonQuery()
+                End Using
+            End SyncLock
 
             count += 1
         Next
@@ -231,29 +231,33 @@ Friend Class Data
             Dim image As Bitmap
             count = 1
 
-            For Each oldImageID As Integer In compressImages
-                Status.StatusText = "Compressing image " + CStr(count) + " of " + CStr(compressImages.Count) + "..."
-                Status.ProgressBarValue = count - 1
-                Application.DoEvents()
+            SyncLock dbUpdateLock
+                For Each oldImageID As Integer In compressImages
+                    Status.StatusText = "Compressing image " + CStr(count) + " of " + CStr(compressImages.Count) + "..."
+                    Status.ProgressBarValue = count - 1
+                    Application.DoEvents()
 
-                image = RetrieveImage(oldImageID)
+                    image = RetrieveImage(oldImageID)
 
-                deleteCmd.Parameters.Add(New SQLiteParameter("@imgid", oldImageID))
-                deleteCmd.ExecuteNonQuery()
+                    deleteCmd.Parameters.Add(New SQLiteParameter("@imgid", oldImageID))
+                    deleteCmd.ExecuteNonQuery()
 
-                newImageID = StoreImage(image)
-                Application.DoEvents()
+                    newImageID = StoreImage(image)
+                    Application.DoEvents()
 
-                updateProgs.Parameters.Add(New SQLiteParameter("@oldimgid", oldImageID))
-                updateProgs.Parameters.Add(New SQLiteParameter("@newimgid", newImageID))
-                updateProgs.ExecuteNonQuery()
+                    updateProgs.Parameters.Add(New SQLiteParameter("@oldimgid", oldImageID))
+                    updateProgs.Parameters.Add(New SQLiteParameter("@newimgid", newImageID))
 
-                updateEps.Parameters.Add(New SQLiteParameter("@oldimgid", oldImageID))
-                updateEps.Parameters.Add(New SQLiteParameter("@newimgid", newImageID))
-                updateEps.ExecuteNonQuery()
+                    updateProgs.ExecuteNonQuery()
 
-                count += 1
-            Next
+                    updateEps.Parameters.Add(New SQLiteParameter("@oldimgid", oldImageID))
+                    updateEps.Parameters.Add(New SQLiteParameter("@newimgid", newImageID))
+
+                    updateEps.ExecuteNonQuery()
+
+                    count += 1
+                Next
+            End SyncLock
         End Using
 
         Status.StatusText = "Finished compressing images"
@@ -524,11 +528,13 @@ Friend Class Data
     End Sub
 
     Private Sub EpisodeSetAutoDownloadAsync(ByVal epid As Integer, ByVal autoDownload As Boolean)
-        Using command As New SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@epid", epid))
-            command.Parameters.Add(New SQLiteParameter("@autodownload", If(autoDownload, 1, 0)))
-            command.ExecuteNonQuery()
-        End Using
+        SyncLock dbUpdateLock
+            Using command As New SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                command.Parameters.Add(New SQLiteParameter("@autodownload", If(autoDownload, 1, 0)))
+                command.ExecuteNonQuery()
+            End Using
+        End SyncLock
     End Sub
 
     Public Function CountDownloadsNew() As Integer
@@ -671,7 +677,7 @@ Friend Class Data
     End Sub
 
     Private Sub AddDownloadAsync(ByVal epid As Integer)
-        SyncLock addDownloadLock
+        SyncLock dbUpdateLock
             ' Check again that the download doesn't exist, as it may have been
             ' added while this call was waiting in the thread pool
             Using command As New SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)
@@ -716,7 +722,7 @@ Friend Class Data
     End Sub
 
     Private Sub AddSubscriptionAsync(ByVal progid As Integer)
-        SyncLock addSubscriptionLock
+        SyncLock dbUpdateLock
             ' Check again that the subscription doesn't exist, as it may have been
             ' added while this call was waiting in the thread pool
             Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
@@ -748,10 +754,12 @@ Friend Class Data
     End Sub
 
     Private Sub RemoveSubscriptionAsync(ByVal progid As Integer)
-        Using command As New SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@progid", progid))
-            Call command.ExecuteNonQuery()
-        End Using
+        SyncLock dbUpdateLock
+            Using command As New SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@progid", progid))
+                Call command.ExecuteNonQuery()
+            End Using
+        End SyncLock
 
         RaiseEvent ProgrammeUpdated(progid)
         RaiseEvent SubscriptionRemoved(progid)
@@ -781,22 +789,24 @@ Friend Class Data
     End Sub
 
     Private Sub ResetDownloadAsync(ByVal epid As Integer, ByVal auto As Boolean)
-        Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
-            Using command As New SQLiteCommand("update downloads set status=@status where epid=@epid", FetchDbConn, transMon.trans)
-                command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Waiting))
-                command.Parameters.Add(New SQLiteParameter("@epid", epid))
-                command.ExecuteNonQuery()
-            End Using
-
-            If auto = False Then
-                Using command As New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn, transMon.trans)
+        SyncLock dbUpdateLock
+            Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
+                Using command As New SQLiteCommand("update downloads set status=@status where epid=@epid", FetchDbConn, transMon.trans)
+                    command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Waiting))
                     command.Parameters.Add(New SQLiteParameter("@epid", epid))
                     command.ExecuteNonQuery()
                 End Using
-            End If
 
-            transMon.trans.Commit()
-        End Using
+                If auto = False Then
+                    Using command As New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn, transMon.trans)
+                        command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                        command.ExecuteNonQuery()
+                    End Using
+                End If
+
+                transMon.trans.Commit()
+            End Using
+        End SyncLock
 
         SyncLock downloadSortCacheLock
             downloadSortCache = Nothing
@@ -818,19 +828,21 @@ Friend Class Data
     End Sub
 
     Private Sub DownloadRemoveAsync(ByVal epid As Integer, ByVal auto As Boolean)
-        Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
-            Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, transMon.trans)
-                command.Parameters.Add(New SQLiteParameter("@epid", epid))
-                command.ExecuteNonQuery()
+        SyncLock dbUpdateLock
+            Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
+                Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, transMon.trans)
+                    command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                    command.ExecuteNonQuery()
+                End Using
+
+                If auto = False Then
+                    ' Unet the auto download flag, so if the user is subscribed it doesn't just download again
+                    EpisodeSetAutoDownloadAsync(epid, False)
+                End If
+
+                transMon.trans.Commit()
             End Using
-
-            If auto = False Then
-                ' Unet the auto download flag, so if the user is subscribed it doesn't just download again
-                EpisodeSetAutoDownloadAsync(epid, False)
-            End If
-
-            transMon.trans.Commit()
-        End Using
+        End SyncLock
 
         SyncLock downloadSortCacheLock
             ' No need to clear the sort cache, just remove this episodes entry
@@ -868,10 +880,12 @@ Friend Class Data
     End Sub
 
     Private Sub DownloadBumpPlayCountAsync(ByVal epid As Integer)
-        Using command As New SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@epid", epid))
-            command.ExecuteNonQuery()
-        End Using
+        SyncLock dbUpdateLock
+            Using command As New SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                command.ExecuteNonQuery()
+            End Using
+        End SyncLock
 
         SyncLock downloadSortCacheLock
             downloadSortCache = Nothing
@@ -968,13 +982,15 @@ Friend Class Data
                 errorDetails = detailsStringWriter.ToString
         End Select
 
-        Using command As New SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Errored))
-            command.Parameters.Add(New SQLiteParameter("@errortype", errorType))
-            command.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
-            command.Parameters.Add(New SQLiteParameter("@epid", curDldProgData.EpId))
-            command.ExecuteNonQuery()
-        End Using
+        SyncLock dbUpdateLock
+            Using command As New SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Errored))
+                command.Parameters.Add(New SQLiteParameter("@errortype", errorType))
+                command.Parameters.Add(New SQLiteParameter("@errordetails", errorDetails))
+                command.Parameters.Add(New SQLiteParameter("@epid", curDldProgData.EpId))
+                command.ExecuteNonQuery()
+            End Using
+        End SyncLock
 
         SyncLock downloadSortCacheLock
             downloadSortCache = Nothing
@@ -991,12 +1007,14 @@ Friend Class Data
     Private Sub DownloadPluginInst_Finished(ByVal fileExtension As String) Handles DownloadPluginInst.Finished
         curDldProgData.FinalName += "." + fileExtension
 
-        Using command As New SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
-            command.Parameters.Add(New SQLiteParameter("@filepath", curDldProgData.FinalName))
-            command.Parameters.Add(New SQLiteParameter("@epid", curDldProgData.EpId))
-            command.ExecuteNonQuery()
-        End Using
+        SyncLock dbUpdateLock
+            Using command As New SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Downloaded))
+                command.Parameters.Add(New SQLiteParameter("@filepath", curDldProgData.FinalName))
+                command.Parameters.Add(New SQLiteParameter("@epid", curDldProgData.EpId))
+                command.ExecuteNonQuery()
+            End Using
+        End SyncLock
 
         SyncLock downloadSortCacheLock
             downloadSortCache = Nothing
@@ -1067,11 +1085,13 @@ Friend Class Data
     End Sub
 
     Private Sub SetDBSetting(ByVal propertyName As String, ByVal value As Object)
-        Using command As New SQLiteCommand("insert or replace into settings (property, value) values (@property, @value)", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@property", propertyName))
-            command.Parameters.Add(New SQLiteParameter("@value", value))
-            command.ExecuteNonQuery()
-        End Using
+        SyncLock dbUpdateLock
+            Using command As New SQLiteCommand("insert or replace into settings (property, value) values (@property, @value)", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@property", propertyName))
+                command.Parameters.Add(New SQLiteParameter("@value", value))
+                command.ExecuteNonQuery()
+            End Using
+        End SyncLock
     End Sub
 
     Private Function GetDBSetting(ByVal propertyName As String) As Object
@@ -1106,9 +1126,11 @@ Friend Class Data
             Application.DoEvents()
 
             ' Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-            Using command As New SQLiteCommand("vacuum", FetchDbConn)
-                command.ExecuteNonQuery()
-            End Using
+            SyncLock dbUpdateLock
+                Using command As New SQLiteCommand("vacuum", FetchDbConn)
+                    command.ExecuteNonQuery()
+                End Using
+            End SyncLock
 
             SetDBSetting("lastvacuum", Now.ToString("O", CultureInfo.InvariantCulture))
 
@@ -1186,7 +1208,7 @@ Friend Class Data
 
         Dim progid As Integer
 
-        SyncLock insertRowIdLock
+        SyncLock dbUpdateLock
             progid = ExtIDToProgID(pluginId, progExtId)
 
             Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
@@ -1246,7 +1268,7 @@ Friend Class Data
         memstream.Position = 0
         memstream.Read(imageAsBytes, 0, CInt(memstream.Length))
 
-        SyncLock insertRowIdLock
+        SyncLock dbUpdateLock
             Using command As New SQLiteCommand("select imgid from images where image=@image", FetchDbConn)
                 command.Parameters.Add(New SQLiteParameter("@image", imageAsBytes))
 
@@ -1346,7 +1368,7 @@ Friend Class Data
             Throw New InvalidDataException("Episode date cannot be nothing or an empty string")
         End If
 
-        SyncLock insertRowIdLock
+        SyncLock dbUpdateLock
             Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
                 Dim epid As Integer
 
