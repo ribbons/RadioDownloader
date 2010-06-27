@@ -22,6 +22,7 @@ Imports System.Runtime.InteropServices
 
 Friend Class TabBarRenderer
     Inherits ToolStripSystemRenderer
+    Implements IDisposable
 
     <DllImport("gdi32.dll", SetLastError:=True)> _
     Public Shared Function CreateCompatibleDC(ByVal hdc As IntPtr) As IntPtr
@@ -109,6 +110,13 @@ Friend Class TabBarRenderer
 
     Private Const tabSeparation As Integer = 3
 
+    Private isDisposed As Boolean
+
+    Private inactiveTabBkg As Brush
+    Private hoverTabBkg As Brush
+    Private activeTabBkg As Brush
+    Private tabBorder As Pen = New Pen(SystemColors.ControlDark)
+
     Protected Overrides Sub OnRenderToolStripBackground(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
         ' Set the background colour to transparent to make it glass
         e.Graphics.Clear(Color.Transparent)
@@ -120,16 +128,22 @@ Friend Class TabBarRenderer
             Return
         End If
 
+        If inactiveTabBkg Is Nothing Then
+            inactiveTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.Control, SystemColors.ControlDark)
+            hoverTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, SystemColors.Control)
+            activeTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, Color.White)
+        End If
+
         Dim button As ToolStripButton = CType(e.Item, ToolStripButton)
-        Dim colour As Brush = Brushes.Gray
+        Dim colour As Brush = inactiveTabBkg
 
         If button.Checked Then
-            colour = Brushes.White
+            colour = activeTabBkg
 
             ' Invalidate between the buttons and the bottom of the toolstrip so that it gets repainted
             e.ToolStrip.Invalidate(New Rectangle(0, e.Item.Bounds.Bottom, e.ToolStrip.Bounds.Width, e.ToolStrip.Bounds.Height - e.Item.Bounds.Bottom))
         ElseIf e.Item.Selected Then
-            colour = Brushes.WhiteSmoke
+            colour = hoverTabBkg
         End If
 
         e.Graphics.SmoothingMode = SmoothingMode.HighQuality
@@ -147,7 +161,7 @@ Friend Class TabBarRenderer
             tab.AddLine(width, curveSize, width, height)
 
             e.Graphics.FillPath(colour, tab)
-            e.Graphics.DrawPath(Pens.Black, tab)
+            e.Graphics.DrawPath(tabBorder, tab)
         End Using
     End Sub
 
@@ -266,8 +280,34 @@ Friend Class TabBarRenderer
         If checked IsNot Nothing Then
             ' Extend the bottom of the tab over the client area border, joining the tab onto the main client area
             e.Graphics.FillRectangle(Brushes.White, New Rectangle(checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Width - tabSeparation, e.ToolStrip.Bounds.Bottom - checked.Bounds.Bottom))
-            e.Graphics.DrawLine(Pens.Black, checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Left, e.AffectedBounds.Bottom)
-            e.Graphics.DrawLine(Pens.Black, checked.Bounds.Right - tabSeparation, checked.Bounds.Bottom, checked.Bounds.Right - tabSeparation, e.AffectedBounds.Bottom)
+            e.Graphics.DrawLine(tabBorder, checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Left, e.AffectedBounds.Bottom)
+            e.Graphics.DrawLine(tabBorder, checked.Bounds.Right - tabSeparation, checked.Bounds.Bottom, checked.Bounds.Right - tabSeparation, e.AffectedBounds.Bottom)
         End If
+    End Sub
+
+    Protected Overridable Sub Dispose(ByVal disposing As Boolean)
+        If Not Me.isDisposed Then
+            If disposing Then
+                If inactiveTabBkg IsNot Nothing Then
+                    inactiveTabBkg.Dispose()
+                    activeTabBkg.Dispose()
+                    hoverTabBkg.Dispose()
+                End If
+
+                tabBorder.Dispose()
+            End If
+        End If
+
+        Me.isDisposed = True
+    End Sub
+
+    Public Sub Dispose() Implements IDisposable.Dispose
+        Dispose(True)
+        GC.SuppressFinalize(Me)
+    End Sub
+
+    Protected Overrides Sub Finalize()
+        Dispose(False)
+        MyBase.Finalize()
     End Sub
 End Class
