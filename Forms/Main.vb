@@ -332,8 +332,9 @@ Friend Class Main
 
         If OsUtils.WinVistaOrLater Then
             OsUtils.ExtendFrameInfoClientArea(Me, 0, 0, tbrView.Height, 0)
-            tbrView.Renderer = New TabBarRenderer
         End If
+
+        tbrView.Renderer = New TabBarRenderer
 
         progData.StartDownload()
         tmrCheckForUpdates.Enabled = True

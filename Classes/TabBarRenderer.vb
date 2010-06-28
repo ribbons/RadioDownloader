@@ -185,6 +185,12 @@ Friend Class TabBarRenderer
     End Sub
 
     Protected Overrides Sub OnRenderItemText(ByVal e As System.Windows.Forms.ToolStripItemTextRenderEventArgs)
+        If OsUtils.WinVistaOrLater = False Then
+            ' XP and earlier don't have glass or the APIs to draw text on it
+            MyBase.OnRenderItemText(e)
+            Return
+        End If
+
         ' Drawing text on glass is a bit of a pain - text generated with GDI (e.g. standard
         ' controls) ends up being transparent as GDI doesn't understand alpha transparency.
         ' GDI+ is fine drawing text on glass but it doesn't use ClearType, so the text ends
