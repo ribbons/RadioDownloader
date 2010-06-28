@@ -115,6 +115,7 @@ Friend Class TabBarRenderer
     Private inactiveTabBkg As Brush
     Private hoverTabBkg As Brush
     Private activeTabBkg As Brush
+    Private activeTabBtmBkg As Brush
     Private tabBorder As Pen = New Pen(SystemColors.ControlDark)
 
     Protected Overrides Sub OnRenderToolStripBackground(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
@@ -129,9 +130,27 @@ Friend Class TabBarRenderer
         End If
 
         If inactiveTabBkg Is Nothing Then
+            Dim toolbarColour As Color = Color.White
+
+            If VisualStyleRenderer.IsSupported Then
+                ' Visual styles are enabled, so draw the correct background behind the toolbars
+
+                Dim background As New Bitmap(e.ToolStrip.Width, e.ToolStrip.Height)
+                Dim graphics As Graphics = graphics.FromImage(background)
+
+                Try
+                    Dim rebar As New VisualStyleRenderer("Rebar", 0, 0)
+                    rebar.DrawBackground(graphics, New Rectangle(0, 0, e.ToolStrip.Width, e.ToolStrip.Height))
+                    toolbarColour = background.GetPixel(e.Item.Bounds.Left + CInt(e.Item.Width / 2), 0)
+                Catch argumentExp As ArgumentException
+                    ' The 'Rebar' background image style did not exist
+                End Try
+            End If
+
             inactiveTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.Control, SystemColors.ControlDark)
             hoverTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, SystemColors.Control)
-            activeTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, Color.White)
+            activeTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, toolbarColour)
+            activeTabBtmBkg = New SolidBrush(toolbarColour)
         End If
 
         Dim button As ToolStripButton = CType(e.Item, ToolStripButton)
@@ -279,7 +298,7 @@ Friend Class TabBarRenderer
 
         If checked IsNot Nothing Then
             ' Extend the bottom of the tab over the client area border, joining the tab onto the main client area
-            e.Graphics.FillRectangle(Brushes.White, New Rectangle(checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Width - tabSeparation, e.ToolStrip.Bounds.Bottom - checked.Bounds.Bottom))
+            e.Graphics.FillRectangle(activeTabBtmBkg, New Rectangle(checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Width - tabSeparation, e.ToolStrip.Bounds.Bottom - checked.Bounds.Bottom))
             e.Graphics.DrawLine(tabBorder, checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Left, e.AffectedBounds.Bottom)
             e.Graphics.DrawLine(tabBorder, checked.Bounds.Right - tabSeparation, checked.Bounds.Bottom, checked.Bounds.Right - tabSeparation, e.AffectedBounds.Bottom)
         End If
@@ -290,8 +309,9 @@ Friend Class TabBarRenderer
             If disposing Then
                 If inactiveTabBkg IsNot Nothing Then
                     inactiveTabBkg.Dispose()
-                    activeTabBkg.Dispose()
                     hoverTabBkg.Dispose()
+                    activeTabBkg.Dispose()
+                    activeTabBtmBkg.Dispose()
                 End If
 
                 tabBorder.Dispose()
