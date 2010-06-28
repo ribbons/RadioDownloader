@@ -114,8 +114,6 @@ Friend Class TabBarRenderer
 
     Private inactiveTabBkg As Brush
     Private hoverTabBkg As Brush
-    Private activeTabBkg As Brush
-    Private activeTabBtmBkg As Brush
     Private tabBorder As Pen = New Pen(SystemColors.ControlDark)
 
     Protected Overrides Sub OnRenderToolStripBackground(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
@@ -130,57 +128,40 @@ Friend Class TabBarRenderer
         End If
 
         If inactiveTabBkg Is Nothing Then
-            Dim toolbarColour As Color = Color.White
-
-            If VisualStyleRenderer.IsSupported Then
-                ' Visual styles are enabled, so draw the correct background behind the toolbars
-
-                Dim background As New Bitmap(e.ToolStrip.Width, e.ToolStrip.Height)
-                Dim graphics As Graphics = graphics.FromImage(background)
-
-                Try
-                    Dim rebar As New VisualStyleRenderer("Rebar", 0, 0)
-                    rebar.DrawBackground(graphics, New Rectangle(0, 0, e.ToolStrip.Width, e.ToolStrip.Height))
-                    toolbarColour = background.GetPixel(e.Item.Bounds.Left + CInt(e.Item.Width / 2), 0)
-                Catch argumentExp As ArgumentException
-                    ' The 'Rebar' background image style did not exist
-                End Try
-            End If
-
             inactiveTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.Control, SystemColors.ControlDark)
             hoverTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, SystemColors.Control)
-            activeTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, toolbarColour)
-            activeTabBtmBkg = New SolidBrush(toolbarColour)
         End If
 
-        Dim button As ToolStripButton = CType(e.Item, ToolStripButton)
-        Dim colour As Brush = inactiveTabBkg
+        Using activeTabBkg As New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, GetActiveTabBtmCol(e.ToolStrip, e.Item))
+            Dim button As ToolStripButton = CType(e.Item, ToolStripButton)
+            Dim colour As Brush = inactiveTabBkg
 
-        If button.Checked Then
-            colour = activeTabBkg
+            If button.Checked Then
+                colour = activeTabBkg
 
-            ' Invalidate between the buttons and the bottom of the toolstrip so that it gets repainted
-            e.ToolStrip.Invalidate(New Rectangle(0, e.Item.Bounds.Bottom, e.ToolStrip.Bounds.Width, e.ToolStrip.Bounds.Height - e.Item.Bounds.Bottom))
-        ElseIf e.Item.Selected Then
-            colour = hoverTabBkg
-        End If
+                ' Invalidate between the buttons and the bottom of the toolstrip so that it gets repainted
+                e.ToolStrip.Invalidate(New Rectangle(0, e.Item.Bounds.Bottom, e.ToolStrip.Bounds.Width, e.ToolStrip.Bounds.Height - e.Item.Bounds.Bottom))
+            ElseIf e.Item.Selected Then
+                colour = hoverTabBkg
+            End If
 
-        e.Graphics.SmoothingMode = SmoothingMode.HighQuality
+            e.Graphics.SmoothingMode = SmoothingMode.HighQuality
 
-        Dim width As Integer = e.Item.Width - tabSeparation
-        Dim height As Integer = e.Item.Height
+            Dim width As Integer = e.Item.Width - tabSeparation
+            Dim height As Integer = e.Item.Height
 
-        Const curveSize As Integer = 10
+            Const curveSize As Integer = 10
 
-        Using tab As New GraphicsPath
-            tab.AddLine(0, height, 0, curveSize)
-            tab.AddArc(0, 0, curveSize, curveSize, 180, 90)
-            tab.AddLine(curveSize, 0, width - curveSize, 0)
-            tab.AddArc(width - curveSize, 0, curveSize, curveSize, 270, 90)
-            tab.AddLine(width, curveSize, width, height)
+            Using tab As New GraphicsPath
+                tab.AddLine(0, height, 0, curveSize)
+                tab.AddArc(0, 0, curveSize, curveSize, 180, 90)
+                tab.AddLine(curveSize, 0, width - curveSize, 0)
+                tab.AddArc(width - curveSize, 0, curveSize, curveSize, 270, 90)
+                tab.AddLine(width, curveSize, width, height)
 
-            e.Graphics.FillPath(colour, tab)
-            e.Graphics.DrawPath(tabBorder, tab)
+                e.Graphics.FillPath(colour, tab)
+                e.Graphics.DrawPath(tabBorder, tab)
+            End Using
         End Using
     End Sub
 
@@ -304,11 +285,36 @@ Friend Class TabBarRenderer
 
         If checked IsNot Nothing Then
             ' Extend the bottom of the tab over the client area border, joining the tab onto the main client area
-            e.Graphics.FillRectangle(activeTabBtmBkg, New Rectangle(checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Width - tabSeparation, e.ToolStrip.Bounds.Bottom - checked.Bounds.Bottom))
+
+            Using toolbarBkg As New SolidBrush(GetActiveTabBtmCol(e.ToolStrip, checked))
+                e.Graphics.FillRectangle(toolbarBkg, New Rectangle(checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Width - tabSeparation, e.ToolStrip.Bounds.Bottom - checked.Bounds.Bottom))
+            End Using
+
             e.Graphics.DrawLine(tabBorder, checked.Bounds.Left, checked.Bounds.Bottom, checked.Bounds.Left, e.AffectedBounds.Bottom)
             e.Graphics.DrawLine(tabBorder, checked.Bounds.Right - tabSeparation, checked.Bounds.Bottom, checked.Bounds.Right - tabSeparation, e.AffectedBounds.Bottom)
         End If
     End Sub
+
+    Private Function GetActiveTabBtmCol(ByVal strip As ToolStrip, ByVal active As ToolStripItem) As Color
+        Dim toolbarColour As Color = SystemColors.Control
+
+        If VisualStyleRenderer.IsSupported Then
+            ' Visual styles are enabled, so draw the correct background behind the toolbars
+
+            Dim background As New Bitmap(strip.Width, strip.Height)
+            Dim graphics As Graphics = graphics.FromImage(background)
+
+            Try
+                Dim rebar As New VisualStyleRenderer("Rebar", 0, 0)
+                rebar.DrawBackground(graphics, New Rectangle(0, 0, strip.Width, strip.Height))
+                toolbarColour = background.GetPixel(active.Bounds.Left + CInt(active.Width / 2), 0)
+            Catch argumentExp As ArgumentException
+                ' The 'Rebar' background image style did not exist
+            End Try
+        End If
+
+        Return toolbarColour
+    End Function
 
     Protected Overridable Sub Dispose(ByVal disposing As Boolean)
         If Not Me.isDisposed Then
@@ -316,8 +322,6 @@ Friend Class TabBarRenderer
                 If inactiveTabBkg IsNot Nothing Then
                     inactiveTabBkg.Dispose()
                     hoverTabBkg.Dispose()
-                    activeTabBkg.Dispose()
-                    activeTabBtmBkg.Dispose()
                 End If
 
                 tabBorder.Dispose()
