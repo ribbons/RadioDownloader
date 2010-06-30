@@ -44,10 +44,6 @@ Friend Class TabBarRenderer
     Private Shared Function DeleteDC(ByVal hdc As IntPtr) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
 
-    <DllImport("dwmapi.dll", SetLastError:=True)> _
-    Private Shared Function DwmIsCompositionEnabled(<MarshalAs(UnmanagedType.Bool)> ByRef pfEnabled As Boolean) As Integer
-    End Function
-
     <DllImport("UxTheme.dll", SetLastError:=True)> _
     Private Shared Function DrawThemeTextEx(ByVal hTheme As IntPtr, ByVal hdc As IntPtr, ByVal iPartId As Integer, ByVal iStateId As Integer, <MarshalAs(UnmanagedType.LPWStr)> ByVal pszText As String, ByVal iCharCount As Integer, ByVal dwFlags As UInteger, ByRef pRect As RECT, <[In]()> ByRef pOptions As DTTOPTS) As Integer
     End Function
@@ -121,15 +117,7 @@ Friend Class TabBarRenderer
     Private tabBorder As Pen = New Pen(SystemColors.ControlDark)
 
     Protected Overrides Sub OnRenderToolStripBackground(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
-        Dim onGlass As Boolean = False
-
-        If OsUtils.WinVistaOrLater Then
-            If DwmIsCompositionEnabled(onGlass) <> 0 Then
-                Throw New Win32Exception
-            End If
-        End If
-
-        If onGlass Then
+        If OsUtils.CompositionEnabled Then
             ' Set the background colour to transparent to make it glass
             e.Graphics.Clear(Color.Transparent)
         Else
