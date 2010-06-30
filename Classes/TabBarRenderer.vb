@@ -170,8 +170,8 @@ Friend Class TabBarRenderer
     End Sub
 
     Protected Overrides Sub OnRenderItemText(ByVal e As System.Windows.Forms.ToolStripItemTextRenderEventArgs)
-        If OsUtils.WinVistaOrLater = False Then
-            ' XP and earlier don't have glass or the APIs to draw text on it
+        If OsUtils.CompositionEnabled = False Then
+            ' The OS doesn't support desktop composition, or it isn't enabled
             MyBase.OnRenderItemText(e)
             Return
         End If
@@ -275,6 +275,10 @@ Friend Class TabBarRenderer
     End Sub
 
     Protected Overrides Sub OnRenderToolStripBorder(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
+        If Not VisualStyleRenderer.IsSupported Then
+            e.Graphics.DrawLine(tabBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1)
+        End If
+
         Dim checked As ToolStripButton = Nothing
 
         ' Find the currently checked ToolStripButton
