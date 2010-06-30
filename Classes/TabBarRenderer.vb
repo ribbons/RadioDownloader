@@ -110,18 +110,40 @@ Friend Class TabBarRenderer
 
     Private Const tabSeparation As Integer = 3
 
+    Private rendererFor As ToolStrip
+
     Private isDisposed As Boolean
+    Private isActive As Boolean = True
 
     Private inactiveTabBkg As Brush
     Private hoverTabBkg As Brush
     Private tabBorder As Pen = New Pen(SystemColors.ControlDark)
+
+    Protected Overrides Sub Initialize(ByVal toolStrip As System.Windows.Forms.ToolStrip)
+        MyBase.Initialize(toolStrip)
+
+        Me.rendererFor = toolStrip
+
+        AddHandler toolStrip.FindForm.Activated, AddressOf Form_Activated
+        AddHandler toolStrip.FindForm.Deactivate, AddressOf Form_Deactivated
+    End Sub
 
     Protected Overrides Sub OnRenderToolStripBackground(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
         If OsUtils.CompositionEnabled Then
             ' Set the background colour to transparent to make it glass
             e.Graphics.Clear(Color.Transparent)
         Else
-            MyBase.OnRenderToolStripBackground(e)
+            If VisualStyleRenderer.IsSupported AndAlso OsUtils.WinVistaOrLater Then
+                ' Set the background the same as the title bar to give the illusion of an extended frame
+
+                If isActive Then
+                    e.Graphics.Clear(SystemColors.GradientActiveCaption)
+                Else
+                    e.Graphics.Clear(SystemColors.GradientInactiveCaption)
+                End If
+            Else
+                MyBase.OnRenderToolStripBackground(e)
+            End If
         End If
     End Sub
 
@@ -324,6 +346,16 @@ Friend Class TabBarRenderer
         Return toolbarColour
     End Function
 
+    Private Sub Form_Activated(ByVal sender As Object, ByVal e As System.EventArgs)
+        isActive = True
+        rendererFor.Invalidate()
+    End Sub
+
+    Private Sub Form_Deactivated(ByVal sender As Object, ByVal e As System.EventArgs)
+        isActive = False
+        rendererFor.Invalidate()
+    End Sub
+
     Protected Overridable Sub Dispose(ByVal disposing As Boolean)
         If Not Me.isDisposed Then
             If disposing Then
@@ -331,6 +363,9 @@ Friend Class TabBarRenderer
                     inactiveTabBkg.Dispose()
                     hoverTabBkg.Dispose()
                 End If
+
+                RemoveHandler rendererFor.FindForm.Activated, AddressOf Form_Activated
+                RemoveHandler rendererFor.FindForm.Deactivate, AddressOf Form_Deactivated
 
                 tabBorder.Dispose()
             End If
