@@ -117,7 +117,8 @@ Friend Class TabBarRenderer
 
     Private inactiveTabBkg As Brush
     Private hoverTabBkg As Brush
-    Private tabBorder As Pen = New Pen(SystemColors.ControlDark)
+    Private tabBorder As New Pen(SystemColors.ControlDark)
+    Private nonAeroBorder As New Pen(Color.FromArgb(255, 182, 193, 204))
 
     Protected Overrides Sub Initialize(ByVal toolStrip As System.Windows.Forms.ToolStrip)
         MyBase.Initialize(toolStrip)
@@ -297,7 +298,11 @@ Friend Class TabBarRenderer
     End Sub
 
     Protected Overrides Sub OnRenderToolStripBorder(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
-        If Not VisualStyleRenderer.IsSupported Then
+        If OsUtils.WinVistaOrLater AndAlso VisualStyleRenderer.IsSupported Then
+            If OsUtils.CompositionEnabled = False Then
+                e.Graphics.DrawLine(nonAeroBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1)
+            End If
+        Else
             e.Graphics.DrawLine(tabBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1)
         End If
 
@@ -368,6 +373,7 @@ Friend Class TabBarRenderer
                 RemoveHandler rendererFor.FindForm.Deactivate, AddressOf Form_Deactivated
 
                 tabBorder.Dispose()
+                nonAeroBorder.Dispose()
             End If
         End If
 
