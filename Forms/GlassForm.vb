@@ -20,7 +20,7 @@ Imports System.Runtime.InteropServices
 Imports System.Security.Permissions
 Imports System.Windows.Forms.VisualStyles
 
-Public MustInherit Class GlassForm
+Public Class GlassForm
     Inherits Form
 
     Private Const WM_NCHITTEST As Integer = &H84
@@ -43,10 +43,6 @@ Public MustInherit Class GlassForm
 
     Private glassSet As Boolean
     Private glassMargins As MARGINS
-
-    Protected Sub New()
-        MyBase.New()
-    End Sub
 
     Public Sub SetGlassMargins(ByVal leftMargin As Integer, ByVal rightMargin As Integer, ByVal topMargin As Integer, ByVal bottomMargin As Integer)
         glassMargins = New MARGINS()
