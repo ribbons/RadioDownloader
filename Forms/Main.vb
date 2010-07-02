@@ -311,7 +311,7 @@ Friend Class Main
         lstSubscribed.Dock = DockStyle.Fill
         lstDownloads.Dock = DockStyle.Fill
 
-        ttxSearch.Visible = False
+        tbrView.Items.Remove(ttxSearch)
 
         Me.Font = SystemFonts.MessageBoxFont
         lblSideMainTitle.Font = New Font(Me.Font.FontFamily, CSng(Me.Font.SizeInPoints * 1.16), Me.Font.Style, GraphicsUnit.Point)

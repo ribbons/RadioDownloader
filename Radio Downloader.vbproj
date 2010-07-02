@@ -165,6 +165,9 @@
     <Compile Include="Controls\ExtToolBar.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Controls\ExtToolStrip.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\GlassForm.vb">
       <SubType>Form</SubType>
     </Compile>

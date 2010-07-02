@@ -18,11 +18,16 @@ Option Explicit On
 Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 Imports System.Security.Permissions
+Imports System.Windows.Forms.VisualStyles
 
 Public MustInherit Class GlassForm
     Inherits Form
 
+    Private Const WM_NCHITTEST As Integer = &H84
     Private Const WM_DWMCOMPOSITIONCHANGED As Integer = &H31E
+
+    Private Const HTCLIENT As Integer = &H1
+    Private Const HTCAPTION As Integer = &H2
 
     <StructLayout(LayoutKind.Sequential)> _
     Private Structure MARGINS
@@ -61,6 +66,16 @@ Public MustInherit Class GlassForm
             Case WM_DWMCOMPOSITIONCHANGED
                 If glassSet Then
                     ExtendFrameIntoClientArea()
+                End If
+            Case WM_NCHITTEST
+                DefWndProc(m)
+
+                If OsUtils.WinVistaOrLater AndAlso VisualStyleRenderer.IsSupported AndAlso glassSet Then
+                    If CInt(m.Result) = HTCLIENT Then
+                        ' Pretend that the mouse was over the title bar, making the form draggable
+                        m.Result = New IntPtr(HTCAPTION)
+                        Return
+                    End If
                 End If
         End Select
 

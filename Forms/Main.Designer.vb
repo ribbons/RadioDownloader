@@ -22,7 +22,7 @@
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
-        Me.tbrView = New System.Windows.Forms.ToolStrip
+        Me.tbrView = New ExtToolStrip
         Me.tbtBack = New System.Windows.Forms.ToolStripButton
         Me.tbtForward = New System.Windows.Forms.ToolStripButton
         Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
@@ -609,7 +609,7 @@
         Me.PerformLayout()
 
     End Sub
-    Friend WithEvents tbrView As System.Windows.Forms.ToolStrip
+    Friend WithEvents tbrView As ExtToolStrip
     Friend WithEvents tbtFindNew As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtSubscriptions As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtDownloads As System.Windows.Forms.ToolStripButton
