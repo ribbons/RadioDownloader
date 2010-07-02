@@ -34,14 +34,6 @@ Friend Class OsUtils
     Private Const IDANI_CLOSE As Short = &H2S
     Private Const IDANI_CAPTION As Short = &H3S
 
-    <StructLayout(LayoutKind.Sequential)> _
-    Private Structure MARGINS
-        Public cxLeftWidth As Integer
-        Public cxRightWidth As Integer
-        Public cyTopHeight As Integer
-        Public cyButtomheight As Integer
-    End Structure
-
     <DllImport("user32.dll", SetLastError:=True)> _
     Private Shared Function DrawAnimatedRects(ByVal hWnd As IntPtr, ByVal idAni As Integer, ByRef lprcFrom As RECT, ByRef lprcTo As RECT) As <MarshalAs(UnmanagedType.Bool)> Boolean
     End Function
@@ -60,10 +52,6 @@ Friend Class OsUtils
 
     <DllImport("user32.dll", SetLastError:=True)> _
     Private Shared Function GetWindowRect(ByVal hWnd As IntPtr, ByRef lpRect As RECT) As <MarshalAs(UnmanagedType.Bool)> Boolean
-    End Function
-
-    <DllImport("dwmapi.dll", SetLastError:=True)> _
-    Private Shared Function DwmExtendFrameIntoClientArea(ByVal hWnd As IntPtr, ByRef pMarinset As MARGINS) As Integer
     End Function
 
     <DllImport("dwmapi.dll", SetLastError:=True)> _
@@ -153,23 +141,6 @@ Friend Class OsUtils
             If DrawAnimatedRects(form.Handle, IDANI_OPEN Or IDANI_CAPTION, systray, window) = False Then
                 Throw New Win32Exception
             End If
-        End If
-    End Sub
-
-    Public Shared Sub ExtendFrameIntoClientArea(ByVal glassWin As Form, ByVal leftMargin As Integer, ByVal rightMargin As Integer, ByVal topMargin As Integer, ByVal bottomMargin As Integer)
-        If Not CompositionEnabled() Then
-            Return
-        End If
-
-        Dim margins As MARGINS = New MARGINS
-
-        margins.cxLeftWidth = leftMargin
-        margins.cxRightWidth = rightMargin
-        margins.cyTopHeight = topMargin
-        margins.cyButtomheight = bottomMargin
-
-        If OsUtils.DwmExtendFrameIntoClientArea(glassWin.Handle, margins) <> 0 Then
-            Throw New Win32Exception()
         End If
     End Sub
 

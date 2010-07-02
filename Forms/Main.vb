@@ -22,9 +22,7 @@ Imports System.IO
 Imports System.Windows.Forms.VisualStyles
 
 Friend Class Main
-    Inherits System.Windows.Forms.Form
-
-    Private Const WM_DWMCOMPOSITIONCHANGED As Integer = &H31E
+    Inherits GlassForm
 
     Private Enum MainTab
         FindProgramme
@@ -332,7 +330,7 @@ Friend Class Main
             tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right)
         End If
 
-        OsUtils.ExtendFrameIntoClientArea(Me, 0, 0, tbrView.Height, 0)
+        Me.SetGlassMargins(0, 0, tbrView.Height, 0)
         tbrView.Renderer = New TabBarRenderer
 
         progData.StartDownload()
@@ -1583,14 +1581,5 @@ Friend Class Main
 
         ' Add the whole array of ListItems at once
         lstDownloads.Items.AddRange(initItems)
-    End Sub
-
-    Protected Overrides Sub WndProc(ByRef m As System.Windows.Forms.Message)
-        Select Case m.Msg
-            Case WM_DWMCOMPOSITIONCHANGED
-                OsUtils.ExtendFrameIntoClientArea(Me, 0, 0, tbrView.Height, 0)
-        End Select
-
-        MyBase.WndProc(m)
     End Sub
 End Class
