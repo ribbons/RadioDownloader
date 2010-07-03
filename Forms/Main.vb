@@ -330,6 +330,10 @@ Friend Class Main
             tblToolbars.ColumnStyles(1) = New ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right)
         End If
 
+        If OsUtils.WinVistaOrLater And VisualStyleRenderer.IsSupported Then
+            tbrView.Margin = New Padding(0)
+        End If
+
         Me.SetGlassMargins(0, 0, tbrView.Height, 0)
         tbrView.Renderer = New TabBarRenderer
 

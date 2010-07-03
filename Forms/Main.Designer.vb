@@ -22,10 +22,9 @@
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
-        Me.tbrView = New ExtToolStrip
+        Me.tbrView = New RadioDld.ExtToolStrip
         Me.tbtBack = New System.Windows.Forms.ToolStripButton
         Me.tbtForward = New System.Windows.Forms.ToolStripButton
-        Me.ToolStripSeparator1 = New System.Windows.Forms.ToolStripSeparator
         Me.tbtFindNew = New System.Windows.Forms.ToolStripButton
         Me.tbtFavourites = New System.Windows.Forms.ToolStripButton
         Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton
@@ -93,7 +92,7 @@
         '
         Me.tbrView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
         Me.tbrView.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtBack, Me.tbtForward, Me.ToolStripSeparator1, Me.tbtFindNew, Me.tbtFavourites, Me.tbtSubscriptions, Me.tbtDownloads, Me.ttxSearch})
+        Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtBack, Me.tbtForward, Me.tbtFindNew, Me.tbtSubscriptions, Me.tbtFavourites, Me.tbtDownloads, Me.ttxSearch})
         Me.tbrView.Location = New System.Drawing.Point(0, 0)
         Me.tbrView.Name = "tbrView"
         Me.tbrView.Padding = New System.Windows.Forms.Padding(3, 0, 1, 0)
@@ -108,8 +107,8 @@
         Me.tbtBack.Image = Global.RadioDld.My.Resources.Resources.views_back
         Me.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtBack.Name = "tbtBack"
-        Me.tbtBack.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtBack.Size = New System.Drawing.Size(32, 28)
+        Me.tbtBack.Padding = New System.Windows.Forms.Padding(1, 0, 1, 0)
+        Me.tbtBack.Size = New System.Drawing.Size(30, 28)
         Me.tbtBack.Text = "Back"
         '
         'tbtForward
@@ -117,15 +116,11 @@
         Me.tbtForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
         Me.tbtForward.Image = Global.RadioDld.My.Resources.Resources.views_forward
         Me.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtForward.Margin = New System.Windows.Forms.Padding(0, 1, 8, 2)
         Me.tbtForward.Name = "tbtForward"
-        Me.tbtForward.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtForward.Size = New System.Drawing.Size(32, 28)
+        Me.tbtForward.Padding = New System.Windows.Forms.Padding(1, 0, 1, 0)
+        Me.tbtForward.Size = New System.Drawing.Size(30, 28)
         Me.tbtForward.Text = "Forward"
-        '
-        'ToolStripSeparator1
-        '
-        Me.ToolStripSeparator1.Name = "ToolStripSeparator1"
-        Me.ToolStripSeparator1.Size = New System.Drawing.Size(6, 31)
         '
         'tbtFindNew
         '
@@ -651,7 +646,6 @@
     Friend WithEvents tbtFavourites As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtBack As System.Windows.Forms.ToolStripButton
     Friend WithEvents tbtForward As System.Windows.Forms.ToolStripButton
-    Friend WithEvents ToolStripSeparator1 As System.Windows.Forms.ToolStripSeparator
     Friend WithEvents tbtCurrentEps As System.Windows.Forms.ToolBarButton
     Friend WithEvents imlToolbar As System.Windows.Forms.ImageList
     Friend WithEvents mnuOptions As System.Windows.Forms.ContextMenu

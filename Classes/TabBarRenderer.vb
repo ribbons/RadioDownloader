@@ -108,6 +108,12 @@ Friend Class TabBarRenderer
     Private Const AC_SRC_OVER As Integer = 0
     Private Const AC_SRC_ALPHA As Integer = 1
 
+    ' NAV_BACKBUTTONSTATES / NAV_FORWARDBUTTONSTATES
+    Private Const NAV_BF_NORMAL As Integer = 1
+    Private Const NAV_BF_HOT As Integer = 2
+    Private Const NAV_BF_PRESSED As Integer = 3
+    Private Const NAV_BF_DISABLED As Integer = 4
+
     Private Const tabSeparation As Integer = 3
 
     Private rendererFor As ToolStrip
@@ -127,6 +133,39 @@ Friend Class TabBarRenderer
 
         AddHandler toolStrip.FindForm.Activated, AddressOf Form_Activated
         AddHandler toolStrip.FindForm.Deactivate, AddressOf Form_Deactivated
+    End Sub
+
+    Protected Overrides Sub OnRenderItemImage(ByVal e As System.Windows.Forms.ToolStripItemImageRenderEventArgs)
+        If e.Item.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText Then
+            MyBase.OnRenderItemImage(e)
+            Return
+        End If
+
+        If VisualStyleRenderer.IsSupported Then
+            Dim navigation As VisualStyleRenderer = Nothing
+            Dim stylePart As Integer = e.ToolStrip.Items.IndexOf(e.Item) + 1
+
+            Try
+                If e.Item.Enabled = False Then
+                    navigation = New VisualStyleRenderer("Navigation", stylePart, NAV_BF_DISABLED)
+                ElseIf e.Item.Pressed Then
+                    navigation = New VisualStyleRenderer("Navigation", stylePart, NAV_BF_PRESSED)
+                ElseIf e.Item.Selected Then
+                    navigation = New VisualStyleRenderer("Navigation", stylePart, NAV_BF_HOT)
+                Else
+                    navigation = New VisualStyleRenderer("Navigation", stylePart, NAV_BF_NORMAL)
+                End If
+            Catch argumentExp As ArgumentException
+                ' The element is not defined in the current theme
+            End Try
+
+            If navigation IsNot Nothing Then
+                navigation.DrawBackground(e.Graphics, New Rectangle(0, -2, e.Item.Width, e.Item.Width))
+                Return
+            End If
+        End If
+
+        MyBase.OnRenderItemImage(e)
     End Sub
 
     Protected Overrides Sub OnRenderToolStripBackground(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
@@ -290,11 +329,6 @@ Friend Class TabBarRenderer
         End If
 
         e.Graphics.ReleaseHdc()
-    End Sub
-
-    Protected Overrides Sub OnRenderSeparator(ByVal e As System.Windows.Forms.ToolStripSeparatorRenderEventArgs)
-        ' Not painted as a visible separator
-        Return
     End Sub
 
     Protected Overrides Sub OnRenderToolStripBorder(ByVal e As System.Windows.Forms.ToolStripRenderEventArgs)
