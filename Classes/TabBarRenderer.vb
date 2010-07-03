@@ -137,6 +137,9 @@ Friend Class TabBarRenderer
 
     Protected Overrides Sub OnRenderItemImage(ByVal e As System.Windows.Forms.ToolStripItemImageRenderEventArgs)
         If e.Item.DisplayStyle = ToolStripItemDisplayStyle.ImageAndText Then
+            e.Graphics.DrawImage(e.Item.Image, e.ImageRectangle)
+            Return
+        ElseIf e.Item.DisplayStyle <> ToolStripItemDisplayStyle.Image Then
             MyBase.OnRenderItemImage(e)
             Return
         End If
