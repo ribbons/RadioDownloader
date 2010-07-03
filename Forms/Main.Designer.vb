@@ -124,6 +124,7 @@
         '
         'tbtFindNew
         '
+        Me.tbtFindNew.AutoToolTip = False
         Me.tbtFindNew.Checked = True
         Me.tbtFindNew.CheckState = System.Windows.Forms.CheckState.Checked
         Me.tbtFindNew.Image = Global.RadioDld.My.Resources.Resources.views_find_new
@@ -135,6 +136,7 @@
         '
         'tbtFavourites
         '
+        Me.tbtFavourites.AutoToolTip = False
         Me.tbtFavourites.Image = CType(resources.GetObject("tbtFavourites.Image"), System.Drawing.Image)
         Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtFavourites.Name = "tbtFavourites"
@@ -145,6 +147,7 @@
         '
         'tbtSubscriptions
         '
+        Me.tbtSubscriptions.AutoToolTip = False
         Me.tbtSubscriptions.Image = Global.RadioDld.My.Resources.Resources.views_subscriptions
         Me.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtSubscriptions.Name = "tbtSubscriptions"
@@ -154,6 +157,7 @@
         '
         'tbtDownloads
         '
+        Me.tbtDownloads.AutoToolTip = False
         Me.tbtDownloads.Image = Global.RadioDld.My.Resources.Resources.views_downloads
         Me.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta
         Me.tbtDownloads.Name = "tbtDownloads"
