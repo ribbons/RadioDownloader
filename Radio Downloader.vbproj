@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -337,6 +337,6 @@
     </PostBuildEvent>
   </PropertyGroup>
   <Target Name="AfterBuild">
-    <Exec Command="&quot;$(ProgramFiles)\Microsoft FxCop 1.36\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /project:&quot;Radio Downloader.FxCop&quot; /console" />
+    <Exec Command="&quot;$(ProgramFiles)\Microsoft FxCop 10.0\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /project:&quot;Radio Downloader.FxCop&quot; /console" />
   </Target>
 </Project>

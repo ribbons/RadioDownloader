@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -166,6 +166,6 @@
   <Target Name="BeforeBuild">
   </Target>
   <Target Name="AfterBuild">
-    <Exec Command="&quot;$(ProgramFiles)\Microsoft FxCop 1.36\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /project:&quot;PodcastProvider.FxCop&quot; /console" />
+    <Exec Command="&quot;$(ProgramFiles)\Microsoft FxCop 10.0\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /project:&quot;PodcastProvider.FxCop&quot; /console" />
   </Target>
 </Project>
