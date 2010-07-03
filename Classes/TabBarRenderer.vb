@@ -123,6 +123,7 @@ Friend Class TabBarRenderer
 
     Private inactiveTabBkg As Brush
     Private hoverTabBkg As Brush
+    Private pressedTabBkg As Brush
     Private tabBorder As New Pen(SystemColors.ControlDark)
     Private nonAeroBorder As New Pen(Color.FromArgb(255, 182, 193, 204))
 
@@ -199,6 +200,7 @@ Friend Class TabBarRenderer
         If inactiveTabBkg Is Nothing Then
             inactiveTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.Control, SystemColors.ControlDark)
             hoverTabBkg = New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, SystemColors.Control)
+            pressedTabBkg = New SolidBrush(SystemColors.ControlLight)
         End If
 
         Using activeTabBkg As New LinearGradientBrush(New Point(0, 0), New Point(0, e.Item.Height), SystemColors.ControlLight, GetActiveTabBtmCol(e.ToolStrip, e.Item))
@@ -211,7 +213,11 @@ Friend Class TabBarRenderer
                 ' Invalidate between the buttons and the bottom of the toolstrip so that it gets repainted
                 e.ToolStrip.Invalidate(New Rectangle(0, e.Item.Bounds.Bottom, e.ToolStrip.Bounds.Width, e.ToolStrip.Bounds.Height - e.Item.Bounds.Bottom))
             ElseIf e.Item.Selected Then
-                colour = hoverTabBkg
+                If e.Item.Pressed Then
+                    colour = pressedTabBkg
+                Else
+                    colour = hoverTabBkg
+                End If
             End If
 
             e.Graphics.SmoothingMode = SmoothingMode.HighQuality
@@ -404,6 +410,7 @@ Friend Class TabBarRenderer
                 If inactiveTabBkg IsNot Nothing Then
                     inactiveTabBkg.Dispose()
                     hoverTabBkg.Dispose()
+                    pressedTabBkg.Dispose()
                 End If
 
                 RemoveHandler rendererFor.FindForm.Activated, AddressOf Form_Activated
