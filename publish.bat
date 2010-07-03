@@ -2,7 +2,7 @@
 
 rem Batch file to build and sign and Radio Downloader and provider, and build and sign the installer
 
-set sdklocation=%programfiles%\Microsoft SDKs\Windows\v7.0
+set sdklocation=%programfiles%\Microsoft SDKs\Windows\v7.1
 if not exist "%sdklocation%" goto nosdk
 
 set timestampserver=http://timestamp.verisign.com/scripts/timstamp.dll
