@@ -16,74 +16,11 @@ Option Strict On
 Option Explicit On
 
 Friend Class DldProgData
-    Private _pluginId As Guid
-    Private _progExtId As String
-    Private _epId As Integer
-    Private _episodeExtId As String
-    Private _progInfo As ProgrammeInfo
-    Private _episodeInfo As EpisodeInfo
-    Private _finalName As String
-
-    Public Property PluginId() As Guid
-        Get
-            Return _pluginId
-        End Get
-        Set(ByVal pluginId As Guid)
-            Me._pluginId = pluginId
-        End Set
-    End Property
-
-    Public Property ProgExtId() As String
-        Get
-            Return _progExtId
-        End Get
-        Set(ByVal progExtId As String)
-            Me._progExtId = progExtId
-        End Set
-    End Property
-
-    Public Property EpId() As Integer
-        Get
-            Return _epId
-        End Get
-        Set(ByVal epId As Integer)
-            Me._epId = epId
-        End Set
-    End Property
-
-    Public Property EpisodeExtId() As String
-        Get
-            Return _episodeExtId
-        End Get
-        Set(ByVal episodeExtId As String)
-            Me._episodeExtId = episodeExtId
-        End Set
-    End Property
-
-    Public Property ProgInfo() As ProgrammeInfo
-        Get
-            Return _progInfo
-        End Get
-        Set(ByVal progInfo As ProgrammeInfo)
-            Me._progInfo = progInfo
-        End Set
-    End Property
-
-    Public Property EpisodeInfo() As EpisodeInfo
-        Get
-            Return _episodeInfo
-        End Get
-        Set(ByVal episodeInfo As EpisodeInfo)
-            Me._episodeInfo = episodeInfo
-        End Set
-    End Property
-
-    Public Property FinalName() As String
-        Get
-            Return _finalName
-        End Get
-        Set(ByVal finalName As String)
-            Me._finalName = finalName
-        End Set
-    End Property
+    Public Property PluginId As Guid
+    Public Property ProgExtId As String
+    Public Property EpId As Integer
+    Public Property EpisodeExtId As String
+    Public Property ProgInfo As ProgrammeInfo
+    Public Property EpisodeInfo As EpisodeInfo
+    Public Property FinalName As String
 End Class

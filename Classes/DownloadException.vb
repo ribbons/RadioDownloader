@@ -21,34 +21,16 @@ Imports System.Security.Permissions
 
 <Serializable()> _
 Public Class DldErrorDataItem
-    Private itemName As String
-    Private itemData As String
-
-    Public Property Name() As String
-        Get
-            Return itemName
-        End Get
-        Set(ByVal value As String)
-            itemName = value
-        End Set
-    End Property
-
-    Public Property Data() As String
-        Get
-            Return itemData
-        End Get
-        Set(ByVal value As String)
-            itemData = value
-        End Set
-    End Property
+    Public Property Name As String
+    Public Property Data As String
 
     Protected Sub New()
         ' Do nothing, just needed for deserialisation
     End Sub
 
     Public Sub New(ByVal name As String, ByVal data As String)
-        itemName = name
-        itemData = data
+        Me.Name = name
+        Me.Data = data
     End Sub
 End Class
 
