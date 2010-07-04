@@ -174,7 +174,7 @@ Friend Class Data
         End Select
 
         ' Start regularly checking for new subscriptions in the background
-        ThreadPool.QueueUserWorkItem(AddressOf CheckSubscriptions)
+        ThreadPool.QueueUserWorkItem(Sub() CheckSubscriptions())
     End Sub
 
     Private Sub UpgradeDBv2to3()
@@ -269,11 +269,7 @@ Friend Class Data
     End Sub
 
     Public Sub StartDownload()
-        ThreadPool.QueueUserWorkItem(AddressOf StartDownloadAsync)
-    End Sub
-
-    Private Sub StartDownloadAsync(ByVal dummy As Object)
-        Call StartDownloadAsync()
+        ThreadPool.QueueUserWorkItem(Sub() StartDownloadAsync())
     End Sub
 
     Private Sub StartDownloadAsync()
@@ -422,11 +418,7 @@ Friend Class Data
     End Sub
 
     Public Sub UpdateProgInfoIfRequired(ByVal progid As Integer)
-        ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf UpdateProgInfoIfRequiredAsync), progid)
-    End Sub
-
-    Private Sub UpdateProgInfoIfRequiredAsync(ByVal progid As Object)
-        Call UpdateProgInfoIfRequiredAsync(CInt(progid))
+        ThreadPool.QueueUserWorkItem(Sub() UpdateProgInfoIfRequiredAsync(progid))
     End Sub
 
     Private Sub UpdateProgInfoIfRequiredAsync(ByVal progid As Integer)
@@ -519,12 +511,7 @@ Friend Class Data
     End Function
 
     Public Sub EpisodeSetAutoDownload(ByVal epid As Integer, ByVal autoDownload As Boolean)
-        ThreadPool.QueueUserWorkItem(AddressOf EpisodeSetAutoDownloadAsync, New ArrayList(New Object() {epid, autoDownload}))
-    End Sub
-
-    Private Sub EpisodeSetAutoDownloadAsync(ByVal params As Object)
-        Dim paramList As ArrayList = DirectCast(params, ArrayList)
-        EpisodeSetAutoDownloadAsync(CInt(paramList(0)), CBool(paramList(1)))
+        ThreadPool.QueueUserWorkItem(Sub() EpisodeSetAutoDownloadAsync(epid, autoDownload))
     End Sub
 
     Private Sub EpisodeSetAutoDownloadAsync(ByVal epid As Integer, ByVal autoDownload As Boolean)
@@ -551,7 +538,7 @@ Friend Class Data
         End Using
     End Function
 
-    Private Sub CheckSubscriptions(ByVal dummy As Object)
+    Private Sub CheckSubscriptions()
         ' Wait for 10 minutes to give a pause between each check for new episodes
         Thread.Sleep(600000)
 
@@ -653,7 +640,7 @@ Friend Class Data
 
         ' Queue the next subscription check.  This is used instead of a loop
         ' as it frees up a slot in the thread pool other actions are waiting.
-        ThreadPool.QueueUserWorkItem(AddressOf CheckSubscriptions)
+        ThreadPool.QueueUserWorkItem(Sub() CheckSubscriptions())
     End Sub
 
     Public Function AddDownload(ByVal epid As Integer) As Boolean
@@ -667,14 +654,10 @@ Friend Class Data
             End Using
         End Using
 
-        ThreadPool.QueueUserWorkItem(AddressOf AddDownloadAsync, epid)
+        ThreadPool.QueueUserWorkItem(Sub() AddDownloadAsync(epid))
 
         Return True
     End Function
-
-    Private Sub AddDownloadAsync(ByVal epid As Object)
-        AddDownloadAsync(CInt(epid))
-    End Sub
 
     Private Sub AddDownloadAsync(ByVal epid As Integer)
         SyncLock dbUpdateLock
@@ -712,14 +695,10 @@ Friend Class Data
             End Using
         End Using
 
-        ThreadPool.QueueUserWorkItem(AddressOf AddSubscriptionAsync, progid)
+        ThreadPool.QueueUserWorkItem(Sub() AddSubscriptionAsync(progid))
 
         Return True
     End Function
-
-    Private Sub AddSubscriptionAsync(ByVal progid As Object)
-        AddSubscriptionAsync(CInt(progid))
-    End Sub
 
     Private Sub AddSubscriptionAsync(ByVal progid As Integer)
         SyncLock dbUpdateLock
@@ -746,11 +725,7 @@ Friend Class Data
     End Sub
 
     Public Sub RemoveSubscription(ByVal progid As Integer)
-        ThreadPool.QueueUserWorkItem(AddressOf RemoveSubscriptionAsync, progid)
-    End Sub
-
-    Private Sub RemoveSubscriptionAsync(ByVal progid As Object)
-        RemoveSubscriptionAsync(CInt(progid))
+        ThreadPool.QueueUserWorkItem(Sub() RemoveSubscriptionAsync(progid))
     End Sub
 
     Private Sub RemoveSubscriptionAsync(ByVal progid As Integer)
@@ -781,11 +756,7 @@ Friend Class Data
     End Function
 
     Public Sub ResetDownload(ByVal epid As Integer)
-        ThreadPool.QueueUserWorkItem(AddressOf ResetDownloadAsync, epid)
-    End Sub
-
-    Private Sub ResetDownloadAsync(ByVal epidObj As Object)
-        ResetDownloadAsync(CInt(epidObj), False)
+        ThreadPool.QueueUserWorkItem(Sub() ResetDownloadAsync(epid, False))
     End Sub
 
     Private Sub ResetDownloadAsync(ByVal epid As Integer, ByVal auto As Boolean)
@@ -820,11 +791,7 @@ Friend Class Data
     End Sub
 
     Public Sub DownloadRemove(ByVal epid As Integer)
-        ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf DownloadRemoveAsync), epid)
-    End Sub
-
-    Private Sub DownloadRemoveAsync(ByVal epidObj As Object)
-        DownloadRemoveAsync(CInt(epidObj), False)
+        ThreadPool.QueueUserWorkItem(Sub() DownloadRemoveAsync(epid, False))
     End Sub
 
     Private Sub DownloadRemoveAsync(ByVal epid As Integer, ByVal auto As Boolean)
@@ -872,11 +839,7 @@ Friend Class Data
     End Sub
 
     Public Sub DownloadBumpPlayCount(ByVal epid As Integer)
-        ThreadPool.QueueUserWorkItem(New WaitCallback(AddressOf DownloadBumpPlayCountAsync), epid)
-    End Sub
-
-    Private Sub DownloadBumpPlayCountAsync(ByVal epidObj As Object)
-        DownloadBumpPlayCountAsync(CInt(epidObj))
+        ThreadPool.QueueUserWorkItem(Sub() DownloadBumpPlayCountAsync(epid))
     End Sub
 
     Private Sub DownloadBumpPlayCountAsync(ByVal epid As Integer)
@@ -1479,9 +1442,9 @@ Friend Class Data
 
     Public Sub InitEpisodeList(ByVal progid As Integer)
         SyncLock episodeListThreadLock
-            episodeListThread = New Thread(New ParameterizedThreadStart(AddressOf InitEpisodeListThread))
+            episodeListThread = New Thread(Sub() InitEpisodeListThread(progid))
             episodeListThread.IsBackground = True
-            episodeListThread.Start(progid)
+            episodeListThread.Start()
         End SyncLock
     End Sub
 
@@ -1489,10 +1452,6 @@ Friend Class Data
         SyncLock episodeListThreadLock
             episodeListThread = Nothing
         End SyncLock
-    End Sub
-
-    Private Sub InitEpisodeListThread(ByVal progid As Object)
-        Call InitEpisodeListThread(CInt(progid))
     End Sub
 
     Private Sub InitEpisodeListThread(ByVal progid As Integer)
