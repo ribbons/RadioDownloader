@@ -18,12 +18,6 @@ Option Explicit On
 Imports System.Threading
 
 Friend Class Status
-    Private Delegate Sub SetStatusText_Delegate(ByVal text As String)
-    Private Delegate Sub SetProgressBarMarquee_Delegate(ByVal marquee As Boolean)
-    Private Delegate Sub SetProgressBarMax_Delegate(ByVal value As Integer)
-    Private Delegate Sub SetProgressBarValue_Delegate(ByVal value As Integer)
-    Private Delegate Sub HideForm_Delegate()
-
     Private showThread As Thread
 
     Public Shadows Sub Show()
@@ -41,7 +35,7 @@ Friend Class Status
         End Get
         Set(ByVal text As String)
             If Me.IsHandleCreated Then
-                Call Me.Invoke(New SetStatusText_Delegate(AddressOf SetStatusText_FormThread), New Object() {text})
+                Call Me.Invoke(Sub() SetStatusText_FormThread(text))
             Else
                 Call SetStatusText_FormThread(text)
             End If
@@ -58,7 +52,7 @@ Friend Class Status
         End Get
         Set(ByVal marquee As Boolean)
             If Me.IsHandleCreated Then
-                Call Me.Invoke(New SetProgressBarMarquee_Delegate(AddressOf SetProgressBarMarquee_FormThread), New Object() {marquee})
+                Call Me.Invoke(Sub() SetProgressBarMarquee_FormThread(marquee))
             Else
                 Call SetProgressBarMarquee_FormThread(marquee)
             End If
@@ -79,7 +73,7 @@ Friend Class Status
         End Get
         Set(ByVal value As Integer)
             If Me.IsHandleCreated Then
-                Call Me.Invoke(New SetProgressBarMax_Delegate(AddressOf SetProgressBarMax_FormThread), New Object() {value})
+                Call Me.Invoke(Sub() SetProgressBarMax_FormThread(value))
             Else
                 SetProgressBarMax_FormThread(value)
             End If
@@ -96,7 +90,7 @@ Friend Class Status
         End Get
         Set(ByVal value As Integer)
             If Me.IsHandleCreated Then
-                Call Me.Invoke(New SetProgressBarValue_Delegate(AddressOf SetProgressBarValue_FormThread), New Object() {value})
+                Call Me.Invoke(Sub() SetProgressBarValue_FormThread(value))
             Else
                 SetProgressBarValue_FormThread(value)
             End If
@@ -109,7 +103,7 @@ Friend Class Status
 
     Public Shadows Sub Hide()
         If Me.IsHandleCreated Then
-            Call Me.Invoke(New HideForm_Delegate(AddressOf HideForm_FormThread))
+            Call Me.Invoke(Sub() HideForm_FormThread())
         Else
             HideForm_FormThread()
         End If
