@@ -24,28 +24,6 @@ Imports System.Windows.Forms.VisualStyles
 Friend Class Main
     Inherits GlassForm
 
-    Private Enum MainTab
-        FindProgramme
-        Favourites
-        Subscriptions
-        Downloads
-    End Enum
-
-    Private Enum View
-        FindNewChooseProvider
-        FindNewProviderForm
-        ProgEpisodes
-        Favourites
-        Subscriptions
-        Downloads
-    End Enum
-
-    Private Structure ViewStore
-        Dim Tab As MainTab
-        Dim View As View
-        Dim ViewData As Object
-    End Structure
-
     Private Structure FindNewViewData
         Dim ProviderID As Guid
         Dim View As Object
@@ -82,10 +60,9 @@ Friend Class Main
         End Function
     End Class
 
-    Private backData(-1) As ViewStore
-    Private fwdData(-1) As ViewStore
-
     Private WithEvents progData As Data
+    Private WithEvents view As ViewState
+
     Private checkUpdate As UpdateCheck
     Private tbarNotif As TaskbarNotify
 
@@ -280,7 +257,8 @@ Friend Class Main
         downloadColNames.Add(Data.DownloadCols.Progress, "Progress")
         downloadColNames.Add(Data.DownloadCols.Status, "Status")
 
-        Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
+        view = New ViewState
+        Call view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider)
 
         progData = Data.GetInstance
         Call progData.InitProviderList()
@@ -376,7 +354,7 @@ Friend Class Main
         Dim info As Data.ProviderData = progData.FetchProviderData(providerId)
         Call SetSideBar(info.name, info.description, Nothing)
 
-        If backData(backData.GetUpperBound(0)).View = View.FindNewChooseProvider Then
+        If view.CurrentView = ViewState.View.FindNewChooseProvider Then
             SetToolbarButtons("ChooseProgramme")
         End If
     End Sub
@@ -395,7 +373,7 @@ Friend Class Main
     End Sub
 
     Private Sub ShowEpisodeInfo(ByVal epid As Integer)
-        Dim progInfo As Data.ProgrammeData = progData.FetchProgrammeData(CInt(backData(backData.GetUpperBound(0)).ViewData))
+        Dim progInfo As Data.ProgrammeData = progData.FetchProgrammeData(CInt(view.CurrentViewData))
         Dim epInfo As Data.EpisodeData = progData.FetchEpisodeData(epid)
         Dim infoText As String = ""
 
@@ -737,15 +715,15 @@ Friend Class Main
     End Sub
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
-        Call SetView(MainTab.FindProgramme, View.FindNewChooseProvider, Nothing)
+        Call view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider)
     End Sub
 
     Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
-        Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
+        Call view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions)
     End Sub
 
     Private Sub tbtDownloads_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtDownloads.Click
-        Call SetView(MainTab.Downloads, View.Downloads, Nothing)
+        Call view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads)
     End Sub
 
     Private Sub progData_ProviderAdded(ByVal providerId As System.Guid) Handles progData.ProviderAdded
@@ -785,7 +763,7 @@ Friend Class Main
 
         mnuOptionsProviderOpts.MenuItems.Add(addMenuItem)
 
-        If backData(backData.GetUpperBound(0)).View = View.FindNewChooseProvider Then
+        If view.CurrentView = ViewState.View.FindNewChooseProvider Then
             If lstProviders.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -800,8 +778,8 @@ Friend Class Main
             Return
         End If
 
-        If backData(backData.GetUpperBound(0)).View = View.ProgEpisodes Then
-            If CInt(backData(backData.GetUpperBound(0)).ViewData) = progid Then
+        If view.CurrentView = ViewState.View.ProgEpisodes Then
+            If CInt(view.CurrentViewData) = progid Then
                 If lstEpisodes.SelectedItems.Count = 0 Then
                     ' Update the displayed programme information
                     Call ShowProgrammeInfo(progid)
@@ -815,7 +793,7 @@ Friend Class Main
     End Sub
 
     Private Sub ShowProgrammeInfo(ByVal progid As Integer)
-        Dim progInfo As Data.ProgrammeData = progData.FetchProgrammeData(CInt(backData(backData.GetUpperBound(0)).ViewData))
+        Dim progInfo As Data.ProgrammeData = progData.FetchProgrammeData(CInt(view.CurrentViewData))
 
         If progInfo.subscribed Then
             Call SetToolbarButtons("Unsubscribe")
@@ -886,7 +864,7 @@ Friend Class Main
         SubscriptionListItem(progid, info, addItem)
         lstSubscribed.Items.Add(addItem)
 
-        If backData(backData.GetUpperBound(0)).View = View.Subscriptions Then
+        If view.CurrentView = ViewState.View.Subscriptions Then
             If lstSubscribed.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -906,7 +884,7 @@ Friend Class Main
 
         SubscriptionListItem(progid, info, item)
 
-        If backData(backData.GetUpperBound(0)).View = View.Subscriptions Then
+        If view.CurrentView = ViewState.View.Subscriptions Then
             If lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture)).Selected Then
                 ShowSubscriptionInfo(progid)
             ElseIf lstSubscribed.SelectedItems.Count = 0 Then
@@ -923,7 +901,7 @@ Friend Class Main
             Return
         End If
 
-        If backData(backData.GetUpperBound(0)).View = View.Subscriptions Then
+        If view.CurrentView = ViewState.View.Subscriptions Then
             If lstSubscribed.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -1014,7 +992,7 @@ Friend Class Main
         Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
         lstDownloads.Items.Add(DownloadListItem(info))
 
-        If backData(backData.GetUpperBound(0)).View = View.Downloads Then
+        If view.CurrentView = ViewState.View.Downloads Then
             If lstDownloads.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -1064,7 +1042,7 @@ Friend Class Main
             Return
         End If
 
-        If backData(backData.GetUpperBound(0)).View = View.Downloads Then
+        If view.CurrentView = ViewState.View.Downloads Then
             If lstDownloads.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
@@ -1107,7 +1085,7 @@ Friend Class Main
         ' Update the downloads list sorting, as the order may now have changed
         lstDownloads.Sort()
 
-        If backData(backData.GetUpperBound(0)).View = View.Downloads Then
+        If view.CurrentView = ViewState.View.Downloads Then
             If item.Selected Then
                 ShowDownloadInfo(epid)
             ElseIf lstDownloads.SelectedItems.Count = 0 Then
@@ -1119,19 +1097,15 @@ Friend Class Main
         Call UpdateTrayStatus(False)
     End Sub
 
-    Private Sub progData_FindNewViewChange(ByVal view As Object) Handles progData.FindNewViewChange
-        Dim ChangedView As ViewStore = backData(backData.GetUpperBound(0))
-        Dim FindViewData As FindNewViewData = DirectCast(ChangedView.ViewData, FindNewViewData)
+    Private Sub progData_FindNewViewChange(ByVal viewData As Object) Handles progData.FindNewViewChange
+        Dim findViewData As FindNewViewData = DirectCast(view.CurrentViewData, FindNewViewData)
+        findViewData.View = viewData
 
-        FindViewData.View = view
-        ChangedView.ViewData = FindViewData
-
-        Call StoreView(ChangedView)
-        Call UpdateNavCtrlState()
+        view.StoreView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewProviderForm, viewData)
     End Sub
 
     Private Sub progData_FoundNew(ByVal progid As Integer) Handles progData.FoundNew
-        Call SetView(MainTab.FindProgramme, View.ProgEpisodes, progid)
+        Call view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.ProgEpisodes, progid)
     End Sub
 
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
@@ -1161,10 +1135,10 @@ Friend Class Main
     End Sub
 
     Private Sub tbtSubscribe_Click()
-        Dim progid As Integer = CInt(backData(backData.GetUpperBound(0)).ViewData)
+        Dim progid As Integer = CInt(view.CurrentViewData)
 
         If progData.AddSubscription(progid) Then
-            Call SetView(MainTab.Subscriptions, View.Subscriptions, Nothing)
+            Call view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions, Nothing)
         Else
             Call MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation)
         End If
@@ -1173,10 +1147,10 @@ Friend Class Main
     Private Sub tbtUnsubscribe_Click()
         Dim progid As Integer
 
-        Select Case backData(backData.GetUpperBound(0)).View
-            Case View.ProgEpisodes
-                progid = CInt(backData(backData.GetUpperBound(0)).ViewData)
-            Case View.Subscriptions
+        Select Case view.CurrentView
+            Case ViewState.View.ProgEpisodes
+                progid = CInt(view.CurrentViewData)
+            Case ViewState.View.Subscriptions
                 progid = CInt(lstSubscribed.SelectedItems(0).Name)
         End Select
 
@@ -1245,7 +1219,7 @@ Friend Class Main
         Dim epid As Integer = CInt(lstEpisodes.SelectedItems(0).Name)
 
         If progData.AddDownload(epid) Then
-            Call SetView(MainTab.Downloads, View.Downloads, Nothing)
+            Call view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads)
         Else
             Call MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation)
         End If
@@ -1253,7 +1227,7 @@ Friend Class Main
 
     Private Sub tbtCurrentEps_Click()
         Dim progid As Integer = CInt(lstSubscribed.SelectedItems(0).Name)
-        Call SetView(MainTab.Subscriptions, View.ProgEpisodes, progid)
+        Call view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.ProgEpisodes, progid)
     End Sub
 
     Private Sub tbtReportError_Click()
@@ -1266,7 +1240,7 @@ Friend Class Main
         viewData.ProviderID = New Guid(lstProviders.SelectedItems(0).Name)
         viewData.View = Nothing
 
-        Call SetView(MainTab.FindProgramme, View.FindNewProviderForm, viewData)
+        Call view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewProviderForm, viewData)
     End Sub
 
     Private Sub mnuOptionsShowOpts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsShowOpts.Click
@@ -1293,51 +1267,29 @@ Friend Class Main
         Call CleanUp.ShowDialog()
     End Sub
 
-    Private Sub StoreView(ByVal viewData As ViewStore)
-        ReDim Preserve backData(backData.GetUpperBound(0) + 1)
-        backData(backData.GetUpperBound(0)) = viewData
-
-        If fwdData.GetUpperBound(0) > -1 Then
-            ReDim fwdData(-1)
-        End If
+    Private Sub view_UpdateNavBtnState(ByVal enableBack As Boolean, ByVal enableFwd As Boolean) Handles view.UpdateNavBtnState
+        tbtBack.Enabled = enableBack
+        tbtForward.Enabled = enableFwd
     End Sub
 
-    Private Sub SetView(ByVal tab As MainTab, ByVal view As View, ByVal viewData As Object)
-        Dim ViewDataStore As ViewStore
-
-        ViewDataStore.Tab = tab
-        ViewDataStore.View = view
-        ViewDataStore.ViewData = viewData
-
-        Call StoreView(ViewDataStore)
-        Call PerformViewChanges(ViewDataStore)
-    End Sub
-
-    Private Sub UpdateNavCtrlState()
-        tbtBack.Enabled = backData.GetUpperBound(0) > 0
-        tbtForward.Enabled = fwdData.GetUpperBound(0) > -1
-    End Sub
-
-    Private Sub PerformViewChanges(ByVal viewData As ViewStore)
-        Call UpdateNavCtrlState()
-
+    Private Sub view_ViewChanged(ByVal view As ViewState.View, ByVal tab As ViewState.MainTab, ByVal data As Object) Handles view.ViewChanged
         tbtFindNew.Checked = False
         tbtFavourites.Checked = False
         tbtSubscriptions.Checked = False
         tbtDownloads.Checked = False
 
-        Select Case viewData.Tab
-            Case MainTab.FindProgramme
+        Select Case tab
+            Case ViewState.MainTab.FindProgramme
                 tbtFindNew.Checked = True
-            Case MainTab.Favourites
+            Case ViewState.MainTab.Favourites
                 tbtFavourites.Checked = True
-            Case MainTab.Subscriptions
+            Case ViewState.MainTab.Subscriptions
                 tbtSubscriptions.Checked = True
-            Case MainTab.Downloads
+            Case ViewState.MainTab.Downloads
                 tbtDownloads.Checked = True
         End Select
 
-        SetViewDefaults(viewData)
+        Call SetViewDefaults()
 
         ' Set the focus to a control which does not show it, to prevent the toolbar momentarily showing focus
         lblSideMainTitle.Focus()
@@ -1348,37 +1300,37 @@ Friend Class Main
         lstSubscribed.Visible = False
         lstDownloads.Visible = False
 
-        Select Case viewData.View
-            Case View.FindNewChooseProvider
+        Select Case view
+            Case view.FindNewChooseProvider
                 lstProviders.Visible = True
                 lstProviders.Focus()
 
                 If lstProviders.SelectedItems.Count > 0 Then
                     ShowProviderInfo(New Guid(lstProviders.SelectedItems(0).Name))
                 End If
-            Case View.FindNewProviderForm
-                Dim FindViewData As FindNewViewData = DirectCast(viewData.ViewData, FindNewViewData)
+            Case view.FindNewProviderForm
+                Dim FindViewData As FindNewViewData = DirectCast(data, FindNewViewData)
 
                 pnlPluginSpace.Visible = True
                 pnlPluginSpace.Controls.Clear()
                 pnlPluginSpace.Controls.Add(progData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View))
                 pnlPluginSpace.Controls(0).Dock = DockStyle.Fill
                 pnlPluginSpace.Controls(0).Focus()
-            Case View.ProgEpisodes
+            Case view.ProgEpisodes
                 lstEpisodes.Visible = True
                 progData.CancelEpisodeListing()
                 lstEpisodes.Items.Clear() ' Clear before DoEvents so that old items don't flash up on screen
                 Application.DoEvents() ' Give any queued BeginInvoke calls a chance to be processed
                 lstEpisodes.Items.Clear()
-                progData.InitEpisodeList(CInt(viewData.ViewData))
-            Case View.Subscriptions
+                progData.InitEpisodeList(CInt(data))
+            Case view.Subscriptions
                 lstSubscribed.Visible = True
                 lstSubscribed.Focus()
 
                 If lstSubscribed.SelectedItems.Count > 0 Then
                     ShowSubscriptionInfo(CInt(lstSubscribed.SelectedItems(0).Name))
                 End If
-            Case View.Downloads
+            Case view.Downloads
                 lstDownloads.Visible = True
                 lstDownloads.Focus()
 
@@ -1389,25 +1341,21 @@ Friend Class Main
     End Sub
 
     Private Sub SetViewDefaults()
-        SetViewDefaults(backData(backData.GetUpperBound(0)))
-    End Sub
-
-    Private Sub SetViewDefaults(ByVal viewData As ViewStore)
-        Select Case viewData.View
-            Case View.FindNewChooseProvider
+        Select Case view.CurrentView
+            Case ViewState.View.FindNewChooseProvider
                 Call SetToolbarButtons("")
                 Call SetSideBar(CStr(lstProviders.Items.Count) + " provider" + If(lstProviders.Items.Count = 1, "", "s"), "", Nothing)
-            Case View.FindNewProviderForm
-                Dim FindViewData As FindNewViewData = DirectCast(viewData.ViewData, FindNewViewData)
+            Case ViewState.View.FindNewProviderForm
+                Dim FindViewData As FindNewViewData = DirectCast(view.CurrentViewData, FindNewViewData)
                 Call SetToolbarButtons("")
                 Call ShowProviderInfo(FindViewData.ProviderID)
-            Case View.ProgEpisodes
-                Dim progid As Integer = CInt(viewData.ViewData)
+            Case ViewState.View.ProgEpisodes
+                Dim progid As Integer = CInt(view.CurrentViewData)
                 Call ShowProgrammeInfo(progid)
-            Case View.Subscriptions
+            Case ViewState.View.Subscriptions
                 Call SetToolbarButtons("")
                 Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + If(lstSubscribed.Items.Count = 1, "", "s"), "", Nothing)
-            Case View.Downloads
+            Case ViewState.View.Downloads
                 Call SetToolbarButtons("CleanUp")
 
                 Dim description As String = ""
@@ -1427,19 +1375,11 @@ Friend Class Main
     End Sub
 
     Private Sub tbtBack_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtBack.Click
-        ReDim Preserve fwdData(fwdData.GetUpperBound(0) + 1)
-        fwdData(fwdData.GetUpperBound(0)) = backData(backData.GetUpperBound(0))
-        ReDim Preserve backData(backData.GetUpperBound(0) - 1)
-
-        Call PerformViewChanges(backData(backData.GetUpperBound(0)))
+        view.NavBack()
     End Sub
 
     Private Sub tbtForward_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtForward.Click
-        ReDim Preserve backData(backData.GetUpperBound(0) + 1)
-        backData(backData.GetUpperBound(0)) = fwdData(fwdData.GetUpperBound(0))
-        ReDim Preserve fwdData(fwdData.GetUpperBound(0) - 1)
-
-        Call PerformViewChanges(backData(backData.GetUpperBound(0)))
+        view.NavFwd()
     End Sub
 
     Private Sub tbrToolbar_ButtonClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.ToolBarButtonClickEventArgs) Handles tbrToolbar.ButtonClick

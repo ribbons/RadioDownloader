@@ -110,7 +110,7 @@ Friend Class Data
     Private findDownloadLock As New Object
 
     Public Event ProviderAdded(ByVal providerId As Guid)
-    Public Event FindNewViewChange(ByVal view As Object)
+    Public Event FindNewViewChange(ByVal viewData As Object)
     Public Event FoundNew(ByVal progid As Integer)
     Public Event ProgrammeUpdated(ByVal progid As Integer)
     Public Event EpisodeAdded(ByVal epid As Integer)
