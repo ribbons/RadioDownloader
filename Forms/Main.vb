@@ -1101,7 +1101,7 @@ Friend Class Main
         Dim findViewData As FindNewViewData = DirectCast(view.CurrentViewData, FindNewViewData)
         findViewData.View = viewData
 
-        view.StoreView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewProviderForm, viewData)
+        view.StoreView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewProviderForm, findViewData)
     End Sub
 
     Private Sub progData_FoundNew(ByVal progid As Integer) Handles progData.FoundNew
