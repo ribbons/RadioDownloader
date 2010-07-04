@@ -70,11 +70,6 @@ Friend Class Main
     Private downloadColSizes As New Dictionary(Of Integer, Integer)
     Private downloadColOrder As New List(Of Data.DownloadCols)
 
-    Private Delegate Sub progData_ProviderAdded_Delegate(ByVal providerId As Guid)
-    Private Delegate Sub progData_Programme_Delegate(ByVal progid As Integer)
-    Private Delegate Sub progData_Episode_Delegate(ByVal epid As Integer)
-    Private Delegate Sub progData_DownloadProgress_Delegate(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon)
-
     Public Sub UpdateTrayStatus(ByVal active As Boolean)
         If OsUtils.WinSevenOrLater Then
             If progData.CountDownloadsErrored > 0 Then
@@ -729,7 +724,7 @@ Friend Class Main
     Private Sub progData_ProviderAdded(ByVal providerId As System.Guid) Handles progData.ProviderAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_ProviderAdded_Delegate(AddressOf progData_ProviderAdded), providerId)
+            Me.BeginInvoke(Sub() progData_ProviderAdded(providerId))
             Return
         End If
 
@@ -774,7 +769,7 @@ Friend Class Main
     Private Sub progData_ProgrammeUpdated(ByVal progid As Integer) Handles progData.ProgrammeUpdated
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_Programme_Delegate(AddressOf progData_ProgrammeUpdated), progid)
+            Me.BeginInvoke(Sub() progData_ProgrammeUpdated(progid))
             Return
         End If
 
@@ -818,7 +813,7 @@ Friend Class Main
     Private Sub progData_EpisodeAdded(ByVal epid As Integer) Handles progData.EpisodeAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_Episode_Delegate(AddressOf progData_EpisodeAdded), epid)
+            Me.BeginInvoke(Sub() progData_EpisodeAdded(epid))
             Return
         End If
 
@@ -851,7 +846,7 @@ Friend Class Main
     Private Sub progData_SubscriptionAdded(ByVal progid As Integer) Handles progData.SubscriptionAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_Programme_Delegate(AddressOf progData_SubscriptionAdded), progid)
+            Me.BeginInvoke(Sub() progData_SubscriptionAdded(progid))
             Return
         End If
 
@@ -875,7 +870,7 @@ Friend Class Main
     Private Sub progData_SubscriptionUpdated(ByVal progid As Integer) Handles progData.SubscriptionUpdated
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_Programme_Delegate(AddressOf progData_SubscriptionUpdated), progid)
+            Me.BeginInvoke(Sub() progData_SubscriptionUpdated(progid))
             Return
         End If
 
@@ -897,7 +892,7 @@ Friend Class Main
     Private Sub progData_SubscriptionRemoved(ByVal progid As Integer) Handles progData.SubscriptionRemoved
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_Programme_Delegate(AddressOf progData_SubscriptionRemoved), progid)
+            Me.BeginInvoke(Sub() progData_SubscriptionRemoved(progid))
             Return
         End If
 
@@ -985,7 +980,7 @@ Friend Class Main
     Private Sub progData_DownloadAdded(ByVal epid As Integer) Handles progData.DownloadAdded
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_Episode_Delegate(AddressOf progData_DownloadAdded), epid)
+            Me.BeginInvoke(Sub() progData_DownloadAdded(epid))
             Return
         End If
 
@@ -1003,7 +998,7 @@ Friend Class Main
     Private Sub progData_DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon) Handles progData.DownloadProgress
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_DownloadProgress_Delegate(AddressOf progData_DownloadProgress), New Object() {epid, percent, statusText, icon})
+            Me.BeginInvoke(Sub() progData_DownloadProgress(epid, percent, statusText, icon))
             Return
         End If
 
@@ -1038,7 +1033,7 @@ Friend Class Main
     Private Sub progData_DownloadRemoved(ByVal epid As Integer) Handles progData.DownloadRemoved
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_Episode_Delegate(AddressOf progData_DownloadRemoved), epid)
+            Me.BeginInvoke(Sub() progData_DownloadRemoved(epid))
             Return
         End If
 
@@ -1067,7 +1062,7 @@ Friend Class Main
     Private Sub progData_DownloadUpdated(ByVal epid As Integer) Handles progData.DownloadUpdated
         If Me.InvokeRequired Then
             ' Events will sometimes be fired on a different thread to the ui
-            Me.BeginInvoke(New progData_Episode_Delegate(AddressOf progData_DownloadUpdated), epid)
+            Me.BeginInvoke(Sub() progData_DownloadUpdated(epid))
             Return
         End If
 
