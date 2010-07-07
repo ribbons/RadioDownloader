@@ -197,7 +197,7 @@
         <Control Id="List" Type="ListBox" X="20" Y="87" Width="330" Height="130" Property="FileInUseProcess" Sunken="yes" TabSkip="yes" />
       </Dialog>
       <Dialog Id="LicenseAgreementDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
-        <Control Id="LicenseAcceptedCheckBox" Type="CheckBox" X="20" Y="210" Width="236" Height="18" CheckBoxValue="1" Property="LicenseAccepted" Text="I &amp;accept the terms in the license agreement" />
+        <Control Id="LicenseAcceptedCheckBox" Type="CheckBox" X="20" Y="210" Width="227" Height="18" CheckBoxValue="1" Property="LicenseAccepted" Text="I &amp;accept the terms in the license agreement" />
         <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]" ElevationShield="yes">
           <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg"><![CDATA[CostingComplete = 1]]></Publish>
           <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace <> 1]]></Publish>
@@ -207,6 +207,15 @@
           <Publish Event="SpawnDialog" Value="OutOfDiskDlg"><![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]></Publish>
           <Condition Action="disable"><![CDATA[LicenseAccepted <> "1"]]></Condition>
           <Condition Action="enable">LicenseAccepted = "1"</Condition>
+          <Condition Action="hide">ShowOptions = "1"</Condition>
+          <Condition Action="show">ShowOptions &lt;&gt; "1"</Condition>
+        </Control>
+        <Control Id="Options" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
+          <Condition Action="disable"><![CDATA[LicenseAccepted <> "1"]]></Condition>
+          <Condition Action="enable">LicenseAccepted = "1"</Condition>
+          <Condition Action="show">ShowOptions = "1"</Condition>
+          <Condition Action="hide">ShowOptions &lt;&gt; "1"</Condition>
+          <Publish Event="NewDialog" Value="OptionsDlg" />
         </Control>
         <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]" Disabled="yes" />
         <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
@@ -224,8 +233,34 @@
         <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
           <Text>[DlgTitleFont]End-User License Agreement</Text>
         </Control>
-        <Control Type="Text" Id="Version" Width="155" Height="10" X="20" Y="246" NoPrefix="yes">
+        <Control Type="Text" Id="Version" Width="90" Height="10" X="260" Y="214" NoPrefix="yes" RightAligned="yes">
           <Text>Version !(bind.FileVersion.RadioDownloaderExe)</Text>
+        </Control>
+        <Control Type="CheckBox" Id="ShowOptionsCheckbox" Width="148" Height="17" X="20" Y="244" Text="&amp;Show advanced options" Property="ShowOptions" CheckBoxValue="1" />
+      </Dialog>
+      <Dialog Id="OptionsDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]" ElevationShield="yes">
+          <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg"><![CDATA[CostingComplete = 1]]></Publish>
+          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace <> 1]]></Publish>
+          <Publish Event="SpawnDialog" Value="OutOfRbDiskDlg"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)]]></Publish>
+          <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
+          <Publish Event="EnableRollback" Value="False"><![CDATA[OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"]]></Publish>
+          <Publish Event="SpawnDialog" Value="OutOfDiskDlg"><![CDATA[(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")]]></Publish>
+        </Control>
+        <Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="LicenseAgreementDlg" />
+        </Control>
+        <Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg"><![CDATA[1]]></Publish>
+        </Control>
+        <Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
+        <Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+        <Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+        <Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>Choose advanced options for the installation</Text>
+        </Control>
+        <Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+          <Text>[DlgTitleFont]Installation Options</Text>
         </Control>
       </Dialog>
       <Dialog Id="OutOfDiskDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
