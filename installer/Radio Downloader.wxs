@@ -210,7 +210,7 @@
           <Condition Action="hide">ShowOptions = "1"</Condition>
           <Condition Action="show">ShowOptions &lt;&gt; "1"</Condition>
         </Control>
-        <Control Id="Options" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Next]">
+        <Control Id="Options" Type="PushButton" X="236" Y="243" Width="56" Height="17" Text="[ButtonText_Next]">
           <Condition Action="disable"><![CDATA[LicenseAccepted <> "1"]]></Condition>
           <Condition Action="enable">LicenseAccepted = "1"</Condition>
           <Condition Action="show">ShowOptions = "1"</Condition>
@@ -239,6 +239,7 @@
         <Control Type="CheckBox" Id="ShowOptionsCheckbox" Width="148" Height="17" X="20" Y="244" Text="&amp;Show advanced options" Property="ShowOptions" CheckBoxValue="1" />
       </Dialog>
       <Dialog Id="OptionsDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+        <Control Id="NoRunAtStartupCheckBox" Type="CheckBox" X="20" Y="100" Width="227" Height="18" CheckBoxValue="1" Property="NORUNATSTARTUP" Text="Do not run [ProductName] at startup" />
         <Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[ButtonText_Install]" ElevationShield="yes">
           <Publish Event="SpawnWaitDialog" Value="WaitForCostingDlg"><![CDATA[CostingComplete = 1]]></Publish>
           <Publish Event="EndDialog" Value="Return"><![CDATA[OutOfDiskSpace <> 1]]></Publish>
@@ -391,6 +392,10 @@
     <Property Id="ARPHELPLINK" Value="http://www.nerdoftheherd.com/tools/radiodld/" />
     <Property Id="ARPNOMODIFY" Value="1" />
     <Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
+    <Property Id="PropsRegPath" Value="SOFTWARE\nerdoftheherd.com\Radio Downloader\installer" />
+    <Property Id="NORUNATSTARTUP">
+      <RegistrySearch Id="RegistryVal" Root="HKLM" Key="[PropsRegPath]" Name="NoRunAtStartup" Type="raw" />
+    </Property>
     <AdminExecuteSequence />
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize" />
@@ -428,7 +433,11 @@
       </Directory>
       <Directory Id="ProgramMenuFolder" Name="Start Menu Programs" />
       <Component Id="RunOnStartup" Guid="FC61531E-1B54-4680-A20A-6CBFC605B1C6">
-        <RegistryValue Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string" Value="&quot;[INSTALLLOCATION]Radio Downloader.exe&quot; /hidemainwindow" />
+        <RegistryValue Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string" Value="&quot;[INSTALLLOCATION]Radio Downloader.exe&quot; /hidemainwindow" />
+        <Condition>NOT NORUNATSTARTUP</Condition>
+      </Component>
+      <Component Id="StoreProperties" Guid="E19172E7-1E96-4D91-8C10-A88BB5D0FEC6">
+        <RegistryValue Key="[PropsRegPath]" Name="NoRunAtStartup" Root="HKLM" Type="string" Value="[NORUNATSTARTUP]" />
       </Component>
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes" />
@@ -439,6 +448,7 @@
       <ComponentRef Id="GplTxt" />
       <ComponentRef Id="RunOnStartup" />
       <ComponentRef Id="PodcastProviderDll" />
+      <ComponentRef Id="StoreProperties" />
     </Feature>
     <Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
     <Condition Message="A newer version of [ProductName] is already installed.">NOT NEWERVERSIONDETECTED</Condition>
