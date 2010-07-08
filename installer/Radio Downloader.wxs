@@ -382,7 +382,6 @@
     <Property Id="PROMPTROLLBACKCOST"><![CDATA[P]]></Property>
     <Property Id="DlgTitleFont"><![CDATA[{&DlgFontBold8}]]></Property>
     <Property Id="ButtonText_Cancel"><![CDATA[Cancel]]></Property>
-    <Property Id="INSTALLLEVEL"><![CDATA[3]]></Property>
     <Property Id="InfoIcon"><![CDATA[info]]></Property>
     <Property Id="ButtonText_Retry"><![CDATA[&Retry]]></Property>
     <Property Id="BannerBitmap"><![CDATA[dialog_banner]]></Property>
