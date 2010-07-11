@@ -310,6 +310,8 @@ Friend Class Main
         Me.SetGlassMargins(0, 0, tbrView.Height, 0)
         tbrView.Renderer = New TabBarRenderer
 
+        OsUtils.ApplyRunOnStartup()
+
         progData.StartDownload()
         tmrCheckForUpdates.Enabled = True
     End Sub

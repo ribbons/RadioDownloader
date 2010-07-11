@@ -40,9 +40,12 @@ Friend Class Preferences
             Exit Sub
         End If
 
+        My.Settings.RunOnStartup = uxRunOnStartup.Checked
         My.Settings.SaveFolder = txtSaveIn.Text
         My.Settings.FileNameFormat = txtFileNameFormat.Text
         My.Settings.RunAfterCommand = txtRunAfter.Text
+
+        OsUtils.ApplyRunOnStartup()
         My.Settings.Save()
     End Sub
 
@@ -56,6 +59,8 @@ Friend Class Preferences
 
     Private Sub Preferences_Load(ByVal eventSender As System.Object, ByVal eventArgs As System.EventArgs) Handles MyBase.Load
         Me.Font = SystemFonts.MessageBoxFont
+
+        uxRunOnStartup.Checked = My.Settings.RunOnStartup
 
         Try
             txtSaveIn.Text = FileUtils.GetSaveFolder()
@@ -73,10 +78,14 @@ Friend Class Preferences
 
     Private Sub cmdReset_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdReset.Click
         If MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question) = MsgBoxResult.Yes Then
+            My.Settings.RunOnStartup = CBool(My.Settings.Properties.Item("RunOnStartup").DefaultValue)
             My.Settings.SaveFolder = My.Settings.Properties.Item("SaveFolder").DefaultValue.ToString
             My.Settings.FileNameFormat = My.Settings.Properties.Item("FileNameFormat").DefaultValue.ToString
             My.Settings.RunAfterCommand = My.Settings.Properties.Item("RunAfterCommand").DefaultValue.ToString
+
+            OsUtils.ApplyRunOnStartup()
             My.Settings.Save()
+
             Me.Close()
         End If
     End Sub

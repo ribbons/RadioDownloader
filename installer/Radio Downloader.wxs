@@ -391,9 +391,6 @@
         </Directory>
       </Directory>
       <Directory Id="ProgramMenuFolder" Name="Start Menu Programs" />
-      <Component Id="RunOnStartup" Guid="FC61531E-1B54-4680-A20A-6CBFC605B1C6">
-        <RegistryValue Action="write" Key="SOFTWARE\Microsoft\Windows\CurrentVersion\Run" Name="Radio Downloader" Root="HKLM" Type="string" Value="&quot;[INSTALLLOCATION]Radio Downloader.exe&quot; /hidemainwindow" />
-      </Component>
     </Directory>
     <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes" />
     <Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow" AllowAdvertise="no" Description="The Radio Downloader application.">
@@ -401,7 +398,6 @@
       <ComponentRef Id="SQLiteDll" />
       <ComponentRef Id="Database" />
       <ComponentRef Id="GplTxt" />
-      <ComponentRef Id="RunOnStartup" />
       <ComponentRef Id="PodcastProviderDll" />
     </Feature>
     <Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>

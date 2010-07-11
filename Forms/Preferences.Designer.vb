@@ -25,18 +25,19 @@
 	'It can be modified using the Windows Form Designer.
 	'Do not modify it using the code editor.
 	<System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
-        Me.cmdCancel = New System.Windows.Forms.Button
-        Me.cmdOK = New System.Windows.Forms.Button
-        Me.cmdChangeFolder = New System.Windows.Forms.Button
-        Me.txtSaveIn = New System.Windows.Forms.TextBox
-        Me.lblSaveIn = New System.Windows.Forms.Label
-        Me.lblFileNameFormat = New System.Windows.Forms.Label
-        Me.txtFileNameFormat = New System.Windows.Forms.TextBox
-        Me.lblFilenameFormatResult = New System.Windows.Forms.Label
-        Me.cmdReset = New System.Windows.Forms.Button
-        Me.lblRunAfter = New System.Windows.Forms.Label
-        Me.txtRunAfter = New System.Windows.Forms.TextBox
-        Me.lblRunAfterFileDef = New System.Windows.Forms.Label
+        Me.cmdCancel = New System.Windows.Forms.Button()
+        Me.cmdOK = New System.Windows.Forms.Button()
+        Me.cmdChangeFolder = New System.Windows.Forms.Button()
+        Me.txtSaveIn = New System.Windows.Forms.TextBox()
+        Me.lblSaveIn = New System.Windows.Forms.Label()
+        Me.lblFileNameFormat = New System.Windows.Forms.Label()
+        Me.txtFileNameFormat = New System.Windows.Forms.TextBox()
+        Me.lblFilenameFormatResult = New System.Windows.Forms.Label()
+        Me.cmdReset = New System.Windows.Forms.Button()
+        Me.lblRunAfter = New System.Windows.Forms.Label()
+        Me.txtRunAfter = New System.Windows.Forms.TextBox()
+        Me.lblRunAfterFileDef = New System.Windows.Forms.Label()
+        Me.uxRunOnStartup = New System.Windows.Forms.CheckBox()
         Me.SuspendLayout()
         '
         'cmdCancel
@@ -46,7 +47,7 @@
         Me.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdCancel.Location = New System.Drawing.Point(297, 237)
+        Me.cmdCancel.Location = New System.Drawing.Point(297, 277)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdCancel.Size = New System.Drawing.Size(77, 25)
@@ -61,7 +62,7 @@
         Me.cmdOK.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdOK.Location = New System.Drawing.Point(214, 237)
+        Me.cmdOK.Location = New System.Drawing.Point(214, 277)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdOK.Size = New System.Drawing.Size(77, 25)
@@ -76,11 +77,11 @@
         Me.cmdChangeFolder.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdChangeFolder.FlatStyle = System.Windows.Forms.FlatStyle.System
         Me.cmdChangeFolder.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.cmdChangeFolder.Location = New System.Drawing.Point(384, 33)
+        Me.cmdChangeFolder.Location = New System.Drawing.Point(384, 74)
         Me.cmdChangeFolder.Name = "cmdChangeFolder"
         Me.cmdChangeFolder.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdChangeFolder.Size = New System.Drawing.Size(73, 25)
-        Me.cmdChangeFolder.TabIndex = 5
+        Me.cmdChangeFolder.TabIndex = 6
         Me.cmdChangeFolder.Text = "&Change"
         Me.cmdChangeFolder.UseVisualStyleBackColor = False
         '
@@ -91,14 +92,14 @@
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtSaveIn.Cursor = System.Windows.Forms.Cursors.IBeam
         Me.txtSaveIn.ForeColor = System.Drawing.SystemColors.WindowText
-        Me.txtSaveIn.Location = New System.Drawing.Point(37, 36)
+        Me.txtSaveIn.Location = New System.Drawing.Point(37, 77)
         Me.txtSaveIn.Margin = New System.Windows.Forms.Padding(3, 3, 3, 20)
         Me.txtSaveIn.MaxLength = 0
         Me.txtSaveIn.Name = "txtSaveIn"
         Me.txtSaveIn.ReadOnly = True
         Me.txtSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.txtSaveIn.Size = New System.Drawing.Size(341, 20)
-        Me.txtSaveIn.TabIndex = 4
+        Me.txtSaveIn.TabIndex = 5
         '
         'lblSaveIn
         '
@@ -106,41 +107,41 @@
         Me.lblSaveIn.BackColor = System.Drawing.SystemColors.Control
         Me.lblSaveIn.Cursor = System.Windows.Forms.Cursors.Default
         Me.lblSaveIn.ForeColor = System.Drawing.SystemColors.ControlText
-        Me.lblSaveIn.Location = New System.Drawing.Point(12, 15)
+        Me.lblSaveIn.Location = New System.Drawing.Point(12, 56)
         Me.lblSaveIn.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblSaveIn.Name = "lblSaveIn"
         Me.lblSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.lblSaveIn.Size = New System.Drawing.Size(167, 13)
-        Me.lblSaveIn.TabIndex = 3
-        Me.lblSaveIn.Text = "&Save downloaded programmes in:"
+        Me.lblSaveIn.TabIndex = 4
+        Me.lblSaveIn.Text = "Save &downloaded programmes in:"
         '
         'lblFileNameFormat
         '
         Me.lblFileNameFormat.AutoSize = True
-        Me.lblFileNameFormat.Location = New System.Drawing.Point(12, 72)
+        Me.lblFileNameFormat.Location = New System.Drawing.Point(12, 113)
         Me.lblFileNameFormat.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblFileNameFormat.Name = "lblFileNameFormat"
         Me.lblFileNameFormat.Size = New System.Drawing.Size(202, 13)
-        Me.lblFileNameFormat.TabIndex = 6
-        Me.lblFileNameFormat.Text = "&Downloaded programme file name format:"
+        Me.lblFileNameFormat.TabIndex = 7
+        Me.lblFileNameFormat.Text = "Downloaded programme file name &format:"
         '
         'txtFileNameFormat
         '
         Me.txtFileNameFormat.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtFileNameFormat.Location = New System.Drawing.Point(37, 93)
+        Me.txtFileNameFormat.Location = New System.Drawing.Point(37, 134)
         Me.txtFileNameFormat.Name = "txtFileNameFormat"
         Me.txtFileNameFormat.Size = New System.Drawing.Size(420, 20)
-        Me.txtFileNameFormat.TabIndex = 7
+        Me.txtFileNameFormat.TabIndex = 8
         '
         'lblFilenameFormatResult
         '
         Me.lblFilenameFormatResult.AutoSize = True
-        Me.lblFilenameFormatResult.Location = New System.Drawing.Point(34, 120)
+        Me.lblFilenameFormatResult.Location = New System.Drawing.Point(34, 161)
         Me.lblFilenameFormatResult.Margin = New System.Windows.Forms.Padding(3, 3, 3, 17)
         Me.lblFilenameFormatResult.Name = "lblFilenameFormatResult"
         Me.lblFilenameFormatResult.Size = New System.Drawing.Size(40, 13)
-        Me.lblFilenameFormatResult.TabIndex = 8
+        Me.lblFilenameFormatResult.TabIndex = 9
         Me.lblFilenameFormatResult.Text = "Result:"
         '
         'cmdReset
@@ -149,7 +150,7 @@
         Me.cmdReset.BackColor = System.Drawing.SystemColors.Control
         Me.cmdReset.Cursor = System.Windows.Forms.Cursors.Default
         Me.cmdReset.FlatStyle = System.Windows.Forms.FlatStyle.System
-        Me.cmdReset.Location = New System.Drawing.Point(380, 237)
+        Me.cmdReset.Location = New System.Drawing.Point(380, 277)
         Me.cmdReset.Name = "cmdReset"
         Me.cmdReset.RightToLeft = System.Windows.Forms.RightToLeft.No
         Me.cmdReset.Size = New System.Drawing.Size(77, 25)
@@ -160,31 +161,42 @@
         'lblRunAfter
         '
         Me.lblRunAfter.AutoSize = True
-        Me.lblRunAfter.Location = New System.Drawing.Point(12, 150)
+        Me.lblRunAfter.Location = New System.Drawing.Point(12, 191)
         Me.lblRunAfter.Margin = New System.Windows.Forms.Padding(3, 0, 3, 5)
         Me.lblRunAfter.Name = "lblRunAfter"
         Me.lblRunAfter.Size = New System.Drawing.Size(229, 13)
-        Me.lblRunAfter.TabIndex = 9
-        Me.lblRunAfter.Text = "Run &command after download (blank for none):"
+        Me.lblRunAfter.TabIndex = 10
+        Me.lblRunAfter.Text = "Run command &after download (blank for none):"
         '
         'txtRunAfter
         '
         Me.txtRunAfter.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtRunAfter.Location = New System.Drawing.Point(37, 171)
+        Me.txtRunAfter.Location = New System.Drawing.Point(37, 212)
         Me.txtRunAfter.Name = "txtRunAfter"
         Me.txtRunAfter.Size = New System.Drawing.Size(420, 20)
-        Me.txtRunAfter.TabIndex = 10
+        Me.txtRunAfter.TabIndex = 11
         '
         'lblRunAfterFileDef
         '
         Me.lblRunAfterFileDef.AutoSize = True
-        Me.lblRunAfterFileDef.Location = New System.Drawing.Point(34, 198)
+        Me.lblRunAfterFileDef.Location = New System.Drawing.Point(34, 239)
         Me.lblRunAfterFileDef.Margin = New System.Windows.Forms.Padding(3, 3, 3, 17)
         Me.lblRunAfterFileDef.Name = "lblRunAfterFileDef"
         Me.lblRunAfterFileDef.Size = New System.Drawing.Size(192, 13)
-        Me.lblRunAfterFileDef.TabIndex = 11
+        Me.lblRunAfterFileDef.TabIndex = 12
         Me.lblRunAfterFileDef.Text = "%file% = full path to the downloaded file"
+        '
+        'uxRunOnStartup
+        '
+        Me.uxRunOnStartup.AutoSize = True
+        Me.uxRunOnStartup.Location = New System.Drawing.Point(15, 19)
+        Me.uxRunOnStartup.Margin = New System.Windows.Forms.Padding(6, 10, 3, 20)
+        Me.uxRunOnStartup.Name = "uxRunOnStartup"
+        Me.uxRunOnStartup.Size = New System.Drawing.Size(240, 17)
+        Me.uxRunOnStartup.TabIndex = 3
+        Me.uxRunOnStartup.Text = "Run Radio Downloader on computer &startup?"
+        Me.uxRunOnStartup.UseVisualStyleBackColor = True
         '
         'Preferences
         '
@@ -193,7 +205,8 @@
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.BackColor = System.Drawing.SystemColors.Control
         Me.CancelButton = Me.cmdCancel
-        Me.ClientSize = New System.Drawing.Size(469, 274)
+        Me.ClientSize = New System.Drawing.Size(469, 314)
+        Me.Controls.Add(Me.uxRunOnStartup)
         Me.Controls.Add(Me.lblRunAfterFileDef)
         Me.Controls.Add(Me.txtRunAfter)
         Me.Controls.Add(Me.lblRunAfter)
@@ -228,5 +241,6 @@
     Friend WithEvents lblRunAfter As System.Windows.Forms.Label
     Friend WithEvents txtRunAfter As System.Windows.Forms.TextBox
     Friend WithEvents lblRunAfterFileDef As System.Windows.Forms.Label
+    Friend WithEvents uxRunOnStartup As System.Windows.Forms.CheckBox
 #End Region
 End Class

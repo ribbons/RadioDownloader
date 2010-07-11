@@ -19,6 +19,8 @@ Imports System.ComponentModel
 Imports System.Runtime.InteropServices
 Imports System.Text
 
+Imports Microsoft.Win32
+
 <StructLayout(LayoutKind.Sequential, Pack:=4)> _
 Friend Structure RECT
     Public left As Integer
@@ -157,4 +159,16 @@ Friend Class OsUtils
 
         Return enabled
     End Function
+
+    Public Shared Sub ApplyRunOnStartup()
+        Dim runKey As RegistryKey = My.Computer.Registry.CurrentUser.OpenSubKey("SOFTWARE\Microsoft\Windows\CurrentVersion\Run", True)
+
+        If My.Settings.RunOnStartup Then
+            runKey.SetValue(My.Application.Info.Title, """" + Application.ExecutablePath + """ /hidemainwindow")
+        Else
+            If runKey.GetValue(My.Application.Info.Title) IsNot Nothing Then
+                runKey.DeleteValue(My.Application.Info.Title)
+            End If
+        End If
+    End Sub
 End Class

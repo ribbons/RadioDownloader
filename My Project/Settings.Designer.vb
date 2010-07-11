@@ -194,6 +194,18 @@ Namespace My
                 Me("DownloadColSortAsc") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("True")>  _
+        Public Property RunOnStartup() As Boolean
+            Get
+                Return CType(Me("RunOnStartup"),Boolean)
+            End Get
+            Set
+                Me("RunOnStartup") = value
+            End Set
+        End Property
     End Class
 End Namespace
 
