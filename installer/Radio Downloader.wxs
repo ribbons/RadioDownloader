@@ -355,6 +355,7 @@
     <Property Id="ARPHELPLINK" Value="http://www.nerdoftheherd.com/tools/radiodld/" />
     <Property Id="ARPNOMODIFY" Value="1" />
     <Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
+    <Property Id="ARPPRODUCTICON" Value="RadioDownloader.exe" />
     <AdminExecuteSequence />
     <InstallExecuteSequence>
       <RemoveExistingProducts After="InstallInitialize" />
@@ -369,8 +370,8 @@
         <Directory Id="INSTALLLOCATION" Name="Radio Downloader">
           <Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E">
             <File Id="RadioDownloaderExe" Source="..\bin\win32\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
-              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloaderIcon.exe" Description="Easily download radio station content and podcasts.">
-                <Icon Id="RadioDownloaderIcon.exe" SourceFile="Resources\ProgramIcon.exe" />
+              <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloader.exe" Description="Easily download radio station content and podcasts.">
+                <Icon Id="RadioDownloader.exe" SourceFile="..\Resources\icons\Icon.ico" />
               </Shortcut>
             </File>
             <File Name="Radio Downloader.pdb" Source="..\bin\win32\Radio Downloader.pdb" />
