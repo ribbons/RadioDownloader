@@ -19,7 +19,6 @@ Imports System.Collections.Generic
 Imports System.Data.SQLite
 Imports System.Globalization
 Imports System.IO
-Imports System.IO.File
 Imports System.Threading
 Imports System.Text.RegularExpressions
 Imports System.Xml.Serialization
@@ -1038,7 +1037,7 @@ Friend Class Data
 
                 Do While reader.Read
                     ' Remove programmes for which the associated audio file no longer exists
-                    If Exists(reader.GetString(filepathOrd)) = False Then
+                    If File.Exists(reader.GetString(filepathOrd)) = False Then
                         ' Take the download out of the list and set the auto download flag to false
                         DownloadRemoveAsync(reader.GetInt32(epidOrd), False)
                     End If
