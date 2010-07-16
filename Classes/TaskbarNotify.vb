@@ -94,5 +94,10 @@ Friend Class TaskbarNotify
         End If
 
         taskBarListInst.SetProgressValue(parentWin.Handle, CULng(value), CULng(total))
+        taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NORMAL)
+    End Sub
+
+    Public Sub SetProgressNone(ByVal parentWin As Form)
+        taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NOPROGRESS)
     End Sub
 End Class

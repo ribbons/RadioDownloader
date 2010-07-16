@@ -1030,6 +1030,10 @@ Friend Class Main
         End Select
 
         Call UpdateTrayStatus(True)
+
+        If OsUtils.WinSevenOrLater Then
+            tbarNotif.SetProgressValue(Me, percent, 100)
+        End If
     End Sub
 
     Private Sub progData_DownloadRemoved(ByVal epid As Integer) Handles progData.DownloadRemoved
@@ -1059,6 +1063,10 @@ Friend Class Main
         End If
 
         Call UpdateTrayStatus(False)
+
+        If OsUtils.WinSevenOrLater Then
+            tbarNotif.SetProgressNone(Me)
+        End If
     End Sub
 
     Private Sub progData_DownloadUpdated(ByVal epid As Integer) Handles progData.DownloadUpdated
@@ -1092,6 +1100,10 @@ Friend Class Main
         End If
 
         Call UpdateTrayStatus(False)
+
+        If OsUtils.WinSevenOrLater Then
+            tbarNotif.SetProgressNone(Me)
+        End If
     End Sub
 
     Private Sub progData_FindNewViewChange(ByVal viewData As Object) Handles progData.FindNewViewChange
