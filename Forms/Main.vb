@@ -1124,7 +1124,13 @@ Friend Class Main
                 My.Settings.LastUpdatePrompt = Now
                 My.Settings.Save() ' Save the last prompt time in case of unexpected termination
 
-                If MsgBox("A new version of Radio Downloader is available." + Environment.NewLine + "Would you like to visit the website to update now?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question, "Radio Downloader") = MsgBoxResult.Yes Then
+                Dim showUpdate As New UpdateNotify
+
+                If Me.WindowState = FormWindowState.Minimized Or Me.Visible = False Then
+                    showUpdate.StartPosition = FormStartPosition.CenterScreen
+                End If
+
+                If showUpdate.ShowDialog(Me) = DialogResult.Yes Then
                     Process.Start("http://www.nerdoftheherd.com/tools/radiodld/update.php?prevver=" + My.Application.Info.Version.ToString)
                 End If
             End If
