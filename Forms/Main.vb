@@ -84,7 +84,9 @@ Friend Class Main
                     tbarNotif.SetThumbnailTooltip(Me, Nothing)
                 End If
             End If
-        Else
+        End If
+
+        If nicTrayIcon.Visible Then
             If progData.CountDownloadsErrored > 0 Then
                 nicTrayIcon.Icon = My.Resources.icon_error
                 nicTrayIcon.Text = Me.Text + ": Error"
@@ -266,8 +268,10 @@ Friend Class Main
         If OsUtils.WinSevenOrLater Then
             ' New style taskbar - initialise the taskbar notification class
             tbarNotif = New TaskbarNotify
-        Else
-            ' Show a standard system tray icon
+        End If
+
+        If Not OsUtils.WinSevenOrLater Or My.Settings.CloseToSystray Then
+            ' Show a system tray icon
             nicTrayIcon.Visible = True
         End If
 
@@ -318,7 +322,7 @@ Friend Class Main
 
     Private Sub Main_FormClosing(ByVal eventSender As System.Object, ByVal eventArgs As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
         If eventArgs.CloseReason = CloseReason.UserClosing Then
-            If OsUtils.WinSevenOrLater() Then
+            If Not nicTrayIcon.Visible Then
                 If Me.WindowState <> FormWindowState.Minimized Then
                     Me.WindowState = FormWindowState.Minimized
                     eventArgs.Cancel = True
@@ -330,8 +334,8 @@ Friend Class Main
 
                 If My.Settings.ShownTrayBalloon = False Then
                     nicTrayIcon.BalloonTipIcon = ToolTipIcon.Info
-                    nicTrayIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + vbCrLf + "Click here to hide this message in future."
-                    nicTrayIcon.BalloonTipTitle = "Radio Downloader is Still Running"
+                    nicTrayIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + Environment.NewLine + "Click here to hide this message in future."
+                    nicTrayIcon.BalloonTipTitle = "Radio Downloader is still running"
                     nicTrayIcon.ShowBalloonTip(30000)
                 End If
             End If

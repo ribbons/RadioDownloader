@@ -45,6 +45,10 @@ Friend Class Preferences
         My.Settings.FileNameFormat = txtFileNameFormat.Text
         My.Settings.RunAfterCommand = txtRunAfter.Text
 
+        If OsUtils.WinSevenOrLater Then
+            My.Settings.CloseToSystray = uxCloseToSystray.Checked
+        End If
+
         OsUtils.ApplyRunOnStartup()
         My.Settings.Save()
     End Sub
@@ -61,6 +65,13 @@ Friend Class Preferences
         Me.Font = SystemFonts.MessageBoxFont
 
         uxRunOnStartup.Checked = My.Settings.RunOnStartup
+
+        If OsUtils.WinSevenOrLater Then
+            uxCloseToSystray.Checked = My.Settings.CloseToSystray
+        Else
+            uxCloseToSystray.Checked = True
+            uxCloseToSystray.Enabled = False
+        End If
 
         Try
             txtSaveIn.Text = FileUtils.GetSaveFolder()
@@ -79,6 +90,7 @@ Friend Class Preferences
     Private Sub cmdReset_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdReset.Click
         If MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo Or MsgBoxStyle.Question) = MsgBoxResult.Yes Then
             My.Settings.RunOnStartup = CBool(My.Settings.Properties.Item("RunOnStartup").DefaultValue)
+            My.Settings.CloseToSystray = CBool(My.Settings.Properties.Item("CloseToSystray").DefaultValue)
             My.Settings.SaveFolder = My.Settings.Properties.Item("SaveFolder").DefaultValue.ToString
             My.Settings.FileNameFormat = My.Settings.Properties.Item("FileNameFormat").DefaultValue.ToString
             My.Settings.RunAfterCommand = My.Settings.Properties.Item("RunAfterCommand").DefaultValue.ToString

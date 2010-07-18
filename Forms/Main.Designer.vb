@@ -175,7 +175,6 @@
         'nicTrayIcon
         '
         Me.nicTrayIcon.ContextMenu = Me.mnuTray
-        Me.nicTrayIcon.Visible = True
         '
         'mnuTray
         '
