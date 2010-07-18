@@ -1043,13 +1043,6 @@ Friend Class Main
             Return
         End If
 
-        If view.CurrentView = ViewState.View.Downloads Then
-            If lstDownloads.SelectedItems.Count = 0 Then
-                ' Update the displayed statistics
-                SetViewDefaults()
-            End If
-        End If
-
         Dim item As ListViewItem = lstDownloads.Items(epid.ToString(CultureInfo.InvariantCulture))
 
         If item IsNot Nothing Then
@@ -1060,6 +1053,13 @@ Friend Class Main
             End If
 
             item.Remove()
+        End If
+
+        If view.CurrentView = ViewState.View.Downloads Then
+            If lstDownloads.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
         End If
 
         Call UpdateTrayStatus(False)
