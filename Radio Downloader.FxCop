@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<FxCopProject Version="1.36" Name="Radio Downloader">
+<FxCopProject Version="10.0" Name="Radio Downloader">
  <ProjectOptions>
   <SharedProject>True</SharedProject>
   <Stylesheet Apply="False" />
@@ -71,6 +71,7 @@
     <Rule Name="TypesShouldNotExtendCertainBaseTypes" Enabled="True" />
     <Rule Name="TypesThatOwnDisposableFieldsShouldBeDisposable" Enabled="True" />
     <Rule Name="TypesThatOwnNativeResourcesShouldBeDisposable" Enabled="True" />
+    <Rule Name="UriParametersShouldNotBeStrings" Enabled="True" />
     <Rule Name="UriPropertiesShouldNotBeStrings" Enabled="True" />
     <Rule Name="UriReturnValuesShouldNotBeStrings" Enabled="True" />
     <Rule Name="UseEventsWhereAppropriate" Enabled="True" />
@@ -88,7 +89,6 @@
     <Rule Name="AvoidUnsealedAttributes" Enabled="True" />
     <Rule Name="AvoidUnusedPrivateFields" Enabled="True" />
     <Rule Name="DoNotCastUnnecessarily" Enabled="True" />
-    <Rule Name="DoNotInitializeUnnecessarily" Enabled="True" />
     <Rule Name="InitializeReferenceTypeStaticFieldsInline" Enabled="True" />
     <Rule Name="MarkAssembliesWithNeutralResourcesLanguage" Enabled="True" />
     <Rule Name="PreferJaggedArraysOverMultidimensional" Enabled="True" />
@@ -105,5 +105,5 @@
   <Groups />
   <Settings />
  </Rules>
- <FxCopReport Version="1.36" />
+ <FxCopReport Version="10.0" />
 </FxCopProject>

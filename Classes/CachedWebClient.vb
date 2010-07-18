@@ -60,9 +60,9 @@ Public Class CachedWebClient
         End Using
     End Sub
 
-    Private Sub AddToHTTPCache(ByVal uri As String, ByVal requestSuccess As Boolean, ByVal data As Byte())
+    Private Sub AddToHTTPCache(ByVal uri As Uri, ByVal requestSuccess As Boolean, ByVal data As Byte())
         Using command As New SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@uri", uri))
+            command.Parameters.Add(New SQLiteParameter("@uri", uri.ToString))
             command.Parameters.Add(New SQLiteParameter("@lastfetch", Now))
             command.Parameters.Add(New SQLiteParameter("@success", requestSuccess))
             command.Parameters.Add(New SQLiteParameter("@data", data))
@@ -70,9 +70,9 @@ Public Class CachedWebClient
         End Using
     End Sub
 
-    Private Function GetHTTPCacheLastUpdate(ByVal uri As String) As Date
+    Private Function GetHTTPCacheLastUpdate(ByVal uri As Uri) As Date
         Using command As New SQLiteCommand("select lastfetch from httpcache where uri=@uri", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@uri", uri))
+            command.Parameters.Add(New SQLiteParameter("@uri", uri.ToString))
 
             Using reader As SQLiteDataReader = command.ExecuteReader
                 If reader.Read Then
@@ -84,9 +84,9 @@ Public Class CachedWebClient
         End Using
     End Function
 
-    Private Function GetHTTPCacheContent(ByVal uri As String, ByRef requestSuccess As Boolean) As Byte()
+    Private Function GetHTTPCacheContent(ByVal uri As Uri, ByRef requestSuccess As Boolean) As Byte()
         Using command As New SQLiteCommand("select success, data from httpcache where uri=@uri", FetchDbConn)
-            command.Parameters.Add(New SQLiteParameter("@uri", uri))
+            command.Parameters.Add(New SQLiteParameter("@uri", uri.ToString))
 
             Using reader As SQLiteDataReader = command.ExecuteReader
                 If reader.Read Then
@@ -106,7 +106,7 @@ Public Class CachedWebClient
         End Using
     End Function
 
-    Public Function DownloadData(ByVal uri As String, ByVal fetchIntervalHrs As Integer) As Byte()
+    Public Function DownloadData(ByVal uri As Uri, ByVal fetchIntervalHrs As Integer) As Byte()
         If fetchIntervalHrs = 0 Then
             Throw New ArgumentException("fetchIntervalHrs cannot be zero.", "fetchIntervalHrs")
         End If
@@ -136,7 +136,7 @@ Public Class CachedWebClient
             End If
         End If
 
-        Debug.Print("Cached WebClient: Fetching " + uri)
+        Debug.Print("Cached WebClient: Fetching " + uri.ToString)
         Dim webClient As New WebClient
         webClient.Headers.Add("user-agent", My.Application.Info.AssemblyName + " " + My.Application.Info.Version.ToString)
 
@@ -171,7 +171,7 @@ Public Class CachedWebClient
         Return data
     End Function
 
-    Public Function DownloadString(ByVal uri As String, ByVal fetchIntervalHrs As Integer) As String
+    Public Function DownloadString(ByVal uri As Uri, ByVal fetchIntervalHrs As Integer) As String
         Return Encoding.UTF8.GetString(DownloadData(uri, fetchIntervalHrs))
     End Function
 End Class
