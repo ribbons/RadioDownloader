@@ -446,7 +446,7 @@ Friend Class Data
 
         ' Now perform the update if required
         If updateExtid IsNot Nothing Then
-            Call StoreProgrammeInfo(providerId, updateExtid, Nothing)
+            Call StoreProgrammeInfo(providerId, updateExtid)
         End If
     End Sub
 
@@ -1129,27 +1129,17 @@ Friend Class Data
 
     Private Sub FindNewPluginInst_FoundNew(ByVal progExtId As String) Handles FindNewPluginInst.FoundNew
         Dim pluginId As Guid = FindNewPluginInst.ProviderID
-        Dim pluginExp As Exception = Nothing
-
-        If StoreProgrammeInfo(pluginId, progExtId, pluginExp) = False Then
-            If pluginExp IsNot Nothing Then
-                If MsgBox("A problem was encountered while attempting to retrieve information about this programme." + Environment.NewLine + "Would you like to report this to NerdoftheHerd.com to help us improve Radio Downloader?", MsgBoxStyle.YesNo Or MsgBoxStyle.Exclamation) = MsgBoxResult.Yes Then
-                    Dim report As New ErrorReporting(pluginExp)
-                    report.SendReport(My.Settings.ErrorReportURL)
-                End If
-
-                Exit Sub
-            Else
-                Call MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation)
-                Exit Sub
-            End If
+        
+        If StoreProgrammeInfo(pluginId, progExtId) = False Then
+            Call MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation)
+            Exit Sub
         End If
 
         Dim progid As Integer = ExtIDToProgID(pluginId, progExtId)
         RaiseEvent FoundNew(progid)
     End Sub
 
-    Private Function StoreProgrammeInfo(ByVal pluginId As System.Guid, ByVal progExtId As String, ByRef pluginExp As Exception) As Boolean
+    Private Function StoreProgrammeInfo(ByVal pluginId As System.Guid, ByVal progExtId As String) As Boolean
         If pluginsInst.PluginExists(pluginId) = False Then
             Return False
         End If
@@ -1157,12 +1147,7 @@ Friend Class Data
         Dim pluginInstance As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
         Dim progInfo As GetProgrammeInfoReturn
 
-        Try
-            progInfo = pluginInstance.GetProgrammeInfo(progExtId)
-        Catch pluginExp
-            ' Catch unhandled errors in the plugin
-            Return False
-        End Try
+        progInfo = pluginInstance.GetProgrammeInfo(progExtId)
 
         If progInfo.Success = False Then
             Return False
