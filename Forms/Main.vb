@@ -1103,10 +1103,12 @@ Friend Class Main
             End If
         End If
 
-        Call UpdateTrayStatus(False)
+        If Me.IsDisposed = False Then
+            Call UpdateTrayStatus(False)
 
-        If OsUtils.WinSevenOrLater Then
-            tbarNotif.SetProgressNone(Me)
+            If OsUtils.WinSevenOrLater Then
+                tbarNotif.SetProgressNone(Me)
+            End If
         End If
     End Sub
 
