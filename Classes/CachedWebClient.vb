@@ -23,7 +23,7 @@ Imports System.Text
 
 Public Class CachedWebClient
     <Serializable()> _
-    Public Structure CacheWebException
+    Public Structure CacheWebExpInfo
         Dim Message As String
         Dim InnerException As Exception
         Dim Status As WebExceptionStatus
@@ -126,8 +126,8 @@ Public Class CachedWebClient
                         Dim binaryFormatter As New System.Runtime.Serialization.Formatters.Binary.BinaryFormatter()
 
                         ' Deserialise the CacheWebException structure
-                        Dim cachedException As CacheWebException
-                        cachedException = DirectCast(binaryFormatter.Deserialize(memoryStream), CacheWebException)
+                        Dim cachedException As CacheWebExpInfo
+                        cachedException = DirectCast(binaryFormatter.Deserialize(memoryStream), CacheWebExpInfo)
 
                         ' Crete a new WebException with the cached data and throw it
                         Throw New WebException(cachedException.Message, cachedException.InnerException, cachedException.Status, cachedException.Response)
@@ -148,7 +148,7 @@ Public Class CachedWebClient
             If webExp.Status <> WebExceptionStatus.NameResolutionFailure And webExp.Status <> WebExceptionStatus.Timeout Then
                 ' A WebException doesn't serialise well, as Response and Status get lost,
                 ' so store the information in a structure and then recreate it later
-                Dim cacheException As New CacheWebException
+                Dim cacheException As New CacheWebExpInfo
                 cacheException.Message = webExp.Message
                 cacheException.InnerException = webExp.InnerException
                 cacheException.Status = webExp.Status
