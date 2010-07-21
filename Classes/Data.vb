@@ -391,6 +391,9 @@ Friend Class Data
                 Catch dirNotFoundExp As DirectoryNotFoundException
                     Call DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", Nothing)
                     Exit Sub
+                Catch ioExp As IOException
+                    Call DownloadError(ErrorType.LocalProblem, "Encountered an error generating the download file name.  The error message was '" + ioExp.Message + "'.  You may need to select a new location for saving downloaded programmes under Options -> Main Options.", Nothing)
+                    Exit Sub
                 End Try
 
                 DownloadPluginInst.DownloadProgramme(.ProgExtId, .EpisodeExtId, .ProgInfo, .EpisodeInfo, .FinalName)
