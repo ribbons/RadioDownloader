@@ -39,9 +39,13 @@ Public Class CachedWebClient
         Return instance
     End Function
 
+    Private Function DatabasePath() As String
+        Return Path.Combine(Path.GetTempPath, "radiodld-httpcache.db")
+    End Function
+
     Private Function FetchDbConn() As SQLiteConnection
         If dbConn Is Nothing Then
-            dbConn = New SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "httpcache.db") + ";Version=3")
+            dbConn = New SQLiteConnection("Data Source=" + DatabasePath() + ";Version=3")
             dbConn.Open()
         End If
 
@@ -49,13 +53,10 @@ Public Class CachedWebClient
     End Function
 
     Private Sub New()
-        ' Create the table (and implicitly the database) for caching HTTP requests if it does not exist
-        Using command As New SQLiteCommand("create table if not exists httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", FetchDbConn)
-            command.ExecuteNonQuery()
-        End Using
+        File.Delete(DatabasePath)
 
-        ' Empty the table if it does exist
-        Using command As New SQLiteCommand("delete from httpcache", FetchDbConn)
+        ' Create the the database and table for caching HTTP requests
+        Using command As New SQLiteCommand("create table httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", FetchDbConn)
             command.ExecuteNonQuery()
         End Using
     End Sub
