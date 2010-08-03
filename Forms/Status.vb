@@ -19,6 +19,7 @@ Imports System.Threading
 
 Friend Class Status
     Private showThread As Thread
+    Private tbarNotif As TaskbarNotify
 
     Public Shadows Sub Show()
         showThread = New Thread(AddressOf ShowFormThread)
@@ -26,6 +27,10 @@ Friend Class Status
     End Sub
 
     Private Sub ShowFormThread()
+        If OsUtils.WinSevenOrLater Then
+            tbarNotif = New TaskbarNotify
+        End If
+
         MyBase.ShowDialog()
     End Sub
 
@@ -60,10 +65,14 @@ Friend Class Status
     End Property
 
     Private Sub SetProgressBarMarquee_FormThread(ByVal marquee As Boolean)
-        If marquee Then
-            prgProgress.Style = ProgressBarStyle.Marquee
-        Else
-            prgProgress.Style = ProgressBarStyle.Blocks
+        prgProgress.Style = If(marquee, ProgressBarStyle.Marquee, ProgressBarStyle.Blocks)
+
+        If OsUtils.WinSevenOrLater And Me.IsHandleCreated Then
+            If marquee Then
+                tbarNotif.SetProgressMarquee(Me)
+            Else
+                tbarNotif.SetProgressNone(Me)
+            End If
         End If
     End Sub
 
@@ -99,6 +108,10 @@ Friend Class Status
 
     Private Sub SetProgressBarValue_FormThread(ByVal value As Integer)
         prgProgress.Value = value
+
+        If OsUtils.WinSevenOrLater And Me.IsHandleCreated Then
+            tbarNotif.SetProgressValue(Me, value, prgProgress.Maximum)
+        End If
     End Sub
 
     Public Shadows Sub Hide()
@@ -119,5 +132,17 @@ Friend Class Status
 
     Private Sub Status_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.Font = SystemFonts.MessageBoxFont
+    End Sub
+
+    Private Sub Status_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
+        If OsUtils.WinSevenOrLater Then
+            If prgProgress.Style = ProgressBarStyle.Marquee Then
+                tbarNotif.SetProgressMarquee(Me)
+            Else
+                If prgProgress.Value <> 0 Then
+                    tbarNotif.SetProgressValue(Me, prgProgress.Value, prgProgress.Maximum)
+                End If
+            End If
+        End If
     End Sub
 End Class

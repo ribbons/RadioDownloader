@@ -97,6 +97,10 @@ Friend Class TaskbarNotify
         taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NORMAL)
     End Sub
 
+    Public Sub SetProgressMarquee(ByVal parentWin As Form)
+        taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_INDETERMINATE)
+    End Sub
+
     Public Sub SetProgressNone(ByVal parentWin As Form)
         taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NOPROGRESS)
     End Sub
