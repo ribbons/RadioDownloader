@@ -1507,7 +1507,7 @@ Friend Class Data
     End Sub
 
     Public Sub InitSubscriptionList()
-        Using command As New SQLiteCommand("select progid from subscriptions", FetchDbConn)
+        Using command As New SQLiteCommand("select subscriptions.progid from subscriptions, programmes where subscriptions.progid = programmes.progid", FetchDbConn)
             Using reader As New SQLiteMonDataReader(command.ExecuteReader)
                 Dim progidOrdinal As Integer = reader.GetOrdinal("progid")
 
