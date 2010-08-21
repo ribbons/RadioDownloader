@@ -77,7 +77,11 @@ Friend Class TaskbarNotify
     End Sub
 
     Public Sub SetOverlayIcon(ByVal parentWin As Form, ByVal icon As Icon, ByVal description As String)
-        taskBarListInst.SetOverlayIcon(parentWin.Handle, If(icon Is Nothing, IntPtr.Zero, icon.Handle), description)
+        Try
+            taskBarListInst.SetOverlayIcon(parentWin.Handle, If(icon Is Nothing, IntPtr.Zero, icon.Handle), description)
+        Catch comExp As COMException
+            ' Ignore COMExceptions, as they seem to be erroneously thrown sometimes when calling SetOverlayIcon
+        End Try
     End Sub
 
     Public Sub SetThumbnailTooltip(ByVal parentWin As Form, ByVal tooltip As String)
