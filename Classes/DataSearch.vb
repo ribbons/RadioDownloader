@@ -19,29 +19,33 @@ Imports System.Data.SQLite
 Imports System.Collections.Generic
 Imports System.IO
 
-Public Class DataSearch
+Friend Class DataSearch
     <ThreadStatic()> _
     Private Shared dbConn As SQLiteConnection
 
-    Private Shared searchInstance As Datasearch
+    Private Shared searchInstance As DataSearch
     Private Shared searchInstanceLock As New Object
 
-    Public Shared Function GetInstance() As DataSearch
+    Private dataInstance As Data
+
+    Public Shared Function GetInstance(ByVal instance As Data) As DataSearch
         ' Need to use a lock instead of declaring the instance variable as New,
         ' as otherwise New gets called before the Data class is ready
         SyncLock searchInstanceLock
             If searchInstance Is Nothing Then
-                searchInstance = New DataSearch
+                searchInstance = New DataSearch(instance)
             End If
 
             Return searchInstance
         End SyncLock
     End Function
 
-    Public Sub New()
+    Private Sub New(ByVal instance As Data)
+        dataInstance = instance
+
         Dim tableCols As New Dictionary(Of String, String())
 
-        tableCols.Add("downloads", {"title"})
+        tableCols.Add("downloads", {"name"})
 
         If CheckIndex(tableCols) = False Then
             ' Close & clean up the connection used for testing
@@ -52,12 +56,49 @@ Public Class DataSearch
             ' Clean up the old index
             File.Delete(DatabasePath())
 
-            ' Create the index tables
-            For Each table As KeyValuePair(Of String, String()) In tableCols
-                Using createTable As New SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn)
-                    createTable.ExecuteNonQuery()
+            Status.StatusText = "Building search index..."
+            Status.ProgressBarMarquee = False
+            Status.ProgressBarValue = 0
+            Status.ProgressBarMax = 100 * tableCols.Count
+            Status.Show()
+
+            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+                ' Create the index tables
+                For Each table As KeyValuePair(Of String, String()) In tableCols
+                    Using createTable As New SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn, trans)
+                        createTable.ExecuteNonQuery()
+                    End Using
+                Next
+
+                Status.StatusText = "Building search index for downloads..."
+
+                Using insertCmd As New SQLiteCommand("insert into downloads (docid, name) values (@epid, @name)", FetchDbConn, trans)
+                    Dim epidParam As New SQLiteParameter("@epid")
+                    Dim nameParam As New SQLiteParameter("@name")
+
+                    insertCmd.Parameters.Add(epidParam)
+                    insertCmd.Parameters.Add(nameParam)
+
+                    Dim progress As Integer = 1
+                    Dim downloadItems As List(Of Data.DownloadData) = dataInstance.FetchDownloadList(False)
+
+                    For Each downloadItem As Data.DownloadData In downloadItems
+                        epidParam.Value = downloadItem.epid
+                        nameParam.Value = downloadItem.name
+
+                        insertCmd.ExecuteNonQuery()
+
+                        Status.ProgressBarValue = CInt((progress / downloadItems.Count) * 100)
+                        progress += 1
+                    Next
                 End Using
-            Next
+
+                Status.ProgressBarValue = 100
+
+                trans.Commit()
+            End Using
+
+            Status.Hide()
         End If
     End Sub
 

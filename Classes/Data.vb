@@ -173,7 +173,7 @@ Friend Class Data
                 ' Nothing to do, this is the current version.
         End Select
 
-        search = DataSearch.GetInstance
+        search = DataSearch.GetInstance(Me)
 
         ' Start regularly checking for new subscriptions in the background
         ThreadPool.QueueUserWorkItem(Sub() CheckSubscriptions())
@@ -1521,7 +1521,7 @@ Friend Class Data
         End Using
     End Sub
 
-    Public Function FetchDownloadList() As List(Of DownloadData)
+    Public Function FetchDownloadList(ByVal filtered As Boolean) As List(Of DownloadData)
         Dim downloadList As New List(Of DownloadData)
 
         Using command As New SQLiteCommand("select downloads.epid, name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", FetchDbConn)

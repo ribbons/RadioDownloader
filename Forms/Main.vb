@@ -1537,7 +1537,7 @@ Friend Class Main
         lstDownloads.ShowSortOnHeader(downloadColOrder.IndexOf(progData.DownloadSortByCol), If(progData.DownloadSortAscending, SortOrder.Ascending, SortOrder.Descending))
 
         ' Convert the list of DownloadData items to an array of ListItems
-        Dim initData As List(Of Data.DownloadData) = progData.FetchDownloadList
+        Dim initData As List(Of Data.DownloadData) = progData.FetchDownloadList(True)
         Dim initItems(initData.Count - 1) As ListViewItem
 
         For convItems As Integer = 0 To initData.Count - 1
