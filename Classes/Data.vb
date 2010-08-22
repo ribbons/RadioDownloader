@@ -1529,7 +1529,11 @@ Friend Class Data
                 Dim epidOrdinal As Integer = reader.GetOrdinal("epid")
 
                 Do While reader.Read
-                    downloadList.Add(ReadDownloadData(reader.GetInt32(epidOrdinal), reader))
+                    Dim epid As Integer = reader.GetInt32(epidOrdinal)
+
+                    If Not filtered OrElse search.DownloadIsVisible(epid) Then
+                        downloadList.Add(ReadDownloadData(epid, reader))
+                    End If
                 Loop
             End Using
         End Using
@@ -1713,6 +1717,15 @@ Friend Class Data
 
                 downloadSortAsc = sortAscending
             End SyncLock
+        End Set
+    End Property
+
+    Public Property DownloadQuery As String
+        Get
+            Return search.DownloadQuery
+        End Get
+        Set(ByVal value As String)
+            search.DownloadQuery = value
         End Set
     End Property
 End Class

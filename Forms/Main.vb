@@ -116,7 +116,8 @@ Friend Class Main
                     Call tbtCancel_Click()
                 End If
             Case Keys.Back
-                If Me.ActiveControl.GetType IsNot GetType(TextBox) Then
+                If Me.ActiveControl.GetType IsNot GetType(TextBox) And
+                   Me.ActiveControl.Parent.GetType IsNot GetType(ExtToolStrip) Then
                     If e.Shift Then
                         If tbtForward.Enabled Then
                             e.Handled = True
@@ -1546,5 +1547,10 @@ Friend Class Main
 
         ' Add the whole array of ListItems at once
         lstDownloads.Items.AddRange(initItems)
+    End Sub
+
+    Private Sub ttxSearch_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ttxSearch.TextChanged
+        progData.DownloadQuery = ttxSearch.Text
+        InitDownloadList()
     End Sub
 End Class

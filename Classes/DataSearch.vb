@@ -28,6 +28,9 @@ Friend Class DataSearch
 
     Private dataInstance As Data
 
+    Private _downloadQuery As String = String.Empty
+    Private downloadsVisible As List(Of Integer)
+
     Public Shared Function GetInstance(ByVal instance As Data) As DataSearch
         ' Need to use a lock instead of declaring the instance variable as New,
         ' as otherwise New gets called before the Data class is ready
@@ -65,19 +68,19 @@ Friend Class DataSearch
             Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
                 ' Create the index tables
                 For Each table As KeyValuePair(Of String, String()) In tableCols
-                    Using createTable As New SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn, trans)
-                        createTable.ExecuteNonQuery()
+                    Using command As New SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn, trans)
+                        command.ExecuteNonQuery()
                     End Using
                 Next
 
                 Status.StatusText = "Building search index for downloads..."
 
-                Using insertCmd As New SQLiteCommand("insert into downloads (docid, name) values (@epid, @name)", FetchDbConn, trans)
+                Using command As New SQLiteCommand("insert into downloads (docid, name) values (@epid, @name)", FetchDbConn, trans)
                     Dim epidParam As New SQLiteParameter("@epid")
                     Dim nameParam As New SQLiteParameter("@name")
 
-                    insertCmd.Parameters.Add(epidParam)
-                    insertCmd.Parameters.Add(nameParam)
+                    command.Parameters.Add(epidParam)
+                    command.Parameters.Add(nameParam)
 
                     Dim progress As Integer = 1
                     Dim downloadItems As List(Of Data.DownloadData) = dataInstance.FetchDownloadList(False)
@@ -86,7 +89,7 @@ Friend Class DataSearch
                         epidParam.Value = downloadItem.epid
                         nameParam.Value = downloadItem.name
 
-                        insertCmd.ExecuteNonQuery()
+                        command.ExecuteNonQuery()
 
                         Status.ProgressBarValue = CInt((progress / downloadItems.Count) * 100)
                         progress += 1
@@ -116,18 +119,18 @@ Friend Class DataSearch
     End Function
 
     Private Function CheckIndex(ByVal tableCols As Dictionary(Of String, String())) As Boolean
-        Using checkCmd As New SQLiteCommand("select count(*) from sqlite_master where type='table' and name=@name and sql=@sql", FetchDbConn)
+        Using command As New SQLiteCommand("select count(*) from sqlite_master where type='table' and name=@name and sql=@sql", FetchDbConn)
             Dim nameParam As New SQLiteParameter("@name")
             Dim sqlParam As New SQLiteParameter("@sql")
 
-            checkCmd.Parameters.Add(nameParam)
-            checkCmd.Parameters.Add(sqlParam)
+            command.Parameters.Add(nameParam)
+            command.Parameters.Add(sqlParam)
 
             For Each table As KeyValuePair(Of String, String()) In tableCols
                 nameParam.Value = table.Key
                 sqlParam.Value = TableSql(table.Key, table.Value)
 
-                If CInt(checkCmd.ExecuteScalar()) <> 1 Then
+                If CInt(command.ExecuteScalar()) <> 1 Then
                     Return False
                 End If
             Next
@@ -138,5 +141,41 @@ Friend Class DataSearch
 
     Private Function TableSql(ByVal tableName As String, ByVal columns As String()) As String
         Return "CREATE VIRTUAL TABLE " + tableName + " USING fts3(" + Join(columns, ", ") + ")"
+    End Function
+
+    Public Property DownloadQuery As String
+        Get
+            Return _downloadQuery
+        End Get
+        Set(ByVal value As String)
+            If value <> _downloadQuery Then
+                _downloadQuery = value
+                downloadsVisible = Nothing
+            End If
+        End Set
+    End Property
+
+    Public Function DownloadIsVisible(ByVal epid As Integer) As Boolean
+        If DownloadQuery = String.Empty Then
+            Return True
+        End If
+
+        If downloadsVisible Is Nothing Then
+            downloadsVisible = New List(Of Integer)
+
+            Using command As New SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@query", DownloadQuery + "*"))
+
+                Using reader As SQLiteDataReader = command.ExecuteReader()
+                    Dim docidOrdinal As Integer = reader.GetOrdinal("docid")
+
+                    While reader.Read
+                        downloadsVisible.Add(reader.GetInt32(docidOrdinal))
+                    End While
+                End Using
+            End Using
+        End If
+
+        Return downloadsVisible.Contains(epid)
     End Function
 End Class
