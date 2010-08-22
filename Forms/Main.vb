@@ -288,8 +288,6 @@ Friend Class Main
         lstSubscribed.Dock = DockStyle.Fill
         lstDownloads.Dock = DockStyle.Fill
 
-        tbrView.Items.Remove(ttxSearch)
-
         Me.Font = SystemFonts.MessageBoxFont
         lblSideMainTitle.Font = New Font(Me.Font.FontFamily, CSng(Me.Font.SizeInPoints * 1.16), Me.Font.Style, GraphicsUnit.Point)
 
@@ -1320,6 +1318,7 @@ Friend Class Main
         lstEpisodes.Visible = False
         lstSubscribed.Visible = False
         lstDownloads.Visible = False
+        ttxSearch.Visible = False
 
         Select Case view
             Case view.FindNewChooseProvider
@@ -1352,6 +1351,7 @@ Friend Class Main
                     ShowSubscriptionInfo(CInt(lstSubscribed.SelectedItems(0).Name))
                 End If
             Case view.Downloads
+                ttxSearch.Visible = True
                 lstDownloads.Visible = True
                 lstDownloads.Focus()
 

@@ -168,9 +168,9 @@
         'ttxSearch
         '
         Me.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
+        Me.ttxSearch.Margin = New System.Windows.Forms.Padding(1, 0, 0, 5)
         Me.ttxSearch.Name = "ttxSearch"
-        Me.ttxSearch.Size = New System.Drawing.Size(130, 31)
-        Me.ttxSearch.Text = "Search..."
+        Me.ttxSearch.Size = New System.Drawing.Size(160, 26)
         '
         'nicTrayIcon
         '
