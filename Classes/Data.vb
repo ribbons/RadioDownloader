@@ -89,6 +89,7 @@ Friend Class Data
     Private dbUpdateLock As New Object
 
     Private pluginsInst As Plugins
+    Private search As DataSearch
 
     Private episodeListThread As Thread
     Private episodeListThreadLock As New Object
@@ -171,6 +172,8 @@ Friend Class Data
             Case 3
                 ' Nothing to do, this is the current version.
         End Select
+
+        search = DataSearch.GetInstance
 
         ' Start regularly checking for new subscriptions in the background
         ThreadPool.QueueUserWorkItem(Sub() CheckSubscriptions())

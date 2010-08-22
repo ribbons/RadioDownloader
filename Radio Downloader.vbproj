@@ -160,6 +160,7 @@
   <ItemGroup>
     <Compile Include="Classes\DownloadException.vb" />
     <Compile Include="Classes\FileUtils.vb" />
+    <Compile Include="Classes\DataSearch.vb" />
     <Compile Include="Classes\TabBarRenderer.vb" />
     <Compile Include="Classes\OsUtils.vb" />
     <Compile Include="Classes\SQLiteMonDataReader.vb" />
