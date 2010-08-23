@@ -31,6 +31,9 @@ Friend Class DataSearch
     Private _downloadQuery As String = String.Empty
     Private downloadsVisible As List(Of Integer)
 
+    Private updateIndexLock As New Object
+    Private downloadVisLock As New Object
+
     Public Shared Function GetInstance(ByVal instance As Data) As DataSearch
         ' Need to use a lock instead of declaring the instance variable as New,
         ' as otherwise New gets called before the Data class is ready
@@ -65,41 +68,32 @@ Friend Class DataSearch
             Status.ProgressBarMax = 100 * tableCols.Count
             Status.Show()
 
-            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
-                ' Create the index tables
-                For Each table As KeyValuePair(Of String, String()) In tableCols
-                    Using command As New SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn, trans)
-                        command.ExecuteNonQuery()
-                    End Using
-                Next
+            SyncLock updateIndexLock
+                Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+                    ' Create the index tables
+                    For Each table As KeyValuePair(Of String, String()) In tableCols
+                        Using command As New SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn, trans)
+                            command.ExecuteNonQuery()
+                        End Using
+                    Next
 
-                Status.StatusText = "Building search index for downloads..."
-
-                Using command As New SQLiteCommand("insert into downloads (docid, name) values (@epid, @name)", FetchDbConn, trans)
-                    Dim epidParam As New SQLiteParameter("@epid")
-                    Dim nameParam As New SQLiteParameter("@name")
-
-                    command.Parameters.Add(epidParam)
-                    command.Parameters.Add(nameParam)
+                    Status.StatusText = "Building search index for downloads..."
 
                     Dim progress As Integer = 1
                     Dim downloadItems As List(Of Data.DownloadData) = dataInstance.FetchDownloadList(False)
 
                     For Each downloadItem As Data.DownloadData In downloadItems
-                        epidParam.Value = downloadItem.epid
-                        nameParam.Value = downloadItem.name
-
-                        command.ExecuteNonQuery()
+                        AddDownload(downloadItem)
 
                         Status.ProgressBarValue = CInt((progress / downloadItems.Count) * 100)
                         progress += 1
                     Next
+
+                    Status.ProgressBarValue = 100
+
+                    trans.Commit()
                 End Using
-
-                Status.ProgressBarValue = 100
-
-                trans.Commit()
-            End Using
+            End SyncLock
 
             Status.Hide()
         End If
@@ -160,22 +154,64 @@ Friend Class DataSearch
             Return True
         End If
 
-        If downloadsVisible Is Nothing Then
-            downloadsVisible = New List(Of Integer)
+        SyncLock downloadVisLock
+            If downloadsVisible Is Nothing Then
+                downloadsVisible = New List(Of Integer)
 
-            Using command As New SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn)
-                command.Parameters.Add(New SQLiteParameter("@query", DownloadQuery + "*"))
+                Using command As New SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn)
+                    command.Parameters.Add(New SQLiteParameter("@query", DownloadQuery + "*"))
 
-                Using reader As SQLiteDataReader = command.ExecuteReader()
-                    Dim docidOrdinal As Integer = reader.GetOrdinal("docid")
+                    Using reader As SQLiteDataReader = command.ExecuteReader()
+                        Dim docidOrdinal As Integer = reader.GetOrdinal("docid")
 
-                    While reader.Read
-                        downloadsVisible.Add(reader.GetInt32(docidOrdinal))
-                    End While
+                        While reader.Read
+                            downloadsVisible.Add(reader.GetInt32(docidOrdinal))
+                        End While
+                    End Using
                 End Using
-            End Using
-        End If
+            End If
 
-        Return downloadsVisible.Contains(epid)
+            Return downloadsVisible.Contains(epid)
+        End SyncLock
     End Function
+
+    Private Sub AddDownload(ByVal storeData As Data.DownloadData)
+        SyncLock updateIndexLock
+            Using command As New SQLiteCommand("insert or replace into downloads (docid, name) values (@epid, @name)", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@epid", storeData.epid))
+                command.Parameters.Add(New SQLiteParameter("@name", storeData.name))
+
+                command.ExecuteNonQuery()
+            End Using
+        End SyncLock
+
+        SyncLock downloadVisLock
+            downloadsVisible = Nothing
+        End SyncLock
+    End Sub
+
+    Public Sub AddDownload(ByVal epid As Integer)
+        Dim downloadData As Data.DownloadData = dataInstance.FetchDownloadData(epid)
+        AddDownload(downloadData)
+    End Sub
+
+    Public Sub UpdateDownload(ByVal epid As Integer)
+        SyncLock updateIndexLock
+            Using trans As SQLiteTransaction = FetchDbConn.BeginTransaction
+                RemoveDownload(epid)
+                AddDownload(epid)
+            End Using
+        End SyncLock
+    End Sub
+
+    Public Sub RemoveDownload(ByVal epid As Integer)
+        SyncLock updateIndexLock
+            Using command As New SQLiteCommand("delete from downloads where docid = @epid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@epid", epid))
+                command.ExecuteNonQuery()
+            End Using
+        End SyncLock
+
+        ' No need to clear the visibility cache, as having an extra entry won't cause an issue
+    End Sub
 End Class

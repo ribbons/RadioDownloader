@@ -684,7 +684,11 @@ Friend Class Data
             End Using
         End SyncLock
 
-        RaiseEvent DownloadAdded(epid)
+        search.AddDownload(epid)
+
+        If search.DownloadIsVisible(epid) Then
+            RaiseEvent DownloadAdded(epid)
+        End If
 
         Call StartDownload()
     End Sub
@@ -788,7 +792,11 @@ Friend Class Data
             downloadSortCache = Nothing
         End SyncLock
 
-        RaiseEvent DownloadUpdated(epid)
+        search.UpdateDownload(epid)
+
+        If search.DownloadIsVisible(epid) Then
+            RaiseEvent DownloadUpdated(epid)
+        End If
 
         If auto = False Then
             StartDownloadAsync()
@@ -823,7 +831,11 @@ Friend Class Data
             End If
         End SyncLock
 
-        RaiseEvent DownloadRemoved(epid)
+        If search.DownloadIsVisible(epid) Then
+            RaiseEvent DownloadRemoved(epid)
+        End If
+
+        search.RemoveDownload(epid)
 
         If curDldProgData IsNot Nothing Then
             If curDldProgData.EpId = epid Then
@@ -859,7 +871,11 @@ Friend Class Data
             downloadSortCache = Nothing
         End SyncLock
 
-        RaiseEvent DownloadUpdated(epid)
+        search.UpdateDownload(epid)
+
+        If search.DownloadIsVisible(epid) Then
+            RaiseEvent DownloadUpdated(epid)
+        End If
     End Sub
 
     Public Sub DownloadReportError(ByVal epid As Integer)
@@ -964,7 +980,11 @@ Friend Class Data
             downloadSortCache = Nothing
         End SyncLock
 
-        RaiseEvent DownloadUpdated(curDldProgData.EpId)
+        search.UpdateDownload(curDldProgData.EpId)
+
+        If search.DownloadIsVisible(curDldProgData.EpId) Then
+            RaiseEvent DownloadUpdated(curDldProgData.EpId)
+        End If
 
         downloadThread = Nothing
         curDldProgData = Nothing
@@ -988,7 +1008,11 @@ Friend Class Data
             downloadSortCache = Nothing
         End SyncLock
 
-        RaiseEvent DownloadUpdated(curDldProgData.EpId)
+        search.UpdateDownload(curDldProgData.EpId)
+
+        If search.DownloadIsVisible(curDldProgData.EpId) Then
+            RaiseEvent DownloadUpdated(curDldProgData.EpId)
+        End If
 
         ' If the episode's programme is a subscription, clear the sort cache and raise an updated event
         Using command As New SQLiteCommand("select subscriptions.progid from episodes, subscriptions where epid=@epid and subscriptions.progid = episodes.progid", FetchDbConn)
