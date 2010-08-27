@@ -51,7 +51,7 @@ Friend Class DataSearch
 
         Dim tableCols As New Dictionary(Of String, String())
 
-        tableCols.Add("downloads", {"name"})
+        tableCols.Add("downloads", {"name", "description"})
 
         If CheckIndex(tableCols) = False Then
             ' Close & clean up the connection used for testing
@@ -159,7 +159,7 @@ Friend Class DataSearch
                 downloadsVisible = New List(Of Integer)
 
                 Using command As New SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn)
-                    command.Parameters.Add(New SQLiteParameter("@query", DownloadQuery + "*"))
+                    command.Parameters.Add(New SQLiteParameter("@query", _downloadQuery + "*"))
 
                     Using reader As SQLiteDataReader = command.ExecuteReader()
                         Dim docidOrdinal As Integer = reader.GetOrdinal("docid")
@@ -177,9 +177,10 @@ Friend Class DataSearch
 
     Private Sub AddDownload(ByVal storeData As Data.DownloadData)
         SyncLock updateIndexLock
-            Using command As New SQLiteCommand("insert or replace into downloads (docid, name) values (@epid, @name)", FetchDbConn)
+            Using command As New SQLiteCommand("insert or replace into downloads (docid, name, description) values (@epid, @name, @description)", FetchDbConn)
                 command.Parameters.Add(New SQLiteParameter("@epid", storeData.epid))
                 command.Parameters.Add(New SQLiteParameter("@name", storeData.name))
+                command.Parameters.Add(New SQLiteParameter("@description", storeData.description))
 
                 command.ExecuteNonQuery()
             End Using
