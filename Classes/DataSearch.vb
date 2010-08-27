@@ -141,10 +141,29 @@ Friend Class DataSearch
         Get
             Return _downloadQuery
         End Get
-        Set(ByVal value As String)
-            If value <> _downloadQuery Then
-                _downloadQuery = value
-                downloadsVisible = Nothing
+        Set(ByVal newQuery As String)
+            If newQuery <> _downloadQuery Then
+                Try
+                    SyncLock downloadVisLock
+                        Using command As New SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn)
+                            command.Parameters.Add(New SQLiteParameter("@query", newQuery + "*"))
+
+                            Using reader As SQLiteDataReader = command.ExecuteReader()
+                                Dim docidOrdinal As Integer = reader.GetOrdinal("docid")
+
+                                downloadsVisible = New List(Of Integer)
+
+                                While reader.Read
+                                    downloadsVisible.Add(reader.GetInt32(docidOrdinal))
+                                End While
+                            End Using
+                        End Using
+                    End SyncLock
+
+                    _downloadQuery = newQuery
+                Catch sqliteExp As SQLiteException When sqliteExp.ErrorCode = SQLiteErrorCode.Error
+                    ' The search query is badly formed, so keep the old query
+                End Try
             End If
         End Set
     End Property
@@ -155,22 +174,6 @@ Friend Class DataSearch
         End If
 
         SyncLock downloadVisLock
-            If downloadsVisible Is Nothing Then
-                downloadsVisible = New List(Of Integer)
-
-                Using command As New SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn)
-                    command.Parameters.Add(New SQLiteParameter("@query", _downloadQuery + "*"))
-
-                    Using reader As SQLiteDataReader = command.ExecuteReader()
-                        Dim docidOrdinal As Integer = reader.GetOrdinal("docid")
-
-                        While reader.Read
-                            downloadsVisible.Add(reader.GetInt32(docidOrdinal))
-                        End While
-                    End Using
-                End Using
-            End If
-
             Return downloadsVisible.Contains(epid)
         End SyncLock
     End Function
