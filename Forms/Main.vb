@@ -1380,19 +1380,23 @@ Friend Class Main
             Case ViewState.View.Downloads
                 Call SetToolbarButtons("CleanUp")
 
-                Dim description As String = ""
-                Dim newCount As Integer = progData.CountDownloadsNew
-                Dim errorCount As Integer = progData.CountDownloadsErrored
+                If progData.DownloadQuery <> String.Empty Then
+                    Call SetSideBar(CStr(lstDownloads.Items.Count) + " result" + If(lstDownloads.Items.Count = 1, String.Empty, "s"), String.Empty, Nothing)
+                Else
+                    Dim description As String = String.Empty
+                    Dim newCount As Integer = progData.CountDownloadsNew
+                    Dim errorCount As Integer = progData.CountDownloadsErrored
 
-                If newCount > 0 Then
-                    description += "Newly downloaded: " + CStr(newCount) + Environment.NewLine
+                    If newCount > 0 Then
+                        description += "Newly downloaded: " + CStr(newCount) + Environment.NewLine
+                    End If
+
+                    If errorCount > 0 Then
+                        description += "Errored: " + CStr(errorCount)
+                    End If
+
+                    Call SetSideBar(CStr(lstDownloads.Items.Count) + " download" + If(lstDownloads.Items.Count = 1, String.Empty, "s"), description, Nothing)
                 End If
-
-                If errorCount > 0 Then
-                    description += "Errored: " + CStr(errorCount)
-                End If
-
-                Call SetSideBar(CStr(lstDownloads.Items.Count) + " download" + If(lstDownloads.Items.Count = 1, "", "s"), description, Nothing)
         End Select
     End Sub
 
@@ -1552,5 +1556,6 @@ Friend Class Main
     Private Sub ttxSearch_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ttxSearch.TextChanged
         progData.DownloadQuery = ttxSearch.Text
         InitDownloadList()
+        SetViewDefaults()
     End Sub
 End Class
