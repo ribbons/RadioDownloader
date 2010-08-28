@@ -29,7 +29,7 @@
         Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton()
         Me.tbtFavourites = New System.Windows.Forms.ToolStripButton()
         Me.tbtDownloads = New System.Windows.Forms.ToolStripButton()
-        Me.ttxSearch = New System.Windows.Forms.ToolStripTextBox()
+        Me.ttxSearch = New RadioDld.ToolStripSearchBox()
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
         Me.mnuTray = New System.Windows.Forms.ContextMenu()
         Me.mnuTrayShow = New System.Windows.Forms.MenuItem()
@@ -168,9 +168,10 @@
         'ttxSearch
         '
         Me.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
-        Me.ttxSearch.Margin = New System.Windows.Forms.Padding(1, 0, 0, 5)
+        Me.ttxSearch.ControlAlign = System.Drawing.ContentAlignment.TopRight
+        Me.ttxSearch.Margin = New System.Windows.Forms.Padding(1, 0, 0, 0)
         Me.ttxSearch.Name = "ttxSearch"
-        Me.ttxSearch.Size = New System.Drawing.Size(160, 26)
+        Me.ttxSearch.Size = New System.Drawing.Size(160, 31)
         '
         'nicTrayIcon
         '
@@ -617,7 +618,7 @@
     Friend WithEvents mnuTrayShow As System.Windows.Forms.MenuItem
     Friend WithEvents mnuTraySep As System.Windows.Forms.MenuItem
     Friend WithEvents mnuTrayExit As System.Windows.Forms.MenuItem
-    Friend WithEvents ttxSearch As System.Windows.Forms.ToolStripTextBox
+    Friend WithEvents ttxSearch As ToolStripSearchBox
     Friend WithEvents lstProviders As RadioDld.ExtListView
     Friend WithEvents imlListIcons As System.Windows.Forms.ImageList
     Friend WithEvents imlProviders As System.Windows.Forms.ImageList

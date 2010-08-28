@@ -174,10 +174,16 @@
     <Compile Include="Classes\Plugins.vb" />
     <Compile Include="Classes\UpdateDB.vb" />
     <Compile Include="Classes\ViewState.vb" />
+    <Compile Include="Controls\SearchBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\ExtToolBar.vb">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Controls\ExtToolStrip.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ToolStripSearchBox.vb">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\GlassForm.vb">
