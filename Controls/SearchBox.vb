@@ -26,18 +26,27 @@ Public Class SearchBox
     Private Shared Function SetWindowTheme(ByVal hWnd As IntPtr, ByVal pszSubAppName As String, ByVal pszSubIdList As String) As Integer
     End Function
 
+    <DllImport("user32.dll", SetLastError:=True, CharSet:=CharSet.Unicode)> _
+    Private Shared Function SendMessage(ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As IntPtr, ByVal lParam As String) As IntPtr
+    End Function
+
+    ' Window Messages
+    Private Const EM_SETCUEBANNER As Integer = &H1501
+
     ' Search box theme class, part and states
     Private Const SEARCHBOX As String = "SearchBox"
-    Private Const SBBACKGROUND As Integer = 1
+    Private Const SBBACKGROUND As Integer = &H1
 
-    Private Const SBB_NORMAL As Integer = 1
-    Private Const SBB_HOT As Integer = 2
-    Private Const SBB_DISABLED As Integer = 3
-    Private Const SBB_FOCUSED As Integer = 4
+    Private Const SBB_NORMAL As Integer = &H1
+    Private Const SBB_HOT As Integer = &H2
+    Private Const SBB_DISABLED As Integer = &H3
+    Private Const SBB_FOCUSED As Integer = &H4
 
     Private boxState As Integer = SBB_NORMAL
     Private themeHeight As Integer
     Private buttonHover As Boolean
+
+    Private _cueBanner As String
 
     Private WithEvents textBox As TextBox
     Private WithEvents button As PictureBox
@@ -64,6 +73,16 @@ Public Class SearchBox
             Me.themeHeight = sizeStyle.GetPartSize(sizeGraphics, ThemeSizeType.True).Height
         End Using
     End Sub
+
+    Public Property CueBanner As String
+        Get
+            Return _cueBanner
+        End Get
+        Set(ByVal value As String)
+            _cueBanner = value
+            SendMessage(textBox.Handle, EM_SETCUEBANNER, IntPtr.Zero, _cueBanner)
+        End Set
+    End Property
 
     Private Sub SearchBox_HandleCreated(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.HandleCreated
         If OsUtils.WinXpOrLater() Then

@@ -21,5 +21,14 @@ Public Class ToolStripSearchBox
     Public Sub New()
         MyBase.New(New SearchBox)
     End Sub
+
+    Public Property CueBanner As String
+        Get
+            Return DirectCast(Me.Control, SearchBox).CueBanner
+        End Get
+        Set(ByVal value As String)
+            DirectCast(Me.Control, SearchBox).CueBanner = value
+        End Set
+    End Property
 End Class
 
