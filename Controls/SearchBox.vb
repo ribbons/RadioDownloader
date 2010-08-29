@@ -212,5 +212,16 @@ Public Class SearchBox
             textBox.Text = String.Empty
         End If
     End Sub
+
+    Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+        If Not Me.IsDisposed Then
+            If disposing Then
+                textBox.Dispose()
+                button.Dispose()
+            End If
+        End If
+
+        MyBase.Dispose(disposing)
+    End Sub
 End Class
 
