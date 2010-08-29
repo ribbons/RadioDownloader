@@ -188,5 +188,11 @@ Public Class SearchBox
             End If
         End If
     End Sub
+
+    Private Sub textBox_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles textBox.KeyDown
+        If e.KeyCode = Keys.Escape Then
+            textBox.Text = String.Empty
+        End If
+    End Sub
 End Class
 
