@@ -54,6 +54,8 @@ Public Class SearchBox
     Public Sub New()
         MyBase.New()
 
+        SetStyle(ControlStyles.SupportsTransparentBackColor, True)
+
         ' Create the child textbox control for the user to type in, without a border
         textBox = New TextBox
         textBox.BorderStyle = BorderStyle.None
@@ -98,9 +100,6 @@ Public Class SearchBox
     End Sub
 
     Private Sub SearchBox_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
-        ' Clear the background of the control to make sure it is transparent when on glass
-        e.Graphics.Clear(Color.Transparent)
-
         If VisualStyleRenderer.IsSupported Then
             ' Paint the correct background for the control based on the current state
             Dim searchBoxStyle As New VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, boxState)
