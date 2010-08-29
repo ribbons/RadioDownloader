@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -288,6 +288,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\search\close_14.png" />
+    <None Include="Resources\search\close pressed_14.png" />
+    <None Include="Resources\search\close hover_14.png" />
+    <None Include="Resources\provider_default.png" />
     <None Include="Resources\search\search_14.png" />
     <EmbeddedResource Include="Forms\ChooseCols.resx">
       <DependentUpon>ChooseCols.vb</DependentUpon>

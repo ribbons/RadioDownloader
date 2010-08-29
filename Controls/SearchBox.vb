@@ -37,6 +37,7 @@ Public Class SearchBox
 
     Private boxState As Integer = SBB_NORMAL
     Private themeHeight As Integer
+    Private buttonHover As Boolean
 
     Private WithEvents textBox As TextBox
     Private WithEvents button As PictureBox
@@ -88,7 +89,7 @@ Public Class SearchBox
         End If
     End Sub
 
-    Private Sub textBox_button_MouseEnter(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseEnter, button.MouseEnter
+    Private Sub textBox_MouseEnter(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseEnter
         If boxState = SBB_NORMAL Then
             boxState = SBB_HOT
         End If
@@ -98,7 +99,7 @@ Public Class SearchBox
         textBox.Invalidate()
     End Sub
 
-    Private Sub textBox_button_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseLeave, button.MouseLeave
+    Private Sub textBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseLeave
         If boxState = SBB_HOT Then
             boxState = SBB_NORMAL
         End If
@@ -116,6 +117,44 @@ Public Class SearchBox
     Private Sub textBox_LostFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.LostFocus
         boxState = SBB_NORMAL
         Me.Invalidate() ' Repaint the control
+    End Sub
+
+    Private Sub button_MouseEnter(ByVal sender As Object, ByVal e As System.EventArgs) Handles button.MouseEnter
+        buttonHover = True
+
+        If Me.Text <> String.Empty Then
+            button.BackgroundImage = My.Resources.search_close_hover
+        End If
+
+        textBox_MouseEnter(sender, e)
+    End Sub
+
+    Private Sub button_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles button.MouseLeave
+        buttonHover = False
+
+        If Me.Text <> String.Empty Then
+            button.BackgroundImage = My.Resources.search_close
+        End If
+
+        textBox_MouseLeave(sender, e)
+    End Sub
+
+    Private Sub button_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles button.MouseDown
+        If Me.Text <> String.Empty Then
+            button.BackgroundImage = My.Resources.search_close_pressed
+        End If
+    End Sub
+
+    Private Sub button_MouseUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles button.MouseUp
+        If Me.Text <> String.Empty Then
+            button.BackgroundImage = My.Resources.search_close_hover
+        End If
+    End Sub
+
+    Private Sub button_MouseClick(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles button.MouseClick
+        If textBox.Text <> String.Empty Then
+            textBox.Text = String.Empty
+        End If
     End Sub
 
     Private Sub SearchBox_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Resize
@@ -137,6 +176,17 @@ Public Class SearchBox
     Private Sub textBox_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.TextChanged
         ' Hook up changes to the child textbox through this control
         Me.Text = textBox.Text
+
+        ' Update the displayed icon
+        If Me.Text = String.Empty Then
+            button.BackgroundImage = My.Resources.search_icon
+        Else
+            If buttonHover Then
+                button.BackgroundImage = My.Resources.search_close_hover
+            Else
+                button.BackgroundImage = My.Resources.search_close
+            End If
+        End If
     End Sub
 End Class
 
