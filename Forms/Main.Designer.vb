@@ -170,7 +170,7 @@
         Me.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right
         Me.ttxSearch.ControlAlign = System.Drawing.ContentAlignment.TopRight
         Me.ttxSearch.CueBanner = "Search downloads"
-        Me.ttxSearch.Margin = New System.Windows.Forms.Padding(1, 0, 0, 0)
+        Me.ttxSearch.Margin = New System.Windows.Forms.Padding(1, 1, 0, 0)
         Me.ttxSearch.Name = "ttxSearch"
         Me.ttxSearch.Size = New System.Drawing.Size(160, 31)
         '
