@@ -151,6 +151,13 @@ Namespace My.Resources
             End Get
         End Property
         
+        Friend ReadOnly Property search_icon() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("search_icon", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
         Friend ReadOnly Property toolbar_choose_programme() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("toolbar_choose_programme", resourceCulture)

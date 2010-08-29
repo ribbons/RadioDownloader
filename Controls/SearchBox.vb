@@ -35,10 +35,11 @@ Public Class SearchBox
     Private Const SBB_DISABLED As Integer = 3
     Private Const SBB_FOCUSED As Integer = 4
 
-    Private boxState As Integer = 1
+    Private boxState As Integer = SBB_NORMAL
     Private themeHeight As Integer
 
     Private WithEvents textBox As TextBox
+    Private WithEvents button As PictureBox
 
     Public Sub New()
         MyBase.New()
@@ -47,6 +48,13 @@ Public Class SearchBox
         textBox = New TextBox
         textBox.BorderStyle = BorderStyle.None
         Me.Controls.Add(textBox)
+
+        ' Create a picturebox to display the search icon and cancel 'button'
+        button = New PictureBox
+        button.BackColor = Color.Transparent
+        button.BackgroundImage = My.Resources.search_icon
+        button.Size = My.Resources.search_icon.Size
+        Me.Controls.Add(button)
 
         ' Work out the height that the search box should be displayed with
         Dim sizeStyle As New VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, SBB_NORMAL)
@@ -80,7 +88,7 @@ Public Class SearchBox
         End If
     End Sub
 
-    Private Sub textBox_MouseEnter(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseEnter
+    Private Sub textBox_button_MouseEnter(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseEnter, button.MouseEnter
         If boxState = SBB_NORMAL Then
             boxState = SBB_HOT
         End If
@@ -90,7 +98,7 @@ Public Class SearchBox
         textBox.Invalidate()
     End Sub
 
-    Private Sub textBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseLeave
+    Private Sub textBox_button_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseLeave, button.MouseLeave
         If boxState = SBB_HOT Then
             boxState = SBB_NORMAL
         End If
@@ -116,9 +124,14 @@ Public Class SearchBox
             Me.Height = Me.themeHeight
         End If
 
+        ' Vertically center the search / cancel button on the right hand side
+        button.Left = Me.Width - (button.Width + 6)
+        button.Top = CInt((Me.Height - button.Height) / 2) + 1
+
+        ' Use the rest of the space for the textbox
         textBox.Top = 4
         textBox.Left = 2
-        textBox.Width = Me.Width - (textBox.Left + 2)
+        textBox.Width = button.Left - (textBox.Left + 4)
     End Sub
 
     Private Sub textBox_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.TextChanged
