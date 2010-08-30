@@ -1035,12 +1035,6 @@ Friend Class Main
             Case ProgressIcon.Converting
                 item.ImageKey = "converting"
         End Select
-
-        Call UpdateTrayStatus(True)
-
-        If OsUtils.WinSevenOrLater Then
-            tbarNotif.SetProgressValue(Me, percent, 100)
-        End If
     End Sub
 
     Private Sub progData_DownloadRemoved(ByVal epid As Integer) Handles progData.DownloadRemoved
@@ -1067,12 +1061,6 @@ Friend Class Main
                 ' Update the displayed statistics
                 SetViewDefaults()
             End If
-        End If
-
-        Call UpdateTrayStatus(False)
-
-        If OsUtils.WinSevenOrLater Then
-            tbarNotif.SetProgressNone(Me)
         End If
     End Sub
 
@@ -1105,12 +1093,24 @@ Friend Class Main
                 SetViewDefaults()
             End If
         End If
+    End Sub
+
+    Private Sub progData_DownloadProgressTotal(ByVal downloading As Boolean, ByVal percent As Integer) Handles progData.DownloadProgressTotal
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(Sub() progData_DownloadProgressTotal(downloading, percent))
+            Return
+        End If
 
         If Me.IsDisposed = False Then
-            Call UpdateTrayStatus(False)
+            Call UpdateTrayStatus(downloading)
 
             If OsUtils.WinSevenOrLater Then
-                tbarNotif.SetProgressNone(Me)
+                If downloading Then
+                    tbarNotif.SetProgressValue(Me, percent, 100)
+                Else
+                    tbarNotif.SetProgressNone(Me)
+                End If
             End If
         End If
     End Sub

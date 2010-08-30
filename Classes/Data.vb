@@ -121,6 +121,7 @@ Friend Class Data
     Public Event DownloadUpdated(ByVal epid As Integer)
     Public Event DownloadProgress(ByVal epid As Integer, ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon)
     Public Event DownloadRemoved(ByVal epid As Integer)
+    Public Event DownloadProgressTotal(ByVal downloading As Boolean, ByVal percent As Integer)
 
     Public Shared Function GetInstance() As Data
         ' Need to use a lock instead of declaring the instance variable as New, as otherwise
@@ -835,6 +836,7 @@ Friend Class Data
             RaiseEvent DownloadRemoved(epid)
         End If
 
+        RaiseEvent DownloadProgressTotal(False, 0)
         search.RemoveDownload(epid)
 
         If curDldProgData IsNot Nothing Then
@@ -986,6 +988,8 @@ Friend Class Data
             RaiseEvent DownloadUpdated(curDldProgData.EpId)
         End If
 
+        RaiseEvent DownloadProgressTotal(False, 0)
+
         downloadThread = Nothing
         curDldProgData = Nothing
 
@@ -1013,6 +1017,8 @@ Friend Class Data
         If search.DownloadIsVisible(curDldProgData.EpId) Then
             RaiseEvent DownloadUpdated(curDldProgData.EpId)
         End If
+
+        RaiseEvent DownloadProgressTotal(False, 100)
 
         ' If the episode's programme is a subscription, clear the sort cache and raise an updated event
         Using command As New SQLiteCommand("select subscriptions.progid from episodes, subscriptions where epid=@epid and subscriptions.progid = episodes.progid", FetchDbConn)
@@ -1054,7 +1060,11 @@ Friend Class Data
 
         lastNum = percent
 
-        RaiseEvent DownloadProgress(curDldProgData.EpId, percent, statusText, icon)
+        If search.DownloadIsVisible(curDldProgData.EpId) Then
+            RaiseEvent DownloadProgress(curDldProgData.EpId, percent, statusText, icon)
+        End If
+
+        RaiseEvent DownloadProgressTotal(True, percent)
     End Sub
 
     Public Sub PerformCleanup()
