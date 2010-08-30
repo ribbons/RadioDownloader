@@ -58,6 +58,7 @@ Public Class SearchBox
 
         ' Create the child textbox control for the user to type in, without a border
         textBox = New TextBox
+        Me.themeHeight = textBox.Height + 2
         textBox.BorderStyle = BorderStyle.None
         Me.Controls.Add(textBox)
 
@@ -68,12 +69,14 @@ Public Class SearchBox
         button.Size = My.Resources.search_icon.Size
         Me.Controls.Add(button)
 
-        ' Work out the height that the search box should be displayed with
-        Dim sizeStyle As New VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, SBB_NORMAL)
+        ' Work out the height that the search box should be displayed
+        If VisualStyleRenderer.IsSupported Then
+            Dim sizeStyle As New VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, SBB_NORMAL)
 
-        Using sizeGraphics As Graphics = Me.CreateGraphics
-            Me.themeHeight = sizeStyle.GetPartSize(sizeGraphics, ThemeSizeType.True).Height
-        End Using
+            Using sizeGraphics As Graphics = Me.CreateGraphics
+                Me.themeHeight = sizeStyle.GetPartSize(sizeGraphics, ThemeSizeType.True).Height
+            End Using
+        End If
     End Sub
 
     Public Property CueBanner As String
@@ -104,6 +107,21 @@ Public Class SearchBox
             ' Paint the correct background for the control based on the current state
             Dim searchBoxStyle As New VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, boxState)
             searchBoxStyle.DrawBackground(e.Graphics, New Rectangle(0, 0, Me.Width, Me.Height))
+        Else
+            e.Graphics.Clear(SystemColors.Window)
+
+            ' Paint a 'classic textbox' border for the control
+            Using controlDark As New Pen(SystemColors.ControlDark), controlDarkDark As New Pen(SystemColors.ControlDarkDark), controlLightLight As New Pen(SystemColors.ControlLightLight), controlLight As New Pen(SystemColors.ControlLight)
+                e.Graphics.DrawLine(controlDark, 0, Me.Height, 0, 0)
+                e.Graphics.DrawLine(controlDark, 0, 0, Me.Width, 0)
+                e.Graphics.DrawLine(controlDarkDark, 1, Me.Height - 1, 1, 1)
+                e.Graphics.DrawLine(controlDarkDark, 1, 1, Me.Width - 1, 1)
+
+                e.Graphics.DrawLine(controlLight, Me.Width - 2, 1, Me.Width - 2, Me.Height - 2)
+                e.Graphics.DrawLine(controlLight, Me.Width - 2, Me.Height - 2, 1, Me.Height - 2)
+                e.Graphics.DrawLine(controlLightLight, Me.Width - 1, 0, Me.Width - 1, Me.Height - 1)
+                e.Graphics.DrawLine(controlLightLight, Me.Width - 1, Me.Height - 1, 0, Me.Height - 1)
+            End Using
         End If
     End Sub
 
@@ -112,9 +130,11 @@ Public Class SearchBox
             boxState = SBB_HOT
         End If
 
-        ' Repaint the control and child textbox
-        Me.Invalidate()
-        textBox.Invalidate()
+        If VisualStyleRenderer.IsSupported Then
+            ' Repaint the control and child textbox
+            Me.Invalidate()
+            textBox.Invalidate()
+        End If
     End Sub
 
     Private Sub textBox_MouseLeave(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.MouseLeave
@@ -122,9 +142,11 @@ Public Class SearchBox
             boxState = SBB_NORMAL
         End If
 
-        ' Repaint the control and child textbox
-        Me.Invalidate()
-        textBox.Invalidate()
+        If VisualStyleRenderer.IsSupported Then
+            ' Repaint the control and child textbox
+            Me.Invalidate()
+            textBox.Invalidate()
+        End If
     End Sub
 
     Private Sub textBox_GotFocus(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.GotFocus
@@ -187,8 +209,14 @@ Public Class SearchBox
 
         ' Use the rest of the space for the textbox
         textBox.Top = 4
-        textBox.Left = 2
         textBox.Width = button.Left - (textBox.Left + 4)
+
+        If OsUtils.WinVistaOrLater And VisualStyleRenderer.IsSupported Then
+            ' The textbox is given extra padding as part of the visual style
+            textBox.Left = 2
+        Else
+            textBox.Left = 8
+        End If
     End Sub
 
     Private Sub textBox_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.TextChanged
