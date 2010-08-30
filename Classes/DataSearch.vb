@@ -144,22 +144,7 @@ Friend Class DataSearch
         Set(ByVal newQuery As String)
             If newQuery <> _downloadQuery Then
                 Try
-                    SyncLock downloadVisLock
-                        Using command As New SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn)
-                            command.Parameters.Add(New SQLiteParameter("@query", newQuery + "*"))
-
-                            Using reader As SQLiteDataReader = command.ExecuteReader()
-                                Dim docidOrdinal As Integer = reader.GetOrdinal("docid")
-
-                                downloadsVisible = New List(Of Integer)
-
-                                While reader.Read
-                                    downloadsVisible.Add(reader.GetInt32(docidOrdinal))
-                                End While
-                            End Using
-                        End Using
-                    End SyncLock
-
+                    RunQuery(newQuery)
                     _downloadQuery = newQuery
                 Catch sqliteExp As SQLiteException When sqliteExp.ErrorCode = SQLiteErrorCode.Error
                     ' The search query is badly formed, so keep the old query
@@ -168,12 +153,34 @@ Friend Class DataSearch
         End Set
     End Property
 
+    Private Sub RunQuery(ByVal query As String)
+        SyncLock downloadVisLock
+            Using command As New SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@query", query + "*"))
+
+                Using reader As SQLiteDataReader = command.ExecuteReader()
+                    Dim docidOrdinal As Integer = reader.GetOrdinal("docid")
+
+                    downloadsVisible = New List(Of Integer)
+
+                    While reader.Read
+                        downloadsVisible.Add(reader.GetInt32(docidOrdinal))
+                    End While
+                End Using
+            End Using
+        End SyncLock
+    End Sub
+
     Public Function DownloadIsVisible(ByVal epid As Integer) As Boolean
         If DownloadQuery = String.Empty Then
             Return True
         End If
 
         SyncLock downloadVisLock
+            If downloadsVisible Is Nothing Then
+                RunQuery(_downloadQuery)
+            End If
+
             Return downloadsVisible.Contains(epid)
         End SyncLock
     End Function
