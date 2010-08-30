@@ -39,7 +39,17 @@ Public Class ExtToolStrip
 
                 ' Test to see if the mouse is over any of the toolstrip controls
                 For Each child As ToolStripItem In Me.Items
-                    If child.Bounds.Contains(clientPos) Then
+                    If child.Bounds.Contains(clientPos) AndAlso child.Visible Then
+                        Dim controlHost As ToolStripControlHost = TryCast(child, ToolStripControlHost)
+
+                        If controlHost IsNot Nothing Then
+                            ' This is a control host, so check the click wasn't outside the child control
+                            If Not controlHost.Control.Bounds.Contains(clientPos) Then
+                                onBackground = True
+                                Exit For
+                            End If
+                        End If
+
                         onBackground = False
                         Exit For
                     End If
