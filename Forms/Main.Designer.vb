@@ -90,6 +90,7 @@
         '
         'tbrView
         '
+        Me.tbrView.CanOverflow = False
         Me.tbrView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
         Me.tbrView.ImageScalingSize = New System.Drawing.Size(24, 24)
         Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtBack, Me.tbtForward, Me.tbtFindNew, Me.tbtSubscriptions, Me.tbtFavourites, Me.tbtDownloads, Me.ttxSearch})
