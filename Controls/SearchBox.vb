@@ -65,8 +65,8 @@ Public Class SearchBox
         ' Create a picturebox to display the search icon and cancel 'button'
         button = New PictureBox
         button.BackColor = Color.Transparent
-        button.BackgroundImage = My.Resources.search_icon
-        button.Size = My.Resources.search_icon.Size
+        button.Image = My.Resources.search_icon
+        button.SizeMode = PictureBoxSizeMode.AutoSize
         Me.Controls.Add(button)
 
         ' Work out the height that the search box should be displayed
@@ -171,7 +171,7 @@ Public Class SearchBox
         buttonHover = True
 
         If Me.Text <> String.Empty Then
-            button.BackgroundImage = My.Resources.search_close_hover
+            button.Image = My.Resources.search_close_hover
         End If
 
         textBox_MouseEnter(sender, e)
@@ -181,7 +181,7 @@ Public Class SearchBox
         buttonHover = False
 
         If Me.Text <> String.Empty Then
-            button.BackgroundImage = My.Resources.search_close
+            button.Image = My.Resources.search_close
         End If
 
         textBox_MouseLeave(sender, e)
@@ -189,13 +189,13 @@ Public Class SearchBox
 
     Private Sub button_MouseDown(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles button.MouseDown
         If Me.Text <> String.Empty Then
-            button.BackgroundImage = My.Resources.search_close_pressed
+            button.Image = My.Resources.search_close_pressed
         End If
     End Sub
 
     Private Sub button_MouseUp(ByVal sender As Object, ByVal e As System.Windows.Forms.MouseEventArgs) Handles button.MouseUp
         If Me.Text <> String.Empty Then
-            button.BackgroundImage = My.Resources.search_close_hover
+            button.Image = My.Resources.search_close_hover
         End If
     End Sub
 
@@ -233,12 +233,12 @@ Public Class SearchBox
 
         ' Update the displayed icon
         If Me.Text = String.Empty Then
-            button.BackgroundImage = My.Resources.search_icon
+            button.Image = My.Resources.search_icon
         Else
             If buttonHover Then
-                button.BackgroundImage = My.Resources.search_close_hover
+                button.Image = My.Resources.search_close_hover
             Else
-                button.BackgroundImage = My.Resources.search_close
+                button.Image = My.Resources.search_close
             End If
         End If
     End Sub
