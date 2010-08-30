@@ -19,6 +19,7 @@ Imports System.Collections.Generic
 Imports System.Configuration
 Imports System.Globalization
 Imports System.IO
+Imports System.Threading
 Imports System.Windows.Forms.VisualStyles
 
 Friend Class Main
@@ -65,6 +66,9 @@ Friend Class Main
 
     Private checkUpdate As UpdateCheck
     Private tbarNotif As TaskbarNotify
+
+    Private searchThread As Thread
+    Private searchThreadLock As New Object
 
     Private downloadColNames As New Dictionary(Of Integer, String)
     Private downloadColSizes As New Dictionary(Of Integer, Integer)
@@ -1353,6 +1357,8 @@ Friend Class Main
                 End If
             Case view.Downloads
                 ttxSearch.Visible = True
+                ttxSearch.Text = progData.DownloadQuery
+
                 lstDownloads.Visible = True
                 lstDownloads.Focus()
 
@@ -1554,8 +1560,36 @@ Friend Class Main
     End Sub
 
     Private Sub ttxSearch_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles ttxSearch.TextChanged
-        progData.DownloadQuery = ttxSearch.Text
-        InitDownloadList()
-        SetViewDefaults()
+        SyncLock searchThreadLock
+            If ttxSearch.Text = String.Empty Then
+                searchThread = Nothing
+                PerformSearch(view.CurrentView, ttxSearch.Text)
+            Else
+                searchThread = New Thread(Sub() SearchWait(view.CurrentView, ttxSearch.Text))
+                searchThread.IsBackground = True
+                searchThread.Start()
+            End If
+        End SyncLock
+    End Sub
+
+    Private Sub SearchWait(ByVal origView As ViewState.View, ByVal search As String)
+        Thread.Sleep(500)
+
+        SyncLock searchThreadLock
+            If Thread.CurrentThread IsNot searchThread Then
+                ' A search thread was created more recently, stop this thread
+                Exit Sub
+            End If
+
+            Me.Invoke(Sub() PerformSearch(origView, search))
+        End SyncLock
+    End Sub
+
+    Private Sub PerformSearch(ByVal origView As ViewState.View, ByVal search As String)
+        If view.CurrentView = origView Then
+            progData.DownloadQuery = search
+            InitDownloadList()
+            SetViewDefaults()
+        End If
     End Sub
 End Class

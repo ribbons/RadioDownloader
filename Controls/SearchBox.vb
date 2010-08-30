@@ -227,6 +227,12 @@ Public Class SearchBox
         End If
     End Sub
 
+    Private Sub SearchBox_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.TextChanged
+        If textBox.Text <> Me.Text Then
+            textBox.Text = Me.Text
+        End If
+    End Sub
+
     Private Sub textBox_TextChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles textBox.TextChanged
         ' Hook up changes to the child textbox through this control
         Me.Text = textBox.Text
