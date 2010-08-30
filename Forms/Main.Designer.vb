@@ -21,13 +21,12 @@
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
-        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(Main))
         Me.tbrView = New RadioDld.ExtToolStrip()
         Me.tbtBack = New System.Windows.Forms.ToolStripButton()
         Me.tbtForward = New System.Windows.Forms.ToolStripButton()
         Me.tbtFindNew = New System.Windows.Forms.ToolStripButton()
-        Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton()
         Me.tbtFavourites = New System.Windows.Forms.ToolStripButton()
+        Me.tbtSubscriptions = New System.Windows.Forms.ToolStripButton()
         Me.tbtDownloads = New System.Windows.Forms.ToolStripButton()
         Me.ttxSearch = New RadioDld.ToolStripSearchBox()
         Me.nicTrayIcon = New System.Windows.Forms.NotifyIcon(Me.components)
@@ -81,6 +80,7 @@
         Me.lstSubscribed = New RadioDld.ExtListView()
         Me.lstEpisodes = New RadioDld.ExtListView()
         Me.lstProviders = New RadioDld.ExtListView()
+        Me.lstFavourites = New RadioDld.ExtListView()
         Me.tbrView.SuspendLayout()
         Me.tblInfo.SuspendLayout()
         CType(Me.picSidebarImg, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -93,13 +93,13 @@
         Me.tbrView.CanOverflow = False
         Me.tbrView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden
         Me.tbrView.ImageScalingSize = New System.Drawing.Size(24, 24)
-        Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtBack, Me.tbtForward, Me.tbtFindNew, Me.tbtSubscriptions, Me.tbtFavourites, Me.tbtDownloads, Me.ttxSearch})
+        Me.tbrView.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.tbtBack, Me.tbtForward, Me.tbtFindNew, Me.tbtFavourites, Me.tbtSubscriptions, Me.tbtDownloads, Me.ttxSearch})
         Me.tbrView.Location = New System.Drawing.Point(0, 0)
         Me.tbrView.Name = "tbrView"
         Me.tbrView.Padding = New System.Windows.Forms.Padding(3, 0, 1, 0)
         Me.tbrView.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
         Me.tbrView.Size = New System.Drawing.Size(757, 31)
-        Me.tbrView.TabIndex = 6
+        Me.tbrView.TabIndex = 7
         Me.tbrView.TabStop = True
         '
         'tbtBack
@@ -135,6 +135,16 @@
         Me.tbtFindNew.Size = New System.Drawing.Size(128, 28)
         Me.tbtFindNew.Text = "&Find Programme"
         '
+        'tbtFavourites
+        '
+        Me.tbtFavourites.AutoToolTip = False
+        Me.tbtFavourites.Image = Global.RadioDld.My.Resources.Resources.views_favourites
+        Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
+        Me.tbtFavourites.Name = "tbtFavourites"
+        Me.tbtFavourites.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
+        Me.tbtFavourites.Size = New System.Drawing.Size(93, 28)
+        Me.tbtFavourites.Text = "F&avourites"
+        '
         'tbtSubscriptions
         '
         Me.tbtSubscriptions.AutoToolTip = False
@@ -144,17 +154,6 @@
         Me.tbtSubscriptions.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
         Me.tbtSubscriptions.Size = New System.Drawing.Size(110, 28)
         Me.tbtSubscriptions.Text = "&Subscriptions"
-        '
-        'tbtFavourites
-        '
-        Me.tbtFavourites.AutoToolTip = False
-        Me.tbtFavourites.Image = CType(resources.GetObject("tbtFavourites.Image"), System.Drawing.Image)
-        Me.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.tbtFavourites.Name = "tbtFavourites"
-        Me.tbtFavourites.Padding = New System.Windows.Forms.Padding(2, 0, 2, 0)
-        Me.tbtFavourites.Size = New System.Drawing.Size(93, 28)
-        Me.tbtFavourites.Text = "F&avourites"
-        Me.tbtFavourites.Visible = False
         '
         'tbtDownloads
         '
@@ -213,10 +212,10 @@
         '
         'prgDldProg
         '
-        Me.prgDldProg.Location = New System.Drawing.Point(430, 427)
+        Me.prgDldProg.Location = New System.Drawing.Point(438, 356)
         Me.prgDldProg.Name = "prgDldProg"
         Me.prgDldProg.Size = New System.Drawing.Size(100, 23)
-        Me.prgDldProg.TabIndex = 5
+        Me.prgDldProg.TabIndex = 6
         Me.prgDldProg.Visible = False
         '
         'tmrCheckForUpdates
@@ -303,7 +302,7 @@
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.tblInfo.RowStyles.Add(New System.Windows.Forms.RowStyle())
         Me.tblInfo.Size = New System.Drawing.Size(187, 385)
-        Me.tblInfo.TabIndex = 8
+        Me.tblInfo.TabIndex = 9
         '
         'txtSideDescript
         '
@@ -355,7 +354,7 @@
         Me.pnlPluginSpace.Anchor = CType((((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom) _
                     Or System.Windows.Forms.AnchorStyles.Left) _
                     Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.pnlPluginSpace.Location = New System.Drawing.Point(197, 149)
+        Me.pnlPluginSpace.Location = New System.Drawing.Point(197, 118)
         Me.pnlPluginSpace.Name = "pnlPluginSpace"
         Me.pnlPluginSpace.Size = New System.Drawing.Size(560, 41)
         Me.pnlPluginSpace.TabIndex = 1
@@ -373,7 +372,7 @@
         Me.tblToolbars.RowCount = 1
         Me.tblToolbars.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100.0!))
         Me.tblToolbars.Size = New System.Drawing.Size(757, 34)
-        Me.tblToolbars.TabIndex = 7
+        Me.tblToolbars.TabIndex = 8
         '
         'tbrToolbar
         '
@@ -526,12 +525,12 @@
         Me.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstDownloads.FullRowSelect = True
         Me.lstDownloads.HideSelection = False
-        Me.lstDownloads.Location = New System.Drawing.Point(197, 418)
+        Me.lstDownloads.Location = New System.Drawing.Point(197, 396)
         Me.lstDownloads.Margin = New System.Windows.Forms.Padding(0, 3, 3, 0)
         Me.lstDownloads.MultiSelect = False
         Me.lstDownloads.Name = "lstDownloads"
         Me.lstDownloads.Size = New System.Drawing.Size(560, 54)
-        Me.lstDownloads.TabIndex = 4
+        Me.lstDownloads.TabIndex = 5
         Me.lstDownloads.UseCompatibleStateImageBehavior = False
         Me.lstDownloads.View = System.Windows.Forms.View.Details
         '
@@ -540,12 +539,12 @@
         Me.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None
         Me.lstSubscribed.FullRowSelect = True
         Me.lstSubscribed.HideSelection = False
-        Me.lstSubscribed.Location = New System.Drawing.Point(197, 348)
+        Me.lstSubscribed.Location = New System.Drawing.Point(197, 301)
         Me.lstSubscribed.Margin = New System.Windows.Forms.Padding(0, 3, 3, 3)
         Me.lstSubscribed.MultiSelect = False
         Me.lstSubscribed.Name = "lstSubscribed"
         Me.lstSubscribed.Size = New System.Drawing.Size(560, 49)
-        Me.lstSubscribed.TabIndex = 3
+        Me.lstSubscribed.TabIndex = 4
         Me.lstSubscribed.UseCompatibleStateImageBehavior = False
         Me.lstSubscribed.View = System.Windows.Forms.View.Details
         '
@@ -555,7 +554,7 @@
         Me.lstEpisodes.CheckBoxes = True
         Me.lstEpisodes.FullRowSelect = True
         Me.lstEpisodes.HideSelection = False
-        Me.lstEpisodes.Location = New System.Drawing.Point(197, 247)
+        Me.lstEpisodes.Location = New System.Drawing.Point(197, 171)
         Me.lstEpisodes.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
         Me.lstEpisodes.MultiSelect = False
         Me.lstEpisodes.Name = "lstEpisodes"
@@ -572,15 +571,30 @@
         Me.lstProviders.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
         Me.lstProviders.MultiSelect = False
         Me.lstProviders.Name = "lstProviders"
-        Me.lstProviders.Size = New System.Drawing.Size(560, 62)
+        Me.lstProviders.Size = New System.Drawing.Size(560, 49)
         Me.lstProviders.TabIndex = 0
         Me.lstProviders.UseCompatibleStateImageBehavior = False
+        '
+        'lstFavourites
+        '
+        Me.lstFavourites.BorderStyle = System.Windows.Forms.BorderStyle.None
+        Me.lstFavourites.FullRowSelect = True
+        Me.lstFavourites.HideSelection = False
+        Me.lstFavourites.Location = New System.Drawing.Point(197, 236)
+        Me.lstFavourites.Margin = New System.Windows.Forms.Padding(0, 0, 3, 3)
+        Me.lstFavourites.MultiSelect = False
+        Me.lstFavourites.Name = "lstFavourites"
+        Me.lstFavourites.Size = New System.Drawing.Size(560, 50)
+        Me.lstFavourites.TabIndex = 3
+        Me.lstFavourites.UseCompatibleStateImageBehavior = False
+        Me.lstFavourites.View = System.Windows.Forms.View.Details
         '
         'Main
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(96.0!, 96.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi
         Me.ClientSize = New System.Drawing.Size(757, 450)
+        Me.Controls.Add(Me.lstFavourites)
         Me.Controls.Add(Me.lstDownloads)
         Me.Controls.Add(Me.lstSubscribed)
         Me.Controls.Add(Me.lstEpisodes)
@@ -671,5 +685,6 @@
     Friend WithEvents mnuListHdrsColumns As System.Windows.Forms.MenuItem
     Friend WithEvents mnuListHdrsReset As System.Windows.Forms.MenuItem
     Friend WithEvents mnuListHdrsSep As System.Windows.Forms.MenuItem
+    Friend WithEvents lstFavourites As RadioDld.ExtListView
 #End Region
 End Class

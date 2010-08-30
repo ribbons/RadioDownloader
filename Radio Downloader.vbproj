@@ -288,6 +288,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\toolbar\favourites_24.png" />
     <None Include="Resources\search\close_14.png" />
     <None Include="Resources\search\close pressed_14.png" />
     <None Include="Resources\search\close hover_14.png" />

@@ -248,6 +248,9 @@ Friend Class Main
 
         Call lstEpisodes.Columns.Add("Date", CInt(0.179 * lstEpisodes.Width))
         Call lstEpisodes.Columns.Add("Episode Name", CInt(0.786 * lstEpisodes.Width))
+        Call lstFavourites.Columns.Add("Programme Name", CInt(0.482 * lstFavourites.Width))
+        Call lstFavourites.Columns.Add("Last Download", CInt(0.179 * lstFavourites.Width))
+        Call lstFavourites.Columns.Add("Provider", CInt(0.304 * lstFavourites.Width))
         Call lstSubscribed.Columns.Add("Programme Name", CInt(0.482 * lstSubscribed.Width))
         Call lstSubscribed.Columns.Add("Last Download", CInt(0.179 * lstSubscribed.Width))
         Call lstSubscribed.Columns.Add("Provider", CInt(0.304 * lstSubscribed.Width))
@@ -290,6 +293,7 @@ Friend Class Main
         lstProviders.Dock = DockStyle.Fill
         pnlPluginSpace.Dock = DockStyle.Fill
         lstEpisodes.Dock = DockStyle.Fill
+        lstFavourites.Dock = DockStyle.Fill
         lstSubscribed.Dock = DockStyle.Fill
         lstDownloads.Dock = DockStyle.Fill
 
@@ -720,6 +724,10 @@ Friend Class Main
 
     Private Sub tbtFindNew_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFindNew.Click
         Call view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider)
+    End Sub
+
+    Private Sub tbtFavourites_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtFavourites.Click
+        Call view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites)
     End Sub
 
     Private Sub tbtSubscriptions_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tbtSubscriptions.Click
@@ -1321,19 +1329,20 @@ Friend Class Main
         lstProviders.Visible = False
         pnlPluginSpace.Visible = False
         lstEpisodes.Visible = False
+        lstFavourites.Visible = False
         lstSubscribed.Visible = False
         lstDownloads.Visible = False
         ttxSearch.Visible = False
 
         Select Case view
-            Case view.FindNewChooseProvider
+            Case ViewState.View.FindNewChooseProvider
                 lstProviders.Visible = True
                 lstProviders.Focus()
 
                 If lstProviders.SelectedItems.Count > 0 Then
                     ShowProviderInfo(New Guid(lstProviders.SelectedItems(0).Name))
                 End If
-            Case view.FindNewProviderForm
+            Case ViewState.View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(data, FindNewViewData)
 
                 pnlPluginSpace.Visible = True
@@ -1341,21 +1350,24 @@ Friend Class Main
                 pnlPluginSpace.Controls.Add(progData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View))
                 pnlPluginSpace.Controls(0).Dock = DockStyle.Fill
                 pnlPluginSpace.Controls(0).Focus()
-            Case view.ProgEpisodes
+            Case ViewState.View.ProgEpisodes
                 lstEpisodes.Visible = True
                 progData.CancelEpisodeListing()
                 lstEpisodes.Items.Clear() ' Clear before DoEvents so that old items don't flash up on screen
                 Application.DoEvents() ' Give any queued BeginInvoke calls a chance to be processed
                 lstEpisodes.Items.Clear()
                 progData.InitEpisodeList(CInt(data))
-            Case view.Subscriptions
+            Case ViewState.View.Favourites
+                lstFavourites.Visible = True
+                lstFavourites.Focus()
+            Case ViewState.View.Subscriptions
                 lstSubscribed.Visible = True
                 lstSubscribed.Focus()
 
                 If lstSubscribed.SelectedItems.Count > 0 Then
                     ShowSubscriptionInfo(CInt(lstSubscribed.SelectedItems(0).Name))
                 End If
-            Case view.Downloads
+            Case ViewState.View.Downloads
                 ttxSearch.Visible = True
                 ttxSearch.Text = progData.DownloadQuery
 

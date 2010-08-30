@@ -277,6 +277,13 @@ Namespace My.Resources
             End Get
         End Property
         
+        Friend ReadOnly Property views_favourites() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("views_favourites", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
         Friend ReadOnly Property views_find_new() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("views_find_new", resourceCulture)
