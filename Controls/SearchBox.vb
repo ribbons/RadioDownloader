@@ -70,7 +70,7 @@ Public Class SearchBox
         Me.Controls.Add(button)
 
         ' Work out the height that the search box should be displayed
-        If VisualStyleRenderer.IsSupported Then
+        If OsUtils.WinVistaOrLater AndAlso VisualStyleRenderer.IsSupported Then
             Dim sizeStyle As New VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, SBB_NORMAL)
 
             Using sizeGraphics As Graphics = Me.CreateGraphics
@@ -104,8 +104,16 @@ Public Class SearchBox
 
     Private Sub SearchBox_Paint(ByVal sender As Object, ByVal e As System.Windows.Forms.PaintEventArgs) Handles Me.Paint
         If VisualStyleRenderer.IsSupported Then
-            ' Paint the correct background for the control based on the current state
-            Dim searchBoxStyle As New VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, boxState)
+            Dim searchBoxStyle As VisualStyleRenderer
+
+            If OsUtils.WinVistaOrLater Then
+                ' Fetch the correct style based on the current state
+                searchBoxStyle = New VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, boxState)
+            Else
+                searchBoxStyle = New VisualStyleRenderer(VisualStyleElement.TextBox.TextEdit.Normal)
+            End If
+
+            ' Paint the visual style background for the control
             searchBoxStyle.DrawBackground(e.Graphics, New Rectangle(0, 0, Me.Width, Me.Height))
         Else
             e.Graphics.Clear(SystemColors.Window)
@@ -215,7 +223,7 @@ Public Class SearchBox
             ' The textbox is given extra padding as part of the visual style
             textBox.Left = 2
         Else
-            textBox.Left = 8
+            textBox.Left = 6
         End If
     End Sub
 
