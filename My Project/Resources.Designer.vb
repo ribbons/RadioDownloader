@@ -130,6 +130,13 @@ Namespace My.Resources
             End Get
         End Property
         
+        Friend ReadOnly Property list_favourite() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("list_favourite", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
         Friend ReadOnly Property list_subscribed() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("list_subscribed", resourceCulture)

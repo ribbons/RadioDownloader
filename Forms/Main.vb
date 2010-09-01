@@ -224,6 +224,7 @@ Friend Class Main
         imlListIcons.Images.Add("downloaded", My.Resources.list_downloaded)
         imlListIcons.Images.Add("subscribed", My.Resources.list_subscribed)
         imlListIcons.Images.Add("error", My.Resources.list_error)
+        imlListIcons.Images.Add("favourite", My.Resources.list_favourite)
 
         imlProviders.Images.Add("default", My.Resources.provider_default)
 
@@ -243,13 +244,13 @@ Friend Class Main
         tbrToolbar.ImageList = imlToolbar
         tbrHelp.ImageList = imlToolbar
         lstProviders.LargeImageList = imlProviders
+        lstFavourites.SmallImageList = imlListIcons
         lstSubscribed.SmallImageList = imlListIcons
         lstDownloads.SmallImageList = imlListIcons
 
         Call lstEpisodes.Columns.Add("Date", CInt(0.179 * lstEpisodes.Width))
         Call lstEpisodes.Columns.Add("Episode Name", CInt(0.786 * lstEpisodes.Width))
-        Call lstFavourites.Columns.Add("Programme Name", CInt(0.482 * lstFavourites.Width))
-        Call lstFavourites.Columns.Add("Last Download", CInt(0.179 * lstFavourites.Width))
+        Call lstFavourites.Columns.Add("Programme Name", CInt(0.661 * lstFavourites.Width))
         Call lstFavourites.Columns.Add("Provider", CInt(0.304 * lstFavourites.Width))
         Call lstSubscribed.Columns.Add("Programme Name", CInt(0.482 * lstSubscribed.Width))
         Call lstSubscribed.Columns.Add("Last Download", CInt(0.179 * lstSubscribed.Width))
@@ -267,6 +268,7 @@ Friend Class Main
 
         progData = Data.GetInstance
         Call progData.InitProviderList()
+        Call InitFavouriteList()
         Call progData.InitSubscriptionList()
         lstSubscribed.ListViewItemSorter = New ListComparer(ListComparer.ListType.Subscription)
 
@@ -412,6 +414,24 @@ Friend Class Main
         Else
             Call SetViewDefaults() ' Revert back to programme info in sidebar
         End If
+    End Sub
+
+    Private Sub lstFavourites_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstFavourites.SelectedIndexChanged
+        If lstFavourites.SelectedItems.Count > 0 Then
+            Dim progid As Integer = CInt(lstFavourites.SelectedItems(0).Name)
+
+            progData.UpdateProgInfoIfRequired(progid)
+            Call ShowFavouriteInfo(progid)
+        Else
+            Call SetViewDefaults() ' Revert back to subscribed items view default sidebar and toolbar
+        End If
+    End Sub
+
+    Private Sub ShowFavouriteInfo(ByVal progid As Integer)
+        Dim info As Data.FavouriteData = progData.FetchFavouriteData(progid)
+
+        Call SetSideBar(info.name, info.description, progData.FetchProgrammeImage(progid))
+        Call SetToolbarButtons("CurrentEps")
     End Sub
 
     Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
@@ -846,6 +866,21 @@ Friend Class Main
         AddHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
     End Sub
 
+    Private Function FavouriteListItem(ByVal info As Data.FavouriteData, Optional ByRef item As ListViewItem = Nothing) As ListViewItem
+        If item Is Nothing Then
+            item = New ListViewItem
+            item.SubItems.Add("")
+        End If
+
+        item.Name = info.progid.ToString(CultureInfo.InvariantCulture)
+        item.Text = info.name
+
+        item.SubItems(1).Text = info.providerName
+        item.ImageKey = "favourite"
+
+        Return item
+    End Function
+
     Private Sub SubscriptionListItem(ByVal progid As Integer, ByVal info As Data.SubscriptionData, ByRef item As ListViewItem)
         item.Name = progid.ToString(CultureInfo.InvariantCulture)
         item.Text = info.name
@@ -1258,8 +1293,14 @@ Friend Class Main
     End Sub
 
     Private Sub tbtCurrentEps_Click()
-        Dim progid As Integer = CInt(lstSubscribed.SelectedItems(0).Name)
-        Call view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.ProgEpisodes, progid)
+        Select Case view.CurrentView
+            Case ViewState.View.Favourites
+                Dim progid As Integer = CInt(lstFavourites.SelectedItems(0).Name)
+                Call view.SetView(ViewState.MainTab.Favourites, ViewState.View.ProgEpisodes, progid)
+            Case ViewState.View.Subscriptions
+                Dim progid As Integer = CInt(lstSubscribed.SelectedItems(0).Name)
+                Call view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.ProgEpisodes, progid)
+        End Select
     End Sub
 
     Private Sub tbtReportError_Click()
@@ -1360,6 +1401,10 @@ Friend Class Main
             Case ViewState.View.Favourites
                 lstFavourites.Visible = True
                 lstFavourites.Focus()
+
+                If lstFavourites.SelectedItems.Count > 0 Then
+                    ShowFavouriteInfo(CInt(lstFavourites.SelectedItems(0).Name))
+                End If
             Case ViewState.View.Subscriptions
                 lstSubscribed.Visible = True
                 lstSubscribed.Focus()
@@ -1392,6 +1437,9 @@ Friend Class Main
             Case ViewState.View.ProgEpisodes
                 Dim progid As Integer = CInt(view.CurrentViewData)
                 Call ShowProgrammeInfo(progid)
+            Case ViewState.View.Favourites
+                Call SetToolbarButtons("")
+                Call SetSideBar(CStr(lstFavourites.Items.Count) + " favourite" + If(lstFavourites.Items.Count = 1, "", "s"), "", Nothing)
             Case ViewState.View.Subscriptions
                 Call SetToolbarButtons("")
                 Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + If(lstSubscribed.Items.Count = 1, "", "s"), "", Nothing)
@@ -1509,6 +1557,23 @@ Friend Class Main
         My.Settings.DownloadColSortAsc = CBool(My.Settings.Properties.Item("DownloadColSortAsc").DefaultValue)
 
         Call InitDownloadList()
+    End Sub
+
+    Private Sub InitFavouriteList()
+        If lstFavourites.SelectedItems.Count > 0 Then
+            Call SetViewDefaults() ' Revert back to default sidebar and toolbar
+        End If
+
+        ' Convert the list of FavouriteData items to an array of ListItems
+        Dim initData As List(Of Data.FavouriteData) = progData.FetchFavouriteList
+        Dim initItems(initData.Count - 1) As ListViewItem
+
+        For convItems As Integer = 0 To initData.Count - 1
+            initItems(convItems) = FavouriteListItem(initData(convItems))
+        Next
+
+        ' Add the whole array of ListItems at once
+        lstFavourites.Items.AddRange(initItems)
     End Sub
 
     Private Sub InitDownloadList()

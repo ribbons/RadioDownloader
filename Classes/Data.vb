@@ -60,6 +60,13 @@ Friend Class Data
         Dim singleEpisode As Boolean
     End Structure
 
+    Public Structure FavouriteData
+        Dim progid As Integer
+        Dim name As String
+        Dim description As String
+        Dim providerName As String
+    End Structure
+
     Public Structure SubscriptionData
         Dim name As String
         Dim description As String
@@ -114,6 +121,9 @@ Friend Class Data
     Public Event FoundNew(ByVal progid As Integer)
     Public Event ProgrammeUpdated(ByVal progid As Integer)
     Public Event EpisodeAdded(ByVal epid As Integer)
+    Public Event FavouriteAdded(ByVal progid As Integer)
+    Public Event FavouriteUpdated(ByVal progid As Integer)
+    Public Event FavouriteRemoved(ByVal progid As Integer)
     Public Event SubscriptionAdded(ByVal progid As Integer)
     Public Event SubscriptionUpdated(ByVal progid As Integer)
     Public Event SubscriptionRemoved(ByVal progid As Integer)
@@ -1618,6 +1628,54 @@ Friend Class Data
         End If
 
         info.playCount = reader.GetInt32(reader.GetOrdinal("playcount"))
+
+        Return info
+    End Function
+
+    Public Function FetchFavouriteList() As List(Of FavouriteData)
+        Dim favouriteList As New List(Of FavouriteData)
+
+        Using command As New SQLiteCommand("select favourites.progid, name, description, pluginid from favourites, programmes where favourites.progid = programmes.progid", FetchDbConn)
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                Dim progidOrdinal As Integer = reader.GetOrdinal("progid")
+
+                Do While reader.Read
+                    favouriteList.Add(ReadFavouriteData(reader.GetInt32(progidOrdinal), reader))
+                Loop
+            End Using
+        End Using
+
+        Return favouriteList
+    End Function
+
+    Public Function FetchFavouriteData(ByVal progid As Integer) As FavouriteData
+        Using command As New SQLiteCommand("select name, description, pluginid from programmes where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                If reader.Read = False Then
+                    Return Nothing
+                End If
+
+                Return ReadFavouriteData(progid, reader)
+            End Using
+        End Using
+    End Function
+
+    Private Function ReadFavouriteData(ByVal progid As Integer, ByRef reader As SQLiteMonDataReader) As FavouriteData
+        Dim descriptionOrdinal As Integer = reader.GetOrdinal("description")
+
+        Dim info As New FavouriteData
+        info.progid = progid
+        info.name = reader.GetString(reader.GetOrdinal("name"))
+
+        If Not reader.IsDBNull(descriptionOrdinal) Then
+            info.description = reader.GetString(descriptionOrdinal)
+        End If
+
+        Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
+        Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
+        info.providerName = providerInst.ProviderName
 
         Return info
     End Function
