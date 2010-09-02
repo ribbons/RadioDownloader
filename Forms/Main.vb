@@ -30,37 +30,6 @@ Friend Class Main
         Dim View As Object
     End Structure
 
-    Private Class ListComparer
-        Implements IComparer
-
-        Public Enum ListType
-            Subscription
-            Download
-        End Enum
-
-        Private dataInstance As Data
-        Private compareType As ListType
-
-        Public Sub New(ByVal compareType As ListType)
-            dataInstance = Data.GetInstance
-            Me.compareType = compareType
-        End Sub
-
-        Public Function Compare(ByVal x As Object, ByVal y As Object) As Integer Implements System.Collections.IComparer.Compare
-            Dim itemXId As Integer = CInt(CType(x, ListViewItem).Name)
-            Dim itemYId As Integer = CInt(CType(y, ListViewItem).Name)
-
-            Select Case compareType
-                Case ListType.Subscription
-                    Return dataInstance.CompareSubscriptions(itemXId, itemYId)
-                Case ListType.Download
-                    Return dataInstance.CompareDownloads(itemXId, itemYId)
-                Case Else
-                    Throw New InvalidOperationException("Unknown compare type of " + compareType.ToString)
-            End Select
-        End Function
-    End Class
-
     Private WithEvents progData As Data
     Private WithEvents view As ViewState
 
@@ -269,13 +238,15 @@ Friend Class Main
         Call view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider)
 
         progData = Data.GetInstance
+
         Call progData.InitProviderList()
         Call InitFavouriteList()
         Call progData.InitSubscriptionList()
-        lstSubscribed.ListViewItemSorter = New ListComparer(ListComparer.ListType.Subscription)
-
         Call InitDownloadList()
-        lstDownloads.ListViewItemSorter = New ListComparer(ListComparer.ListType.Download)
+
+        lstFavourites.ListViewItemSorter = New ListItemComparer(ListItemComparer.ListType.Favourite)
+        lstSubscribed.ListViewItemSorter = New ListItemComparer(ListItemComparer.ListType.Subscription)
+        lstDownloads.ListViewItemSorter = New ListItemComparer(ListItemComparer.ListType.Download)
 
         If OsUtils.WinSevenOrLater Then
             ' New style taskbar - initialise the taskbar notification class

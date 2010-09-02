@@ -1586,6 +1586,30 @@ Friend Class Data
         End SyncLock
     End Function
 
+    Public Function CompareFavourites(ByVal progid1 As Integer, ByVal progid2 As Integer) As Integer
+        SyncLock favouriteSortCacheLock
+            If favouriteSortCache Is Nothing OrElse Not favouriteSortCache.ContainsKey(progid1) OrElse Not favouriteSortCache.ContainsKey(progid2) Then
+                ' The sort cache is either empty or missing one of the values that are required, so recreate it
+                favouriteSortCache = New Dictionary(Of Integer, Integer)
+
+                Dim sort As Integer = 0
+
+                Using command As New SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by name", FetchDbConn)
+                    Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                        Dim progidOrdinal As Integer = reader.GetOrdinal("progid")
+
+                        Do While reader.Read
+                            favouriteSortCache.Add(reader.GetInt32(progidOrdinal), sort)
+                            sort += 1
+                        Loop
+                    End Using
+                End Using
+            End If
+
+            Return favouriteSortCache(progid1) - favouriteSortCache(progid2)
+        End SyncLock
+    End Function
+
     Public Sub InitProviderList()
         Dim pluginIdList() As Guid
         pluginIdList = pluginsInst.GetPluginIdList
