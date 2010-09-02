@@ -56,6 +56,7 @@ Friend Class Data
     Public Structure ProgrammeData
         Dim name As String
         Dim description As String
+        Dim favourite As Boolean
         Dim subscribed As Boolean
         Dim singleEpisode As Boolean
     End Structure
@@ -64,12 +65,14 @@ Friend Class Data
         Dim progid As Integer
         Dim name As String
         Dim description As String
+        Dim subscribed As Boolean
         Dim providerName As String
     End Structure
 
     Public Structure SubscriptionData
         Dim name As String
         Dim description As String
+        Dim favourite As Boolean
         Dim latestDownload As Date
         Dim providerName As String
     End Structure
@@ -105,6 +108,9 @@ Friend Class Data
     Private downloadThread As Thread
     Private WithEvents DownloadPluginInst As IRadioProvider
     Private WithEvents FindNewPluginInst As IRadioProvider
+
+    Private favouriteSortCache As Dictionary(Of Integer, Integer)
+    Private favouriteSortCacheLock As New Object
 
     Private subscriptionSortCache As Dictionary(Of Integer, Integer)
     Private subscriptionSortCacheLock As New Object
@@ -704,6 +710,82 @@ Friend Class Data
         Call StartDownload()
     End Sub
 
+    Public Function AddFavourite(ByVal progid As Integer) As Boolean
+        Using command As New SQLiteCommand("select progid from favourites where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                If reader.Read Then
+                    Return False
+                End If
+            End Using
+        End Using
+
+        ThreadPool.QueueUserWorkItem(Sub() AddFavouriteAsync(progid))
+
+        Return True
+    End Function
+
+    Private Sub AddFavouriteAsync(ByVal progid As Integer)
+        SyncLock dbUpdateLock
+            ' Check again that the favourite doesn't exist, as it may have been
+            ' added while this call was waiting in the thread pool
+            Using command As New SQLiteCommand("select progid from favourites where progid=@progid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+                Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                    If reader.Read Then
+                        Return
+                    End If
+                End Using
+            End Using
+
+            Using command As New SQLiteCommand("insert into favourites (progid) values (@progid)", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@progid", progid))
+                Call command.ExecuteNonQuery()
+            End Using
+        End SyncLock
+
+        RaiseEvent ProgrammeUpdated(progid)
+        RaiseEvent FavouriteAdded(progid)
+
+        Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                If reader.Read Then
+                    RaiseEvent SubscriptionUpdated(progid)
+                End If
+            End Using
+        End Using
+    End Sub
+
+    Public Sub RemoveFavourite(ByVal progid As Integer)
+        ThreadPool.QueueUserWorkItem(Sub() RemoveFavouriteAsync(progid))
+    End Sub
+
+    Private Sub RemoveFavouriteAsync(ByVal progid As Integer)
+        SyncLock dbUpdateLock
+            Using command As New SQLiteCommand("delete from favourites where progid=@progid", FetchDbConn)
+                command.Parameters.Add(New SQLiteParameter("@progid", progid))
+                Call command.ExecuteNonQuery()
+            End Using
+        End SyncLock
+
+        RaiseEvent ProgrammeUpdated(progid)
+        RaiseEvent FavouriteRemoved(progid)
+
+        Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                If reader.Read Then
+                    RaiseEvent SubscriptionUpdated(progid)
+                End If
+            End Using
+        End Using
+    End Sub
+
     Public Function AddSubscription(ByVal progid As Integer) As Boolean
         Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
@@ -742,6 +824,16 @@ Friend Class Data
 
         RaiseEvent ProgrammeUpdated(progid)
         RaiseEvent SubscriptionAdded(progid)
+
+        Using command As New SQLiteCommand("select progid from favourites where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                If reader.Read Then
+                    RaiseEvent FavouriteUpdated(progid)
+                End If
+            End Using
+        End Using
     End Sub
 
     Public Sub RemoveSubscription(ByVal progid As Integer)
@@ -758,6 +850,16 @@ Friend Class Data
 
         RaiseEvent ProgrammeUpdated(progid)
         RaiseEvent SubscriptionRemoved(progid)
+
+        Using command As New SQLiteCommand("select progid from favourites where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                If reader.Read Then
+                    RaiseEvent FavouriteUpdated(progid)
+                End If
+            End Using
+        End Using
     End Sub
 
     Private Function LatestDownloadDate(ByVal progid As Integer) As Date
@@ -1235,6 +1337,21 @@ Friend Class Data
             End Using
         End SyncLock
 
+        ' If the programme is in the list of favourites, clear the sort cache and raise an updated event
+        Using command As New SQLiteCommand("select progid from favourites where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                If reader.Read Then
+                    SyncLock favouriteSortCacheLock
+                        favouriteSortCache = Nothing
+                    End SyncLock
+
+                    RaiseEvent FavouriteUpdated(progid)
+                End If
+            End Using
+        End Using
+
         ' If the programme is in the list of subscriptions, clear the sort cache and raise an updated event
         Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
             command.Parameters.Add(New SQLiteParameter("@progid", progid))
@@ -1677,6 +1794,14 @@ Friend Class Data
         Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
         info.providerName = providerInst.ProviderName
 
+        Using command As New SQLiteCommand("select progid from subscriptions where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using subReader As New SQLiteMonDataReader(command.ExecuteReader)
+                info.subscribed = subReader.Read
+            End Using
+        End Using
+
         Return info
     End Function
 
@@ -1703,6 +1828,14 @@ Friend Class Data
                 Dim pluginId As New Guid(reader.GetString(reader.GetOrdinal("pluginid")))
                 Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(pluginId)
                 info.providerName = providerInst.ProviderName
+
+                Using favCommand As New SQLiteCommand("select progid from favourites where progid=@progid", FetchDbConn)
+                    favCommand.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+                    Using favReader As New SQLiteMonDataReader(favCommand.ExecuteReader)
+                        info.favourite = favReader.Read
+                    End Using
+                End Using
 
                 Return info
             End Using
@@ -1756,6 +1889,14 @@ Friend Class Data
                 End If
 
                 info.singleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"))
+            End Using
+        End Using
+
+        Using command As New SQLiteCommand("select progid from favourites where progid=@progid", FetchDbConn)
+            command.Parameters.Add(New SQLiteParameter("@progid", progid))
+
+            Using reader As New SQLiteMonDataReader(command.ExecuteReader)
+                info.favourite = reader.Read
             End Using
         End Using
 

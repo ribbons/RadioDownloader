@@ -240,6 +240,8 @@ Friend Class Main
         imlToolbar.Images.Add("retry", My.Resources.toolbar_retry)
         imlToolbar.Images.Add("subscribe", My.Resources.toolbar_subscribe)
         imlToolbar.Images.Add("unsubscribe", My.Resources.toolbar_unsubscribe)
+        imlToolbar.Images.Add("add_favourite", My.Resources.toolbar_add_favourite)
+        imlToolbar.Images.Add("remove_favourite", My.Resources.toolbar_remove_favourite)
 
         tbrToolbar.ImageList = imlToolbar
         tbrHelp.ImageList = imlToolbar
@@ -365,7 +367,7 @@ Friend Class Main
         Call SetSideBar(info.name, info.description, Nothing)
 
         If view.CurrentView = ViewState.View.FindNewChooseProvider Then
-            SetToolbarButtons("ChooseProgramme")
+            SetToolbarButtons({tbtChooseProgramme})
         End If
     End Sub
 
@@ -396,15 +398,22 @@ Friend Class Main
 
         Call SetSideBar(epInfo.name, infoText, progData.FetchEpisodeImage(epid))
 
-        If progInfo.subscribed Then
-            Call SetToolbarButtons("Download,Unsubscribe")
+        Dim buttons As New List(Of ToolBarButton)
+        buttons.Add(tbtDownload)
+
+        If progInfo.favourite Then
+            buttons.Add(tbtRemFavourite)
         Else
-            If progInfo.singleEpisode Then
-                Call SetToolbarButtons("Download")
-            Else
-                Call SetToolbarButtons("Download,Subscribe")
-            End If
+            buttons.Add(tbtAddFavourite)
         End If
+
+        If progInfo.subscribed Then
+            buttons.Add(tbtUnsubscribe)
+        ElseIf Not progInfo.singleEpisode Then
+            buttons.Add(tbtSubscribe)
+        End If
+
+        Call SetToolbarButtons(buttons.ToArray)
     End Sub
 
     Private Sub lstEpisodes_SelectedIndexChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles lstEpisodes.SelectedIndexChanged
@@ -430,8 +439,17 @@ Friend Class Main
     Private Sub ShowFavouriteInfo(ByVal progid As Integer)
         Dim info As Data.FavouriteData = progData.FetchFavouriteData(progid)
 
+        Dim buttons As New List(Of ToolBarButton)
+        buttons.AddRange({tbtRemFavourite, tbtCurrentEps})
+
+        If info.subscribed Then
+            buttons.Add(tbtUnsubscribe)
+        Else
+            buttons.Add(tbtSubscribe)
+        End If
+
+        Call SetToolbarButtons(buttons.ToArray)
         Call SetSideBar(info.name, info.description, progData.FetchProgrammeImage(progid))
-        Call SetToolbarButtons("CurrentEps")
     End Sub
 
     Private Sub lstSubscribed_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles lstSubscribed.SelectedIndexChanged
@@ -448,8 +466,18 @@ Friend Class Main
     Private Sub ShowSubscriptionInfo(ByVal progid As Integer)
         Dim info As Data.SubscriptionData = progData.FetchSubscriptionData(progid)
 
+        Dim buttons As New List(Of ToolBarButton)
+        buttons.AddRange({tbtUnsubscribe, tbtCurrentEps})
+
+        If info.favourite Then
+            buttons.Add(tbtRemFavourite)
+        Else
+            buttons.Add(tbtAddFavourite)
+        End If
+
+        Call SetToolbarButtons(buttons.ToArray)
+
         Call SetSideBar(info.name, info.description, progData.FetchProgrammeImage(progid))
-        Call SetToolbarButtons("Unsubscribe,CurrentEps")
     End Sub
 
     Private Sub lstDownloads_ColumnClick(ByVal sender As Object, ByVal e As System.Windows.Forms.ColumnClickEventArgs) Handles lstDownloads.ColumnClick
@@ -543,8 +571,7 @@ Friend Class Main
     Private Sub ShowDownloadInfo(ByVal epid As Integer)
         Dim info As Data.DownloadData = progData.FetchDownloadData(epid)
 
-        Dim actionString As String
-        Dim infoText As String = ""
+        Dim infoText As String = String.Empty
 
         If info.description IsNot Nothing Then
             infoText += info.description + Environment.NewLine + Environment.NewLine
@@ -556,9 +583,9 @@ Friend Class Main
         Select Case info.status
             Case Data.DownloadStatus.Downloaded
                 If File.Exists(info.downloadPath) Then
-                    actionString = "Play,Delete"
+                    Call SetToolbarButtons({tbtPlay, tbtDelete})
                 Else
-                    actionString = "Delete"
+                    Call SetToolbarButtons({tbtDelete})
                 End If
 
                 infoText += Environment.NewLine + "Play count: " + info.playCount.ToString(CultureInfo.CurrentCulture)
@@ -566,7 +593,7 @@ Friend Class Main
                 Dim errorName As String = ""
                 Dim errorDetails As String = info.errorDetails
 
-                actionString = "Retry,Cancel"
+                Dim toolbarButtons() As ToolBarButton = {tbtRetry, tbtCancel}
 
                 Select Case info.errorType
                     Case ErrorType.LocalProblem
@@ -584,7 +611,7 @@ Friend Class Main
                     Case ErrorType.UnknownError
                         errorName = "Unknown error"
                         errorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed."
-                        actionString = "Retry,Cancel,ReportError"
+                        toolbarButtons = {tbtRetry, tbtCancel, tbtReportError}
                 End Select
 
                 infoText += Environment.NewLine + Environment.NewLine + "Error: " + errorName
@@ -592,12 +619,13 @@ Friend Class Main
                 If errorDetails <> "" Then
                     infoText += Environment.NewLine + Environment.NewLine + errorDetails
                 End If
+
+                Call SetToolbarButtons(toolbarButtons)
             Case Else
-                actionString = "Cancel"
+                Call SetToolbarButtons({tbtCancel})
         End Select
 
         Call SetSideBar(info.name, infoText, progData.FetchEpisodeImage(epid))
-        Call SetToolbarButtons(actionString)
     End Sub
 
     Private Function DescDuration(ByVal duration As Integer) As String
@@ -667,11 +695,11 @@ Friend Class Main
         End If
     End Sub
 
-    Private Sub SetToolbarButtons(ByVal buttons As String)
-        Dim splitButtons() As String = Split(buttons, ",")
-
+    Private Sub SetToolbarButtons(ByVal buttons() As ToolBarButton)
         tbtChooseProgramme.Visible = False
         tbtDownload.Visible = False
+        tbtAddFavourite.Visible = False
+        tbtRemFavourite.Visible = False
         tbtSubscribe.Visible = False
         tbtUnsubscribe.Visible = False
         tbtCurrentEps.Visible = False
@@ -682,31 +710,8 @@ Friend Class Main
         tbtReportError.Visible = False
         tbtCleanUp.Visible = False
 
-        For Each loopButtons As String In splitButtons
-            Select Case loopButtons
-                Case "ChooseProgramme"
-                    tbtChooseProgramme.Visible = True
-                Case "Download"
-                    tbtDownload.Visible = True
-                Case "Subscribe"
-                    tbtSubscribe.Visible = True
-                Case "Unsubscribe"
-                    tbtUnsubscribe.Visible = True
-                Case "CurrentEps"
-                    tbtCurrentEps.Visible = True
-                Case "Play"
-                    tbtPlay.Visible = True
-                Case "Delete"
-                    tbtDelete.Visible = True
-                Case "Cancel"
-                    tbtCancel.Visible = True
-                Case "Retry"
-                    tbtRetry.Visible = True
-                Case "ReportError"
-                    tbtReportError.Visible = True
-                Case "CleanUp"
-                    tbtCleanUp.Visible = True
-            End Select
+        For Each button As ToolBarButton In buttons
+            button.Visible = True
         Next
     End Sub
 
@@ -827,16 +832,21 @@ Friend Class Main
     Private Sub ShowProgrammeInfo(ByVal progid As Integer)
         Dim progInfo As Data.ProgrammeData = progData.FetchProgrammeData(CInt(view.CurrentViewData))
 
-        If progInfo.subscribed Then
-            Call SetToolbarButtons("Unsubscribe")
+        Dim buttons As New List(Of ToolBarButton)
+
+        If progInfo.favourite Then
+            buttons.Add(tbtRemFavourite)
         Else
-            If progInfo.singleEpisode Then
-                Call SetToolbarButtons("")
-            Else
-                Call SetToolbarButtons("Subscribe")
-            End If
+            buttons.Add(tbtAddFavourite)
         End If
 
+        If progInfo.subscribed Then
+            buttons.Add(tbtUnsubscribe)
+        ElseIf Not progInfo.singleEpisode Then
+            buttons.Add(tbtSubscribe)
+        End If
+
+        Call SetToolbarButtons(buttons.ToArray)
         Call SetSideBar(progInfo.name, progInfo.description, progData.FetchProgrammeImage(progid))
     End Sub
 
@@ -866,6 +876,47 @@ Friend Class Main
         AddHandler lstEpisodes.ItemCheck, AddressOf lstEpisodes_ItemCheck
     End Sub
 
+    Private Sub progData_FavouriteAdded(ByVal progid As Integer) Handles progData.FavouriteAdded
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(Sub() progData_FavouriteAdded(progid))
+            Return
+        End If
+
+        Dim info As Data.FavouriteData = progData.FetchFavouriteData(progid)
+
+        lstFavourites.Items.Add(FavouriteListItem(info))
+
+        If view.CurrentView = ViewState.View.Favourites Then
+            If lstFavourites.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
+        End If
+    End Sub
+
+    Private Sub progData_FavouriteUpdated(ByVal progid As Integer) Handles progData.FavouriteUpdated
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(Sub() progData_FavouriteUpdated(progid))
+            Return
+        End If
+
+        Dim info As Data.FavouriteData = progData.FetchFavouriteData(progid)
+        Dim item As ListViewItem = lstFavourites.Items(progid.ToString(CultureInfo.InvariantCulture))
+
+        FavouriteListItem(info, item)
+
+        If view.CurrentView = ViewState.View.Favourites Then
+            If lstFavourites.Items(progid.ToString(CultureInfo.InvariantCulture)).Selected Then
+                ShowFavouriteInfo(progid)
+            ElseIf lstFavourites.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
+        End If
+    End Sub
+
     Private Function FavouriteListItem(ByVal info As Data.FavouriteData, Optional ByRef item As ListViewItem = Nothing) As ListViewItem
         If item Is Nothing Then
             item = New ListViewItem
@@ -880,6 +931,23 @@ Friend Class Main
 
         Return item
     End Function
+
+    Private Sub progData_FavouriteRemoved(ByVal progid As Integer) Handles progData.FavouriteRemoved
+        If Me.InvokeRequired Then
+            ' Events will sometimes be fired on a different thread to the ui
+            Me.BeginInvoke(Sub() progData_FavouriteRemoved(progid))
+            Return
+        End If
+
+        lstFavourites.Items(progid.ToString(CultureInfo.InvariantCulture)).Remove()
+
+        If view.CurrentView = ViewState.View.Favourites Then
+            If lstFavourites.SelectedItems.Count = 0 Then
+                ' Update the displayed statistics
+                SetViewDefaults()
+            End If
+        End If
+    End Sub
 
     Private Sub SubscriptionListItem(ByVal progid As Integer, ByVal info As Data.SubscriptionData, ByRef item As ListViewItem)
         item.Name = progid.ToString(CultureInfo.InvariantCulture)
@@ -948,14 +1016,14 @@ Friend Class Main
             Return
         End If
 
+        lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture)).Remove()
+
         If view.CurrentView = ViewState.View.Subscriptions Then
             If lstSubscribed.SelectedItems.Count = 0 Then
                 ' Update the displayed statistics
                 SetViewDefaults()
             End If
         End If
-
-        lstSubscribed.Items(progid.ToString(CultureInfo.InvariantCulture)).Remove()
     End Sub
 
     Private Function DownloadListItem(ByVal info As Data.DownloadData, Optional ByRef item As ListViewItem = Nothing) As ListViewItem
@@ -1201,8 +1269,49 @@ Friend Class Main
         End If
     End Sub
 
+    Private Sub tbtAddFavourite_Click()
+        Dim progid As Integer
+
+        Select Case view.CurrentView
+            Case ViewState.View.ProgEpisodes
+                progid = CInt(view.CurrentViewData)
+            Case ViewState.View.Subscriptions
+                progid = CInt(lstSubscribed.SelectedItems(0).Name)
+        End Select
+
+        If progData.AddFavourite(progid) Then
+            Call view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites, Nothing)
+        Else
+            Call MsgBox("You already have this programme in your list of favourites!", MsgBoxStyle.Exclamation)
+        End If
+    End Sub
+
+    Private Sub tbtRemFavourite_Click()
+        Dim progid As Integer
+
+        Select Case view.CurrentView
+            Case ViewState.View.ProgEpisodes
+                progid = CInt(view.CurrentViewData)
+            Case ViewState.View.Favourites
+                progid = CInt(lstFavourites.SelectedItems(0).Name)
+            Case ViewState.View.Subscriptions
+                progid = CInt(lstSubscribed.SelectedItems(0).Name)
+        End Select
+
+        If MsgBox("Are you sure you would like to remove this programme from your list of favourites?", MsgBoxStyle.Question Or MsgBoxStyle.YesNo) = MsgBoxResult.Yes Then
+            Call progData.RemoveFavourite(progid)
+        End If
+    End Sub
+
     Private Sub tbtSubscribe_Click()
-        Dim progid As Integer = CInt(view.CurrentViewData)
+        Dim progid As Integer
+
+        Select Case view.CurrentView
+            Case ViewState.View.ProgEpisodes
+                progid = CInt(view.CurrentViewData)
+            Case ViewState.View.Favourites
+                progid = CInt(lstFavourites.SelectedItems(0).Name)
+        End Select
 
         If progData.AddSubscription(progid) Then
             Call view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions, Nothing)
@@ -1217,6 +1326,8 @@ Friend Class Main
         Select Case view.CurrentView
             Case ViewState.View.ProgEpisodes
                 progid = CInt(view.CurrentViewData)
+            Case ViewState.View.Favourites
+                progid = CInt(lstFavourites.SelectedItems(0).Name)
             Case ViewState.View.Subscriptions
                 progid = CInt(lstSubscribed.SelectedItems(0).Name)
         End Select
@@ -1428,23 +1539,23 @@ Friend Class Main
     Private Sub SetViewDefaults()
         Select Case view.CurrentView
             Case ViewState.View.FindNewChooseProvider
-                Call SetToolbarButtons("")
+                Call SetToolbarButtons({})
                 Call SetSideBar(CStr(lstProviders.Items.Count) + " provider" + If(lstProviders.Items.Count = 1, "", "s"), "", Nothing)
             Case ViewState.View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(view.CurrentViewData, FindNewViewData)
-                Call SetToolbarButtons("")
+                Call SetToolbarButtons({})
                 Call ShowProviderInfo(FindViewData.ProviderID)
             Case ViewState.View.ProgEpisodes
                 Dim progid As Integer = CInt(view.CurrentViewData)
                 Call ShowProgrammeInfo(progid)
             Case ViewState.View.Favourites
-                Call SetToolbarButtons("")
+                Call SetToolbarButtons({})
                 Call SetSideBar(CStr(lstFavourites.Items.Count) + " favourite" + If(lstFavourites.Items.Count = 1, "", "s"), "", Nothing)
             Case ViewState.View.Subscriptions
-                Call SetToolbarButtons("")
+                Call SetToolbarButtons({})
                 Call SetSideBar(CStr(lstSubscribed.Items.Count) + " subscription" + If(lstSubscribed.Items.Count = 1, "", "s"), "", Nothing)
             Case ViewState.View.Downloads
-                Call SetToolbarButtons("CleanUp")
+                Call SetToolbarButtons({tbtCleanUp})
 
                 If progData.DownloadQuery <> String.Empty Then
                     Call SetSideBar(CStr(lstDownloads.Items.Count) + " result" + If(lstDownloads.Items.Count = 1, String.Empty, "s"), String.Empty, Nothing)
@@ -1480,6 +1591,10 @@ Friend Class Main
                 Call tbtChooseProgramme_Click()
             Case "tbtDownload"
                 Call tbtDownload_Click()
+            Case "tbtAddFavourite"
+                Call tbtAddFavourite_Click()
+            Case "tbtRemFavourite"
+                Call tbtRemFavourite_Click()
             Case "tbtSubscribe"
                 Call tbtSubscribe_Click()
             Case "tbtUnsubscribe"

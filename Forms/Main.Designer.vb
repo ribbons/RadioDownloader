@@ -60,6 +60,8 @@
         Me.tbtOptionsMenu = New System.Windows.Forms.ToolBarButton()
         Me.tbtChooseProgramme = New System.Windows.Forms.ToolBarButton()
         Me.tbtDownload = New System.Windows.Forms.ToolBarButton()
+        Me.tbtAddFavourite = New System.Windows.Forms.ToolBarButton()
+        Me.tbtRemFavourite = New System.Windows.Forms.ToolBarButton()
         Me.tbtSubscribe = New System.Windows.Forms.ToolBarButton()
         Me.tbtUnsubscribe = New System.Windows.Forms.ToolBarButton()
         Me.tbtCurrentEps = New System.Windows.Forms.ToolBarButton()
@@ -377,7 +379,7 @@
         'tbrToolbar
         '
         Me.tbrToolbar.Appearance = System.Windows.Forms.ToolBarAppearance.Flat
-        Me.tbrToolbar.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtOptionsMenu, Me.tbtChooseProgramme, Me.tbtDownload, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp})
+        Me.tbrToolbar.Buttons.AddRange(New System.Windows.Forms.ToolBarButton() {Me.tbtOptionsMenu, Me.tbtChooseProgramme, Me.tbtDownload, Me.tbtAddFavourite, Me.tbtRemFavourite, Me.tbtSubscribe, Me.tbtUnsubscribe, Me.tbtCurrentEps, Me.tbtCancel, Me.tbtPlay, Me.tbtDelete, Me.tbtRetry, Me.tbtReportError, Me.tbtCleanUp})
         Me.tbrToolbar.ButtonSize = New System.Drawing.Size(135, 22)
         Me.tbrToolbar.Divider = False
         Me.tbrToolbar.DropDownArrows = True
@@ -409,6 +411,18 @@
         Me.tbtDownload.ImageKey = "download"
         Me.tbtDownload.Name = "tbtDownload"
         Me.tbtDownload.Text = "Do&wnload"
+        '
+        'tbtAddFavourite
+        '
+        Me.tbtAddFavourite.ImageKey = "add_favourite"
+        Me.tbtAddFavourite.Name = "tbtAddFavourite"
+        Me.tbtAddFavourite.Text = "Add &Favourite"
+        '
+        'tbtRemFavourite
+        '
+        Me.tbtRemFavourite.ImageKey = "remove_favourite"
+        Me.tbtRemFavourite.Name = "tbtRemFavourite"
+        Me.tbtRemFavourite.Text = "Remove &Favourite"
         '
         'tbtSubscribe
         '
@@ -686,5 +700,7 @@
     Friend WithEvents mnuListHdrsReset As System.Windows.Forms.MenuItem
     Friend WithEvents mnuListHdrsSep As System.Windows.Forms.MenuItem
     Friend WithEvents lstFavourites As RadioDld.ExtListView
+    Friend WithEvents tbtAddFavourite As System.Windows.Forms.ToolBarButton
+    Friend WithEvents tbtRemFavourite As System.Windows.Forms.ToolBarButton
 #End Region
 End Class
