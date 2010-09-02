@@ -415,7 +415,7 @@ Friend Class Main
 
         If info.subscribed Then
             buttons.Add(tbtUnsubscribe)
-        Else
+        ElseIf Not info.singleEpisode Then
             buttons.Add(tbtSubscribe)
         End If
 
