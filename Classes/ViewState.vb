@@ -71,6 +71,11 @@ Friend Class ViewState
         RaiseEvent ViewChanged(view, tab, viewData)
     End Sub
 
+    Public Sub SetView(ByVal view As View, ByVal viewData As Object)
+        Dim currentView As ViewData = backData.Peek
+        SetView(currentView.Tab, view, viewData)
+    End Sub
+
     Public Sub StoreView(ByVal tab As MainTab, ByVal view As View, ByVal viewData As Object)
         Dim storeView As ViewData
 
@@ -85,6 +90,16 @@ Friend Class ViewState
         End If
 
         RaiseEvent UpdateNavBtnState(backData.Count > 1, False)
+    End Sub
+
+    Public Sub StoreView(ByVal view As View, ByVal viewData As Object)
+        Dim currentView As ViewData = backData.Peek
+        StoreView(currentView.Tab, view, viewData)
+    End Sub
+
+    Public Sub StoreView(ByVal viewData As Object)
+        Dim currentView As ViewData = backData.Peek
+        StoreView(currentView.Tab, currentView.View, viewData)
     End Sub
 
     Public Sub NavBack()

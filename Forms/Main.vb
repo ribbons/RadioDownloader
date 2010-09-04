@@ -1201,11 +1201,11 @@ Friend Class Main
         Dim findViewData As FindNewViewData = DirectCast(view.CurrentViewData, FindNewViewData)
         findViewData.View = viewData
 
-        view.StoreView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewProviderForm, findViewData)
+        view.StoreView(findViewData)
     End Sub
 
     Private Sub progData_FoundNew(ByVal progid As Integer) Handles progData.FoundNew
-        Call view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.ProgEpisodes, progid)
+        Call view.SetView(ViewState.View.ProgEpisodes, progid)
     End Sub
 
     Private Sub Main_Shown(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Shown
@@ -1375,14 +1375,16 @@ Friend Class Main
     End Sub
 
     Private Sub tbtCurrentEps_Click()
+        Dim progid As Integer
+
         Select Case view.CurrentView
             Case ViewState.View.Favourites
-                Dim progid As Integer = CInt(lstFavourites.SelectedItems(0).Name)
-                Call view.SetView(ViewState.MainTab.Favourites, ViewState.View.ProgEpisodes, progid)
+                progid = CInt(lstFavourites.SelectedItems(0).Name)
             Case ViewState.View.Subscriptions
-                Dim progid As Integer = CInt(lstSubscribed.SelectedItems(0).Name)
-                Call view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.ProgEpisodes, progid)
+                progid = CInt(lstSubscribed.SelectedItems(0).Name)
         End Select
+
+        Call view.SetView(ViewState.View.ProgEpisodes, progid)
     End Sub
 
     Private Sub tbtReportError_Click()
@@ -1395,7 +1397,7 @@ Friend Class Main
         viewData.ProviderID = New Guid(lstProviders.SelectedItems(0).Name)
         viewData.View = Nothing
 
-        Call view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewProviderForm, viewData)
+        Call view.SetView(ViewState.View.FindNewProviderForm, viewData)
     End Sub
 
     Private Sub mnuOptionsShowOpts_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles mnuOptionsShowOpts.Click
@@ -1757,11 +1759,11 @@ Friend Class Main
         If view.CurrentView = origView Then
             If search = String.Empty Then
                 If view.CurrentViewData IsNot Nothing Then
-                    view.StoreView(ViewState.MainTab.Downloads, ViewState.View.Downloads, Nothing)
+                    view.StoreView(Nothing)
                 End If
             Else
                 If view.CurrentViewData Is Nothing Then
-                    view.StoreView(ViewState.MainTab.Downloads, ViewState.View.Downloads, search)
+                    view.StoreView(search)
                 Else
                     view.CurrentViewData = search
                 End If
