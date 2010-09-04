@@ -1495,9 +1495,14 @@ Friend Class Main
                     ShowSubscriptionInfo(CInt(lstSubscribed.SelectedItems(0).Name))
                 End If
             Case ViewState.View.Downloads
-                ttxSearch.Visible = True
-                ttxSearch.Text = progData.DownloadQuery
+                If data Is Nothing Then
+                    ttxSearch.Text = String.Empty
+                Else
+                    ttxSearch.Text = CStr(data)
+                    PerformSearch(view, ttxSearch.Text)
+                End If
 
+                ttxSearch.Visible = True
                 lstDownloads.Visible = True
                 lstDownloads.Focus()
 
@@ -1750,6 +1755,18 @@ Friend Class Main
 
     Private Sub PerformSearch(ByVal origView As ViewState.View, ByVal search As String)
         If view.CurrentView = origView Then
+            If search = String.Empty Then
+                If view.CurrentViewData IsNot Nothing Then
+                    view.StoreView(ViewState.MainTab.Downloads, ViewState.View.Downloads, Nothing)
+                End If
+            Else
+                If view.CurrentViewData Is Nothing Then
+                    view.StoreView(ViewState.MainTab.Downloads, ViewState.View.Downloads, search)
+                Else
+                    view.CurrentViewData = search
+                End If
+            End If
+
             progData.DownloadQuery = search
             InitDownloadList()
             SetViewDefaults()

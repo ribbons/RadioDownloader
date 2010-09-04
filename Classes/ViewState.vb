@@ -52,10 +52,14 @@ Friend Class ViewState
         End Get
     End Property
 
-    Public ReadOnly Property CurrentViewData As Object
+    Public Property CurrentViewData As Object
         Get
             Return backData.Peek.Data
         End Get
+        Set(ByVal value As Object)
+            Dim curView As ViewData = backData.Peek
+            curView.Data = value
+        End Set
     End Property
 
     Public Sub SetView(ByVal tab As MainTab, ByVal view As View)
