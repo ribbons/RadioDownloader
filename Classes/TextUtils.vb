@@ -31,4 +31,30 @@ Friend Class TextUtils
 
         Return name
     End Function
+
+    Public Shared Function DescDuration(ByVal duration As Integer) As String
+        Dim readable As String = String.Empty
+
+        If duration <> 0 Then
+            readable += Environment.NewLine + "Duration: "
+
+            Dim mins As Integer = CInt(Math.Round(duration / 60, 0))
+            Dim hours As Integer = mins \ 60
+            mins = mins Mod 60
+
+            If hours > 0 Then
+                readable += CStr(hours) + "hr" + If(hours = 1, "", "s")
+            End If
+
+            If hours > 0 And mins > 0 Then
+                readable += " "
+            End If
+
+            If mins > 0 Then
+                readable += CStr(mins) + "min"
+            End If
+        End If
+
+        Return readable
+    End Function
 End Class

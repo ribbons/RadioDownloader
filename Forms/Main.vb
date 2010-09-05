@@ -365,7 +365,7 @@ Friend Class Main
         End If
 
         infoText += "Date: " + epInfo.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
-        infoText += DescDuration(epInfo.duration)
+        infoText += TextUtils.DescDuration(epInfo.duration)
 
         Call SetSideBar(epInfo.name, infoText, progData.FetchEpisodeImage(epid))
 
@@ -549,7 +549,7 @@ Friend Class Main
         End If
 
         infoText += "Date: " + info.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture)
-        infoText += DescDuration(info.duration)
+        infoText += TextUtils.DescDuration(info.duration)
 
         Select Case info.status
             Case Data.DownloadStatus.Downloaded
@@ -598,32 +598,6 @@ Friend Class Main
 
         Call SetSideBar(info.name, infoText, progData.FetchEpisodeImage(epid))
     End Sub
-
-    Private Function DescDuration(ByVal duration As Integer) As String
-        Dim readable As String = String.Empty
-
-        If duration <> 0 Then
-            readable += Environment.NewLine + "Duration: "
-
-            Dim mins As Integer = CInt(Math.Round(duration / 60, 0))
-            Dim hours As Integer = mins \ 60
-            mins = mins Mod 60
-
-            If hours > 0 Then
-                readable += CStr(hours) + "hr" + If(hours = 1, "", "s")
-            End If
-
-            If hours > 0 And mins > 0 Then
-                readable += " "
-            End If
-
-            If mins > 0 Then
-                readable += CStr(mins) + "min"
-            End If
-        End If
-
-        Return readable
-    End Function
 
     Private Sub SetSideBar(ByVal title As String, ByVal description As String, ByVal picture As Bitmap)
         lblSideMainTitle.Text = title
