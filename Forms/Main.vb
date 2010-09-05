@@ -43,6 +43,8 @@ Friend Class Main
     Private downloadColSizes As New Dictionary(Of Integer, Integer)
     Private downloadColOrder As New List(Of Data.DownloadCols)
 
+    Private windowPosLoaded As Boolean
+
     Public Sub UpdateTrayStatus(ByVal active As Boolean)
         If OsUtils.WinSevenOrLater Then
             If progData.CountDownloadsErrored > 0 Then
@@ -279,6 +281,19 @@ Friend Class Main
         Using graphicsForDpi As Graphics = Me.CreateGraphics()
             picSidebarImg.MaximumSize = New Size(CInt(picSidebarImg.MaximumSize.Width * (graphicsForDpi.DpiX / 96)), CInt(picSidebarImg.MaximumSize.Height * (graphicsForDpi.DpiY / 96)))
         End Using
+
+        If My.Settings.MainFormPos <> Rectangle.Empty Then
+            If OsUtils.VisibleOnScreen(My.Settings.MainFormPos) Then
+                Me.StartPosition = FormStartPosition.Manual
+                Me.DesktopBounds = My.Settings.MainFormPos
+            Else
+                Me.Size = My.Settings.MainFormPos.Size
+            End If
+
+            Me.WindowState = My.Settings.MainFormState
+        End If
+
+        windowPosLoaded = True
 
         tblToolbars.Height = tbrToolbar.Height
         tbrToolbar.SetWholeDropDown(tbtOptionsMenu)
@@ -1194,6 +1209,18 @@ Friend Class Main
                 End If
             End If
         Next
+    End Sub
+
+    Private Sub Main_Move_Resize(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Move, Me.Resize
+        If windowPosLoaded Then
+            If Me.WindowState = FormWindowState.Normal Then
+                My.Settings.MainFormPos = Me.DesktopBounds
+            End If
+
+            If Me.WindowState <> FormWindowState.Minimized Then
+                My.Settings.MainFormState = Me.WindowState
+            End If
+        End If
     End Sub
 
     Private Sub tmrCheckForUpdates_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles tmrCheckForUpdates.Tick

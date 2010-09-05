@@ -218,6 +218,30 @@ Namespace My
                 Me("CloseToSystray") = value
             End Set
         End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("0, 0, 0, 0")>  _
+        Public Property MainFormPos() As Global.System.Drawing.Rectangle
+            Get
+                Return CType(Me("MainFormPos"),Global.System.Drawing.Rectangle)
+            End Get
+            Set
+                Me("MainFormPos") = value
+            End Set
+        End Property
+        
+        <Global.System.Configuration.UserScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Normal")>  _
+        Public Property MainFormState() As Global.System.Windows.Forms.FormWindowState
+            Get
+                Return CType(Me("MainFormState"),Global.System.Windows.Forms.FormWindowState)
+            End Get
+            Set
+                Me("MainFormState") = value
+            End Set
+        End Property
     End Class
 End Namespace
 

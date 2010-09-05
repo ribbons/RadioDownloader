@@ -171,4 +171,14 @@ Friend Class OsUtils
             End If
         End If
     End Sub
+
+    Public Shared Function VisibleOnScreen(ByVal location As Rectangle) As Boolean
+        For Each thisScreen As Screen In Screen.AllScreens
+            If (thisScreen.WorkingArea.IntersectsWith(location)) Then
+                Return True
+            End If
+        Next
+
+        Return False
+    End Function
 End Class
