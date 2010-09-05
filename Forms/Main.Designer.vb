@@ -623,7 +623,7 @@
         Me.Icon = Global.RadioDld.My.Resources.Resources.icon_main
         Me.KeyPreview = True
         Me.Location = New System.Drawing.Point(11, 37)
-        Me.MinimumSize = New System.Drawing.Size(500, 300)
+        Me.MinimumSize = New System.Drawing.Size(550, 300)
         Me.Name = "Main"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Radio Downloader"
