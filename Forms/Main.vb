@@ -1472,8 +1472,12 @@ Friend Class Main
             Case ViewState.View.FindNewProviderForm
                 Dim FindViewData As FindNewViewData = DirectCast(data, FindNewViewData)
 
+                If pnlPluginSpace.Controls.Count > 0 Then
+                    pnlPluginSpace.Controls(0).Dispose()
+                    pnlPluginSpace.Controls.Clear()
+                End If
+
                 pnlPluginSpace.Visible = True
-                pnlPluginSpace.Controls.Clear()
                 pnlPluginSpace.Controls.Add(progData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View))
                 pnlPluginSpace.Controls(0).Dock = DockStyle.Fill
                 pnlPluginSpace.Controls(0).Focus()
