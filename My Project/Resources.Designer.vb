@@ -151,6 +151,20 @@ Namespace My.Resources
             End Get
         End Property
         
+        Friend ReadOnly Property overlay_downloading() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("overlay_downloading", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        Friend ReadOnly Property overlay_error() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("overlay_error", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
         Friend ReadOnly Property provider_default() As System.Drawing.Bitmap
             Get
                 Dim obj As Object = ResourceManager.GetObject("provider_default", resourceCulture)

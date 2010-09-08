@@ -289,6 +289,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\overlay icons\error.ico" />
+    <None Include="Resources\overlay icons\downloading.ico" />
     <None Include="Resources\toolbar\remove favourite_16.png" />
     <None Include="Resources\toolbar\favourites_16.png" />
     <None Include="Resources\list icons\favourite_16.png" />

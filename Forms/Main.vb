@@ -48,11 +48,11 @@ Friend Class Main
     Public Sub UpdateTrayStatus(ByVal active As Boolean)
         If OsUtils.WinSevenOrLater Then
             If progData.CountDownloadsErrored > 0 Then
-                tbarNotif.SetOverlayIcon(Me, Icon.FromHandle(My.Resources.list_error.GetHicon), "Error")
+                tbarNotif.SetOverlayIcon(Me, My.Resources.overlay_error, "Error")
                 tbarNotif.SetThumbnailTooltip(Me, Me.Text + ": Error")
             Else
                 If active = True Then
-                    tbarNotif.SetOverlayIcon(Me, Icon.FromHandle(My.Resources.list_downloading.GetHicon), "Downloading")
+                    tbarNotif.SetOverlayIcon(Me, My.Resources.overlay_downloading, "Downloading")
                     tbarNotif.SetThumbnailTooltip(Me, Me.Text + ": Downloading")
                 Else
                     tbarNotif.SetOverlayIcon(Me, Nothing, String.Empty)
