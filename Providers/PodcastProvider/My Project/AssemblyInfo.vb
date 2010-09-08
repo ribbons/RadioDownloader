@@ -10,7 +10,7 @@ Imports System.Security
 <Assembly: AssemblyProduct("Podcast Plugin")> 
 <Assembly: AssemblyCopyright("Copyright © 2007-2010 Matt Robinson")> 
 <Assembly: AssemblyTrademark("")> 
-<Assembly: AssemblyVersion("0.16.0.0")> 
+<Assembly: AssemblyVersion("0.17.0.0")> 
 
 <Assembly: CLSCompliant(True)> 
 <Assembly: ComVisible(False)> 
