@@ -1462,10 +1462,6 @@ Friend Class Data
     End Function
 
     Public Function CompareDownloads(ByVal epid1 As Integer, ByVal epid2 As Integer) As Integer
-        If epid1 = 9384578 Or epid2 = 9384578 Then
-            Stop
-        End If
-
         SyncLock downloadSortCacheLock
             If downloadSortCache Is Nothing OrElse Not downloadSortCache.ContainsKey(epid1) OrElse Not downloadSortCache.ContainsKey(epid2) Then
                 ' The sort cache is either empty or missing one of the values that are required, so recreate it
