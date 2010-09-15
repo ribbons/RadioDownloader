@@ -1495,7 +1495,12 @@ Friend Class Data
                 End Using
             End If
 
-            Return downloadSortCache(epid1) - downloadSortCache(epid2)
+            Try
+                Return downloadSortCache(epid1) - downloadSortCache(epid2)
+            Catch keyNotFoundExp As KeyNotFoundException
+                ' One of the entries has been removed from the database, but not yet from the list
+                Return 0
+            End Try
         End SyncLock
     End Function
 
