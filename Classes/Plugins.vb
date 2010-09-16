@@ -52,7 +52,7 @@ Public Enum ProgressIcon
 End Enum
 
 Public Interface IRadioProvider
-    ReadOnly Property ProviderID() As Guid
+    ReadOnly Property ProviderId() As Guid
     ReadOnly Property ProviderName() As String
     ReadOnly Property ProviderIcon() As Bitmap
     ReadOnly Property ProviderDescription() As String
@@ -60,17 +60,17 @@ Public Interface IRadioProvider
 
     Function GetShowOptionsHandler() As EventHandler
     Function GetFindNewPanel(ByVal view As Object) As Panel
-    Function GetProgrammeInfo(ByVal progExtID As String) As GetProgrammeInfoReturn
-    Function GetAvailableEpisodeIDs(ByVal progExtID As String) As String()
-    Function GetEpisodeInfo(ByVal progExtID As String, ByVal episodeExtID As String) As GetEpisodeInfoReturn
+    Function GetProgrammeInfo(ByVal progExtId As String) As GetProgrammeInfoReturn
+    Function GetAvailableEpisodeIds(ByVal progExtId As String) As String()
+    Function GetEpisodeInfo(ByVal progExtId As String, ByVal episodeExtId As String) As GetEpisodeInfoReturn
 
     Event FindNewViewChange(ByVal view As Object)
     Event FindNewException(ByVal findExp As Exception, ByVal unhandled As Boolean)
-    Event FoundNew(ByVal progExtID As String)
+    Event FoundNew(ByVal progExtId As String)
     Event Progress(ByVal percent As Integer, ByVal statusText As String, ByVal icon As ProgressIcon)
     Event Finished(ByVal fileExtension As String)
 
-    Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String)
+    Sub DownloadProgramme(ByVal progExtId As String, ByVal episodeExtId As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String)
 End Interface
 
 Friend Class Plugins
@@ -143,7 +143,7 @@ Friend Class Plugins
                         Try
                             Dim pluginInst As IRadioProvider
                             pluginInst = CreateInstance(pluginInfo)
-                            availablePlugins.Add(pluginInst.ProviderID, pluginInfo)
+                            availablePlugins.Add(pluginInst.ProviderId, pluginInfo)
                         Catch
                             Continue For
                         End Try

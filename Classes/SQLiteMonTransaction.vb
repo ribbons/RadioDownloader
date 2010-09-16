@@ -53,7 +53,7 @@ Public Class SQLiteMonTransaction
         Return exp
     End Function
 
-    Public ReadOnly Property trans() As SQLiteTransaction
+    Public ReadOnly Property Trans() As SQLiteTransaction
         Get
             Return wrappedTrans
         End Get

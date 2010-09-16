@@ -83,6 +83,7 @@
    <RuleFile Name="$(FxCopDir)\Rules\InteroperabilityRules.dll" Enabled="True" AllRulesEnabled="True" />
    <RuleFile Name="$(FxCopDir)\Rules\MobilityRules.dll" Enabled="True" AllRulesEnabled="True" />
    <RuleFile Name="$(FxCopDir)\Rules\NamingRules.dll" Enabled="True" AllRulesEnabled="True" />
+    <Rule Name="IdentifiersShouldBeCasedCorrectly" Enabled="True" />
     <Rule Name="IdentifiersShouldNotContainTypeNames" Enabled="True" />
     <Rule Name="IdentifiersShouldNotHaveIncorrectSuffix" Enabled="True" />
     <Rule Name="ResourceStringsShouldBeSpelledCorrectly" Enabled="True" />

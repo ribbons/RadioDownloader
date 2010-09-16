@@ -41,7 +41,7 @@ Public Class PodcastProvider
 
     Private WithEvents doDownload As DownloadWrapper
 
-    Public ReadOnly Property ProviderID() As Guid Implements IRadioProvider.ProviderID
+    Public ReadOnly Property ProviderId() As Guid Implements IRadioProvider.ProviderId
         Get
             Return New Guid("3cfbe63e-95b8-4f80-8570-4ace909e0921")
         End Get
@@ -82,7 +82,7 @@ Public Class PodcastProvider
         Return FindNewInst.pnlFindNew
     End Function
 
-    Public Function GetProgrammeInfo(ByVal progExtID As String) As GetProgrammeInfoReturn Implements IRadioProvider.GetProgrammeInfo
+    Public Function GetProgrammeInfo(ByVal progExtId As String) As GetProgrammeInfoReturn Implements IRadioProvider.GetProgrammeInfo
         Dim getProgInfo As New GetProgrammeInfoReturn
         getProgInfo.Success = False
 
@@ -123,7 +123,7 @@ Public Class PodcastProvider
         Return getProgInfo
     End Function
 
-    Public Function GetAvailableEpisodeIDs(ByVal progExtID As String) As String() Implements IRadioProvider.GetAvailableEpisodeIDs
+    Public Function GetAvailableEpisodeIds(ByVal progExtId As String) As String() Implements IRadioProvider.GetAvailableEpisodeIds
         Dim strEpisodeIDs(-1) As String
         GetAvailableEpisodeIDs = strEpisodeIDs
 
@@ -158,7 +158,7 @@ Public Class PodcastProvider
         Return strEpisodeIDs
     End Function
 
-    Function GetEpisodeInfo(ByVal progExtID As String, ByVal episodeExtID As String) As GetEpisodeInfoReturn Implements IRadioProvider.GetEpisodeInfo
+    Function GetEpisodeInfo(ByVal progExtId As String, ByVal episodeExtId As String) As GetEpisodeInfoReturn Implements IRadioProvider.GetEpisodeInfo
         Dim episodeInfoReturn As New GetEpisodeInfoReturn
         episodeInfoReturn.Success = False
 
@@ -191,7 +191,7 @@ Public Class PodcastProvider
         For Each xmlItem As XmlNode In xmlItems
             strItemID = ItemNodeToEpisodeID(xmlItem)
 
-            If strItemID = episodeExtID Then
+            If strItemID = episodeExtId Then
                 Dim xmlTitle As XmlNode = xmlItem.SelectSingleNode("./title")
                 Dim xmlDescription As XmlNode = xmlItem.SelectSingleNode("./description")
                 Dim xmlPubDate As XmlNode = xmlItem.SelectSingleNode("./pubDate")
@@ -343,7 +343,7 @@ Public Class PodcastProvider
         Return episodeInfoReturn
     End Function
 
-    Public Sub DownloadProgramme(ByVal progExtID As String, ByVal episodeExtID As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String) Implements IRadioProvider.DownloadProgramme
+    Public Sub DownloadProgramme(ByVal progExtId As String, ByVal episodeExtId As String, ByVal progInfo As ProgrammeInfo, ByVal epInfo As EpisodeInfo, ByVal finalName As String) Implements IRadioProvider.DownloadProgramme
         Dim downloadUrl As Uri = New Uri(epInfo.ExtInfo("EnclosureURL"))
 
         Dim fileNamePos As Integer = finalName.LastIndexOf("\", StringComparison.Ordinal)
@@ -357,7 +357,7 @@ Public Class PodcastProvider
         Dim downloadFileName As String = Path.Combine(System.IO.Path.GetTempPath, Path.Combine("RadioDownloader", finalName.Substring(fileNamePos + 1) + "." + extension))
         finalName += "." + extension
 
-        dodownload = New DownloadWrapper(downloadUrl, downloadFileName)
+        doDownload = New DownloadWrapper(downloadUrl, downloadFileName)
         doDownload.Download()
 
         While (Not doDownload.Complete) And doDownload.Error Is Nothing

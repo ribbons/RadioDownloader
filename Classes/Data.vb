@@ -837,20 +837,20 @@ Friend Class Data
     Private Sub ResetDownloadAsync(ByVal epid As Integer, ByVal auto As Boolean)
         SyncLock dbUpdateLock
             Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
-                Using command As New SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", FetchDbConn, transMon.trans)
+                Using command As New SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", FetchDbConn, transMon.Trans)
                     command.Parameters.Add(New SQLiteParameter("@status", DownloadStatus.Waiting))
                     command.Parameters.Add(New SQLiteParameter("@epid", epid))
                     command.ExecuteNonQuery()
                 End Using
 
                 If auto = False Then
-                    Using command As New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn, transMon.trans)
+                    Using command As New SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn, transMon.Trans)
                         command.Parameters.Add(New SQLiteParameter("@epid", epid))
                         command.ExecuteNonQuery()
                     End Using
                 End If
 
-                transMon.trans.Commit()
+                transMon.Trans.Commit()
             End Using
         End SyncLock
 
@@ -876,7 +876,7 @@ Friend Class Data
     Private Sub DownloadRemoveAsync(ByVal epid As Integer, ByVal auto As Boolean)
         SyncLock dbUpdateLock
             Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
-                Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, transMon.trans)
+                Using command As New SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn, transMon.Trans)
                     command.Parameters.Add(New SQLiteParameter("@epid", epid))
                     command.ExecuteNonQuery()
                 End Using
@@ -886,7 +886,7 @@ Friend Class Data
                     EpisodeSetAutoDownloadAsync(epid, False)
                 End If
 
-                transMon.trans.Commit()
+                transMon.Trans.Commit()
             End Using
         End SyncLock
 
@@ -1233,7 +1233,7 @@ Friend Class Data
     End Sub
 
     Private Sub FindNewPluginInst_FoundNew(ByVal progExtId As String) Handles FindNewPluginInst.FoundNew
-        Dim pluginId As Guid = FindNewPluginInst.ProviderID
+        Dim pluginId As Guid = FindNewPluginInst.ProviderId
 
         If StoreProgrammeInfo(pluginId, progExtId) = False Then
             Call MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation)
@@ -1286,7 +1286,7 @@ Friend Class Data
                     command.ExecuteNonQuery()
                 End Using
 
-                transMon.trans.Commit()
+                transMon.Trans.Commit()
             End Using
         End SyncLock
 
@@ -1387,7 +1387,7 @@ Friend Class Data
         Dim extIds As String()
         Dim providerInst As IRadioProvider = pluginsInst.GetPluginInstance(providerId)
 
-        extIds = providerInst.GetAvailableEpisodeIDs(progExtId)
+        extIds = providerInst.GetAvailableEpisodeIds(progExtId)
 
         If extIds Is Nothing Then
             Return Nothing
@@ -1427,7 +1427,7 @@ Friend Class Data
             Using transMon As New SQLiteMonTransaction(FetchDbConn.BeginTransaction)
                 Dim epid As Integer
 
-                Using addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn, transMon.trans)
+                Using addEpisodeCmd As New SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn, transMon.Trans)
                     addEpisodeCmd.Parameters.Add(New SQLiteParameter("@progid", progid))
                     addEpisodeCmd.Parameters.Add(New SQLiteParameter("@extid", episodeExtId))
                     addEpisodeCmd.Parameters.Add(New SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name))
@@ -1438,12 +1438,12 @@ Friend Class Data
                     addEpisodeCmd.ExecuteNonQuery()
                 End Using
 
-                Using getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn, transMon.trans)
+                Using getRowIDCmd As New SQLiteCommand("select last_insert_rowid()", FetchDbConn, transMon.Trans)
                     epid = CInt(getRowIDCmd.ExecuteScalar)
                 End Using
 
                 If episodeInfoReturn.EpisodeInfo.ExtInfo IsNot Nothing Then
-                    Using addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn, transMon.trans)
+                    Using addExtInfoCmd As New SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn, transMon.Trans)
                         For Each extItem As KeyValuePair(Of String, String) In episodeInfoReturn.EpisodeInfo.ExtInfo
                             With addExtInfoCmd
                                 .Parameters.Add(New SQLiteParameter("@epid", epid))
@@ -1455,7 +1455,7 @@ Friend Class Data
                     End Using
                 End If
 
-                transMon.trans.Commit()
+                transMon.Trans.Commit()
                 Return epid
             End Using
         End SyncLock
