@@ -15,7 +15,7 @@
 Option Strict On
 Option Explicit On
 
-Imports System.Diagnostics.Process
+Imports System.Diagnostics
 
 Friend NotInheritable Class About
     Private Sub About_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
@@ -39,6 +39,6 @@ Friend NotInheritable Class About
     End Sub
 
     Private Sub HomepageLink_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles HomepageLink.Click
-        Start("http://www.nerdoftheherd.com/tools/radiodld/")
+        Process.Start("http://www.nerdoftheherd.com/tools/radiodld/")
     End Sub
 End Class
