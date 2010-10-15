@@ -1,0 +1,383 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <MyType>WindowsForms</MyType>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0B79D58E-5E08-493F-AC06-CC4922583572}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <AssemblyName>Radio Downloader</AssemblyName>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>RadioDld.My.MyApplication</StartupObject>
+    <AssemblyMajorVersion>0</AssemblyMajorVersion>
+    <AssemblyMinorVersion>0</AssemblyMinorVersion>
+    <AssemblyRevisionNumber>43</AssemblyRevisionNumber>
+    <GenerateRevisionNumber>True</GenerateRevisionNumber>
+    <RootNamespace>RadioDld</RootNamespace>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OptionStrict>On</OptionStrict>
+    <ApplicationIcon>Resources\icons\Icon.ico</ApplicationIcon>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>false</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\mono\</OutputPath>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DebugSymbols>True</DebugSymbols>
+    <DefineDebug>True</DefineDebug>
+    <DefineTrace>True</DefineTrace>
+    <DefineConstants>
+    </DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+    <NoWarn>
+    </NoWarn>
+    <DebugType>full</DebugType>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\mono\</OutputPath>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DebugSymbols>False</DebugSymbols>
+    <DefineDebug>False</DefineDebug>
+    <DefineTrace>True</DefineTrace>
+    <Optimize>True</Optimize>
+    <DefineConstants>
+    </DefineConstants>
+    <PlatformTarget>x86</PlatformTarget>
+    <NoWarn>
+    </NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win32\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>
+    </NoWarn>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win32\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>
+    </NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win_x64\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>
+    </NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win_x64\</OutputPath>
+    <DefineConstants>
+    </DefineConstants>
+    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <NoWarn>
+    </NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Data.SQLite, Version=1.0.65.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(OutputPath)\System.Data.SQLite.DLL</HintPath>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Data" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Windows.Forms" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Classes\DownloadException.cs" />
+    <Compile Include="Classes\FileUtils.cs" />
+    <Compile Include="Classes\DataSearch.cs" />
+    <Compile Include="Classes\ListItemComparer.cs" />
+    <Compile Include="Classes\TabBarRenderer.cs" />
+    <Compile Include="Classes\OsUtils.cs" />
+    <Compile Include="Classes\SQLiteMonDataReader.cs" />
+    <Compile Include="Classes\SQLiteMonTransaction.cs" />
+    <Compile Include="Classes\TaskbarNotify.cs" />
+    <Compile Include="Classes\TextUtils.cs" />
+    <Compile Include="Classes\UpdateCheck.cs" />
+    <Compile Include="Classes\CachedWebClient.cs" />
+    <Compile Include="Classes\DldProgData.cs" />
+    <Compile Include="Classes\ErrorReporting.cs" />
+    <Compile Include="Classes\Plugins.cs" />
+    <Compile Include="Classes\UpdateDB.cs" />
+    <Compile Include="Classes\ViewState.cs" />
+    <Compile Include="Controls\SearchBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ExtToolBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ExtToolStrip.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ToolStripSearchBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\GlassForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ChooseCols.Designer.cs">
+      <DependentUpon>ChooseCols.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ChooseCols.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\CleanUp.Designer.cs">
+      <DependentUpon>CleanUp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\CleanUp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ReportError.Designer.cs">
+      <DependentUpon>ReportError.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ReportError.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Status.Designer.cs">
+      <DependentUpon>Status.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Status.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\UpdateNotify.Designer.cs">
+      <DependentUpon>UpdateNotify.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\UpdateNotify.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MyNamespaceSupportForCSharp.cs" />
+    <Compile Include="Properties\ApplicationEvents.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Classes\Data.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Controls\ExtListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\About.Designer.cs">
+      <DependentUpon>About.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\About.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Main.Designer.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>Main.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Main.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Preferences.Designer.cs">
+      <SubType>Code</SubType>
+      <DependentUpon>Preferences.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Preferences.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Properties\Application.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <EmbeddedResource Include="Forms\ReportError.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ReportError.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\About.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>About.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Main.resX">
+      <DependentUpon>Main.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Preferences.resX">
+      <DependentUpon>Preferences.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UpdateNotify.resx">
+      <DependentUpon>UpdateNotify.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\overlay icons\error.ico" />
+    <None Include="Resources\overlay icons\downloading.ico" />
+    <None Include="Resources\toolbar\remove favourite_16.png" />
+    <None Include="Resources\toolbar\favourites_16.png" />
+    <None Include="Resources\list icons\favourite_16.png" />
+    <None Include="Resources\toolbar\favourites_24.png" />
+    <None Include="Resources\search\close_14.png" />
+    <None Include="Resources\search\close pressed_14.png" />
+    <None Include="Resources\search\close hover_14.png" />
+    <None Include="Resources\provider_default.png" />
+    <None Include="Resources\search\search_14.png" />
+    <EmbeddedResource Include="Forms\ChooseCols.resx">
+      <DependentUpon>ChooseCols.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\CleanUp.resX">
+      <DependentUpon>CleanUp.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Status.resx">
+      <DependentUpon>Status.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Content Include="Properties\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.cs</LastGenOutput>
+    </Content>
+    <None Include="Resources\toolbar\choose programme_16.png" />
+    <None Include="Resources\icons\Icon 64.png" />
+    <None Include="Resources\icons\Icon 32.png" />
+    <None Include="Resources\icons\Working.ico" />
+    <None Include="Resources\icons\Icon.ico" />
+    <None Include="Resources\icons\Error.ico" />
+    <None Include="Resources\provider_default_64.png" />
+    <None Include="Resources\list icons\subscribed_16.png" />
+    <None Include="Resources\list icons\waiting_16.png" />
+    <None Include="Resources\list icons\error_16.png" />
+    <None Include="Resources\list icons\downloading_16.png" />
+    <None Include="Resources\list icons\downloaded_new_16.png" />
+    <None Include="Resources\list icons\downloaded_16.png" />
+    <None Include="Resources\list icons\converting_16.png" />
+    <None Include="Resources\toolbar\unsubscribe_16.png" />
+    <None Include="Resources\toolbar\subscriptions_24.png" />
+    <None Include="Resources\toolbar\subscriptions_16.png" />
+    <None Include="Resources\toolbar\retry_16.png" />
+    <None Include="Resources\toolbar\report_error_16.png" />
+    <None Include="Resources\toolbar\play_16.png" />
+    <None Include="Resources\toolbar\options_16.png" />
+    <None Include="Resources\toolbar\help_16.png" />
+    <None Include="Resources\toolbar\forward_24.png" />
+    <None Include="Resources\toolbar\find new_24.png" />
+    <None Include="Resources\toolbar\downloads_24.png" />
+    <None Include="Resources\toolbar\download_16.png" />
+    <None Include="Resources\toolbar\delete_16.png" />
+    <None Include="Resources\toolbar\current episodes_16.png" />
+    <None Include="Resources\toolbar\clean up_16.png" />
+    <None Include="Resources\toolbar\back_24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="store.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <Target Name="AfterBuild">
+    <Exec Command="&quot;$(ProgramFiles)\Microsoft FxCop 10.0\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /project:&quot;Radio Downloader.FxCop&quot; /console" />
+  </Target>
+</Project>
