@@ -124,24 +124,22 @@ Public Class PodcastProvider
     End Function
 
     Public Function GetAvailableEpisodeIds(ByVal progExtId As String) As String() Implements IRadioProvider.GetAvailableEpisodeIds
-        Dim strEpisodeIDs(-1) As String
-        GetAvailableEpisodeIDs = strEpisodeIDs
-
+        Dim episodeIDs As New List(Of String)
         Dim xmlRSS As XmlDocument
 
         Try
             xmlRSS = LoadFeedXml(New Uri(progExtID))
         Catch expWeb As WebException
-            Exit Function
+            Return episodeIDs.ToArray
         Catch expXML As XmlException
-            Exit Function
+            Return episodeIDs.ToArray
         End Try
 
         Dim xmlItems As XmlNodeList
         xmlItems = xmlRSS.SelectNodes("./rss/channel/item")
 
         If xmlItems Is Nothing Then
-            Exit Function
+            Return episodeIDs.ToArray
         End If
 
         Dim strItemID As String
@@ -150,12 +148,11 @@ Public Class PodcastProvider
             strItemID = ItemNodeToEpisodeID(xmlItem)
 
             If strItemID <> "" Then
-                ReDim Preserve strEpisodeIDs(strEpisodeIDs.GetUpperBound(0) + 1)
-                strEpisodeIDs(strEpisodeIDs.GetUpperBound(0)) = strItemID
+                episodeIDs.Add(strItemID)
             End If
         Next
 
-        Return strEpisodeIDs
+        Return episodeIDs.ToArray
     End Function
 
     Function GetEpisodeInfo(ByVal progExtId As String, ByVal episodeExtId As String) As GetEpisodeInfoReturn Implements IRadioProvider.GetEpisodeInfo

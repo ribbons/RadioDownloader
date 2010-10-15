@@ -95,8 +95,10 @@ Friend Class Plugins
     End Function
 
     Public Function GetPluginIdList() As Guid()
-        ReDim GetPluginIdList(availablePlugins.Keys.Count - 1)
-        availablePlugins.Keys.CopyTo(GetPluginIdList, 0)
+        Dim pluginIDs(availablePlugins.Keys.Count - 1) As Guid
+        availablePlugins.Keys.CopyTo(pluginIDs, 0)
+
+        Return pluginIDs
     End Function
 
     ' Next three functions are based on code from http://www.developerfusion.co.uk/show/4371/3/
