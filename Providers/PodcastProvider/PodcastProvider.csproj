@@ -52,7 +52,8 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\bin\win32\</OutputPath>
-    <DocumentationFile>PodcastProvider.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>
     </NoWarn>
     <DebugType>full</DebugType>
