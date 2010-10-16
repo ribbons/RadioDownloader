@@ -63,7 +63,7 @@ namespace RadioDld
 			this.Controls.Add(this.prgProgress);
 			this.Controls.Add(this.lblStatus);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-			this.Icon = global::RadioDld.My.Resources.Resources.icon_main;
+            this.Icon = Properties.Resources.icon_main;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "Status";

@@ -59,9 +59,9 @@ namespace PodcastProvider
 		public void Download()
 		{
 			SystemEvents.PowerModeChanged += PowerModeChange;
-
+            
 			downloadClient = new WebClient();
-			downloadClient.Headers.Add("user-agent", PodcastProvider.My.Application.Info.AssemblyName + " " + PodcastProvider.My.Application.Info.Version.ToString);
+            downloadClient.Headers.Add("user-agent", new My.MyApplication().Info.AssemblyName + " " + new My.MyApplication().Info.Version.ToString());
 			downloadClient.DownloadFileAsync(downloadUrl, destPath);
 		}
 

@@ -36,7 +36,7 @@ namespace RadioDld
 		{
 			try {
 				this.Visible = false;
-				report.SendReport(RadioDld.My.Settings.ErrorReportURL);
+				report.SendReport(Properties.Settings.Default.ErrorReportURL);
 			} catch {
 				// No way of reporting errors that have happened here, so just give up
 			}

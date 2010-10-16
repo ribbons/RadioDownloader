@@ -47,7 +47,7 @@ namespace RadioDld
 			//
 			//LogoPictureBox
 			//
-			this.LogoPictureBox.Image = global::RadioDld.My.Resources.Resources.icon_main_img64;
+			this.LogoPictureBox.Image = Properties.Resources.icon_main_img64;
 			this.LogoPictureBox.Location = new System.Drawing.Point(12, 12);
 			this.LogoPictureBox.Name = "LogoPictureBox";
 			this.LogoPictureBox.Size = new System.Drawing.Size(64, 64);
@@ -131,7 +131,7 @@ namespace RadioDld
 			this.Controls.Add(this.LabelNameAndVer);
 			this.Controls.Add(this.LogoPictureBox);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Icon = global::RadioDld.My.Resources.Resources.icon_main;
+			this.Icon = Properties.Resources.icon_main;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "About";

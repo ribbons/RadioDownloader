@@ -129,7 +129,7 @@ namespace RadioDld
 			this.Cursor = System.Windows.Forms.Cursors.Default;
 			this.Font = new System.Drawing.Font("Tahoma", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-			this.Icon = global::RadioDld.My.Resources.Resources.icon_main;
+            this.Icon = Properties.Resources.icon_main;
 			this.Location = new System.Drawing.Point(3, 29);
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;

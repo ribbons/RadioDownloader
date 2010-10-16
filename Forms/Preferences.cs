@@ -49,17 +49,17 @@ namespace RadioDld
 				return;
 			}
 
-			RadioDld.My.Settings.RunOnStartup = uxRunOnStartup.Checked;
-			RadioDld.My.Settings.SaveFolder = txtSaveIn.Text;
-			RadioDld.My.Settings.FileNameFormat = txtFileNameFormat.Text;
-			RadioDld.My.Settings.RunAfterCommand = txtRunAfter.Text;
+			Properties.Settings.Default.RunOnStartup = uxRunOnStartup.Checked;
+			Properties.Settings.Default.SaveFolder = txtSaveIn.Text;
+			Properties.Settings.Default.FileNameFormat = txtFileNameFormat.Text;
+			Properties.Settings.Default.RunAfterCommand = txtRunAfter.Text;
 
 			if (OsUtils.WinSevenOrLater()) {
-				RadioDld.My.Settings.CloseToSystray = uxCloseToSystray.Checked;
+				Properties.Settings.Default.CloseToSystray = uxCloseToSystray.Checked;
 			}
 
 			OsUtils.ApplyRunOnStartup();
-			RadioDld.My.Settings.Save();
+			Properties.Settings.Default.Save();
 		}
 
 		private void Preferences_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
@@ -75,10 +75,10 @@ namespace RadioDld
 		{
 			this.Font = SystemFonts.MessageBoxFont;
 
-			uxRunOnStartup.Checked = RadioDld.My.Settings.RunOnStartup;
+			uxRunOnStartup.Checked = Properties.Settings.Default.RunOnStartup;
 
 			if (OsUtils.WinSevenOrLater()) {
-				uxCloseToSystray.Checked = RadioDld.My.Settings.CloseToSystray;
+				uxCloseToSystray.Checked = Properties.Settings.Default.CloseToSystray;
 			} else {
 				uxCloseToSystray.Checked = true;
 				uxCloseToSystray.Enabled = false;
@@ -87,11 +87,11 @@ namespace RadioDld
 			try {
 				txtSaveIn.Text = FileUtils.GetSaveFolder();
 			} catch (DirectoryNotFoundException dirNotFoundExp) {
-				txtSaveIn.Text = RadioDld.My.Settings.SaveFolder;
+				txtSaveIn.Text = Properties.Settings.Default.SaveFolder;
 			}
 
-			txtFileNameFormat.Text = RadioDld.My.Settings.FileNameFormat;
-			txtRunAfter.Text = RadioDld.My.Settings.RunAfterCommand;
+			txtFileNameFormat.Text = Properties.Settings.Default.FileNameFormat;
+			txtRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
 		}
 
 		private void txtFileNameFormat_TextChanged(System.Object sender, System.EventArgs e)
@@ -102,14 +102,14 @@ namespace RadioDld
 		private void cmdReset_Click(System.Object sender, System.EventArgs e)
 		{
 			if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes) {
-				RadioDld.My.Settings.RunOnStartup = Convert.ToBoolean(RadioDld.My.Settings.Properties.Item("RunOnStartup").DefaultValue);
-				RadioDld.My.Settings.CloseToSystray = Convert.ToBoolean(RadioDld.My.Settings.Properties.Item("CloseToSystray").DefaultValue);
-				RadioDld.My.Settings.SaveFolder = RadioDld.My.Settings.Properties.Item("SaveFolder").DefaultValue.ToString;
-				RadioDld.My.Settings.FileNameFormat = RadioDld.My.Settings.Properties.Item("FileNameFormat").DefaultValue.ToString;
-				RadioDld.My.Settings.RunAfterCommand = RadioDld.My.Settings.Properties.Item("RunAfterCommand").DefaultValue.ToString;
+				Properties.Settings.Default.RunOnStartup = Convert.ToBoolean(Properties.Settings.Default.Properties["RunOnStartup"].DefaultValue);
+				Properties.Settings.Default.CloseToSystray = Convert.ToBoolean(Properties.Settings.Default.Properties["CloseToSystray"].DefaultValue);
+				Properties.Settings.Default.SaveFolder = Properties.Settings.Default.Properties["SaveFolder"].DefaultValue.ToString();
+				Properties.Settings.Default.FileNameFormat = Properties.Settings.Default.Properties["FileNameFormat"].DefaultValue.ToString();
+				Properties.Settings.Default.RunAfterCommand = Properties.Settings.Default.Properties["RunAfterCommand"].DefaultValue.ToString();
 
 				OsUtils.ApplyRunOnStartup();
-				RadioDld.My.Settings.Save();
+				Properties.Settings.Default.Save();
 
 				this.Close();
 			}

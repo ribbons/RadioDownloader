@@ -137,7 +137,7 @@ namespace RadioDld
 			//tbtBack
 			//
 			this.tbtBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tbtBack.Image = global::RadioDld.My.Resources.Resources.views_back;
+			this.tbtBack.Image = Properties.Resources.views_back;
 			this.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tbtBack.Name = "tbtBack";
 			this.tbtBack.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
@@ -147,7 +147,7 @@ namespace RadioDld
 			//tbtForward
 			//
 			this.tbtForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-			this.tbtForward.Image = global::RadioDld.My.Resources.Resources.views_forward;
+			this.tbtForward.Image = Properties.Resources.views_forward;
 			this.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tbtForward.Margin = new System.Windows.Forms.Padding(0, 1, 8, 2);
 			this.tbtForward.Name = "tbtForward";
@@ -160,7 +160,7 @@ namespace RadioDld
 			this.tbtFindNew.AutoToolTip = false;
 			this.tbtFindNew.Checked = true;
 			this.tbtFindNew.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.tbtFindNew.Image = global::RadioDld.My.Resources.Resources.views_find_new;
+			this.tbtFindNew.Image = Properties.Resources.views_find_new;
 			this.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tbtFindNew.Name = "tbtFindNew";
 			this.tbtFindNew.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -170,7 +170,7 @@ namespace RadioDld
 			//tbtFavourites
 			//
 			this.tbtFavourites.AutoToolTip = false;
-			this.tbtFavourites.Image = global::RadioDld.My.Resources.Resources.views_favourites;
+			this.tbtFavourites.Image = Properties.Resources.views_favourites;
 			this.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tbtFavourites.Name = "tbtFavourites";
 			this.tbtFavourites.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -180,7 +180,7 @@ namespace RadioDld
 			//tbtSubscriptions
 			//
 			this.tbtSubscriptions.AutoToolTip = false;
-			this.tbtSubscriptions.Image = global::RadioDld.My.Resources.Resources.views_subscriptions;
+			this.tbtSubscriptions.Image = Properties.Resources.views_subscriptions;
 			this.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tbtSubscriptions.Name = "tbtSubscriptions";
 			this.tbtSubscriptions.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -190,7 +190,7 @@ namespace RadioDld
 			//tbtDownloads
 			//
 			this.tbtDownloads.AutoToolTip = false;
-			this.tbtDownloads.Image = global::RadioDld.My.Resources.Resources.views_downloads;
+			this.tbtDownloads.Image = Properties.Resources.views_downloads;
 			this.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta;
 			this.tbtDownloads.Name = "tbtDownloads";
 			this.tbtDownloads.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
@@ -681,7 +681,7 @@ namespace RadioDld
 			this.Controls.Add(this.tblToolbars);
 			this.Controls.Add(this.tbrView);
 			this.Font = new System.Drawing.Font("Tahoma", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
-			this.Icon = global::RadioDld.My.Resources.Resources.icon_main;
+			this.Icon = Properties.Resources.icon_main;
 			this.KeyPreview = true;
 			this.Location = new System.Drawing.Point(11, 37);
 			this.MinimumSize = new System.Drawing.Size(550, 300);

@@ -61,10 +61,7 @@ namespace RadioDld
 
 			Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
 
-			tableCols.Add("downloads", {
-				"name",
-				"description"
-			});
+            tableCols.Add("downloads", new String[] { "name", "description" });
 
 			if (CheckIndex(tableCols) == false) {
 				// Close & clean up the connection used for testing

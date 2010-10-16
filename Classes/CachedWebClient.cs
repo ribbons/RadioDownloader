@@ -85,7 +85,7 @@ namespace RadioDld
 			}
 		}
 
-		private System.DateTime GetHTTPCacheLastUpdate(Uri uri)
+		private System.DateTime? GetHTTPCacheLastUpdate(Uri uri)
 		{
 			using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", FetchDbConn())) {
 				command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
@@ -129,10 +129,10 @@ namespace RadioDld
 				throw new ArgumentException("fetchIntervalHrs cannot be zero.", "fetchIntervalHrs");
 			}
 
-			System.DateTime lastFetch = GetHTTPCacheLastUpdate(uri);
+			System.DateTime? lastFetch = GetHTTPCacheLastUpdate(uri);
 
 			if (lastFetch != null) {
-				if (lastFetch.AddHours(fetchIntervalHrs) > DateAndTime.Now) {
+				if (lastFetch.Value.AddHours(fetchIntervalHrs) > DateAndTime.Now) {
 					bool requestSuccess = false;
 					byte[] cacheData = GetHTTPCacheContent(uri, ref requestSuccess);
 

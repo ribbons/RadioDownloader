@@ -136,7 +136,7 @@ namespace RadioDld
 			this.PictureBox1.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right);
 			this.PictureBox1.BackColor = System.Drawing.Color.White;
 			this.PictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-			this.PictureBox1.Image = global::RadioDld.My.Resources.Resources.icon_main_img32;
+			this.PictureBox1.Image = Properties.Resources.icon_main_img32;
 			this.PictureBox1.Location = new System.Drawing.Point(449, 13);
 			this.PictureBox1.Name = "PictureBox1";
 			this.PictureBox1.Size = new System.Drawing.Size(32, 32);
@@ -192,7 +192,7 @@ namespace RadioDld
 			this.Controls.Add(this.lblTopMessage);
 			this.Controls.Add(this.lblWhiteBar);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-			this.Icon = global::RadioDld.My.Resources.Resources.icon_main;
+			this.Icon = Properties.Resources.icon_main;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "ReportError";

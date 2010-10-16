@@ -48,7 +48,7 @@ namespace RadioDld
 			get { return lblStatus.Text; }
 			set {
 				if (this.IsHandleCreated) {
-					this.Invoke(() => SetStatusText_FormThread(value));
+                    this.Invoke((MethodInvoker)delegate { SetStatusText_FormThread(value); });
 				} else {
 					SetStatusText_FormThread(value);
 				}
@@ -64,7 +64,7 @@ namespace RadioDld
 			get { return prgProgress.Style == ProgressBarStyle.Marquee; }
 			set {
 				if (this.IsHandleCreated) {
-					this.Invoke(() => SetProgressBarMarquee_FormThread(value));
+                    this.Invoke((MethodInvoker)delegate { SetProgressBarMarquee_FormThread(value); });
 				} else {
 					SetProgressBarMarquee_FormThread(value);
 				}
@@ -88,7 +88,7 @@ namespace RadioDld
 			get { return prgProgress.Maximum; }
 			set {
 				if (this.IsHandleCreated) {
-					this.Invoke(() => SetProgressBarMax_FormThread(value));
+                    this.Invoke((MethodInvoker)delegate { SetProgressBarMax_FormThread(value); });
 				} else {
 					SetProgressBarMax_FormThread(value);
 				}
@@ -104,7 +104,7 @@ namespace RadioDld
 			get { return prgProgress.Value; }
 			set {
 				if (this.IsHandleCreated) {
-					this.Invoke(() => SetProgressBarValue_FormThread(value));
+                    this.Invoke((MethodInvoker)delegate { SetProgressBarValue_FormThread(value); });
 				} else {
 					SetProgressBarValue_FormThread(value);
 				}
@@ -123,7 +123,7 @@ namespace RadioDld
 		public new void Hide()
 		{
 			if (this.IsHandleCreated) {
-				this.Invoke(() => HideForm_FormThread());
+                this.Invoke((MethodInvoker)delegate { HideForm_FormThread(); });
 			} else {
 				HideForm_FormThread();
 			}

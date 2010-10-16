@@ -192,10 +192,9 @@ namespace RadioDld
 			GC.SuppressFinalize(this);
 		}
 
-		protected override void Finalize()
+        ~UpdateDB()
 		{
 			Dispose(false);
-			base.Finalize();
 		}
 	}
 }

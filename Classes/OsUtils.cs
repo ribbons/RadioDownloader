@@ -102,7 +102,7 @@ ref bool pfEnabled);
 			}
 		}
 
-		public static void TrayAnimate(ref Form form, ref bool down)
+		public static void TrayAnimate(Form form, bool down)
 		{
 			StringBuilder className = new StringBuilder(255);
 			IntPtr taskbarHwnd = default(IntPtr);
@@ -178,7 +178,7 @@ ref bool pfEnabled);
 		{
 			RegistryKey runKey = RadioDld.My.MyProject.Computer.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-			if (RadioDld.My.Settings.RunOnStartup) {
+			if (Properties.Settings.Default.RunOnStartup) {
 				runKey.SetValue(RadioDld.My.MyProject.Application.Info.Title, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
 			} else {
 				if (runKey.GetValue(RadioDld.My.MyProject.Application.Info.Title) != null) {

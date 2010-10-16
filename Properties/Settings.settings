@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="Settings" UseMySettingsClassName="true">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RadioDld.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
     <Setting Name="SaveFolder" Type="System.String" Scope="User">

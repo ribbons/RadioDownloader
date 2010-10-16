@@ -87,10 +87,9 @@ namespace RadioDld
 			GC.SuppressFinalize(this);
 		}
 
-		protected override void Finalize()
+        ~SQLiteMonTransaction()
 		{
 			Dispose(false);
-			base.Finalize();
 		}
 	}
 }

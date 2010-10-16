@@ -35,19 +35,12 @@ namespace PodcastProvider
 
 	public class PodcastProvider : IRadioProvider
 	{
-
-		public event FindNewViewChangeEventHandler IRadioProvider.FindNewViewChange;
-		public delegate void FindNewViewChangeEventHandler(object objView);
-		public event FindNewExceptionEventHandler IRadioProvider.FindNewException;
-		public delegate void FindNewExceptionEventHandler(Exception exception, bool unhandled);
-		public event FoundNewEventHandler IRadioProvider.FoundNew;
-		public delegate void FoundNewEventHandler(string strProgExtID);
-		public event ProgressEventHandler IRadioProvider.Progress;
-		public delegate void ProgressEventHandler(int intPercent, string strStatusText, ProgressIcon Icon);
-		public event FinishedEventHandler IRadioProvider.Finished;
-		public delegate void FinishedEventHandler(string strFileExtension);
-
-
+		public event FindNewViewChangeEventHandler FindNewViewChange;
+		public event FindNewExceptionEventHandler FindNewException;
+		public event FoundNewEventHandler FoundNew;
+		public event ProgressEventHandler Progress;
+		public event FinishedEventHandler Finished;
+		
 		internal const int intCacheHTTPHours = 2;
 		private DownloadWrapper withEventsField_doDownload;
 		private DownloadWrapper doDownload {
@@ -72,7 +65,7 @@ namespace PodcastProvider
 		}
 
 		public Bitmap ProviderIcon {
-			get { return PodcastProvider.My.Resources.provider_icon; }
+			get { return Properties.Resources.provider_icon; }
 		}
 
 		public string ProviderDescription {
@@ -355,7 +348,7 @@ namespace PodcastProvider
 							tspOffset = new TimeSpan(0);
 						}
 
-						episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Subtract(tspOffset);
+						episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Value.Subtract(tspOffset);
 					} else {
 						episodeInfoReturn.EpisodeInfo.Date = DateAndTime.Now;
 					}

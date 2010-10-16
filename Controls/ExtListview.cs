@@ -249,24 +249,24 @@ namespace RadioDld
 				HDITEM headerInfo = new HDITEM();
 				headerInfo.mask = HDI_FORMAT;
 
-				SendMessage(headersHwnd, HDM_GETITEM, (IntPtr)processCols, headerInfo);
+				SendMessage(headersHwnd, HDM_GETITEM, (IntPtr)processCols, ref headerInfo);
 
 				if (order != SortOrder.None && processCols == column) {
 					switch (order) {
 						case SortOrder.Ascending:
-							headerInfo.fmt = headerInfo.fmt & !HDF_SORTDOWN;
+							headerInfo.fmt = headerInfo.fmt & ~HDF_SORTDOWN;
 							headerInfo.fmt = headerInfo.fmt | HDF_SORTUP;
 							break;
 						case SortOrder.Descending:
-							headerInfo.fmt = headerInfo.fmt & !HDF_SORTUP;
+							headerInfo.fmt = headerInfo.fmt & ~HDF_SORTUP;
 							headerInfo.fmt = headerInfo.fmt | HDF_SORTDOWN;
 							break;
 					}
 				} else {
-					headerInfo.fmt = headerInfo.fmt & !HDF_SORTDOWN & !HDF_SORTUP;
+					headerInfo.fmt = headerInfo.fmt & ~HDF_SORTDOWN & ~HDF_SORTUP;
 				}
 
-				SendMessage(headersHwnd, HDM_SETITEM, (IntPtr)processCols, headerInfo);
+				SendMessage(headersHwnd, HDM_SETITEM, (IntPtr)processCols, ref headerInfo);
 			}
 		}
 

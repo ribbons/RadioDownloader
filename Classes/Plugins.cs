@@ -51,8 +51,8 @@ namespace RadioDld
 	{
 		public string Name;
 		public string Description;
-		public int DurationSecs;
-		public DateTime Date;
+		public int? DurationSecs;
+		public DateTime? Date;
 		public Bitmap Image;
 		public Dictionary<string, string> ExtInfo;
 	}
@@ -77,11 +77,11 @@ namespace RadioDld
 }
 namespace RadioDld
 {
-    delegate void FindNewViewChangeEventHandler(object view);
-    delegate void FindNewExceptionEventHandler(Exception findExp, bool unhandled);
-    delegate void FoundNewEventHandler(string progExtId);
-    delegate void ProgressEventHandler(int percent, string statusText, ProgressIcon icon);
-    delegate void FinishedEventHandler(string fileExtension);
+    public delegate void FindNewViewChangeEventHandler(object view);
+    public delegate void FindNewExceptionEventHandler(Exception findExp, bool unhandled);
+    public delegate void FoundNewEventHandler(string progExtId);
+    public delegate void ProgressEventHandler(int percent, string statusText, ProgressIcon icon);
+    public delegate void FinishedEventHandler(string fileExtension);
 
 	public interface IRadioProvider
 	{

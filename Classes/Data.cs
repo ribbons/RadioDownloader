@@ -89,7 +89,7 @@ namespace RadioDld
 			public string name;
 			public string description;
 			public bool favourite;
-			public System.DateTime latestDownload;
+			public DateTime? latestDownload;
 			public string providerName;
 		}
 
@@ -260,7 +260,7 @@ namespace RadioDld
 			search = DataSearch.GetInstance(this);
 
 			// Start regularly checking for new subscriptions in the background
-			ThreadPool.QueueUserWorkItem(() => CheckSubscriptions());
+            ThreadPool.QueueUserWorkItem(delegate { CheckSubscriptions(); });
 		}
 
 		private void UpgradeDBv2to3()
@@ -317,8 +317,8 @@ namespace RadioDld
 			My.MyProject.Forms.Status.ProgressBarMax = compressImages.Count;
 			Application.DoEvents();
 
-			using (SQLiteCommand deleteCmd = new SQLiteCommand("delete from images where imgid=@imgid", FetchDbConn)) {
-				using (SQLiteCommand updateProgs = new SQLiteCommand("update programmes set image=@newimgid where image=@oldimgid", FetchDbConn)) {
+			using (SQLiteCommand deleteCmd = new SQLiteCommand("delete from images where imgid=@imgid", FetchDbConn())) {
+				using (SQLiteCommand updateProgs = new SQLiteCommand("update programmes set image=@newimgid where image=@oldimgid", FetchDbConn())) {
 					using (SQLiteCommand updateEps = new SQLiteCommand("update episodes set image=@newimgid where image=@oldimgid", FetchDbConn())) {
 
 						int newImageID = 0;
@@ -336,7 +336,7 @@ namespace RadioDld
 								deleteCmd.Parameters.Add(new SQLiteParameter("@imgid", oldImageID));
 								deleteCmd.ExecuteNonQuery();
 
-								newImageID = StoreImage(image);
+								newImageID = StoreImage(image).Value;
 								Application.DoEvents();
 
 								updateProgs.Parameters.Add(new SQLiteParameter("@oldimgid", oldImageID));
@@ -366,7 +366,7 @@ namespace RadioDld
 
 		public void StartDownload()
 		{
-			ThreadPool.QueueUserWorkItem(() => StartDownloadAsync());
+            ThreadPool.QueueUserWorkItem(delegate { StartDownloadAsync(); });
 		}
 
 		private void StartDownloadAsync()
@@ -459,7 +459,7 @@ namespace RadioDld
 									_with1.ProgInfo = progInfo;
 									_with1.EpisodeInfo = epiEpInfo;
 
-									if (reader.GetInt32(reader.GetOrdinal("status")) == DownloadStatus.Errored) {
+									if ((DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == DownloadStatus.Errored) {
 										ResetDownloadAsync(epid, true);
 									}
 
@@ -486,7 +486,7 @@ namespace RadioDld
 
 				var _with2 = curDldProgData;
 				try {
-					curDldProgData.FinalName = FileUtils.FindFreeSaveFileName(RadioDld.My.Settings.FileNameFormat, curDldProgData.ProgInfo.Name, curDldProgData.EpisodeInfo.Name, curDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder());
+					curDldProgData.FinalName = FileUtils.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, curDldProgData.ProgInfo.Name, curDldProgData.EpisodeInfo.Name, curDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder());
 				} catch (DirectoryNotFoundException dirNotFoundExp) {
 					DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", null);
 					return;
@@ -519,12 +519,12 @@ namespace RadioDld
 
 		public void UpdateProgInfoIfRequired(int progid)
 		{
-			ThreadPool.QueueUserWorkItem(() => UpdateProgInfoIfRequiredAsync(progid));
+            ThreadPool.QueueUserWorkItem(delegate { UpdateProgInfoIfRequiredAsync(progid); });
 		}
 
 		private void UpdateProgInfoIfRequiredAsync(int progid)
 		{
-			Guid providerId = null;
+            Guid providerId = Guid.Empty;
 			string updateExtid = null;
 
 			// Test to see if an update is required, and then free up the database
@@ -620,7 +620,7 @@ namespace RadioDld
 
 		public void EpisodeSetAutoDownload(int epid, bool autoDownload)
 		{
-			ThreadPool.QueueUserWorkItem(() => EpisodeSetAutoDownloadAsync(epid, autoDownload));
+            ThreadPool.QueueUserWorkItem(delegate { EpisodeSetAutoDownloadAsync(epid, autoDownload); });
 		}
 
 		private void EpisodeSetAutoDownloadAsync(int epid, bool autoDownload)
@@ -670,8 +670,8 @@ namespace RadioDld
 			}
 
 			// Work through the list of subscriptions and check for new episodes
-			using (SQLiteCommand progInfCmd = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn)) {
-				using (SQLiteCommand checkCmd = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn)) {
+			using (SQLiteCommand progInfCmd = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn())) {
+				using (SQLiteCommand checkCmd = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn())) {
 					using (SQLiteCommand findCmd = new SQLiteCommand("select epid, autodownload from episodes where progid=@progid and extid=@extid", FetchDbConn())) {
 
 						SQLiteParameter epidParam = new SQLiteParameter("@epid");
@@ -755,7 +755,7 @@ namespace RadioDld
 
 			// Queue the next subscription check.  This is used instead of a loop
 			// as it frees up a slot in the thread pool other actions are waiting.
-			ThreadPool.QueueUserWorkItem(() => CheckSubscriptions());
+            ThreadPool.QueueUserWorkItem(delegate { CheckSubscriptions(); });
 		}
 
 		public bool AddDownload(int epid)
@@ -770,7 +770,7 @@ namespace RadioDld
 				}
 			}
 
-			ThreadPool.QueueUserWorkItem(() => AddDownloadAsync(epid));
+            ThreadPool.QueueUserWorkItem(delegate { AddDownloadAsync(epid); });
 
 			return true;
 		}
@@ -813,7 +813,7 @@ namespace RadioDld
 				return false;
 			}
 
-			ThreadPool.QueueUserWorkItem(() => AddFavouriteAsync(progid));
+            ThreadPool.QueueUserWorkItem(delegate { AddFavouriteAsync(progid); });
 
 			return true;
 		}
@@ -849,7 +849,7 @@ namespace RadioDld
 
 		public void RemoveFavourite(int progid)
 		{
-			ThreadPool.QueueUserWorkItem(() => RemoveFavouriteAsync(progid));
+            ThreadPool.QueueUserWorkItem(delegate { RemoveFavouriteAsync(progid); });
 		}
 
 		private void RemoveFavouriteAsync(int progid)
@@ -881,7 +881,7 @@ namespace RadioDld
 				return false;
 			}
 
-			ThreadPool.QueueUserWorkItem(() => AddSubscriptionAsync(progid));
+            ThreadPool.QueueUserWorkItem(delegate { AddSubscriptionAsync(progid); });
 
 			return true;
 		}
@@ -917,7 +917,7 @@ namespace RadioDld
 
 		public void RemoveSubscription(int progid)
 		{
-			ThreadPool.QueueUserWorkItem(() => RemoveSubscriptionAsync(progid));
+            ThreadPool.QueueUserWorkItem(delegate { RemoveSubscriptionAsync(progid); });
 		}
 
 		private void RemoveSubscriptionAsync(int progid)
@@ -943,7 +943,7 @@ namespace RadioDld
 			}
 		}
 
-		private System.DateTime LatestDownloadDate(int progid)
+		private DateTime? LatestDownloadDate(int progid)
 		{
 			using (SQLiteCommand command = new SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", FetchDbConn())) {
 				command.Parameters.Add(new SQLiteParameter("@progid", progid));
@@ -961,7 +961,7 @@ namespace RadioDld
 
 		public void ResetDownload(int epid)
 		{
-			ThreadPool.QueueUserWorkItem(() => ResetDownloadAsync(epid, false));
+            ThreadPool.QueueUserWorkItem(delegate { ResetDownloadAsync(epid, false); });
 		}
 
 		private void ResetDownloadAsync(int epid, bool auto)
@@ -1004,7 +1004,7 @@ namespace RadioDld
 
 		public void DownloadRemove(int epid)
 		{
-			ThreadPool.QueueUserWorkItem(() => DownloadRemoveAsync(epid, false));
+            ThreadPool.QueueUserWorkItem(delegate { DownloadRemoveAsync(epid, false); });
 		}
 
 		private void DownloadRemoveAsync(int epid, bool auto)
@@ -1063,7 +1063,7 @@ namespace RadioDld
 
 		public void DownloadBumpPlayCount(int epid)
 		{
-			ThreadPool.QueueUserWorkItem(() => DownloadBumpPlayCountAsync(epid));
+            ThreadPool.QueueUserWorkItem(delegate { DownloadBumpPlayCountAsync(epid); });
 		}
 
 		private void DownloadBumpPlayCountAsync(int epid)
@@ -1157,16 +1157,16 @@ namespace RadioDld
 			}
 
 			ErrorReporting report = new ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails);
-			report.SendReport(RadioDld.My.Settings.ErrorReportURL);
+			report.SendReport(Properties.Settings.Default.ErrorReportURL);
 		}
 
 		private void DownloadError(ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
 		{
 			switch (errorType) {
-				case errorType.RemoveFromList:
+				case ErrorType.RemoveFromList:
 					DownloadRemoveAsync(curDldProgData.EpId, true);
 					return;
-				case errorType.UnknownError:
+				case ErrorType.UnknownError:
 					if (furtherDetails == null) {
 						furtherDetails = new List<DldErrorDataItem>();
 					}
@@ -1260,10 +1260,10 @@ namespace RadioDld
 				}
 			}
 
-			if (!string.IsNullOrEmpty(RadioDld.My.Settings.RunAfterCommand)) {
+			if (!string.IsNullOrEmpty(Properties.Settings.Default.RunAfterCommand)) {
 				try {
 					// Environ("comspec") will give the path to cmd.exe or command.com
-					Interaction.Shell("\"" + Interaction.Environ("comspec") + "\" /c " + RadioDld.My.Settings.RunAfterCommand.Replace("%file%", curDldProgData.FinalName), AppWinStyle.NormalNoFocus);
+					Interaction.Shell("\"" + Interaction.Environ("comspec") + "\" /c " + Properties.Settings.Default.RunAfterCommand.Replace("%file%", curDldProgData.FinalName), AppWinStyle.NormalNoFocus);
 				} catch {
 					// Just ignore the error, as it just means that something has gone wrong with the run after command.
 				}
@@ -1405,7 +1405,7 @@ namespace RadioDld
 					My.MyProject.Forms.ReportError.ShowDialog();
 				}
 			} else {
-				reportException.SendReport(RadioDld.My.Settings.ErrorReportURL);
+				reportException.SendReport(Properties.Settings.Default.ErrorReportURL);
 			}
 		}
 
@@ -1426,6 +1426,7 @@ namespace RadioDld
 			}
 
 			int progid = ExtIDToProgID(pluginId, progExtId);
+
 			if (FoundNew != null) {
 				FoundNew(progid);
 			}
@@ -1503,7 +1504,7 @@ namespace RadioDld
 			return true;
 		}
 
-		private int StoreImage(Bitmap image)
+		private int? StoreImage(Bitmap image)
 		{
 			if (image == null) {
 				return null;
@@ -1570,7 +1571,8 @@ namespace RadioDld
 					if (reader.Read()) {
 						return reader.GetInt32(reader.GetOrdinal("progid"));
 					} else {
-						return null;
+                        // TODO: Replace with custom DataNotFound exception
+                        throw new Exception(string.Format("Progid not found for extid {0}", progExtId));
 					}
 				}
 			}
@@ -1671,16 +1673,16 @@ namespace RadioDld
 
 					switch (downloadSortBy) {
 						case DownloadCols.EpisodeName:
-							orderBy = "name" + downloadSortAsc ? string.Empty : " desc";
+							orderBy = "name" + (downloadSortAsc ? string.Empty : " desc");
 							break;
 						case DownloadCols.EpisodeDate:
-							orderBy = "date" + downloadSortAsc ? string.Empty : " desc";
+							orderBy = "date" + (downloadSortAsc ? string.Empty : " desc");
 							break;
 						case DownloadCols.Status:
-							orderBy = "status = 0" + downloadSortAsc ? " desc" : string.Empty + ", status" + downloadSortAsc ? " desc" : string.Empty + ", playcount > 0" + downloadSortAsc ? string.Empty : " desc" + ", date" + downloadSortAsc ? " desc" : string.Empty;
+							orderBy = "status = 0" + (downloadSortAsc ? " desc" : string.Empty) + ", status" + (downloadSortAsc ? " desc" : string.Empty) + ", playcount > 0" + (downloadSortAsc ? string.Empty : " desc") + ", date" + (downloadSortAsc ? " desc" : string.Empty);
 							break;
 						case DownloadCols.Duration:
-							orderBy = "duration" + downloadSortAsc ? string.Empty : " desc";
+							orderBy = "duration" + (downloadSortAsc ? string.Empty : " desc");
 							break;
 						default:
 							throw new InvalidDataException("Invalid column: " + downloadSortBy.ToString());
@@ -1876,7 +1878,7 @@ namespace RadioDld
 						int epid = reader.GetInt32(epidOrdinal);
 
 						if (!filtered || search.DownloadIsVisible(epid)) {
-							downloadList.Add(ReadDownloadData(epid, ref reader));
+							downloadList.Add(ReadDownloadData(epid, reader));
 						}
 					}
 				}
@@ -1892,15 +1894,16 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-						return null;
+                        // TODO: Replace with custom DataNotFound exception
+                        throw new Exception(string.Format("Data not found for download {0}", epid));
 					}
 
-					return ReadDownloadData(epid, ref reader);
+					return ReadDownloadData(epid, reader);
 				}
 			}
 		}
 
-		private DownloadData ReadDownloadData(int epid, ref SQLiteMonDataReader reader)
+		private DownloadData ReadDownloadData(int epid, SQLiteMonDataReader reader)
 		{
 			int descriptionOrdinal = reader.GetOrdinal("description");
 			int filepathOrdinal = reader.GetOrdinal("filepath");
@@ -1943,7 +1946,7 @@ namespace RadioDld
 					int progidOrdinal = reader.GetOrdinal("progid");
 
 					while (reader.Read()) {
-						favouriteList.Add(ReadFavouriteData(reader.GetInt32(progidOrdinal), ref reader));
+						favouriteList.Add(ReadFavouriteData(reader.GetInt32(progidOrdinal), reader));
 					}
 				}
 			}
@@ -1958,15 +1961,16 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-						return null;
+                        // TODO: Replace with custom DataNotFound exception
+                        throw new Exception(string.Format("Data not found for favourite {0}", progid));
 					}
 
-					return ReadFavouriteData(progid, ref reader);
+					return ReadFavouriteData(progid, reader);
 				}
 			}
 		}
 
-		private FavouriteData ReadFavouriteData(int progid, ref SQLiteMonDataReader reader)
+		private FavouriteData ReadFavouriteData(int progid, SQLiteMonDataReader reader)
 		{
 			int descriptionOrdinal = reader.GetOrdinal("description");
 
@@ -1996,7 +2000,8 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-						return null;
+                        // TODO: Replace with custom DataNotFound exception
+                        throw new Exception(string.Format("Data not found for subscription {0}", progid));
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2028,7 +2033,8 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-						return null;
+                        // TODO: Replace with custom DataNotFound exception
+                        throw new Exception(string.Format("Data not found for episode {0}", epid));
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2058,7 +2064,8 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-						return null;
+                        // TODO: Replace with custom DataNotFound exception
+                        throw new Exception(string.Format("Data not found for programme {0}", progid));
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");

@@ -116,7 +116,7 @@ namespace RadioDld
 			// Create a picturebox to display the search icon and cancel 'button'
 			button = new PictureBox();
 			button.BackColor = Color.Transparent;
-			button.Image = RadioDld.My.Resources.search_icon;
+            button.Image = Properties.Resources.search_icon;
 			button.SizeMode = PictureBoxSizeMode.AutoSize;
 			this.Controls.Add(button);
 
@@ -235,7 +235,7 @@ namespace RadioDld
 			buttonHover = true;
 
 			if (this.Text != string.Empty) {
-				button.Image = RadioDld.My.Resources.search_close_hover;
+				button.Image = Properties.Resources.search_close_hover;
 			}
 
 			textBox_MouseEnter(sender, e);
@@ -246,7 +246,7 @@ namespace RadioDld
 			buttonHover = false;
 
 			if (this.Text != string.Empty) {
-				button.Image = RadioDld.My.Resources.search_close;
+				button.Image = Properties.Resources.search_close;
 			}
 
 			textBox_MouseLeave(sender, e);
@@ -255,14 +255,14 @@ namespace RadioDld
 		private void button_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
 			if (this.Text != string.Empty) {
-				button.Image = RadioDld.My.Resources.search_close_pressed;
+				button.Image = Properties.Resources.search_close_pressed;
 			}
 		}
 
 		private void button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
 			if (this.Text != string.Empty) {
-				button.Image = RadioDld.My.Resources.search_close_hover;
+				button.Image = Properties.Resources.search_close_hover;
 			}
 		}
 
@@ -310,12 +310,12 @@ namespace RadioDld
 
 			// Update the displayed icon
 			if (this.Text == string.Empty) {
-				button.Image = RadioDld.My.Resources.search_icon;
+				button.Image = Properties.Resources.search_icon;
 			} else {
 				if (buttonHover) {
-					button.Image = RadioDld.My.Resources.search_close_hover;
+					button.Image = Properties.Resources.search_close_hover;
 				} else {
-					button.Image = RadioDld.My.Resources.search_close;
+					button.Image = Properties.Resources.search_close;
 				}
 			}
 		}

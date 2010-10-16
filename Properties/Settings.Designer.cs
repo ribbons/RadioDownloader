@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace My {
+namespace RadioDld.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

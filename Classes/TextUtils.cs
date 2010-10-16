@@ -48,12 +48,12 @@ namespace RadioDld
 			if (duration != 0) {
 				readable += Environment.NewLine + "Duration: ";
 
-				int mins = Convert.ToInt32(Math.Round(duration / 60, 0));
+				int mins = Convert.ToInt32(Math.Round((double)(duration / 60), 0));
 				int hours = mins / 60;
 				mins = mins % 60;
 
 				if (hours > 0) {
-					readable += Convert.ToString(hours) + "hr" + hours == 1 ? "" : "s";
+					readable += Convert.ToString(hours) + "hr" + (hours == 1 ? "" : "s");
 				}
 
 				if (hours > 0 & mins > 0) {

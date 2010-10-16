@@ -295,12 +295,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
-      <CustomToolNamespace>My.Resources</CustomToolNamespace>
-      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Resources\overlay icons\error.ico" />
     <None Include="Resources\overlay icons\downloading.ico" />
     <None Include="Resources\toolbar\remove favourite_16.png" />
@@ -359,10 +359,8 @@
     <None Include="Resources\toolbar\back_24.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
-      <CustomToolNamespace>My</CustomToolNamespace>
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>

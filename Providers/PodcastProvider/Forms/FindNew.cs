@@ -92,7 +92,7 @@ namespace PodcastProvider
 		private void txtFeedURL_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
 		{
 			try {
-				if (Convert.ToInt32(e.KeyChar) == Keys.Enter) {
+				if (e.KeyChar == (char)Keys.Enter) {
 					if (cmdViewEps.Enabled) {
 						cmdViewEps_Click(sender, e);
 					}

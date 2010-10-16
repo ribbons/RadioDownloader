@@ -287,8 +287,10 @@ ref DTTOPTS pOptions);
 			info.biBitCount = 32;
 			info.biCompression = BI_RGB;
 
+            IntPtr bits = IntPtr.Zero;
+
 			// Create the top-down DIB
-			IntPtr dib = CreateDIBSection(renderHdc, ref info, 0, ref IntPtr.Zero, IntPtr.Zero, 0);
+            IntPtr dib = CreateDIBSection(renderHdc, ref info, 0, ref bits, IntPtr.Zero, 0);
 
 			// NULL Pointer
 			if (dib == IntPtr.Zero) {
@@ -404,7 +406,7 @@ ref DTTOPTS pOptions);
 				// Visual styles are enabled, so draw the correct background behind the toolbars
 
 				Bitmap background = new Bitmap(strip.Width, strip.Height);
-				Graphics graphics = graphics.FromImage(background);
+				Graphics graphics = Graphics.FromImage(background);
 
 				try {
 					VisualStyleRenderer rebar = new VisualStyleRenderer("Rebar", 0, 0);
@@ -457,10 +459,9 @@ ref DTTOPTS pOptions);
 			GC.SuppressFinalize(this);
 		}
 
-		protected override void Finalize()
+		~TabBarRenderer()
 		{
 			Dispose(false);
-			base.Finalize();
 		}
 	}
 }

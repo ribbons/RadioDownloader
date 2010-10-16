@@ -33,12 +33,13 @@ namespace RadioDld
 			string functionReturnValue = null;
 			const string defaultFolder = "Downloaded Radio";
 
-			if (!string.IsNullOrEmpty(RadioDld.My.Settings.SaveFolder)) {
-				if (new DirectoryInfo(RadioDld.My.Settings.SaveFolder).Exists == false) {
+			if (!string.IsNullOrEmpty(Properties.Settings.Default.SaveFolder)) {
+                if (new DirectoryInfo(Properties.Settings.Default.SaveFolder).Exists == false)
+                {
 					throw new DirectoryNotFoundException();
 				}
 
-				return RadioDld.My.Settings.SaveFolder;
+				return Properties.Settings.Default.SaveFolder;
 			}
 
 			try {
@@ -57,7 +58,7 @@ namespace RadioDld
 			return new DirectoryInfo(RadioDld.My.MyProject.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData).Parent.FullName;
 		}
 
-		public static string FindFreeSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime episodeDate, string baseSavePath)
+		public static string FindFreeSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime? episodeDate, string baseSavePath)
 		{
 			string saveName = CreateSaveFileName(formatString, programmeName, episodeName, episodeDate);
 			string savePath = Path.Combine(baseSavePath, saveName);
@@ -74,7 +75,7 @@ namespace RadioDld
 			return savePath;
 		}
 
-		public static string CreateSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime episodeDate)
+		public static string CreateSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime? episodeDate)
 		{
 			if (formatString == string.Empty) {
 				// The format string is an empty string, so the output must be an empty string
@@ -82,6 +83,12 @@ namespace RadioDld
 			}
 
 			string fileName = formatString;
+            DateTime substDate = DateTime.Now;
+
+            if (episodeDate != null)
+            {
+                substDate = episodeDate.Value;
+            }
 
 			// Convert %title% -> %epname% for backwards compatability
 			fileName = fileName.Replace("%title%", "%epname%");
@@ -89,18 +96,18 @@ namespace RadioDld
 			// Make variable substitutions
 			fileName = fileName.Replace("%progname%", programmeName);
 			fileName = fileName.Replace("%epname%", episodeName);
-			fileName = fileName.Replace("%day%", episodeDate.ToString("dd", CultureInfo.CurrentCulture));
-			fileName = fileName.Replace("%month%", episodeDate.ToString("MM", CultureInfo.CurrentCulture));
-			fileName = fileName.Replace("%shortmonthname%", episodeDate.ToString("MMM", CultureInfo.CurrentCulture));
-			fileName = fileName.Replace("%monthname%", episodeDate.ToString("MMMM", CultureInfo.CurrentCulture));
-			fileName = fileName.Replace("%year%", episodeDate.ToString("yy", CultureInfo.CurrentCulture));
-			fileName = fileName.Replace("%longyear%", episodeDate.ToString("yyyy", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%day%", substDate.ToString("dd", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%month%", substDate.ToString("MM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%shortmonthname%", substDate.ToString("MMM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%monthname%", substDate.ToString("MMMM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%year%", substDate.ToString("yy", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%longyear%", substDate.ToString("yyyy", CultureInfo.CurrentCulture));
 
 			// Replace invalid file name characters with spaces (except for directory separators
 			// as this then allows the flexibility of storing the downloads in subdirectories)
 			foreach (char removeChar in Path.GetInvalidFileNameChars()) {
 				if (removeChar != Path.DirectorySeparatorChar) {
-					fileName = Strings.Replace(fileName, removeChar, " ");
+                    fileName = fileName.Replace(removeChar, ' ');
 				}
 			}
 

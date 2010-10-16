@@ -32,10 +32,10 @@ namespace RadioDld
 
 		private const int TB_SETBUTTONINFO = WM_USER + 64;
 		// TBBUTTONINFO Mask Flags
-		private const int TBIF_STYLE = 0x8;
+		private const uint TBIF_STYLE = 0x8;
 		private const int TBIF_SIZE = 0x40;
 
-		private const long TBIF_BYINDEX = 0x80000000;
+        private const uint TBIF_BYINDEX = 0x80000000;
 		// TBBUTTONINFO Style Flags
 		private const int BTNS_AUTOSIZE = 0x10;
 
@@ -45,7 +45,7 @@ namespace RadioDld
 		private struct TBBUTTONINFO
 		{
 			public int cbSize;
-			public int dwMask;
+			public uint dwMask;
 			public int idCommand;
 			public int iImage;
 			public byte fsState;
@@ -77,7 +77,7 @@ namespace RadioDld
 
 			var _with1 = buttonInfo;
 			_with1.cbSize = Marshal.SizeOf(buttonInfo);
-			_with1.dwMask = TBIF_STYLE | TBIF_BYINDEX;
+            _with1.dwMask = TBIF_STYLE | TBIF_BYINDEX;
 			_with1.fsStyle = BTNS_WHOLEDROPDOWN | BTNS_AUTOSIZE;
 
 			SendMessage(this.Handle, TB_SETBUTTONINFO, (IntPtr)this.Buttons.IndexOf(button), ref buttonInfo);
