@@ -231,7 +231,7 @@ namespace RadioDld
 			if (fileExits.Exists == false) {
 				try {
 					System.IO.File.Copy(Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"));
-				} catch (FileNotFoundException fileNotFoundExp) {
+				} catch (FileNotFoundException) {
 					Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
 					this.Close();
 					this.Dispose();
@@ -242,12 +242,12 @@ namespace RadioDld
 				// and then make sure that the current db's structure matches it.
 				try {
 					System.IO.File.Copy(Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), true);
-				} catch (FileNotFoundException fileNotFoundExp) {
+				} catch (FileNotFoundException) {
 					Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
 					this.Close();
 					this.Dispose();
 					return;
-				} catch (UnauthorizedAccessException unauthorizedAccessExp) {
+				} catch (UnauthorizedAccessException) {
 					Interaction.MsgBox("Access was denied when attempting to copy the Radio Downloader template database." + Environment.NewLine + Environment.NewLine + "Check that you have read access to '" + Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db") + "' and write access to '" + Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db") + "'.", MsgBoxStyle.Critical);
 					this.Close();
 					this.Dispose();
@@ -810,7 +810,7 @@ namespace RadioDld
 
 			try {
 				Directory.Delete(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"), true);
-			} catch (IOException exp) {
+			} catch (IOException) {
 				// Ignore an IOException - this just means that a file in the temp folder is still in use.
 			}
 		}
@@ -1523,11 +1523,11 @@ namespace RadioDld
 				if (fileExists) {
 					try {
 						File.Delete(info.downloadPath);
-					} catch (IOException ioExp) {
+					} catch (IOException) {
 						if (Interaction.MsgBox("There was a problem deleting the audio file for this episode, as the file is in use by another application." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation | MsgBoxStyle.YesNo) == MsgBoxResult.No) {
 							return;
 						}
-					} catch (UnauthorizedAccessException unauthAccessExp) {
+					} catch (UnauthorizedAccessException) {
 						if (Interaction.MsgBox("There was a problem deleting the audio file for this episode, as the file is either read-only or you do not have the permissions required." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation | MsgBoxStyle.YesNo) == MsgBoxResult.No) {
 							return;
 						}
@@ -1842,7 +1842,7 @@ namespace RadioDld
 						VisualStyleRenderer vsrRebar = new VisualStyleRenderer("Rebar", 0, 0);
 						vsrRebar.DrawBackground(graGraphics, new Rectangle(0, 0, tblToolbars.Width, tblToolbars.Height));
 						tblToolbars.BackgroundImage = bmpBackground;
-					} catch (ArgumentException expArgument) {
+					} catch (ArgumentException) {
 						// The 'Rebar' background image style did not exist, so don't try to draw it.
 					}
 				}

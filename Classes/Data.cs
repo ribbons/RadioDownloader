@@ -487,7 +487,7 @@ namespace RadioDld
 				var _with2 = curDldProgData;
 				try {
 					curDldProgData.FinalName = FileUtils.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, curDldProgData.ProgInfo.Name, curDldProgData.EpisodeInfo.Name, curDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder());
-				} catch (DirectoryNotFoundException dirNotFoundExp) {
+				} catch (DirectoryNotFoundException) {
 					DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", null);
 					return;
 				} catch (IOException ioExp) {
@@ -496,7 +496,7 @@ namespace RadioDld
 				}
 
 				DownloadPluginInst.DownloadProgramme(_with2.ProgExtId, _with2.EpisodeExtId, _with2.ProgInfo, _with2.EpisodeInfo, _with2.FinalName);
-			} catch (ThreadAbortException threadAbortExp) {
+			} catch (ThreadAbortException) {
 			// The download has been aborted, so ignore the exception
 			} catch (DownloadException downloadExp) {
 				DownloadError(downloadExp.TypeOfError, downloadExp.Message, downloadExp.ErrorExtraDetails);
@@ -702,7 +702,7 @@ namespace RadioDld
 
 							try {
 								episodeExtIds = GetAvailableEpisodes(providerId, progExtId);
-							} catch (Exception unhandled) {
+							} catch (Exception) {
 								// Catch any unhandled provider exceptions
 								continue;
 							}
@@ -1145,9 +1145,9 @@ namespace RadioDld
 								break;
 						}
 					}
-				} catch (InvalidOperationException invalidOperationExp) {
+				} catch (InvalidOperationException) {
 				// Do nothing, and fall back to reporting all the details as one string
-				} catch (InvalidCastException invalidCastExp) {
+				} catch (InvalidCastException) {
 					// Do nothing, and fall back to reporting all the details as one string
 				}
 			}
@@ -1702,7 +1702,7 @@ namespace RadioDld
 
 				try {
 					return downloadSortCache[epid1] - downloadSortCache[epid2];
-				} catch (KeyNotFoundException keyNotFoundExp) {
+				} catch (KeyNotFoundException) {
 					// One of the entries has been removed from the database, but not yet from the list
 					return 0;
 				}

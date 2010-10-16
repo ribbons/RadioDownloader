@@ -170,7 +170,7 @@ ref DTTOPTS pOptions);
 					} else {
 						navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_NORMAL);
 					}
-				} catch (ArgumentException argumentExp) {
+				} catch (ArgumentException) {
 					// The element is not defined in the current theme
 				}
 
@@ -412,7 +412,7 @@ ref DTTOPTS pOptions);
 					VisualStyleRenderer rebar = new VisualStyleRenderer("Rebar", 0, 0);
 					rebar.DrawBackground(graphics, new Rectangle(0, 0, strip.Width, strip.Height));
 					toolbarColour = background.GetPixel(active.Bounds.Left + Convert.ToInt32(active.Width / 2), 0);
-				} catch (ArgumentException argumentExp) {
+				} catch (ArgumentException) {
 					// The 'Rebar' background image style did not exist
 				}
 			}

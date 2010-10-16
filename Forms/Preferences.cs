@@ -86,7 +86,7 @@ namespace RadioDld
 
 			try {
 				txtSaveIn.Text = FileUtils.GetSaveFolder();
-			} catch (DirectoryNotFoundException dirNotFoundExp) {
+			} catch (DirectoryNotFoundException) {
 				txtSaveIn.Text = Properties.Settings.Default.SaveFolder;
 			}
 

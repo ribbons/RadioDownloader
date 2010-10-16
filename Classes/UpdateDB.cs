@@ -119,7 +119,7 @@ namespace RadioDld
 										using (SQLiteCommand updateCommand = new SQLiteCommand("drop table [" + specName + "_old]", updateConn, trans)) {
 											updateCommand.ExecuteNonQuery();
 										}
-									} catch (SQLiteException sqliteExp) {
+									} catch (SQLiteException) {
 										trans.Rollback();
 										throw;
 									}

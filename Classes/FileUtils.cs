@@ -44,7 +44,7 @@ namespace RadioDld
 
 			try {
 				functionReturnValue = Path.Combine(RadioDld.My.MyProject.Computer.FileSystem.SpecialDirectories.MyDocuments, defaultFolder);
-			} catch (DirectoryNotFoundException dirNotFoundExp) {
+			} catch (DirectoryNotFoundException) {
 				// The user's Documents folder could not be found, so fall back to a folder under the system drive
 				functionReturnValue = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), defaultFolder);
 			}

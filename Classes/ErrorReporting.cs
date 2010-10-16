@@ -157,9 +157,9 @@ namespace RadioDld
 										fields.Add(fieldName, valueStringWriter.ToString());
 
 										continue;
-									} catch (NotSupportedException notSupported) {
+									} catch (NotSupportedException) {
 									// Not possible to serialize - do nothing & fall through to the ToString code
-									} catch (InvalidOperationException invalidOperation) {
+									} catch (InvalidOperationException) {
 										// Problem serializing the object - do nothing & fall through to the ToString code
 									}
 								}

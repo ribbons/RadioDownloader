@@ -44,7 +44,7 @@ namespace PodcastProvider
 
 				try {
 					feedUrl = new Uri(txtFeedURL.Text);
-				} catch (UriFormatException argumentExp) {
+				} catch (UriFormatException) {
 					lblResult.Text = "The specified URL was not valid.";
 					lblResult.ForeColor = System.Drawing.Color.Red;
 					cmdViewEps.Enabled = true;
@@ -54,12 +54,12 @@ namespace PodcastProvider
 				// Test that we can load something from the URL, and it is valid XML
 				try {
 					xmlRSS = clsPluginInst.LoadFeedXml(feedUrl);
-				} catch (WebException expWeb) {
+				} catch (WebException) {
 					lblResult.Text = "There was a problem requesting the feed from the specified URL.";
 					lblResult.ForeColor = System.Drawing.Color.Red;
 					cmdViewEps.Enabled = true;
 					return;
-				} catch (XmlException expXML) {
+				} catch (XmlException) {
 					lblResult.Text = "The data returned from the specified URL was not a valid RSS feed.";
 					lblResult.ForeColor = System.Drawing.Color.Red;
 					cmdViewEps.Enabled = true;

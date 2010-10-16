@@ -97,7 +97,7 @@ string pszTip);
 		{
 			try {
 				taskBarListInst.SetOverlayIcon(parentWin.Handle, icon == null ? IntPtr.Zero : icon.Handle, description);
-			} catch (COMException comExp) {
+			} catch (COMException) {
 				// Ignore COMExceptions, as they seem to be erroneously thrown sometimes when calling SetOverlayIcon
 			}
 		}

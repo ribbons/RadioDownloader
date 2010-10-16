@@ -99,9 +99,9 @@ namespace PodcastProvider
 
 			try {
 				xmlRSS = LoadFeedXml(new Uri(progExtId));
-			} catch (WebException expWeb) {
+			} catch (WebException) {
 				return getProgInfo;
-			} catch (XmlException expXML) {
+			} catch (XmlException) {
 				return getProgInfo;
 			}
 
@@ -138,9 +138,9 @@ namespace PodcastProvider
 
 			try {
 				xmlRSS = LoadFeedXml(new Uri(progExtId));
-			} catch (WebException expWeb) {
+			} catch (WebException) {
 				return episodeIDs.ToArray();
-			} catch (XmlException expXML) {
+			} catch (XmlException) {
 				return episodeIDs.ToArray();
 			}
 
@@ -174,9 +174,9 @@ namespace PodcastProvider
 
 			try {
 				xmlRSS = LoadFeedXml(new Uri(progExtId));
-			} catch (WebException expWeb) {
+			} catch (WebException) {
 				return episodeInfoReturn;
-			} catch (XmlException expXML) {
+			} catch (XmlException) {
 				return episodeInfoReturn;
 			}
 
@@ -216,7 +216,7 @@ namespace PodcastProvider
 
 					try {
 						Uri uriTestValid = new Uri(xmlUrl.Value);
-					} catch (UriFormatException expUriFormat) {
+					} catch (UriFormatException) {
 						// The enclosure url is empty or malformed, so return false for success
 						return episodeInfoReturn;
 					}
@@ -314,7 +314,7 @@ namespace PodcastProvider
 											int intValue = int.Parse(strZone, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
 											tspOffset = new TimeSpan(intValue / 100, intValue % 100, 0);
 											strPubDate = strZoneFree;
-										} catch (FormatException expFormat) {
+										} catch (FormatException) {
 											// The last part of the date was not a time offset
 										}
 									}
@@ -343,7 +343,7 @@ namespace PodcastProvider
 
 						try {
 							episodeInfoReturn.EpisodeInfo.Date = System.DateTime.Parse(strPubDate, null, DateTimeStyles.AssumeUniversal);
-						} catch (FormatException expFormat) {
+						} catch (FormatException) {
 							episodeInfoReturn.EpisodeInfo.Date = DateAndTime.Now;
 							tspOffset = new TimeSpan(0);
 						}

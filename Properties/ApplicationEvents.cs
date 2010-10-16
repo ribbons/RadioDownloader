@@ -68,7 +68,7 @@ namespace RadioDld.My
 
 			try {
 				unhandledExp = (Exception)e.ExceptionObject;
-			} catch (InvalidCastException classCastExp) {
+			} catch (InvalidCastException) {
 				// The ExceptionObject isn't a child of System.Exception, so we don't know
 				// how to report it.  Instead, let the standard .net dialog appear.
 				return;

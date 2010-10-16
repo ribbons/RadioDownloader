@@ -46,7 +46,7 @@ namespace RadioDld
 
 			try {
 				versionInfo = checkUpdate.DownloadString(versionInfoURL);
-			} catch (WebException webExp) {
+			} catch (WebException) {
 				// Temporary problem downloading the information, try again later
 				return false;
 			}

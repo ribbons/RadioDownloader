@@ -158,7 +158,7 @@ namespace RadioDld
 					try {
 						RunQuery(value);
 						_downloadQuery = value;
-					} catch (SQLiteException sqliteExp) {
+					} catch (SQLiteException) {
 						// The search query is badly formed, so keep the old query
 					}
 				}
