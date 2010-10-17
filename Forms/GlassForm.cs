@@ -77,7 +77,7 @@ namespace RadioDld
 					DefWndProc(ref m);
 
 					if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported && glassSet) {
-						if (Convert.ToInt32(m.Result) == HTCLIENT) {
+						if ((int)m.Result == HTCLIENT) {
 							// Pretend that the mouse was over the title bar, making the form draggable
 							m.Result = new IntPtr(HTCAPTION);
 							return;

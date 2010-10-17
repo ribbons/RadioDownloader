@@ -47,7 +47,7 @@ namespace RadioDld
 					string[] stringCols = Strings.Split(value, ",");
 
 					foreach (string column in stringCols) {
-						columnOrder.Add(Convert.ToInt32(column));
+                        columnOrder.Add(Convert.ToInt32(column, CultureInfo.InvariantCulture));
 					}
 				}
 			}

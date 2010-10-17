@@ -449,12 +449,12 @@ namespace RadioDld
 
 		private void lstEpisodes_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e)
 		{
-			progData.EpisodeSetAutoDownload(Convert.ToInt32(lstEpisodes.Items[e.Index].Name), e.NewValue == CheckState.Checked);
+            progData.EpisodeSetAutoDownload(Convert.ToInt32(lstEpisodes.Items[e.Index].Name, CultureInfo.InvariantCulture), e.NewValue == CheckState.Checked);
 		}
 
 		private void ShowEpisodeInfo(int epid)
 		{
-			Data.ProgrammeData progInfo = progData.FetchProgrammeData(Convert.ToInt32(view.CurrentViewData));
+			Data.ProgrammeData progInfo = progData.FetchProgrammeData((int)view.CurrentViewData);
 			Data.EpisodeData epInfo = progData.FetchEpisodeData(epid);
 			string infoText = "";
 
@@ -488,7 +488,7 @@ namespace RadioDld
 		private void lstEpisodes_SelectedIndexChanged(object sender, System.EventArgs e)
 		{
 			if (lstEpisodes.SelectedItems.Count > 0) {
-				int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name);
+                int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 				ShowEpisodeInfo(epid);
 			} else {
 				SetViewDefaults();
@@ -499,7 +499,7 @@ namespace RadioDld
 		private void lstFavourites_SelectedIndexChanged(object sender, System.EventArgs e)
 		{
 			if (lstFavourites.SelectedItems.Count > 0) {
-				int progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name);
+                int progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
 				progData.UpdateProgInfoIfRequired(progid);
 				ShowFavouriteInfo(progid);
@@ -529,7 +529,7 @@ namespace RadioDld
 		private void lstSubscribed_SelectedIndexChanged(System.Object sender, System.EventArgs e)
 		{
 			if (lstSubscribed.SelectedItems.Count > 0) {
-				int progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name);
+                int progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
 				progData.UpdateProgInfoIfRequired(progid);
 				ShowSubscriptionInfo(progid);
@@ -589,7 +589,7 @@ namespace RadioDld
 
 			// Fetch the pre-reorder column order
 			foreach (ColumnHeader col in lstDownloads.Columns) {
-				oldOrder[col.DisplayIndex] = Convert.ToInt32(downloadColOrder[col.Index]).ToString(CultureInfo.InvariantCulture);
+                oldOrder[col.DisplayIndex] = ((int)downloadColOrder[col.Index]).ToString(CultureInfo.InvariantCulture);
 			}
 
 			List<string> newOrder = new List<string>(oldOrder);
@@ -646,7 +646,7 @@ namespace RadioDld
 		private void lstDownloads_SelectedIndexChanged(System.Object sender, System.EventArgs e)
 		{
 			if (lstDownloads.SelectedItems.Count > 0) {
-				ShowDownloadInfo(Convert.ToInt32(lstDownloads.SelectedItems[0].Name));
+                ShowDownloadInfo(Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
 			} else {
 				SetViewDefaults();
 				// Revert back to downloads view default sidebar and toolbar
@@ -905,13 +905,13 @@ namespace RadioDld
 			}
 
 			if (view.CurrentView == ViewState.View.ProgEpisodes) {
-				if (Convert.ToInt32(view.CurrentViewData) == progid) {
+				if ((int)view.CurrentViewData == progid) {
 					if (lstEpisodes.SelectedItems.Count == 0) {
 						// Update the displayed programme information
 						ShowProgrammeInfo(progid);
 					} else {
 						// Update the displayed episode information (in case the subscription status has changed)
-						int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name);
+                        int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 						ShowEpisodeInfo(epid);
 					}
 				}
@@ -920,7 +920,7 @@ namespace RadioDld
 
 		private void ShowProgrammeInfo(int progid)
 		{
-			Data.ProgrammeData progInfo = progData.FetchProgrammeData(Convert.ToInt32(view.CurrentViewData));
+			Data.ProgrammeData progInfo = progData.FetchProgrammeData((int)view.CurrentViewData);
 
 			List<ToolBarButton> buttons = new List<ToolBarButton>();
 
@@ -1236,7 +1236,7 @@ namespace RadioDld
 				return;
 			}
 
-			ListViewItem item = lstDownloads.Items[Convert.ToString(epid)];
+            ListViewItem item = lstDownloads.Items[Convert.ToString(epid, CultureInfo.InvariantCulture)];
 
 			if (item == null) {
 				return;
@@ -1412,10 +1412,10 @@ namespace RadioDld
 
 			switch (view.CurrentView) {
 				case ViewState.View.ProgEpisodes:
-					progid = Convert.ToInt32(view.CurrentViewData);
+					progid = (int)view.CurrentViewData;
 					break;
 				case ViewState.View.Subscriptions:
-					progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name);
+					progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 					break;
 			}
 
@@ -1432,13 +1432,13 @@ namespace RadioDld
 
 			switch (view.CurrentView) {
 				case ViewState.View.ProgEpisodes:
-					progid = Convert.ToInt32(view.CurrentViewData);
+					progid = (int)view.CurrentViewData;
 					break;
 				case ViewState.View.Favourites:
-					progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name);
+					progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 					break;
 				case ViewState.View.Subscriptions:
-					progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name);
+                    progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 					break;
 			}
 
@@ -1453,10 +1453,10 @@ namespace RadioDld
 
 			switch (view.CurrentView) {
 				case ViewState.View.ProgEpisodes:
-					progid = Convert.ToInt32(view.CurrentViewData);
+					progid = (int)view.CurrentViewData;
 					break;
 				case ViewState.View.Favourites:
-					progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name);
+                    progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 					break;
 			}
 
@@ -1473,13 +1473,13 @@ namespace RadioDld
 
 			switch (view.CurrentView) {
 				case ViewState.View.ProgEpisodes:
-					progid = Convert.ToInt32(view.CurrentViewData);
+					progid = (int)view.CurrentViewData;
 					break;
 				case ViewState.View.Favourites:
-					progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name);
+                    progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 					break;
 				case ViewState.View.Subscriptions:
-					progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name);
+                    progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 					break;
 			}
 
@@ -1490,7 +1490,7 @@ namespace RadioDld
 
 		private void tbtCancel_Click()
 		{
-			int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name);
+            int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
 			if (Interaction.MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes) {
 				progData.DownloadRemove(epid);
@@ -1499,7 +1499,7 @@ namespace RadioDld
 
 		private void tbtPlay_Click()
 		{
-			int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name);
+            int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 			Data.DownloadData info = progData.FetchDownloadData(epid);
 
 			if (info.status == Data.DownloadStatus.Downloaded) {
@@ -1514,7 +1514,7 @@ namespace RadioDld
 
 		private void tbtDelete_Click()
 		{
-			int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name);
+            int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 			Data.DownloadData info = progData.FetchDownloadData(epid);
 
 			bool fileExists = File.Exists(info.downloadPath);
@@ -1545,12 +1545,12 @@ namespace RadioDld
 
 		private void tbtRetry_Click()
 		{
-			progData.ResetDownload(Convert.ToInt32(lstDownloads.SelectedItems[0].Name));
+            progData.ResetDownload(Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
 		}
 
 		private void tbtDownload_Click()
 		{
-			int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name);
+            int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
 			if (progData.AddDownload(epid)) {
 				view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
@@ -1565,10 +1565,10 @@ namespace RadioDld
 
 			switch (view.CurrentView) {
 				case ViewState.View.Favourites:
-					progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name);
+                    progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 					break;
 				case ViewState.View.Subscriptions:
-					progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name);
+                    progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 					break;
 			}
 
@@ -1577,7 +1577,7 @@ namespace RadioDld
 
 		private void tbtReportError_Click()
 		{
-			int episodeID = Convert.ToInt32(lstDownloads.SelectedItems[0].Name);
+            int episodeID = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 			progData.DownloadReportError(episodeID);
 		}
 
@@ -1691,14 +1691,14 @@ namespace RadioDld
 					Application.DoEvents();
 					// Give any queued BeginInvoke calls a chance to be processed
 					lstEpisodes.Items.Clear();
-					progData.InitEpisodeList(Convert.ToInt32(data));
+					progData.InitEpisodeList((int)data);
 					break;
 				case ViewState.View.Favourites:
 					lstFavourites.Visible = true;
 					lstFavourites.Focus();
 
 					if (lstFavourites.SelectedItems.Count > 0) {
-						ShowFavouriteInfo(Convert.ToInt32(lstFavourites.SelectedItems[0].Name));
+                        ShowFavouriteInfo(Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture));
 					}
 					break;
 				case ViewState.View.Subscriptions:
@@ -1706,14 +1706,14 @@ namespace RadioDld
 					lstSubscribed.Focus();
 
 					if (lstSubscribed.SelectedItems.Count > 0) {
-						ShowSubscriptionInfo(Convert.ToInt32(lstSubscribed.SelectedItems[0].Name));
+                        ShowSubscriptionInfo(Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture));
 					}
 					break;
 				case ViewState.View.Downloads:
 					if (data == null) {
 						ttxSearch.Text = string.Empty;
 					} else {
-						ttxSearch.Text = Convert.ToString(data);
+						ttxSearch.Text = (string)data;
 						PerformSearch(view, ttxSearch.Text);
 					}
 
@@ -1722,7 +1722,7 @@ namespace RadioDld
 					lstDownloads.Focus();
 
 					if (lstDownloads.SelectedItems.Count > 0) {
-						ShowDownloadInfo(Convert.ToInt32(lstDownloads.SelectedItems[0].Name));
+                        ShowDownloadInfo(Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
 					}
 					break;
 			}
@@ -1733,7 +1733,7 @@ namespace RadioDld
 			switch (view.CurrentView) {
 				case ViewState.View.FindNewChooseProvider:
 					SetToolbarButtons(new ToolBarButton[] {});
-					SetSideBar(Convert.ToString(lstProviders.Items.Count) + " provider" + (lstProviders.Items.Count == 1 ? "" : "s"), "", null);
+					SetSideBar(Convert.ToString(lstProviders.Items.Count, CultureInfo.CurrentCulture) + " provider" + (lstProviders.Items.Count == 1 ? "" : "s"), "", null);
 					break;
 				case ViewState.View.FindNewProviderForm:
 					FindNewViewData FindViewData = (FindNewViewData)view.CurrentViewData;
@@ -1741,36 +1741,35 @@ namespace RadioDld
 					ShowProviderInfo(FindViewData.ProviderID);
 					break;
 				case ViewState.View.ProgEpisodes:
-					int progid = Convert.ToInt32(view.CurrentViewData);
-					ShowProgrammeInfo(progid);
+                    ShowProgrammeInfo((int)view.CurrentViewData);
 					break;
 				case ViewState.View.Favourites:
 					SetToolbarButtons(new ToolBarButton[] {});
-					SetSideBar(Convert.ToString(lstFavourites.Items.Count) + " favourite" + (lstFavourites.Items.Count == 1 ? "" : "s"), "", null);
+					SetSideBar(Convert.ToString(lstFavourites.Items.Count, CultureInfo.CurrentCulture) + " favourite" + (lstFavourites.Items.Count == 1 ? "" : "s"), "", null);
 					break;
 				case ViewState.View.Subscriptions:
 					SetToolbarButtons(new ToolBarButton[] {});
-					SetSideBar(Convert.ToString(lstSubscribed.Items.Count) + " subscription" + (lstSubscribed.Items.Count == 1 ? "" : "s"), "", null);
+					SetSideBar(Convert.ToString(lstSubscribed.Items.Count, CultureInfo.CurrentCulture) + " subscription" + (lstSubscribed.Items.Count == 1 ? "" : "s"), "", null);
 					break;
 				case ViewState.View.Downloads:
                     SetToolbarButtons(new ToolBarButton[] {tbtCleanUp});
 
 					if (progData.DownloadQuery != string.Empty) {
-                        SetSideBar(Convert.ToString(lstDownloads.Items.Count) + " result" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
+                        SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " result" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
 					} else {
 						string description = string.Empty;
 						int newCount = progData.CountDownloadsNew();
 						int errorCount = progData.CountDownloadsErrored();
 
 						if (newCount > 0) {
-							description += "Newly downloaded: " + Convert.ToString(newCount) + Environment.NewLine;
+                            description += "Newly downloaded: " + Convert.ToString(newCount, CultureInfo.CurrentCulture) + Environment.NewLine;
 						}
 
 						if (errorCount > 0) {
-							description += "Errored: " + Convert.ToString(errorCount);
+							description += "Errored: " + Convert.ToString(errorCount, CultureInfo.CurrentCulture);
 						}
 
-						SetSideBar(Convert.ToString(lstDownloads.Items.Count) + " download" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), description, null);
+						SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " download" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), description, null);
 					}
 					break;
 			}
@@ -1955,7 +1954,7 @@ namespace RadioDld
 				string[] columns = Strings.Split(Properties.Settings.Default.DownloadCols, ",");
 
 				foreach (string column in columns) {
-					int colVal = int.Parse(column);
+					int colVal = int.Parse(column, CultureInfo.InvariantCulture);
                     downloadColOrder.Add((Data.DownloadCols)colVal);
 					lstDownloads.Columns.Add(downloadColNames[colVal], downloadColSizes[colVal]);
 				}

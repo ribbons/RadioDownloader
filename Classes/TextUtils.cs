@@ -53,7 +53,7 @@ namespace RadioDld
 				mins = mins % 60;
 
 				if (hours > 0) {
-					readable += Convert.ToString(hours) + "hr" + (hours == 1 ? "" : "s");
+					readable += Convert.ToString(hours, CultureInfo.CurrentCulture) + "hr" + (hours == 1 ? "" : "s");
 				}
 
 				if (hours > 0 & mins > 0) {
@@ -61,7 +61,7 @@ namespace RadioDld
 				}
 
 				if (mins > 0) {
-					readable += Convert.ToString(mins) + "min";
+					readable += Convert.ToString(mins, CultureInfo.CurrentCulture) + "min";
 				}
 			}
 

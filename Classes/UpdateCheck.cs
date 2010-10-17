@@ -59,7 +59,8 @@ namespace RadioDld
 				versionInfo = Strings.Split(versionInfo, Constants.vbCrLf)[0];
 
 				// There is a new version available
-				if (String.Compare(versionInfo, RadioDld.My.MyProject.Application.Info.Version.ToString()) > 0) {
+                if (String.Compare(versionInfo, RadioDld.My.MyProject.Application.Info.Version.ToString(), StringComparison.Ordinal) > 0)
+                {
 					return true;
 				}
 			}

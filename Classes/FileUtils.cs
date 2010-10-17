@@ -68,7 +68,7 @@ namespace RadioDld
 			Directory.CreateDirectory(Path.GetDirectoryName(savePath));
 
 			while (Directory.GetFiles(Path.GetDirectoryName(savePath), Path.GetFileName(savePath) + ".*").Length > 0) {
-				savePath = Path.Combine(baseSavePath, saveName + " (" + Convert.ToString(diffNum) + ")");
+				savePath = Path.Combine(baseSavePath, saveName + " (" + Convert.ToString(diffNum, CultureInfo.CurrentCulture) + ")");
 				diffNum += 1;
 			}
 

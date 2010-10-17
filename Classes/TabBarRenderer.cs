@@ -330,7 +330,7 @@ ref DTTOPTS pOptions);
 			opts.crText = Convert.ToUInt32(ColorTranslator.ToWin32(e.TextColor));
 
 			// Paint the text
-			if (DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, Convert.ToUInt32(e.TextFormat), ref textRect, ref opts) != 0) {
+			if (DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, (uint)e.TextFormat, ref textRect, ref opts) != 0) {
 				throw new Win32Exception();
 			}
 

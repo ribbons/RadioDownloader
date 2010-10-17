@@ -255,11 +255,11 @@ namespace PodcastProvider
 							string[] strSplitDuration = Strings.Split(xmlDuration.InnerText.Replace(".", ":"), ":");
 
 							if (strSplitDuration.GetUpperBound(0) == 0) {
-								episodeInfoReturn.EpisodeInfo.DurationSecs = Convert.ToInt32(strSplitDuration[0]);
+                                episodeInfoReturn.EpisodeInfo.DurationSecs = Convert.ToInt32(strSplitDuration[0], CultureInfo.InvariantCulture);
 							} else if (strSplitDuration.GetUpperBound(0) == 1) {
-								episodeInfoReturn.EpisodeInfo.DurationSecs = (Convert.ToInt32(strSplitDuration[0]) * 60) + Convert.ToInt32(strSplitDuration[1]);
+                                episodeInfoReturn.EpisodeInfo.DurationSecs = (Convert.ToInt32(strSplitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(strSplitDuration[1], CultureInfo.InvariantCulture);
 							} else {
-								episodeInfoReturn.EpisodeInfo.DurationSecs = ((Convert.ToInt32(strSplitDuration[0]) * 60) + Convert.ToInt32(strSplitDuration[1])) * 60 + Convert.ToInt32(strSplitDuration[2]);
+                                episodeInfoReturn.EpisodeInfo.DurationSecs = ((Convert.ToInt32(strSplitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(strSplitDuration[1], CultureInfo.InvariantCulture)) * 60 + Convert.ToInt32(strSplitDuration[2], CultureInfo.InvariantCulture);
 							}
 						} else {
 							episodeInfoReturn.EpisodeInfo.DurationSecs = null;

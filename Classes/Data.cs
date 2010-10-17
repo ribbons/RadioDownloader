@@ -240,7 +240,7 @@ namespace RadioDld
 			if (GetDBSetting("databaseversion") == null) {
 				currentVer = 1;
 			} else {
-				currentVer = Convert.ToInt32(GetDBSetting("databaseversion"));
+                currentVer = Convert.ToInt32(GetDBSetting("databaseversion"), CultureInfo.InvariantCulture);
 			}
 
 			// Set the current database version.  This is done before the upgrades are attempted so that
@@ -284,7 +284,7 @@ namespace RadioDld
 
 			// Delete the unused (v0.4 era) tables if they exist
 			foreach (string unusedTable in unusedTables) {
-				My.MyProject.Forms.Status.StatusText = "Removing unused table " + Convert.ToString(count) + " of " + Convert.ToString(unusedTables.GetUpperBound(0) + 1) + "...";
+				My.MyProject.Forms.Status.StatusText = "Removing unused table " + Convert.ToString(count, CultureInfo.CurrentCulture) + " of " + Convert.ToString(unusedTables.GetUpperBound(0) + 1, CultureInfo.CurrentCulture) + "...";
 				My.MyProject.Forms.Status.ProgressBarValue = count;
 				Application.DoEvents();
 
@@ -327,7 +327,7 @@ namespace RadioDld
 
 						lock (dbUpdateLock) {
 							foreach (int oldImageID in compressImages) {
-								My.MyProject.Forms.Status.StatusText = "Compressing image " + Convert.ToString(count) + " of " + Convert.ToString(compressImages.Count) + "...";
+								My.MyProject.Forms.Status.StatusText = "Compressing image " + Convert.ToString(count, CultureInfo.CurrentCulture) + " of " + Convert.ToString(compressImages.Count, CultureInfo.CurrentCulture) + "...";
 								My.MyProject.Forms.Status.ProgressBarValue = count - 1;
 								Application.DoEvents();
 
@@ -508,7 +508,7 @@ namespace RadioDld
 				if (unknownExp.Data != null) {
 					foreach (DictionaryEntry dataEntry in unknownExp.Data) {
 						if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) & object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string))) {
-							extraDetails.Add(new DldErrorDataItem("expdata:Data:" + Convert.ToString(dataEntry.Key), Convert.ToString(dataEntry.Value)));
+							extraDetails.Add(new DldErrorDataItem("expdata:Data:" + (string)dataEntry.Key, (string)dataEntry.Value));
 						}
 					}
 				}
@@ -638,7 +638,7 @@ namespace RadioDld
 		{
 			using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", FetchDbConn())) {
 				command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
-				return Convert.ToInt32(command.ExecuteScalar());
+				return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -646,7 +646,7 @@ namespace RadioDld
 		{
 			using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", FetchDbConn())) {
 				command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
-				return Convert.ToInt32(command.ExecuteScalar());
+                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
 			}
 		}
 
@@ -1111,7 +1111,7 @@ namespace RadioDld
 					errorExtraDetails.Add("episode:name", reader.GetString(reader.GetOrdinal("epname")));
 					errorExtraDetails.Add("episode:description", reader.GetString(reader.GetOrdinal("epdesc")));
 					errorExtraDetails.Add("episode:date", reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture));
-					errorExtraDetails.Add("episode:duration", Convert.ToString(reader.GetInt32(reader.GetOrdinal("duration"))));
+                    errorExtraDetails.Add("episode:duration", Convert.ToString(reader.GetInt32(reader.GetOrdinal("duration")), CultureInfo.InvariantCulture));
 					errorExtraDetails.Add("episode:extid", reader.GetString(reader.GetOrdinal("epextid")));
 
 					errorExtraDetails.Add("programme:name", reader.GetString(reader.GetOrdinal("progname")));
@@ -1362,7 +1362,7 @@ namespace RadioDld
 			if (lastVacuum == null) {
 				runVacuum = true;
 			} else {
-				runVacuum = DateTime.ParseExact(Convert.ToString(lastVacuum), "O", CultureInfo.InvariantCulture).AddMonths(3) < DateAndTime.Now;
+				runVacuum = DateTime.ParseExact((string)lastVacuum, "O", CultureInfo.InvariantCulture).AddMonths(3) < DateAndTime.Now;
 			}
 
 			if (runVacuum) {
@@ -1534,7 +1534,7 @@ namespace RadioDld
 				}
 
 				using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn())) {
-					return Convert.ToInt32(command.ExecuteScalar());
+					return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
 				}
 			}
 		}
@@ -1572,7 +1572,7 @@ namespace RadioDld
 						return reader.GetInt32(reader.GetOrdinal("progid"));
 					} else {
                         // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format("Progid not found for extid {0}", progExtId));
+                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Progid not found for extid {0}", progExtId));
 					}
 				}
 			}
@@ -1640,7 +1640,7 @@ namespace RadioDld
 					}
 
 					using (SQLiteCommand getRowIDCmd = new SQLiteCommand("select last_insert_rowid()", FetchDbConn(), transMon.Trans)) {
-						epid = Convert.ToInt32(getRowIDCmd.ExecuteScalar());
+                        epid = Convert.ToInt32(getRowIDCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
 					}
 
 					if (episodeInfoReturn.EpisodeInfo.ExtInfo != null) {
@@ -1895,7 +1895,7 @@ namespace RadioDld
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
                         // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format("Data not found for download {0}", epid));
+                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for download {0}", epid));
 					}
 
 					return ReadDownloadData(epid, reader);
@@ -1962,7 +1962,7 @@ namespace RadioDld
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
                         // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format("Data not found for favourite {0}", progid));
+                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for favourite {0}", progid));
 					}
 
 					return ReadFavouriteData(progid, reader);
@@ -2001,7 +2001,7 @@ namespace RadioDld
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
                         // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format("Data not found for subscription {0}", progid));
+                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for subscription {0}", progid));
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2034,7 +2034,7 @@ namespace RadioDld
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
                         // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format("Data not found for episode {0}", epid));
+                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for episode {0}", epid));
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2065,7 +2065,7 @@ namespace RadioDld
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
                         // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format("Data not found for programme {0}", progid));
+                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for programme {0}", progid));
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2134,7 +2134,7 @@ namespace RadioDld
 		{
 			using (SQLiteCommand command = new SQLiteCommand("select count(*) from favourites where progid=@progid", FetchDbConn())) {
 				command.Parameters.Add(new SQLiteParameter("@progid", progid));
-				return Convert.ToInt32(command.ExecuteScalar()) > 0;
+				return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
 			}
 		}
 
@@ -2142,7 +2142,7 @@ namespace RadioDld
 		{
 			using (SQLiteCommand command = new SQLiteCommand("select count(*) from subscriptions where progid=@progid", FetchDbConn())) {
 				command.Parameters.Add(new SQLiteParameter("@progid", progid));
-				return Convert.ToInt32(command.ExecuteScalar()) > 0;
+				return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
 			}
 		}
 		static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag flag)

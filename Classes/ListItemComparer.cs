@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Globalization;
 namespace RadioDld
 {
 	// Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
@@ -42,8 +43,8 @@ namespace RadioDld
 
 		public int Compare(object x, object y)
 		{
-			int itemXId = Convert.ToInt32(((ListViewItem)x).Name);
-			int itemYId = Convert.ToInt32(((ListViewItem)y).Name);
+            int itemXId = Convert.ToInt32(((ListViewItem)x).Name, CultureInfo.InvariantCulture);
+            int itemYId = Convert.ToInt32(((ListViewItem)y).Name, CultureInfo.InvariantCulture);
 
 			switch (compareType) {
 				case ListType.Favourite:

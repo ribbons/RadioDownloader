@@ -23,6 +23,7 @@ using System.Windows.Forms;
 using System.Data.SQLite;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
 namespace RadioDld
 {
 
@@ -137,7 +138,8 @@ namespace RadioDld
 					nameParam.Value = table.Key;
 					sqlParam.Value = TableSql(table.Key, table.Value);
 
-					if (Convert.ToInt32(command.ExecuteScalar()) != 1) {
+                    if (Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) != 1)
+                    {
 						return false;
 					}
 				}
