@@ -28,6 +28,10 @@ namespace PodcastProvider
 
     internal partial class FindNew : Form
 	{
+        public FindNew()
+        {
+            InitializeComponent();
+        }
 
 		internal PodcastProvider clsPluginInst;
 		private void cmdViewEps_Click(System.Object sender, System.EventArgs e)
