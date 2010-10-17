@@ -752,7 +752,6 @@ namespace RadioDld
 		internal System.Windows.Forms.ToolBarButton tbtDelete;
 		internal System.Windows.Forms.ToolBarButton tbtRetry;
         internal RadioDld.ExtListView lstEpisodes;
-		internal System.Windows.Forms.ToolBarButton tbtMisc;
         internal System.Windows.Forms.MenuItem mnuOptionsShowOpts;
 		internal System.Windows.Forms.MenuItem mnuOptionsSep;
         internal System.Windows.Forms.MenuItem mnuOptionsExit;
