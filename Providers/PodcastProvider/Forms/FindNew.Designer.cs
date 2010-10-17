@@ -75,6 +75,7 @@ namespace PodcastProvider
             this.cmdViewEps.TabIndex = 2;
             this.cmdViewEps.Text = "&View";
             this.cmdViewEps.UseVisualStyleBackColor = true;
+            this.cmdViewEps.Click += new System.EventHandler(this.cmdViewEps_Click);
             // 
             // txtFeedURL
             // 
@@ -84,6 +85,7 @@ namespace PodcastProvider
             this.txtFeedURL.Name = "txtFeedURL";
             this.txtFeedURL.Size = new System.Drawing.Size(416, 20);
             this.txtFeedURL.TabIndex = 1;
+            this.txtFeedURL.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFeedURL_KeyPress);
             // 
             // FindNew
             // 

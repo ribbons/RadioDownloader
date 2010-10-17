@@ -73,6 +73,7 @@ namespace RadioDld
             this.cmdOK.TabIndex = 0;
             this.cmdOK.Text = "OK";
             this.cmdOK.UseVisualStyleBackColor = false;
+            this.cmdOK.Click += new System.EventHandler(this.cmdOK_Click);
             // 
             // cmdChangeFolder
             // 
@@ -88,6 +89,7 @@ namespace RadioDld
             this.cmdChangeFolder.TabIndex = 7;
             this.cmdChangeFolder.Text = "&Change";
             this.cmdChangeFolder.UseVisualStyleBackColor = false;
+            this.cmdChangeFolder.Click += new System.EventHandler(this.cmdChangeFolder_Click);
             // 
             // txtSaveIn
             // 
@@ -137,6 +139,7 @@ namespace RadioDld
             this.txtFileNameFormat.Name = "txtFileNameFormat";
             this.txtFileNameFormat.Size = new System.Drawing.Size(420, 20);
             this.txtFileNameFormat.TabIndex = 9;
+            this.txtFileNameFormat.TextChanged += new System.EventHandler(this.txtFileNameFormat_TextChanged);
             // 
             // lblFilenameFormatResult
             // 
@@ -161,6 +164,7 @@ namespace RadioDld
             this.cmdReset.TabIndex = 2;
             this.cmdReset.Text = "&Reset";
             this.cmdReset.UseVisualStyleBackColor = false;
+            this.cmdReset.Click += new System.EventHandler(this.cmdReset_Click);
             // 
             // lblRunAfter
             // 
@@ -247,6 +251,8 @@ namespace RadioDld
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Main Options";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Preferences_FormClosing);
+            this.Load += new System.EventHandler(this.Preferences_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

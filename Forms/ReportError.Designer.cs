@@ -54,6 +54,7 @@ namespace RadioDld
             this.cmdSend.Size = new System.Drawing.Size(113, 26);
             this.cmdSend.TabIndex = 0;
             this.cmdSend.Text = "&Send Error Report";
+            this.cmdSend.Click += new System.EventHandler(this.cmdSend_Click);
             // 
             // cmdDontSend
             // 
@@ -65,6 +66,7 @@ namespace RadioDld
             this.cmdDontSend.Size = new System.Drawing.Size(84, 26);
             this.cmdDontSend.TabIndex = 1;
             this.cmdDontSend.Text = "&Don\'t Send";
+            this.cmdDontSend.Click += new System.EventHandler(this.cmdDontSend_Click);
             // 
             // lblWhiteBar
             // 
@@ -170,6 +172,7 @@ namespace RadioDld
             this.lnkWhatData.TabIndex = 10;
             this.lnkWhatData.TabStop = true;
             this.lnkWhatData.Text = "&What data does this error report contain?";
+            this.lnkWhatData.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkWhatData_LinkClicked);
             // 
             // ReportError
             // 

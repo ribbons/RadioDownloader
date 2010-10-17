@@ -65,6 +65,9 @@ namespace RadioDld
             this.Name = "Status";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Radio Downloader";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Status_FormClosing);
+            this.Load += new System.EventHandler(this.Status_Load);
+            this.Shown += new System.EventHandler(this.Status_Shown);
             this.ResumeLayout(false);
 
 		}

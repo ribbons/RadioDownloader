@@ -50,6 +50,7 @@ namespace RadioDld
             this.HideButton.TabIndex = 8;
             this.HideButton.Text = "&Hide";
             this.HideButton.UseVisualStyleBackColor = true;
+            this.HideButton.Click += new System.EventHandler(this.HideButton_Click);
             // 
             // ShowButton
             // 
@@ -62,6 +63,7 @@ namespace RadioDld
             this.ShowButton.TabIndex = 7;
             this.ShowButton.Text = "&Show";
             this.ShowButton.UseVisualStyleBackColor = true;
+            this.ShowButton.Click += new System.EventHandler(this.ShowButton_Click);
             // 
             // MoveDown
             // 
@@ -74,6 +76,7 @@ namespace RadioDld
             this.MoveDown.TabIndex = 6;
             this.MoveDown.Text = "Move &Down";
             this.MoveDown.UseVisualStyleBackColor = true;
+            this.MoveDown.Click += new System.EventHandler(this.MoveDown_Click);
             // 
             // MoveUp
             // 
@@ -86,6 +89,7 @@ namespace RadioDld
             this.MoveUp.TabIndex = 5;
             this.MoveUp.Text = "Move &Up";
             this.MoveUp.UseVisualStyleBackColor = true;
+            this.MoveUp.Click += new System.EventHandler(this.MoveUp_Click);
             // 
             // Okay
             // 
@@ -98,6 +102,7 @@ namespace RadioDld
             this.Okay.TabIndex = 0;
             this.Okay.Text = "OK";
             this.Okay.UseVisualStyleBackColor = true;
+            this.Okay.Click += new System.EventHandler(this.Okay_Click);
             // 
             // Cancel
             // 
@@ -124,6 +129,8 @@ namespace RadioDld
             this.ColumnsList.TabIndex = 4;
             this.ColumnsList.UseCompatibleStateImageBehavior = false;
             this.ColumnsList.View = System.Windows.Forms.View.List;
+            this.ColumnsList.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.ColumnsList_ItemChecked);
+            this.ColumnsList.Click += new System.EventHandler(this.ColumnsList_SelectedIndexChanged);
             // 
             // InfoLabel
             // 
@@ -166,6 +173,7 @@ namespace RadioDld
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Choose Columns";
+            this.Load += new System.EventHandler(this.ChooseCols_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

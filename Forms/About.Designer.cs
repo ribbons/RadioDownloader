@@ -89,6 +89,7 @@ namespace RadioDld
             this.HomepageLink.TabIndex = 3;
             this.HomepageLink.TabStop = true;
             this.HomepageLink.Text = "http://www.nerdoftheherd.com/tools/radiodld/";
+            this.HomepageLink.Click += new System.EventHandler(this.HomepageLink_Click);
             // 
             // LabelLicense
             // 
@@ -111,6 +112,7 @@ namespace RadioDld
             this.ButtonOK.TabIndex = 0;
             this.ButtonOK.Text = "OK";
             this.ButtonOK.UseVisualStyleBackColor = true;
+            this.ButtonOK.Click += new System.EventHandler(this.OKButton_Click);
             // 
             // About
             // 
@@ -134,6 +136,7 @@ namespace RadioDld
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About";
+            this.Load += new System.EventHandler(this.About_Load);
             ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -128,6 +128,7 @@ namespace RadioDld
             this.tbtBack.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
             this.tbtBack.Size = new System.Drawing.Size(30, 28);
             this.tbtBack.Text = "Back";
+            this.tbtBack.Click += new System.EventHandler(this.tbtBack_Click);
             // 
             // tbtForward
             // 
@@ -139,6 +140,7 @@ namespace RadioDld
             this.tbtForward.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
             this.tbtForward.Size = new System.Drawing.Size(30, 28);
             this.tbtForward.Text = "Forward";
+            this.tbtForward.Click += new System.EventHandler(this.tbtForward_Click);
             // 
             // tbtFindNew
             // 
@@ -151,6 +153,7 @@ namespace RadioDld
             this.tbtFindNew.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.tbtFindNew.Size = new System.Drawing.Size(128, 28);
             this.tbtFindNew.Text = "&Find Programme";
+            this.tbtFindNew.Click += new System.EventHandler(this.tbtFindNew_Click);
             // 
             // tbtFavourites
             // 
@@ -161,6 +164,7 @@ namespace RadioDld
             this.tbtFavourites.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.tbtFavourites.Size = new System.Drawing.Size(93, 28);
             this.tbtFavourites.Text = "F&avourites";
+            this.tbtFavourites.Click += new System.EventHandler(this.tbtFavourites_Click);
             // 
             // tbtSubscriptions
             // 
@@ -171,6 +175,7 @@ namespace RadioDld
             this.tbtSubscriptions.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.tbtSubscriptions.Size = new System.Drawing.Size(110, 28);
             this.tbtSubscriptions.Text = "&Subscriptions";
+            this.tbtSubscriptions.Click += new System.EventHandler(this.tbtSubscriptions_Click);
             // 
             // tbtDownloads
             // 
@@ -181,6 +186,7 @@ namespace RadioDld
             this.tbtDownloads.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.tbtDownloads.Size = new System.Drawing.Size(98, 28);
             this.tbtDownloads.Text = "&Downloads";
+            this.tbtDownloads.Click += new System.EventHandler(this.tbtDownloads_Click);
             // 
             // ttxSearch
             // 
@@ -191,10 +197,13 @@ namespace RadioDld
             this.ttxSearch.Margin = new System.Windows.Forms.Padding(1, 1, 0, 0);
             this.ttxSearch.Name = "ttxSearch";
             this.ttxSearch.Size = new System.Drawing.Size(160, 30);
+            this.ttxSearch.TextChanged += new System.EventHandler(this.ttxSearch_TextChanged);
             // 
             // nicTrayIcon
             // 
             this.nicTrayIcon.ContextMenu = this.mnuTray;
+            this.nicTrayIcon.BalloonTipClicked += new System.EventHandler(this.nicTrayIcon_BalloonTipClicked);
+            this.nicTrayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.nicTrayIcon_MouseDoubleClick);
             // 
             // mnuTray
             // 
@@ -207,6 +216,7 @@ namespace RadioDld
             // 
             this.mnuTrayShow.Index = 0;
             this.mnuTrayShow.Text = "&Show Radio Downloader";
+            this.mnuTrayShow.Click += new System.EventHandler(this.mnuTrayShow_Click);
             // 
             // mnuTraySep
             // 
@@ -217,6 +227,7 @@ namespace RadioDld
             // 
             this.mnuTrayExit.Index = 2;
             this.mnuTrayExit.Text = "E&xit";
+            this.mnuTrayExit.Click += new System.EventHandler(this.mnuTrayExit_Click);
             // 
             // imlListIcons
             // 
@@ -241,6 +252,7 @@ namespace RadioDld
             // tmrCheckForUpdates
             // 
             this.tmrCheckForUpdates.Interval = 3600000;
+            this.tmrCheckForUpdates.Tick += new System.EventHandler(this.tmrCheckForUpdates_Tick);
             // 
             // mnuOptions
             // 
@@ -254,6 +266,7 @@ namespace RadioDld
             // 
             this.mnuOptionsShowOpts.Index = 0;
             this.mnuOptionsShowOpts.Text = "Main &Options";
+            this.mnuOptionsShowOpts.Click += new System.EventHandler(this.mnuOptionsShowOpts_Click);
             // 
             // mnuOptionsProviderOpts
             // 
@@ -277,6 +290,7 @@ namespace RadioDld
             // 
             this.mnuOptionsExit.Index = 3;
             this.mnuOptionsExit.Text = "E&xit";
+            this.mnuOptionsExit.Click += new System.EventHandler(this.mnuOptionsExit_Click);
             // 
             // mnuHelp
             // 
@@ -291,11 +305,13 @@ namespace RadioDld
             this.mnuHelpShowHelp.Index = 0;
             this.mnuHelpShowHelp.Shortcut = System.Windows.Forms.Shortcut.F1;
             this.mnuHelpShowHelp.Text = "&Help Contents";
+            this.mnuHelpShowHelp.Click += new System.EventHandler(this.mnuHelpShowHelp_Click);
             // 
             // mnuHelpReportBug
             // 
             this.mnuHelpReportBug.Index = 1;
             this.mnuHelpReportBug.Text = "Report a &Bug";
+            this.mnuHelpReportBug.Click += new System.EventHandler(this.mnuHelpReportBug_Click);
             // 
             // mnuHelpSep
             // 
@@ -306,6 +322,7 @@ namespace RadioDld
             // 
             this.mnuHelpAbout.Index = 3;
             this.mnuHelpAbout.Text = "&About";
+            this.mnuHelpAbout.Click += new System.EventHandler(this.mnuHelpAbout_Click);
             // 
             // imlToolbar
             // 
@@ -402,6 +419,7 @@ namespace RadioDld
             this.tblToolbars.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tblToolbars.Size = new System.Drawing.Size(757, 34);
             this.tblToolbars.TabIndex = 8;
+            this.tblToolbars.Resize += new System.EventHandler(this.tblToolbars_Resize);
             // 
             // tbrToolbar
             // 
@@ -433,6 +451,7 @@ namespace RadioDld
             this.tbrToolbar.TabStop = true;
             this.tbrToolbar.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
             this.tbrToolbar.Wrappable = false;
+            this.tbrToolbar.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.tbrToolbar_ButtonClick);
             // 
             // tbtOptionsMenu
             // 
@@ -555,6 +574,7 @@ namespace RadioDld
             this.picSideBarBorder.Size = new System.Drawing.Size(10, 385);
             this.picSideBarBorder.TabIndex = 22;
             this.picSideBarBorder.TabStop = false;
+            this.picSideBarBorder.Paint += new System.Windows.Forms.PaintEventHandler(this.picSideBarBorder_Paint);
             // 
             // mnuListHdrs
             // 
@@ -567,6 +587,7 @@ namespace RadioDld
             // 
             this.mnuListHdrsColumns.Index = 0;
             this.mnuListHdrsColumns.Text = "Choose Columns...";
+            this.mnuListHdrsColumns.Click += new System.EventHandler(this.mnuListHdrsColumns_Click);
             // 
             // mnuListHdrsSep
             // 
@@ -577,6 +598,7 @@ namespace RadioDld
             // 
             this.mnuListHdrsReset.Index = 2;
             this.mnuListHdrsReset.Text = "Reset";
+            this.mnuListHdrsReset.Click += new System.EventHandler(this.mnuListHdrsReset_Click);
             // 
             // lstDownloads
             // 
@@ -592,6 +614,12 @@ namespace RadioDld
             this.lstDownloads.TabIndex = 5;
             this.lstDownloads.UseCompatibleStateImageBehavior = false;
             this.lstDownloads.View = System.Windows.Forms.View.Details;
+            this.lstDownloads.ColumnRightClick += new System.Windows.Forms.ColumnClickEventHandler(this.lstDownloads_ColumnRightClick);
+            this.lstDownloads.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lstDownloads_ColumnClick);
+            this.lstDownloads.ColumnReordered += new System.Windows.Forms.ColumnReorderedEventHandler(this.lstDownloads_ColumnReordered);
+            this.lstDownloads.ColumnWidthChanged += new System.Windows.Forms.ColumnWidthChangedEventHandler(this.lstDownloads_ColumnWidthChanged);
+            this.lstDownloads.ItemActivate += new System.EventHandler(this.lstDownloads_ItemActivate);
+            this.lstDownloads.SelectedIndexChanged += new System.EventHandler(this.lstDownloads_SelectedIndexChanged);
             // 
             // lstSubscribed
             // 
@@ -606,6 +634,7 @@ namespace RadioDld
             this.lstSubscribed.TabIndex = 4;
             this.lstSubscribed.UseCompatibleStateImageBehavior = false;
             this.lstSubscribed.View = System.Windows.Forms.View.Details;
+            this.lstSubscribed.SelectedIndexChanged += new System.EventHandler(this.lstSubscribed_SelectedIndexChanged);
             // 
             // lstEpisodes
             // 
@@ -621,6 +650,7 @@ namespace RadioDld
             this.lstEpisodes.TabIndex = 2;
             this.lstEpisodes.UseCompatibleStateImageBehavior = false;
             this.lstEpisodes.View = System.Windows.Forms.View.Details;
+            this.lstEpisodes.SelectedIndexChanged += new System.EventHandler(this.lstEpisodes_SelectedIndexChanged);
             // 
             // lstProviders
             // 
@@ -633,6 +663,8 @@ namespace RadioDld
             this.lstProviders.Size = new System.Drawing.Size(560, 49);
             this.lstProviders.TabIndex = 0;
             this.lstProviders.UseCompatibleStateImageBehavior = false;
+            this.lstProviders.ItemActivate += new System.EventHandler(this.lstProviders_ItemActivate);
+            this.lstProviders.SelectedIndexChanged += new System.EventHandler(this.lstProviders_SelectedIndexChanged);
             // 
             // lstFavourites
             // 
@@ -647,6 +679,7 @@ namespace RadioDld
             this.lstFavourites.TabIndex = 3;
             this.lstFavourites.UseCompatibleStateImageBehavior = false;
             this.lstFavourites.View = System.Windows.Forms.View.Details;
+            this.lstFavourites.SelectedIndexChanged += new System.EventHandler(this.lstFavourites_SelectedIndexChanged);
             // 
             // Main
             // 
@@ -672,6 +705,12 @@ namespace RadioDld
             this.Name = "Main";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Radio Downloader";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
+            this.Load += new System.EventHandler(this.Main_Load);
+            this.Shown += new System.EventHandler(this.Main_Shown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_KeyDown);
+            this.Move += new System.EventHandler(this.Main_Move_Resize);
+            this.Resize += new System.EventHandler(this.Main_Move_Resize);
             this.tbrView.ResumeLayout(false);
             this.tbrView.PerformLayout();
             this.tblInfo.ResumeLayout(false);
