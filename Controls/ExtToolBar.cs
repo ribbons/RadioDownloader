@@ -75,10 +75,9 @@ namespace RadioDld
 
 			TBBUTTONINFO buttonInfo = default(TBBUTTONINFO);
 
-			var _with1 = buttonInfo;
-			_with1.cbSize = Marshal.SizeOf(buttonInfo);
-            _with1.dwMask = TBIF_STYLE | TBIF_BYINDEX;
-			_with1.fsStyle = BTNS_WHOLEDROPDOWN | BTNS_AUTOSIZE;
+			buttonInfo.cbSize = Marshal.SizeOf(buttonInfo);
+            buttonInfo.dwMask = TBIF_STYLE | TBIF_BYINDEX;
+            buttonInfo.fsStyle = BTNS_WHOLEDROPDOWN | BTNS_AUTOSIZE;
 
 			SendMessage(this.Handle, TB_SETBUTTONINFO, (IntPtr)this.Buttons.IndexOf(button), ref buttonInfo);
 		}
@@ -99,7 +98,7 @@ namespace RadioDld
 						if ((tbrInfo.fsStyle & BTNS_AUTOSIZE) != BTNS_AUTOSIZE) {
 							// Make sure that the autosize style is set for all buttons, and doesn't
 							// get inadvertantly unset at any point by the .net wrapper
-							tbrInfo.fsStyle = Convert.ToByte(tbrInfo.fsStyle | BTNS_AUTOSIZE);
+                            tbrInfo.fsStyle = (byte)(tbrInfo.fsStyle | BTNS_AUTOSIZE);
 						}
 					}
 
