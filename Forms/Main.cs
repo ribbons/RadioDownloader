@@ -1889,10 +1889,10 @@ namespace RadioDld
 
 		private void mnuListHdrsReset_Click(System.Object sender, System.EventArgs e)
 		{
-			Properties.Settings.Default.DownloadCols = Properties.Settings.Default.Properties["DownloadCols"].DefaultValue.ToString();
-			Properties.Settings.Default.DownloadColSizes = Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue.ToString();
-			Properties.Settings.Default.DownloadColSortBy = int.Parse(Properties.Settings.Default.Properties["DownloadColSortBy"].DefaultValue.ToString(), CultureInfo.InvariantCulture);
-			Properties.Settings.Default.DownloadColSortAsc = Convert.ToBoolean(Properties.Settings.Default.Properties["DownloadColSortAsc"].DefaultValue);
+			Properties.Settings.Default.DownloadCols = (string)Properties.Settings.Default.Properties["DownloadCols"].DefaultValue;
+			Properties.Settings.Default.DownloadColSizes = (string)Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue;
+			Properties.Settings.Default.DownloadColSortBy = Convert.ToInt32(Properties.Settings.Default.Properties["DownloadColSortBy"].DefaultValue, CultureInfo.InvariantCulture);
+            Properties.Settings.Default.DownloadColSortAsc = Convert.ToBoolean(Properties.Settings.Default.Properties["DownloadColSortAsc"].DefaultValue, CultureInfo.InvariantCulture);
 
 			InitDownloadList();
 		}

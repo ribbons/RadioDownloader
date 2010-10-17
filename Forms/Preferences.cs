@@ -21,6 +21,7 @@ using System.Windows.Forms;
 
 
 using System.IO;
+using System.Globalization;
 namespace RadioDld
 {
 
@@ -107,11 +108,11 @@ namespace RadioDld
 		private void cmdReset_Click(System.Object sender, System.EventArgs e)
 		{
 			if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes) {
-				Properties.Settings.Default.RunOnStartup = Convert.ToBoolean(Properties.Settings.Default.Properties["RunOnStartup"].DefaultValue);
-				Properties.Settings.Default.CloseToSystray = Convert.ToBoolean(Properties.Settings.Default.Properties["CloseToSystray"].DefaultValue);
-				Properties.Settings.Default.SaveFolder = Properties.Settings.Default.Properties["SaveFolder"].DefaultValue.ToString();
-				Properties.Settings.Default.FileNameFormat = Properties.Settings.Default.Properties["FileNameFormat"].DefaultValue.ToString();
-				Properties.Settings.Default.RunAfterCommand = Properties.Settings.Default.Properties["RunAfterCommand"].DefaultValue.ToString();
+                Properties.Settings.Default.RunOnStartup = Convert.ToBoolean(Properties.Settings.Default.Properties["RunOnStartup"].DefaultValue, CultureInfo.InvariantCulture);
+                Properties.Settings.Default.CloseToSystray = Convert.ToBoolean(Properties.Settings.Default.Properties["CloseToSystray"].DefaultValue, CultureInfo.InvariantCulture);
+				Properties.Settings.Default.SaveFolder = (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue;
+                Properties.Settings.Default.FileNameFormat = (string)Properties.Settings.Default.Properties["FileNameFormat"].DefaultValue;
+                Properties.Settings.Default.RunAfterCommand = (string)Properties.Settings.Default.Properties["RunAfterCommand"].DefaultValue;
 
 				OsUtils.ApplyRunOnStartup();
 				Properties.Settings.Default.Save();
