@@ -39,8 +39,8 @@ namespace RadioDld
 		{
 			switch (m.Msg) {
 				case WM_NCHITTEST:
-					int xPos = (Convert.ToInt32(m.LParam) << 16) >> 16;
-					int yPos = Convert.ToInt32(m.LParam) >> 16;
+					int xPos = ((int)m.LParam << 16) >> 16;
+					int yPos = (int)m.LParam >> 16;
 
 					Point clientPos = this.PointToClient(new Point(xPos, yPos));
 					bool onBackground = true;

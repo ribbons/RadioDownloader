@@ -288,7 +288,7 @@ namespace RadioDld
 					break;
 				case LVM_SETEXTENDEDLISTVIEWSTYLE:
 					if (OsUtils.WinXpOrLater()) {
-						int styles = Convert.ToInt32(m.LParam);
+                        int styles = (int)m.LParam;
 
 						if ((styles & LVS_EX_DOUBLEBUFFER) != LVS_EX_DOUBLEBUFFER) {
 							styles = styles | LVS_EX_DOUBLEBUFFER;
