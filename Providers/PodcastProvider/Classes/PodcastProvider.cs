@@ -348,7 +348,7 @@ namespace PodcastProvider
 							tspOffset = new TimeSpan(0);
 						}
 
-						episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Value.Subtract(tspOffset);
+						episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Subtract(tspOffset);
 					} else {
 						episodeInfoReturn.EpisodeInfo.Date = DateAndTime.Now;
 					}

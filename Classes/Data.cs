@@ -427,11 +427,7 @@ namespace RadioDld
 										epiEpInfo.DurationSecs = reader.GetInt32(reader.GetOrdinal("duration"));
 									}
 
-									if (reader.IsDBNull(reader.GetOrdinal("date"))) {
-										epiEpInfo.Date = null;
-									} else {
-										epiEpInfo.Date = reader.GetDateTime(reader.GetOrdinal("date"));
-									}
+									epiEpInfo.Date = reader.GetDateTime(reader.GetOrdinal("date"));
 
 									if (reader.IsDBNull(reader.GetOrdinal("epimg"))) {
 										epiEpInfo.Image = null;
@@ -1621,7 +1617,7 @@ namespace RadioDld
 			}
 
 			if (episodeInfoReturn.EpisodeInfo.Date == null) {
-				throw new InvalidDataException("Episode date cannot be null");
+				throw new InvalidDataException("Episode date cannot be null ");
 			}
 
 			lock (dbUpdateLock) {
