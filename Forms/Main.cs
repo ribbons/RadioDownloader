@@ -623,7 +623,7 @@ namespace RadioDld
 
 			// Convert the stored column widths back to a string to save to settings
 			foreach (KeyValuePair<int, int> colSize in downloadColSizes) {
-				if (saveColSizes != string.Empty) {
+				if (!string.IsNullOrEmpty(saveColSizes)) {
 					saveColSizes += "|";
 				}
 
@@ -1754,7 +1754,7 @@ namespace RadioDld
 				case ViewState.View.Downloads:
                     SetToolbarButtons(new ToolBarButton[] {tbtCleanUp});
 
-					if (progData.DownloadQuery != string.Empty) {
+					if (!string.IsNullOrEmpty(progData.DownloadQuery)) {
                         SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " result" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
 					} else {
 						string description = string.Empty;
@@ -1937,7 +1937,7 @@ namespace RadioDld
 			}
 
 			// Append the new column sizes to the end of the setting
-			if (newItems != string.Empty) {
+			if (!string.IsNullOrEmpty(newItems)) {
 				Properties.Settings.Default.DownloadColSizes += newItems;
 			}
 
@@ -1950,7 +1950,7 @@ namespace RadioDld
 			}
 
 			// Set up the columns specified in the DownloadCols setting
-			if (Properties.Settings.Default.DownloadCols != string.Empty) {
+			if (!string.IsNullOrEmpty(Properties.Settings.Default.DownloadCols)) {
 				string[] columns = Strings.Split(Properties.Settings.Default.DownloadCols, ",");
 
 				foreach (string column in columns) {
@@ -1980,7 +1980,7 @@ namespace RadioDld
 		private void ttxSearch_TextChanged(object sender, System.EventArgs e)
 		{
 			lock (searchThreadLock) {
-				if (ttxSearch.Text == string.Empty) {
+				if (string.IsNullOrEmpty(ttxSearch.Text)) {
 					searchThread = null;
 					PerformSearch(view.CurrentView, ttxSearch.Text);
 				} else {
@@ -2008,7 +2008,7 @@ namespace RadioDld
 		private void PerformSearch(ViewState.View origView, string search)
 		{
 			if (view.CurrentView == origView) {
-				if (search == string.Empty) {
+				if (string.IsNullOrEmpty(search)) {
 					if (view.CurrentViewData != null) {
 						view.StoreView(null);
 					}

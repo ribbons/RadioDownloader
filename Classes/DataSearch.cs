@@ -188,7 +188,7 @@ namespace RadioDld
 
 		public bool DownloadIsVisible(int epid)
 		{
-			if (DownloadQuery == string.Empty) {
+			if (string.IsNullOrEmpty(DownloadQuery)) {
 				return true;
 			}
 

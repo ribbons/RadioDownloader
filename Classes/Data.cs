@@ -1152,7 +1152,7 @@ namespace RadioDld
 				}
 			}
 
-			if (errorText == null || errorText == string.Empty) {
+			if (string.IsNullOrEmpty(errorText)) {
 				errorText = errorType.ToString();
 			}
 
@@ -1616,12 +1616,12 @@ namespace RadioDld
 				return -1;
 			}
 
-			if (episodeInfoReturn.EpisodeInfo.Name == null || episodeInfoReturn.EpisodeInfo.Name == string.Empty) {
-				throw new InvalidDataException("Episode name cannot be nothing or an empty string");
+			if (string.IsNullOrEmpty(episodeInfoReturn.EpisodeInfo.Name)) {
+				throw new InvalidDataException("Episode name cannot be null or an empty string");
 			}
 
 			if (episodeInfoReturn.EpisodeInfo.Date == null) {
-				throw new InvalidDataException("Episode date cannot be nothing or an empty string");
+				throw new InvalidDataException("Episode date cannot be null");
 			}
 
 			lock (dbUpdateLock) {

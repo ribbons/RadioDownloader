@@ -77,7 +77,7 @@ namespace RadioDld
 
 		public static string CreateSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime? episodeDate)
 		{
-			if (formatString == string.Empty) {
+			if (string.IsNullOrEmpty(formatString)) {
 				// The format string is an empty string, so the output must be an empty string
 				return string.Empty;
 			}

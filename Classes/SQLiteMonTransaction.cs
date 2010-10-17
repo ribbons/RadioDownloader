@@ -55,7 +55,7 @@ namespace RadioDld
 				}
 			}
 
-			if (info != string.Empty) {
+			if (!string.IsNullOrEmpty(info)) {
 				exp.Data.Add("transactions", info);
 			}
 

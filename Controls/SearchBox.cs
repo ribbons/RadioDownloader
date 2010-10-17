@@ -234,7 +234,7 @@ namespace RadioDld
 		{
 			buttonHover = true;
 
-			if (this.Text != string.Empty) {
+			if (!string.IsNullOrEmpty(this.Text)) {
 				button.Image = Properties.Resources.search_close_hover;
 			}
 
@@ -245,7 +245,7 @@ namespace RadioDld
 		{
 			buttonHover = false;
 
-			if (this.Text != string.Empty) {
+			if (!string.IsNullOrEmpty(this.Text)) {
 				button.Image = Properties.Resources.search_close;
 			}
 
@@ -254,21 +254,21 @@ namespace RadioDld
 
 		private void button_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			if (this.Text != string.Empty) {
+			if (!string.IsNullOrEmpty(this.Text)) {
 				button.Image = Properties.Resources.search_close_pressed;
 			}
 		}
 
 		private void button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			if (this.Text != string.Empty) {
+			if (!string.IsNullOrEmpty(this.Text)) {
 				button.Image = Properties.Resources.search_close_hover;
 			}
 		}
 
 		private void button_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			if (textBox.Text != string.Empty) {
+			if (!string.IsNullOrEmpty(textBox.Text)) {
 				textBox.Text = string.Empty;
 			}
 		}
@@ -309,7 +309,7 @@ namespace RadioDld
 			this.Text = textBox.Text;
 
 			// Update the displayed icon
-			if (this.Text == string.Empty) {
+			if (string.IsNullOrEmpty(this.Text)) {
 				button.Image = Properties.Resources.search_icon;
 			} else {
 				if (buttonHover) {

@@ -55,7 +55,7 @@ namespace RadioDld
 			Properties.Settings.Default.Save();
 			// Save the last check time in case of unexpected termination
 
-			if (versionInfo != string.Empty) {
+			if (!string.IsNullOrEmpty(versionInfo)) {
 				versionInfo = Strings.Split(versionInfo, Constants.vbCrLf)[0];
 
 				// There is a new version available

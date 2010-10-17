@@ -43,7 +43,7 @@ namespace RadioDld
 			set {
 				columnOrder = new List<int>();
 
-				if (value != string.Empty) {
+				if (!string.IsNullOrEmpty(value)) {
 					string[] stringCols = Strings.Split(value, ",");
 
 					foreach (string column in stringCols) {

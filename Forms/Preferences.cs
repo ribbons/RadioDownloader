@@ -48,7 +48,7 @@ namespace RadioDld
 
 		private void cmdOK_Click(System.Object eventSender, System.EventArgs eventArgs)
 		{
-			if (txtFileNameFormat.Text == string.Empty) {
+			if (string.IsNullOrEmpty(txtFileNameFormat.Text)) {
 				Interaction.MsgBox("Please enter a value for the downloaded programme file name format.", MsgBoxStyle.Exclamation);
 				txtFileNameFormat.Focus();
 				cancelClose = true;
