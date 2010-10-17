@@ -15,48 +15,7 @@ using Microsoft.VisualBasic.Devices;
 
 namespace PodcastProvider.My
 {
-	sealed partial class MyProject
-	{
-		[ThreadStatic] static MyApplication application;
-		
-		public static MyApplication Application {
-			[DebuggerStepThrough]
-			get {
-				if (application == null)
-					application = new MyApplication();
-				return application;
-			}
-		}
-		
-		[ThreadStatic] static MyComputer computer;
-		
-		public static MyComputer Computer {
-			[DebuggerStepThrough]
-			get {
-				if (computer == null)
-					computer = new MyComputer();
-				return computer;
-			}
-		}
-		
-		[ThreadStatic] static User user;
-		
-		public static User User {
-			[DebuggerStepThrough]
-			get {
-				if (user == null)
-					user = new User();
-				return user;
-			}
-		}
-		
-	}
-	
 	partial class MyApplication : ApplicationBase
-	{
-	}
-	
-	partial class MyComputer : Computer
 	{
 	}
 }
