@@ -24,10 +24,15 @@ using System.IO;
 namespace RadioDld
 {
 
-	internal partial class Preferences : System.Windows.Forms.Form
+    internal partial class Preferences : Form
 	{
 
 		private bool cancelClose;
+
+        public Preferences()
+        {
+            InitializeComponent();
+        }
 
 		private void cmdChangeFolder_Click(System.Object eventSender, System.EventArgs eventArgs)
 		{

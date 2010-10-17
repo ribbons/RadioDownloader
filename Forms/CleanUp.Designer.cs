@@ -1,54 +1,32 @@
-using Microsoft.VisualBasic;
-using System;
-using System.Collections;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Forms;
 namespace RadioDld
 {
-	[Microsoft.VisualBasic.CompilerServices.DesignerGenerated()]
 	partial class CleanUp
 	{
-		#region "Windows Form Designer generated code "
-		[System.Diagnostics.DebuggerNonUserCode()]
-		public CleanUp() : base()
-		{
-			Load += CleanUp_Load;
-			//This call is required by the Windows Form Designer.
-			InitializeComponent();
-		}
-		//Form overrides dispose to clean up the component list.
-		[System.Diagnostics.DebuggerNonUserCode()]
-		protected override void Dispose(bool Disposing)
-		{
-			if (Disposing) {
-				if ((components != null)) {
-					components.Dispose();
-				}
-			}
-			base.Dispose(Disposing);
-		}
-		//Required by the Windows Form Designer
-		private System.ComponentModel.IContainer components;
-		private System.Windows.Forms.Button withEventsField_cmdOK;
-		public System.Windows.Forms.Button cmdOK {
-			get { return withEventsField_cmdOK; }
-			set {
-				if (withEventsField_cmdOK != null) {
-					withEventsField_cmdOK.Click -= cmdOK_Click;
-				}
-				withEventsField_cmdOK = value;
-				if (withEventsField_cmdOK != null) {
-					withEventsField_cmdOK.Click += cmdOK_Click;
-				}
-			}
-		}
-		//NOTE: The following procedure is required by the Windows Form Designer
-		//It can be modified using the Windows Form Designer.
-		//Do not modify it using the code editor.
-		[System.Diagnostics.DebuggerStepThrough()]
-		private void InitializeComponent()
+        /// <summary>
+        /// Required designer variable.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Windows Form Designer generated code
+
+        /// <summary>
+        /// Required method for Designer support - do not modify
+        /// the contents of this method with the code editor.
+        /// </summary>
+        private void InitializeComponent()
 		{
 			this.cmdOK = new System.Windows.Forms.Button();
 			this.cmdCancel = new System.Windows.Forms.Button();
@@ -127,7 +105,6 @@ namespace RadioDld
 			this.Controls.Add(this.cmdOK);
 			this.Controls.Add(this.lblExplainOrphan);
 			this.Cursor = System.Windows.Forms.Cursors.Default;
-			this.Font = new System.Drawing.Font("Tahoma", 8.25f, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, Convert.ToByte(0));
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = Properties.Resources.icon_main;
 			this.Location = new System.Drawing.Point(3, 29);
@@ -142,21 +119,11 @@ namespace RadioDld
 			this.PerformLayout();
 
 		}
-		private System.Windows.Forms.Button withEventsField_cmdCancel;
-		public System.Windows.Forms.Button cmdCancel {
-			get { return withEventsField_cmdCancel; }
-			set {
-				if (withEventsField_cmdCancel != null) {
-					withEventsField_cmdCancel.Click -= cmdCancel_Click;
-				}
-				withEventsField_cmdCancel = value;
-				if (withEventsField_cmdCancel != null) {
-					withEventsField_cmdCancel.Click += cmdCancel_Click;
-				}
-			}
-		}
-		public System.Windows.Forms.Label lblExplainOrphan;
-			#endregion
+        internal System.Windows.Forms.Button cmdOK;
+        internal System.Windows.Forms.Button cmdCancel;
+        internal System.Windows.Forms.Label lblExplainOrphan;
 		internal System.Windows.Forms.RadioButton radType;
-	}
+
+        #endregion
+    }
 }

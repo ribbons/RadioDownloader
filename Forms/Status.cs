@@ -24,11 +24,17 @@ using System.Threading;
 namespace RadioDld
 {
 
-	internal partial class Status
+    internal partial class Status : Form
 	{
 		private Thread showThread;
 
 		private TaskbarNotify tbarNotif;
+
+        public Status()
+        {
+            InitializeComponent();
+        }
+
 		public new void Show()
 		{
 			showThread = new Thread(ShowFormThread);

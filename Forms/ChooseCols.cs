@@ -25,7 +25,7 @@ using System.Globalization;
 namespace RadioDld
 {
 
-	internal partial class ChooseCols
+    internal partial class ChooseCols : Form
 	{
 		private List<int> columnOrder;
 
@@ -169,7 +169,6 @@ namespace RadioDld
 		}
 		public ChooseCols()
 		{
-			Load += ChooseCols_Load;
 			InitializeComponent();
 		}
 	}

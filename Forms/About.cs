@@ -23,7 +23,7 @@ namespace RadioDld
 {
 
 
-	internal sealed partial class About
+    internal sealed partial class About : Form
 	{
 		private void About_Load(System.Object sender, System.EventArgs e)
 		{
@@ -53,7 +53,6 @@ namespace RadioDld
 		}
 		public About()
 		{
-			Load += About_Load;
 			InitializeComponent();
 		}
 	}

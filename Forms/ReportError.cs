@@ -23,7 +23,7 @@ namespace RadioDld
 {
 
 
-	internal partial class ReportError
+    internal partial class ReportError : Form
 	{
 
 		private ErrorReporting report;
@@ -61,7 +61,6 @@ namespace RadioDld
 		}
 		public ReportError()
 		{
-			FormClosing += Error_FormClosing;
 			InitializeComponent();
 		}
 	}

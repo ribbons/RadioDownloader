@@ -31,7 +31,6 @@ namespace RadioDld
 
 	internal partial class Main : GlassForm
 	{
-
 		private struct FindNewViewData
 		{
 			public Guid ProviderID;
@@ -109,6 +108,12 @@ namespace RadioDld
 		private List<Data.DownloadCols> downloadColOrder = new List<Data.DownloadCols>();
 
 		private bool windowPosLoaded;
+
+        public Main()
+        {
+            InitializeComponent();
+        }
+
 		public void UpdateTrayStatus(bool active)
 		{
 			if (OsUtils.WinSevenOrLater()) {

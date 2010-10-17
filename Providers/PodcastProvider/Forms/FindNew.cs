@@ -26,7 +26,7 @@ using RadioDld;
 namespace PodcastProvider
 {
 
-	internal partial class FindNew
+    internal partial class FindNew : Form
 	{
 
 		internal PodcastProvider clsPluginInst;
@@ -100,10 +100,6 @@ namespace PodcastProvider
 			} catch (Exception expException) {
 				clsPluginInst.RaiseFindNewException(expException);
 			}
-		}
-		public FindNew()
-		{
-			InitializeComponent();
 		}
 	}
 }

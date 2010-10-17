@@ -22,11 +22,17 @@ using System.Windows.Forms;
 namespace RadioDld
 {
 
-	internal partial class CleanUp : System.Windows.Forms.Form
+    internal partial class CleanUp : Form
 	{
 
 
 		private Data progData;
+
+        public CleanUp()
+        {
+            InitializeComponent();
+        }
+
 		private void CleanUp_Load(System.Object sender, System.EventArgs e)
 		{
 			progData = Data.GetInstance();
