@@ -748,10 +748,10 @@ namespace RadioDld
 
 					if (picture.Width > picture.Height) {
 						newWidth = picSidebarImg.MaximumSize.Width;
-						newHeight = Convert.ToInt32((newWidth / picture.Width) * picture.Height);
+						newHeight = (int)((newWidth / (float)picture.Width) * picture.Height);
 					} else {
 						newHeight = picSidebarImg.MaximumSize.Height;
-						newWidth = Convert.ToInt32((newHeight / picture.Height) * picture.Width);
+                        newWidth = (int)((newHeight / (float)picture.Height) * picture.Width);
 					}
 
 					Bitmap origImg = picture;
