@@ -549,41 +549,39 @@ namespace RadioDld
 			}
 		}
 
-		public Bitmap FetchProgrammeImage(int progid)
-		{
-			Bitmap functionReturnValue = null;
-			using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid", FetchDbConn())) {
-				command.Parameters.Add(new SQLiteParameter("@progid", progid));
+        public Bitmap FetchProgrammeImage(int progid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
-				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
-					if (reader.Read()) {
-						int imgid = reader.GetInt32(reader.GetOrdinal("image"));
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        return RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
+                    }
+                    else
+                    {
+                        // Find the id of the latest episode's image
+                        using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image not null order by date desc limit 1", FetchDbConn()))
+                        {
+                            latestCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
 
-						if (imgid == null) {
-							// Find the id of the latest episode's image
-							using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image notnull order by date desc limit 1", FetchDbConn())) {
-								latestCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
+                            using (SQLiteMonDataReader latestRdr = new SQLiteMonDataReader(latestCmd.ExecuteReader()))
+                            {
+                                if (latestRdr.Read())
+                                {
+                                    return RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
-								using (SQLiteMonDataReader latestRdr = new SQLiteMonDataReader(latestCmd.ExecuteReader())) {
-									if (latestRdr.Read()) {
-										imgid = latestRdr.GetInt32(reader.GetOrdinal("image"));
-									}
-								}
-							}
-						}
-
-						if (imgid != null) {
-							functionReturnValue = RetrieveImage(imgid);
-						} else {
-							functionReturnValue = null;
-						}
-					} else {
-						functionReturnValue = null;
-					}
-				}
-			}
-			return functionReturnValue;
-		}
+            return null;
+        }
 
 		public Bitmap FetchEpisodeImage(int epid)
 		{
