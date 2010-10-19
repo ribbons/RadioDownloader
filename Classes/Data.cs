@@ -583,34 +583,46 @@ namespace RadioDld
             return null;
         }
 
-		public Bitmap FetchEpisodeImage(int epid)
-		{
-			Bitmap functionReturnValue = null;
-			using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn())) {
-				command.Parameters.Add(new SQLiteParameter("@epid", epid));
+        public Bitmap FetchEpisodeImage(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
-				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
-					if (reader.Read()) {
-						int imgid = reader.GetInt32(reader.GetOrdinal("image"));
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        int imageOrdinal = reader.GetOrdinal("image");
 
-						if (imgid != null) {
-							functionReturnValue = RetrieveImage(imgid);
-						} else {
-							functionReturnValue = null;
-						}
+                        if (!reader.IsDBNull(imageOrdinal))
+                        {
+                            return RetrieveImage(reader.GetInt32(imageOrdinal));
+                        }
 
-						if (functionReturnValue == null) {
-							if (reader.IsDBNull(reader.GetOrdinal("progid")) == false) {
-								functionReturnValue = FetchProgrammeImage(reader.GetInt32(reader.GetOrdinal("progid")));
-							}
-						}
-					} else {
-						functionReturnValue = null;
-					}
-				}
-			}
-			return functionReturnValue;
-		}
+                        int progidOrdinal = reader.GetOrdinal("progid");
+
+                        if (!reader.IsDBNull(progidOrdinal))
+                        {
+                            using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
+                            {
+                                progCmd.Parameters.Add(new SQLiteParameter("@epid", reader.GetInt32(progidOrdinal)));
+
+                                using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
+                                {
+                                    if (progReader.Read())
+                                    {
+                                        return RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
 
 		public void EpisodeSetAutoDownload(int epid, bool autoDownload)
 		{
