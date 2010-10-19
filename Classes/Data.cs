@@ -1425,90 +1425,116 @@ namespace RadioDld
 		private void FindNewPluginInst_FoundNew(string progExtId)
 		{
 			Guid pluginId = FindNewPluginInst.ProviderId;
+            int? progid = StoreProgrammeInfo(pluginId, progExtId);
 
-			if (StoreProgrammeInfo(pluginId, progExtId) == false) {
-				Interaction.MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation);
-				return;
-			}
-
-			int progid = ExtIDToProgID(pluginId, progExtId);
+            if (progid == null)
+            {
+                Interaction.MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation);
+                return;
+            }
 
 			if (FoundNew != null) {
-				FoundNew(progid);
+				FoundNew(progid.Value);
 			}
 		}
 
-		private bool StoreProgrammeInfo(System.Guid pluginId, string progExtId)
-		{
-			if (pluginsInst.PluginExists(pluginId) == false) {
-				return false;
-			}
+        private int? StoreProgrammeInfo(Guid pluginId, string progExtId)
+        {
+            if (pluginsInst.PluginExists(pluginId) == false)
+            {
+                return null;
+            }
 
-			IRadioProvider pluginInstance = pluginsInst.GetPluginInstance(pluginId);
-			GetProgrammeInfoReturn progInfo = default(GetProgrammeInfoReturn);
+            IRadioProvider pluginInstance = pluginsInst.GetPluginInstance(pluginId);
+            GetProgrammeInfoReturn progInfo = default(GetProgrammeInfoReturn);
 
-			progInfo = pluginInstance.GetProgrammeInfo(progExtId);
+            progInfo = pluginInstance.GetProgrammeInfo(progExtId);
 
-			if (progInfo.Success == false) {
-				return false;
-			}
+            if (progInfo.Success == false)
+            {
+                return null;
+            }
 
-			int progid = 0;
+            int? progid = null;
 
-			lock (dbUpdateLock) {
-				progid = ExtIDToProgID(pluginId, progExtId);
+            lock (dbUpdateLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
+                    command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
 
-				using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction())) {
-					if (progid == null) {
-						using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn())) {
-							command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
-							command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
-							command.ExecuteNonQuery();
-						}
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                    {
+                        if (reader.Read())
+                        {
+                            progid = reader.GetInt32(reader.GetOrdinal("progid"));
+                        }
+                    }
+                }
 
-						using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn())) {
-							progid = Convert.ToInt32(command.ExecuteScalar());
-						}
-					}
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
+                {
+                    if (progid == null)
+                    {
+                        using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn()))
+                        {
+                            command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
+                            command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
+                            command.ExecuteNonQuery();
+                        }
 
-					using (SQLiteCommand command = new SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn())) {
-						command.Parameters.Add(new SQLiteParameter("@name", progInfo.ProgrammeInfo.Name));
-						command.Parameters.Add(new SQLiteParameter("@description", progInfo.ProgrammeInfo.Description));
-						command.Parameters.Add(new SQLiteParameter("@image", StoreImage(progInfo.ProgrammeInfo.Image)));
-						command.Parameters.Add(new SQLiteParameter("@singleepisode", progInfo.ProgrammeInfo.SingleEpisode));
-						command.Parameters.Add(new SQLiteParameter("@lastupdate", DateAndTime.Now));
-						command.Parameters.Add(new SQLiteParameter("@progid", progid));
-						command.ExecuteNonQuery();
-					}
+                        using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
+                        {
+                            progid = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                        }
+                    }
 
-					transMon.Trans.Commit();
-				}
-			}
+                    using (SQLiteCommand command = new SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn()))
+                    {
+                        command.Parameters.Add(new SQLiteParameter("@name", progInfo.ProgrammeInfo.Name));
+                        command.Parameters.Add(new SQLiteParameter("@description", progInfo.ProgrammeInfo.Description));
+                        command.Parameters.Add(new SQLiteParameter("@image", StoreImage(progInfo.ProgrammeInfo.Image)));
+                        command.Parameters.Add(new SQLiteParameter("@singleepisode", progInfo.ProgrammeInfo.SingleEpisode));
+                        command.Parameters.Add(new SQLiteParameter("@lastupdate", DateAndTime.Now));
+                        command.Parameters.Add(new SQLiteParameter("@progid", progid));
+                        command.ExecuteNonQuery();
+                    }
 
-			// If the programme is in the list of favourites, clear the sort cache and raise an updated event
-			if (IsFavourite(progid)) {
-				lock (favouriteSortCacheLock) {
-					favouriteSortCache = null;
-				}
+                    transMon.Trans.Commit();
+                }
+            }
 
-				if (FavouriteUpdated != null) {
-					FavouriteUpdated(progid);
-				}
-			}
+            // If the programme is in the list of favourites, clear the sort cache and raise an updated event
+            if (IsFavourite(progid.Value))
+            {
+                lock (favouriteSortCacheLock)
+                {
+                    favouriteSortCache = null;
+                }
 
-			// If the programme is in the list of subscriptions, clear the sort cache and raise an updated event
-			if (IsSubscribed(progid)) {
-				lock (subscriptionSortCacheLock) {
-					subscriptionSortCache = null;
-				}
+                if (FavouriteUpdated != null)
+                {
+                    FavouriteUpdated(progid.Value);
+                }
+            }
 
-				if (SubscriptionUpdated != null) {
-					SubscriptionUpdated(progid);
-				}
-			}
+            // If the programme is in the list of subscriptions, clear the sort cache and raise an updated event
+            if (IsSubscribed(progid.Value))
+            {
+                lock (subscriptionSortCacheLock)
+                {
+                    subscriptionSortCache = null;
+                }
 
-			return true;
-		}
+                if (SubscriptionUpdated != null)
+                {
+                    SubscriptionUpdated(progid.Value);
+                }
+            }
+
+            return progid;
+        }
 
 		private int? StoreImage(Bitmap image)
 		{
@@ -1565,23 +1591,6 @@ namespace RadioDld
 				}
 			}
 			return functionReturnValue;
-		}
-
-		private int ExtIDToProgID(System.Guid pluginID, string progExtId)
-		{
-			using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn())) {
-				command.Parameters.Add(new SQLiteParameter("@pluginid", pluginID.ToString()));
-				command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
-
-				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
-					if (reader.Read()) {
-						return reader.GetInt32(reader.GetOrdinal("progid"));
-					} else {
-                        // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Progid not found for extid {0}", progExtId));
-					}
-				}
-			}
 		}
 
 		private List<string> GetAvailableEpisodes(Guid providerId, string progExtId)
