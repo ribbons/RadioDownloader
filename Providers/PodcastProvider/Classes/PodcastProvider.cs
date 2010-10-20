@@ -34,7 +34,12 @@ namespace PodcastProvider
 
 	public class PodcastProvider : IRadioProvider
 	{
-		public event FindNewViewChangeEventHandler FindNewViewChange;
+        public event FindNewViewChangeEventHandler FindNewViewChange
+        {
+            add { throw new NotSupportedException(); }
+            remove { }
+        }
+
 		public event FindNewExceptionEventHandler FindNewException;
 		public event FoundNewEventHandler FoundNew;
 		public event ProgressEventHandler Progress;
