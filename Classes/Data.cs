@@ -1906,8 +1906,7 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-                        // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for download {0}", epid));
+                        throw new DataNotFoundException(epid, "Download does not exist");
 					}
 
 					return ReadDownloadData(epid, reader);
@@ -1973,8 +1972,7 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-                        // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for favourite {0}", progid));
+                        throw new DataNotFoundException(progid, "Programme does not exist");
 					}
 
 					return ReadFavouriteData(progid, reader);
@@ -2012,8 +2010,7 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-                        // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for subscription {0}", progid));
+                        throw new DataNotFoundException(progid, "Programme does not exist");
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2045,8 +2042,7 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-                        // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for episode {0}", epid));
+                        throw new DataNotFoundException(epid, "Episode does not exist");
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2076,8 +2072,7 @@ namespace RadioDld
 
 				using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader())) {
 					if (reader.Read() == false) {
-                        // TODO: Replace with custom DataNotFound exception
-                        throw new Exception(string.Format(CultureInfo.InvariantCulture, "Data not found for programme {0}", progid));
+                        throw new DataNotFoundException(progid, "Programme does not exist");
 					}
 
 					int descriptionOrdinal = reader.GetOrdinal("description");

@@ -170,6 +170,7 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\DataNotFoundException.cs" />
     <Compile Include="Classes\DownloadException.cs" />
     <Compile Include="Classes\FileUtils.cs" />
     <Compile Include="Classes\DataSearch.cs" />
