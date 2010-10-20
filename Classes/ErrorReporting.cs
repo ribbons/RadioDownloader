@@ -1,10 +1,3 @@
-using Microsoft.VisualBasic;
-using System;
-using System.Collections;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Forms;
 // Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
 // Copyright © 2007-2010 Matt Robinson
 //
@@ -19,15 +12,18 @@ using System.Windows.Forms;
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Reflection;
-using System.Text;
 using System.Web;
 using System.Xml.Serialization;
+
+using Microsoft.VisualBasic;
 
 namespace RadioDld
 {

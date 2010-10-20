@@ -1,8 +1,3 @@
-using Microsoft.VisualBasic;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
 // Plugin for Radio Downloader to download general podcasts.
 // Copyright © 2007-2010 Matt Robinson
 //
@@ -17,10 +12,11 @@ using System.Diagnostics;
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-
+using System;
 using System.Net;
 
 using Microsoft.Win32;
+
 namespace PodcastProvider
 {
 
