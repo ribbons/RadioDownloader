@@ -59,7 +59,7 @@ namespace RadioDld
             string savePath = Path.Combine(baseSavePath, saveName);
             int diffNum = 1;
 
-            //Make sure the save folder exists (to support subfolders in the save file name template)
+            // Make sure the save folder exists (to support subfolders in the save file name template)
             Directory.CreateDirectory(Path.GetDirectoryName(savePath));
 
             while (Directory.GetFiles(Path.GetDirectoryName(savePath), Path.GetFileName(savePath) + ".*").Length > 0) {

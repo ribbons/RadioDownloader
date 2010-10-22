@@ -36,7 +36,7 @@ namespace RadioDld
         private const int BTNS_AUTOSIZE = 0x10;
 
         private const int BTNS_WHOLEDROPDOWN = 0x80;
-        //API Structs
+        // API Structs
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         private struct TBBUTTONINFO
         {

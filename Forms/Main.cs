@@ -513,7 +513,7 @@ namespace RadioDld
             Data.FavouriteData info = progData.FetchFavouriteData(progid);
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
-            buttons.AddRange(new ToolBarButton[] {tbtRemFavourite, tbtCurrentEps});
+            buttons.AddRange(new ToolBarButton[] { tbtRemFavourite, tbtCurrentEps });
 
             if (info.subscribed) {
                 buttons.Add(tbtUnsubscribe);
@@ -668,9 +668,9 @@ namespace RadioDld
             switch (info.status) {
                 case Data.DownloadStatus.Downloaded:
                     if (File.Exists(info.downloadPath)) {
-                        SetToolbarButtons(new ToolBarButton[] {tbtPlay, tbtDelete});
+                        SetToolbarButtons(new ToolBarButton[] { tbtPlay, tbtDelete });
                     } else {
-                        SetToolbarButtons(new ToolBarButton[] {tbtDelete});
+                        SetToolbarButtons(new ToolBarButton[] { tbtDelete });
                     }
 
                     infoText += Environment.NewLine + "Play count: " + info.playCount.ToString(CultureInfo.CurrentCulture);
@@ -1731,27 +1731,27 @@ namespace RadioDld
         {
             switch (view.CurrentView) {
                 case ViewState.View.FindNewChooseProvider:
-                    SetToolbarButtons(new ToolBarButton[] {});
+                    SetToolbarButtons(new ToolBarButton[] { });
                     SetSideBar(Convert.ToString(lstProviders.Items.Count, CultureInfo.CurrentCulture) + " provider" + (lstProviders.Items.Count == 1 ? "" : "s"), "", null);
                     break;
                 case ViewState.View.FindNewProviderForm:
                     FindNewViewData FindViewData = (FindNewViewData)view.CurrentViewData;
-                    SetToolbarButtons(new ToolBarButton[] {});
+                    SetToolbarButtons(new ToolBarButton[] { });
                     ShowProviderInfo(FindViewData.ProviderID);
                     break;
                 case ViewState.View.ProgEpisodes:
                     ShowProgrammeInfo((int)view.CurrentViewData);
                     break;
                 case ViewState.View.Favourites:
-                    SetToolbarButtons(new ToolBarButton[] {});
+                    SetToolbarButtons(new ToolBarButton[] { });
                     SetSideBar(Convert.ToString(lstFavourites.Items.Count, CultureInfo.CurrentCulture) + " favourite" + (lstFavourites.Items.Count == 1 ? "" : "s"), "", null);
                     break;
                 case ViewState.View.Subscriptions:
-                    SetToolbarButtons(new ToolBarButton[] {});
+                    SetToolbarButtons(new ToolBarButton[] { });
                     SetSideBar(Convert.ToString(lstSubscribed.Items.Count, CultureInfo.CurrentCulture) + " subscription" + (lstSubscribed.Items.Count == 1 ? "" : "s"), "", null);
                     break;
                 case ViewState.View.Downloads:
-                    SetToolbarButtons(new ToolBarButton[] {tbtCleanUp});
+                    SetToolbarButtons(new ToolBarButton[] { tbtCleanUp });
 
                     if (!string.IsNullOrEmpty(progData.DownloadQuery)) {
                         SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " result" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);

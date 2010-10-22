@@ -62,8 +62,7 @@ namespace RadioDld
         private static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
         [DllImport("dwmapi.dll", SetLastError = true)]
-        private static extern int DwmIsCompositionEnabled(        [MarshalAs(UnmanagedType.Bool)]
-ref bool pfEnabled);
+        private static extern int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] ref bool pfEnabled);
 
         public static bool WinSevenOrLater()
         {
@@ -104,14 +103,14 @@ ref bool pfEnabled);
             IntPtr taskbarHwnd = default(IntPtr);
             IntPtr trayHwnd = default(IntPtr);
 
-            //Get taskbar handle
+            // Get taskbar handle
             taskbarHwnd = FindWindow("Shell_traywnd", null);
 
             if (taskbarHwnd == IntPtr.Zero) {
                 throw new Win32Exception();
             }
 
-            //Get system tray handle
+            // Get system tray handle
             trayHwnd = GetWindow(taskbarHwnd, GW_CHILD);
 
             do {
