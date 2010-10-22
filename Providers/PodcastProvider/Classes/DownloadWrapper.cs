@@ -16,6 +16,7 @@ using System;
 using System.Net;
 
 using Microsoft.Win32;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace PodcastProvider
 {
@@ -57,7 +58,7 @@ namespace PodcastProvider
             SystemEvents.PowerModeChanged += PowerModeChange;
             
             downloadClient = new WebClient();
-            downloadClient.Headers.Add("user-agent", new My.MyApplication().Info.AssemblyName + " " + new My.MyApplication().Info.Version.ToString());
+            downloadClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
             downloadClient.DownloadFileAsync(downloadUrl, destPath);
         }
 
