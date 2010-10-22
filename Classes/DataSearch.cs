@@ -23,223 +23,223 @@ using Microsoft.VisualBasic;
 namespace RadioDld
 {
 
-	internal class DataSearch
-	{
-		[ThreadStatic()]
+    internal class DataSearch
+    {
+        [ThreadStatic()]
 
-		private static SQLiteConnection dbConn;
-		private static DataSearch searchInstance;
+        private static SQLiteConnection dbConn;
+        private static DataSearch searchInstance;
 
-		private static object searchInstanceLock = new object();
+        private static object searchInstanceLock = new object();
 
-		private Data dataInstance;
-		private string _downloadQuery = string.Empty;
+        private Data dataInstance;
+        private string _downloadQuery = string.Empty;
 
-		private List<int> downloadsVisible;
-		private object updateIndexLock = new object();
+        private List<int> downloadsVisible;
+        private object updateIndexLock = new object();
 
-		private object downloadVisLock = new object();
-		public static DataSearch GetInstance(Data instance)
-		{
-			// Need to use a lock instead of declaring the instance variable as New,
-			// as otherwise New gets called before the Data class is ready
-			lock (searchInstanceLock) {
-				if (searchInstance == null) {
-					searchInstance = new DataSearch(instance);
-				}
+        private object downloadVisLock = new object();
+        public static DataSearch GetInstance(Data instance)
+        {
+            // Need to use a lock instead of declaring the instance variable as New,
+            // as otherwise New gets called before the Data class is ready
+            lock (searchInstanceLock) {
+                if (searchInstance == null) {
+                    searchInstance = new DataSearch(instance);
+                }
 
-				return searchInstance;
-			}
-		}
+                return searchInstance;
+            }
+        }
 
-		private DataSearch(Data instance)
-		{
-			dataInstance = instance;
+        private DataSearch(Data instance)
+        {
+            dataInstance = instance;
 
-			Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
+            Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
 
             tableCols.Add("downloads", new String[] { "name", "description" });
 
-			if (CheckIndex(tableCols) == false) {
-				// Close & clean up the connection used for testing
-				dbConn.Close();
-				dbConn.Dispose();
-				dbConn = null;
+            if (CheckIndex(tableCols) == false) {
+                // Close & clean up the connection used for testing
+                dbConn.Close();
+                dbConn.Dispose();
+                dbConn = null;
 
-				// Clean up the old index
-				File.Delete(DatabasePath());
+                // Clean up the old index
+                File.Delete(DatabasePath());
 
-				My.MyProject.Forms.Status.StatusText = "Building search index...";
-				My.MyProject.Forms.Status.ProgressBarMarquee = false;
-				My.MyProject.Forms.Status.ProgressBarValue = 0;
-				My.MyProject.Forms.Status.ProgressBarMax = 100 * tableCols.Count;
-				My.MyProject.Forms.Status.Show();
+                My.MyProject.Forms.Status.StatusText = "Building search index...";
+                My.MyProject.Forms.Status.ProgressBarMarquee = false;
+                My.MyProject.Forms.Status.ProgressBarValue = 0;
+                My.MyProject.Forms.Status.ProgressBarMax = 100 * tableCols.Count;
+                My.MyProject.Forms.Status.Show();
 
-				lock (updateIndexLock) {
-					using (SQLiteTransaction trans = FetchDbConn().BeginTransaction()) {
-						// Create the index tables
-						foreach (KeyValuePair<string, string[]> table in tableCols) {
-							using (SQLiteCommand command = new SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn(), trans)) {
-								command.ExecuteNonQuery();
-							}
-						}
+                lock (updateIndexLock) {
+                    using (SQLiteTransaction trans = FetchDbConn().BeginTransaction()) {
+                        // Create the index tables
+                        foreach (KeyValuePair<string, string[]> table in tableCols) {
+                            using (SQLiteCommand command = new SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn(), trans)) {
+                                command.ExecuteNonQuery();
+                            }
+                        }
 
-						My.MyProject.Forms.Status.StatusText = "Building search index for downloads...";
+                        My.MyProject.Forms.Status.StatusText = "Building search index for downloads...";
 
-						int progress = 1;
-						List<Data.DownloadData> downloadItems = dataInstance.FetchDownloadList(false);
+                        int progress = 1;
+                        List<Data.DownloadData> downloadItems = dataInstance.FetchDownloadList(false);
 
-						foreach (Data.DownloadData downloadItem in downloadItems) {
-							AddDownload(downloadItem);
+                        foreach (Data.DownloadData downloadItem in downloadItems) {
+                            AddDownload(downloadItem);
 
-							My.MyProject.Forms.Status.ProgressBarValue = Convert.ToInt32((progress / downloadItems.Count) * 100);
-							progress += 1;
-						}
+                            My.MyProject.Forms.Status.ProgressBarValue = Convert.ToInt32((progress / downloadItems.Count) * 100);
+                            progress += 1;
+                        }
 
-						My.MyProject.Forms.Status.ProgressBarValue = 100;
+                        My.MyProject.Forms.Status.ProgressBarValue = 100;
 
-						trans.Commit();
-					}
-				}
+                        trans.Commit();
+                    }
+                }
 
-				My.MyProject.Forms.Status.Hide();
-			}
-		}
+                My.MyProject.Forms.Status.Hide();
+            }
+        }
 
-		private string DatabasePath()
-		{
-			return Path.Combine(FileUtils.GetAppDataFolder(), "searchindex.db");
-		}
+        private string DatabasePath()
+        {
+            return Path.Combine(FileUtils.GetAppDataFolder(), "searchindex.db");
+        }
 
-		private SQLiteConnection FetchDbConn()
-		{
-			if (dbConn == null) {
-				dbConn = new SQLiteConnection("Data Source=" + DatabasePath() + ";Version=3");
-				dbConn.Open();
-			}
+        private SQLiteConnection FetchDbConn()
+        {
+            if (dbConn == null) {
+                dbConn = new SQLiteConnection("Data Source=" + DatabasePath() + ";Version=3");
+                dbConn.Open();
+            }
 
-			return dbConn;
-		}
+            return dbConn;
+        }
 
-		private bool CheckIndex(Dictionary<string, string[]> tableCols)
-		{
-			using (SQLiteCommand command = new SQLiteCommand("select count(*) from sqlite_master where type='table' and name=@name and sql=@sql", FetchDbConn())) {
-				SQLiteParameter nameParam = new SQLiteParameter("@name");
-				SQLiteParameter sqlParam = new SQLiteParameter("@sql");
+        private bool CheckIndex(Dictionary<string, string[]> tableCols)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from sqlite_master where type='table' and name=@name and sql=@sql", FetchDbConn())) {
+                SQLiteParameter nameParam = new SQLiteParameter("@name");
+                SQLiteParameter sqlParam = new SQLiteParameter("@sql");
 
-				command.Parameters.Add(nameParam);
-				command.Parameters.Add(sqlParam);
+                command.Parameters.Add(nameParam);
+                command.Parameters.Add(sqlParam);
 
-				foreach (KeyValuePair<string, string[]> table in tableCols) {
-					nameParam.Value = table.Key;
-					sqlParam.Value = TableSql(table.Key, table.Value);
+                foreach (KeyValuePair<string, string[]> table in tableCols) {
+                    nameParam.Value = table.Key;
+                    sqlParam.Value = TableSql(table.Key, table.Value);
 
                     if (Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) != 1)
                     {
-						return false;
-					}
-				}
-			}
+                        return false;
+                    }
+                }
+            }
 
-			return true;
-		}
+            return true;
+        }
 
-		private string TableSql(string tableName, string[] columns)
-		{
-			return "CREATE VIRTUAL TABLE " + tableName + " USING fts3(" + Strings.Join(columns, ", ") + ")";
-		}
+        private string TableSql(string tableName, string[] columns)
+        {
+            return "CREATE VIRTUAL TABLE " + tableName + " USING fts3(" + Strings.Join(columns, ", ") + ")";
+        }
 
-		public string DownloadQuery {
-			get { return _downloadQuery; }
-			set {
-				if (value != _downloadQuery) {
-					try {
-						RunQuery(value);
-						_downloadQuery = value;
-					} catch (SQLiteException) {
-						// The search query is badly formed, so keep the old query
-					}
-				}
-			}
-		}
+        public string DownloadQuery {
+            get { return _downloadQuery; }
+            set {
+                if (value != _downloadQuery) {
+                    try {
+                        RunQuery(value);
+                        _downloadQuery = value;
+                    } catch (SQLiteException) {
+                        // The search query is badly formed, so keep the old query
+                    }
+                }
+            }
+        }
 
-		private void RunQuery(string query)
-		{
-			lock (downloadVisLock) {
-				using (SQLiteCommand command = new SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn())) {
-					command.Parameters.Add(new SQLiteParameter("@query", query + "*"));
+        private void RunQuery(string query)
+        {
+            lock (downloadVisLock) {
+                using (SQLiteCommand command = new SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn())) {
+                    command.Parameters.Add(new SQLiteParameter("@query", query + "*"));
 
-					using (SQLiteDataReader reader = command.ExecuteReader()) {
-						int docidOrdinal = reader.GetOrdinal("docid");
+                    using (SQLiteDataReader reader = command.ExecuteReader()) {
+                        int docidOrdinal = reader.GetOrdinal("docid");
 
-						downloadsVisible = new List<int>();
+                        downloadsVisible = new List<int>();
 
-						while (reader.Read()) {
-							downloadsVisible.Add(reader.GetInt32(docidOrdinal));
-						}
-					}
-				}
-			}
-		}
+                        while (reader.Read()) {
+                            downloadsVisible.Add(reader.GetInt32(docidOrdinal));
+                        }
+                    }
+                }
+            }
+        }
 
-		public bool DownloadIsVisible(int epid)
-		{
-			if (string.IsNullOrEmpty(DownloadQuery)) {
-				return true;
-			}
+        public bool DownloadIsVisible(int epid)
+        {
+            if (string.IsNullOrEmpty(DownloadQuery)) {
+                return true;
+            }
 
-			lock (downloadVisLock) {
-				if (downloadsVisible == null) {
-					RunQuery(_downloadQuery);
-				}
+            lock (downloadVisLock) {
+                if (downloadsVisible == null) {
+                    RunQuery(_downloadQuery);
+                }
 
-				return downloadsVisible.Contains(epid);
-			}
-		}
+                return downloadsVisible.Contains(epid);
+            }
+        }
 
-		private void AddDownload(Data.DownloadData storeData)
-		{
-			lock (updateIndexLock) {
-				using (SQLiteCommand command = new SQLiteCommand("insert or replace into downloads (docid, name, description) values (@epid, @name, @description)", FetchDbConn())) {
-					command.Parameters.Add(new SQLiteParameter("@epid", storeData.epid));
-					command.Parameters.Add(new SQLiteParameter("@name", storeData.name));
-					command.Parameters.Add(new SQLiteParameter("@description", storeData.description));
+        private void AddDownload(Data.DownloadData storeData)
+        {
+            lock (updateIndexLock) {
+                using (SQLiteCommand command = new SQLiteCommand("insert or replace into downloads (docid, name, description) values (@epid, @name, @description)", FetchDbConn())) {
+                    command.Parameters.Add(new SQLiteParameter("@epid", storeData.epid));
+                    command.Parameters.Add(new SQLiteParameter("@name", storeData.name));
+                    command.Parameters.Add(new SQLiteParameter("@description", storeData.description));
 
-					command.ExecuteNonQuery();
-				}
-			}
+                    command.ExecuteNonQuery();
+                }
+            }
 
-			lock (downloadVisLock) {
-				downloadsVisible = null;
-			}
-		}
+            lock (downloadVisLock) {
+                downloadsVisible = null;
+            }
+        }
 
-		public void AddDownload(int epid)
-		{
-			Data.DownloadData downloadData = dataInstance.FetchDownloadData(epid);
-			AddDownload(downloadData);
-		}
+        public void AddDownload(int epid)
+        {
+            Data.DownloadData downloadData = dataInstance.FetchDownloadData(epid);
+            AddDownload(downloadData);
+        }
 
-		public void UpdateDownload(int epid)
-		{
-			lock (updateIndexLock) {
-				using (SQLiteTransaction trans = FetchDbConn().BeginTransaction()) {
-					RemoveDownload(epid);
-					AddDownload(epid);
-				}
-			}
-		}
+        public void UpdateDownload(int epid)
+        {
+            lock (updateIndexLock) {
+                using (SQLiteTransaction trans = FetchDbConn().BeginTransaction()) {
+                    RemoveDownload(epid);
+                    AddDownload(epid);
+                }
+            }
+        }
 
-		public void RemoveDownload(int epid)
-		{
-			lock (updateIndexLock) {
-				using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", FetchDbConn())) {
-					command.Parameters.Add(new SQLiteParameter("@epid", epid));
-					command.ExecuteNonQuery();
-				}
-			}
+        public void RemoveDownload(int epid)
+        {
+            lock (updateIndexLock) {
+                using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", FetchDbConn())) {
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.ExecuteNonQuery();
+                }
+            }
 
-			// No need to clear the visibility cache, as having an extra entry won't cause an issue
-		}
-	}
+            // No need to clear the visibility cache, as having an extra entry won't cause an issue
+        }
+    }
 }

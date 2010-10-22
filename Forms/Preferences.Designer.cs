@@ -1,7 +1,7 @@
 namespace RadioDld
 {
-	partial class Preferences
-	{
+    partial class Preferences
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -27,7 +27,7 @@ namespace RadioDld
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-		{
+        {
             this.cmdCancel = new System.Windows.Forms.Button();
             this.cmdOK = new System.Windows.Forms.Button();
             this.cmdChangeFolder = new System.Windows.Forms.Button();
@@ -256,16 +256,16 @@ namespace RadioDld
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
-		internal System.Windows.Forms.Label lblFileNameFormat;
+        }
+        internal System.Windows.Forms.Label lblFileNameFormat;
         internal System.Windows.Forms.TextBox txtFileNameFormat;
-		internal System.Windows.Forms.Label lblFilenameFormatResult;
+        internal System.Windows.Forms.Label lblFilenameFormatResult;
         internal System.Windows.Forms.Button cmdReset;
-		internal System.Windows.Forms.Label lblRunAfter;
-		internal System.Windows.Forms.TextBox txtRunAfter;
-		internal System.Windows.Forms.Label lblRunAfterFileDef;
-		internal System.Windows.Forms.CheckBox uxRunOnStartup;
-		internal System.Windows.Forms.CheckBox uxCloseToSystray;
+        internal System.Windows.Forms.Label lblRunAfter;
+        internal System.Windows.Forms.TextBox txtRunAfter;
+        internal System.Windows.Forms.Label lblRunAfterFileDef;
+        internal System.Windows.Forms.CheckBox uxRunOnStartup;
+        internal System.Windows.Forms.CheckBox uxCloseToSystray;
         internal System.Windows.Forms.Button cmdCancel;
         internal System.Windows.Forms.Button cmdOK;
         internal System.Windows.Forms.Button cmdChangeFolder;

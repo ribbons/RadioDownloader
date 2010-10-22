@@ -1,7 +1,7 @@
 namespace RadioDld
 {
-	partial class About
-	{
+    partial class About
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -27,7 +27,7 @@ namespace RadioDld
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-		{
+        {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(About));
             this.LogoPictureBox = new System.Windows.Forms.PictureBox();
             this.LabelNameAndVer = new System.Windows.Forms.Label();
@@ -141,13 +141,13 @@ namespace RadioDld
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
-		internal System.Windows.Forms.PictureBox LogoPictureBox;
-		internal System.Windows.Forms.Label LabelNameAndVer;
-		internal System.Windows.Forms.TextBox TextboxLicense;
-		internal System.Windows.Forms.Label LabelCopyright;
+        }
+        internal System.Windows.Forms.PictureBox LogoPictureBox;
+        internal System.Windows.Forms.Label LabelNameAndVer;
+        internal System.Windows.Forms.TextBox TextboxLicense;
+        internal System.Windows.Forms.Label LabelCopyright;
         internal System.Windows.Forms.LinkLabel HomepageLink;
-		internal System.Windows.Forms.Label LabelLicense;
+        internal System.Windows.Forms.Label LabelLicense;
         internal System.Windows.Forms.Button ButtonOK;
 
         #endregion

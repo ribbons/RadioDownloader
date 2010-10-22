@@ -20,15 +20,15 @@ namespace RadioDld
 {
 
     public partial class UpdateNotify : Form
-	{
-		public UpdateNotify()
+    {
+        public UpdateNotify()
         {
             InitializeComponent();
         }
         
         private void Update_Load(System.Object sender, System.EventArgs e)
-		{
-			this.Font = SystemFonts.MessageBoxFont;
-		}
-	}
+        {
+            this.Font = SystemFonts.MessageBoxFont;
+        }
+    }
 }

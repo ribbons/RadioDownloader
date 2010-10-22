@@ -1,7 +1,7 @@
 namespace RadioDld
 {
-	partial class ChooseCols
-	{
+    partial class ChooseCols
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -27,7 +27,7 @@ namespace RadioDld
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-		{
+        {
             this.HideButton = new System.Windows.Forms.Button();
             this.ShowButton = new System.Windows.Forms.Button();
             this.MoveDown = new System.Windows.Forms.Button();
@@ -177,7 +177,7 @@ namespace RadioDld
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
         internal System.Windows.Forms.Button HideButton;
         internal System.Windows.Forms.Button ShowButton;
         internal System.Windows.Forms.Button MoveDown;
@@ -185,8 +185,8 @@ namespace RadioDld
         internal System.Windows.Forms.Button Okay;
         internal System.Windows.Forms.Button Cancel;
         internal System.Windows.Forms.ListView ColumnsList;
-		internal System.Windows.Forms.Label InfoLabel;
-		internal System.Windows.Forms.Label ColumnsLabel;
+        internal System.Windows.Forms.Label InfoLabel;
+        internal System.Windows.Forms.Label ColumnsLabel;
 
         #endregion
     }

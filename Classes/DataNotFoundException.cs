@@ -63,15 +63,15 @@ namespace RadioDld
 
         protected DataNotFoundException(SerializationInfo info, StreamingContext context)
             : base(info, context)
-		{
-			this.NotFoundId = (int?)info.GetValue("NotFoundId", typeof(int?));
-		}
+        {
+            this.NotFoundId = (int?)info.GetValue("NotFoundId", typeof(int?));
+        }
 
-		[SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-		public override void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			base.GetObjectData(info, context);
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
             info.AddValue("NotFoundId", NotFoundId);
-		}
+        }
     }
 }

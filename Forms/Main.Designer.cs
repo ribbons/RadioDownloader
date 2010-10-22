@@ -1,7 +1,7 @@
 namespace RadioDld
 {
-	partial class Main
-	{
+    partial class Main
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -27,7 +27,7 @@ namespace RadioDld
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-		{
+        {
             this.components = new System.ComponentModel.Container();
             this.tbrView = new RadioDld.ExtToolStrip();
             this.tbtBack = new System.Windows.Forms.ToolStripButton();
@@ -722,70 +722,70 @@ namespace RadioDld
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
-		internal ExtToolStrip tbrView;
+        }
+        internal ExtToolStrip tbrView;
         internal System.Windows.Forms.ToolStripButton tbtFindNew;
         internal System.Windows.Forms.ToolStripButton tbtSubscriptions;
         internal System.Windows.Forms.ToolStripButton tbtDownloads;
-		internal System.Windows.Forms.ToolBarButton tbtCleanUp;
+        internal System.Windows.Forms.ToolBarButton tbtCleanUp;
         internal System.Windows.Forms.NotifyIcon nicTrayIcon;
-		internal System.Windows.Forms.ContextMenu mnuTray;
+        internal System.Windows.Forms.ContextMenu mnuTray;
         internal System.Windows.Forms.MenuItem mnuTrayShow;
-		internal System.Windows.Forms.MenuItem mnuTraySep;
+        internal System.Windows.Forms.MenuItem mnuTraySep;
         internal System.Windows.Forms.MenuItem mnuTrayExit;
         internal ToolStripSearchBox ttxSearch;
         internal RadioDld.ExtListView lstProviders;
-		internal System.Windows.Forms.ImageList imlListIcons;
-		internal System.Windows.Forms.ImageList imlProviders;
+        internal System.Windows.Forms.ImageList imlListIcons;
+        internal System.Windows.Forms.ImageList imlProviders;
         internal RadioDld.ExtListView lstSubscribed;
-		internal System.Windows.Forms.ProgressBar prgDldProg;
+        internal System.Windows.Forms.ProgressBar prgDldProg;
         internal RadioDld.ExtListView lstDownloads;
         internal System.Windows.Forms.Timer tmrCheckForUpdates;
         internal ExtToolBar tbrToolbar;
-		internal System.Windows.Forms.TableLayoutPanel tblInfo;
-		internal System.Windows.Forms.PictureBox picSidebarImg;
-		internal System.Windows.Forms.ToolBarButton tbtPlay;
-		internal System.Windows.Forms.ToolBarButton tbtCancel;
-		internal System.Windows.Forms.ToolBarButton tbtSubscribe;
-		internal System.Windows.Forms.ToolBarButton tbtUnsubscribe;
-		internal System.Windows.Forms.ToolBarButton tbtDownload;
-		internal System.Windows.Forms.ToolBarButton tbtDelete;
-		internal System.Windows.Forms.ToolBarButton tbtRetry;
+        internal System.Windows.Forms.TableLayoutPanel tblInfo;
+        internal System.Windows.Forms.PictureBox picSidebarImg;
+        internal System.Windows.Forms.ToolBarButton tbtPlay;
+        internal System.Windows.Forms.ToolBarButton tbtCancel;
+        internal System.Windows.Forms.ToolBarButton tbtSubscribe;
+        internal System.Windows.Forms.ToolBarButton tbtUnsubscribe;
+        internal System.Windows.Forms.ToolBarButton tbtDownload;
+        internal System.Windows.Forms.ToolBarButton tbtDelete;
+        internal System.Windows.Forms.ToolBarButton tbtRetry;
         internal RadioDld.ExtListView lstEpisodes;
         internal System.Windows.Forms.MenuItem mnuOptionsShowOpts;
-		internal System.Windows.Forms.MenuItem mnuOptionsSep;
+        internal System.Windows.Forms.MenuItem mnuOptionsSep;
         internal System.Windows.Forms.MenuItem mnuOptionsExit;
         internal System.Windows.Forms.MenuItem mnuHelpShowHelp;
         internal System.Windows.Forms.MenuItem mnuHelpAbout;
         internal System.Windows.Forms.MenuItem mnuHelpReportBug;
-		internal System.Windows.Forms.MenuItem mnuHelpSep;
-		internal System.Windows.Forms.ToolBarButton tbtReportError;
-		internal System.Windows.Forms.Panel pnlPluginSpace;
+        internal System.Windows.Forms.MenuItem mnuHelpSep;
+        internal System.Windows.Forms.ToolBarButton tbtReportError;
+        internal System.Windows.Forms.Panel pnlPluginSpace;
         internal System.Windows.Forms.ToolStripButton tbtFavourites;
         internal System.Windows.Forms.ToolStripButton tbtBack;
         internal System.Windows.Forms.ToolStripButton tbtForward;
-		internal System.Windows.Forms.ToolBarButton tbtCurrentEps;
-		internal System.Windows.Forms.ImageList imlToolbar;
-		internal System.Windows.Forms.ContextMenu mnuOptions;
-		internal System.Windows.Forms.ContextMenu mnuHelp;
-		internal System.Windows.Forms.ToolBarButton tbtOptionsMenu;
-		internal System.Windows.Forms.ToolBarButton tbtHelpMenu;
+        internal System.Windows.Forms.ToolBarButton tbtCurrentEps;
+        internal System.Windows.Forms.ImageList imlToolbar;
+        internal System.Windows.Forms.ContextMenu mnuOptions;
+        internal System.Windows.Forms.ContextMenu mnuHelp;
+        internal System.Windows.Forms.ToolBarButton tbtOptionsMenu;
+        internal System.Windows.Forms.ToolBarButton tbtHelpMenu;
         internal System.Windows.Forms.TableLayoutPanel tblToolbars;
-		internal ExtToolBar tbrHelp;
-		internal System.Windows.Forms.Label lblSideMainTitle;
+        internal ExtToolBar tbrHelp;
+        internal System.Windows.Forms.Label lblSideMainTitle;
         internal System.Windows.Forms.RichTextBox txtSideDescript;
         internal System.Windows.Forms.PictureBox picSideBarBorder;
-		internal System.Windows.Forms.MenuItem mnuOptionsProviderOpts;
-		internal System.Windows.Forms.ToolBarButton tbtChooseProgramme;
-		internal System.Windows.Forms.MenuItem mnuOptionsProviderOptsNoProvs;
-		internal System.Windows.Forms.ContextMenu mnuListHdrs;
+        internal System.Windows.Forms.MenuItem mnuOptionsProviderOpts;
+        internal System.Windows.Forms.ToolBarButton tbtChooseProgramme;
+        internal System.Windows.Forms.MenuItem mnuOptionsProviderOptsNoProvs;
+        internal System.Windows.Forms.ContextMenu mnuListHdrs;
         internal System.Windows.Forms.MenuItem mnuListHdrsColumns;
         internal System.Windows.Forms.MenuItem mnuListHdrsReset;
-		internal System.Windows.Forms.MenuItem mnuListHdrsSep;
+        internal System.Windows.Forms.MenuItem mnuListHdrsSep;
         internal RadioDld.ExtListView lstFavourites;
-		internal System.Windows.Forms.ToolBarButton tbtAddFavourite;
+        internal System.Windows.Forms.ToolBarButton tbtAddFavourite;
         internal System.Windows.Forms.ToolBarButton tbtRemFavourite;
 
-		#endregion
-	}
+        #endregion
+    }
 }

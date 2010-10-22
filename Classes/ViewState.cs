@@ -18,129 +18,129 @@ using System.Collections.Generic;
 namespace RadioDld
 {
 
-	internal class ViewState
-	{
-		public enum MainTab
-		{
-			FindProgramme,
-			Favourites,
-			Subscriptions,
-			Downloads
-		}
+    internal class ViewState
+    {
+        public enum MainTab
+        {
+            FindProgramme,
+            Favourites,
+            Subscriptions,
+            Downloads
+        }
 
-		public enum View
-		{
-			FindNewChooseProvider,
-			FindNewProviderForm,
-			ProgEpisodes,
-			Favourites,
-			Subscriptions,
-			Downloads
-		}
+        public enum View
+        {
+            FindNewChooseProvider,
+            FindNewProviderForm,
+            ProgEpisodes,
+            Favourites,
+            Subscriptions,
+            Downloads
+        }
 
-		private struct ViewData
-		{
-			public MainTab Tab;
-			public View View;
-			public object Data;
-		}
+        private struct ViewData
+        {
+            public MainTab Tab;
+            public View View;
+            public object Data;
+        }
 
-		private Stack<ViewData> backData = new Stack<ViewData>();
+        private Stack<ViewData> backData = new Stack<ViewData>();
 
-		private Stack<ViewData> fwdData = new Stack<ViewData>();
-		public event UpdateNavBtnStateEventHandler UpdateNavBtnState;
-		public delegate void UpdateNavBtnStateEventHandler(bool enableBack, bool enableFwd);
-		public event ViewChangedEventHandler ViewChanged;
-		public delegate void ViewChangedEventHandler(View view, MainTab tab, object data);
+        private Stack<ViewData> fwdData = new Stack<ViewData>();
+        public event UpdateNavBtnStateEventHandler UpdateNavBtnState;
+        public delegate void UpdateNavBtnStateEventHandler(bool enableBack, bool enableFwd);
+        public event ViewChangedEventHandler ViewChanged;
+        public delegate void ViewChangedEventHandler(View view, MainTab tab, object data);
 
-		public View CurrentView {
-			get { return backData.Peek().View; }
-		}
+        public View CurrentView {
+            get { return backData.Peek().View; }
+        }
 
-		public object CurrentViewData {
-			get { return backData.Peek().Data; }
-			set {
-				ViewData curView = backData.Peek();
-				curView.Data = value;
-			}
-		}
+        public object CurrentViewData {
+            get { return backData.Peek().Data; }
+            set {
+                ViewData curView = backData.Peek();
+                curView.Data = value;
+            }
+        }
 
-		public void SetView(MainTab tab, View view)
-		{
-			SetView(tab, view, null);
-		}
+        public void SetView(MainTab tab, View view)
+        {
+            SetView(tab, view, null);
+        }
 
-		public void SetView(MainTab tab, View view, object viewData)
-		{
-			StoreView(tab, view, viewData);
-			if (ViewChanged != null) {
-				ViewChanged(view, tab, viewData);
-			}
-		}
+        public void SetView(MainTab tab, View view, object viewData)
+        {
+            StoreView(tab, view, viewData);
+            if (ViewChanged != null) {
+                ViewChanged(view, tab, viewData);
+            }
+        }
 
-		public void SetView(View view, object viewData)
-		{
-			ViewData currentView = backData.Peek();
-			SetView(currentView.Tab, view, viewData);
-		}
+        public void SetView(View view, object viewData)
+        {
+            ViewData currentView = backData.Peek();
+            SetView(currentView.Tab, view, viewData);
+        }
 
-		public void StoreView(MainTab tab, View view, object viewData)
-		{
-			ViewData storeView = default(ViewData);
+        public void StoreView(MainTab tab, View view, object viewData)
+        {
+            ViewData storeView = default(ViewData);
 
-			storeView.Tab = tab;
-			storeView.View = view;
-			storeView.Data = viewData;
+            storeView.Tab = tab;
+            storeView.View = view;
+            storeView.Data = viewData;
 
-			backData.Push(storeView);
+            backData.Push(storeView);
 
-			if (fwdData.Count > 0) {
-				fwdData.Clear();
-			}
+            if (fwdData.Count > 0) {
+                fwdData.Clear();
+            }
 
-			if (UpdateNavBtnState != null) {
-				UpdateNavBtnState(backData.Count > 1, false);
-			}
-		}
+            if (UpdateNavBtnState != null) {
+                UpdateNavBtnState(backData.Count > 1, false);
+            }
+        }
 
-		public void StoreView(View view, object viewData)
-		{
-			ViewData currentView = backData.Peek();
-			StoreView(currentView.Tab, view, viewData);
-		}
+        public void StoreView(View view, object viewData)
+        {
+            ViewData currentView = backData.Peek();
+            StoreView(currentView.Tab, view, viewData);
+        }
 
-		public void StoreView(object viewData)
-		{
-			ViewData currentView = backData.Peek();
-			StoreView(currentView.Tab, currentView.View, viewData);
-		}
+        public void StoreView(object viewData)
+        {
+            ViewData currentView = backData.Peek();
+            StoreView(currentView.Tab, currentView.View, viewData);
+        }
 
-		public void NavBack()
-		{
-			fwdData.Push(backData.Pop());
+        public void NavBack()
+        {
+            fwdData.Push(backData.Pop());
 
-			ViewData curView = backData.Peek();
+            ViewData curView = backData.Peek();
 
-			if (UpdateNavBtnState != null) {
-				UpdateNavBtnState(backData.Count > 1, fwdData.Count > 0);
-			}
-			if (ViewChanged != null) {
-				ViewChanged(curView.View, curView.Tab, curView.Data);
-			}
-		}
+            if (UpdateNavBtnState != null) {
+                UpdateNavBtnState(backData.Count > 1, fwdData.Count > 0);
+            }
+            if (ViewChanged != null) {
+                ViewChanged(curView.View, curView.Tab, curView.Data);
+            }
+        }
 
-		public void NavFwd()
-		{
-			backData.Push(fwdData.Pop());
+        public void NavFwd()
+        {
+            backData.Push(fwdData.Pop());
 
-			ViewData curView = backData.Peek();
+            ViewData curView = backData.Peek();
 
-			if (UpdateNavBtnState != null) {
-				UpdateNavBtnState(backData.Count > 1, fwdData.Count > 0);
-			}
-			if (ViewChanged != null) {
-				ViewChanged(curView.View, curView.Tab, curView.Data);
-			}
-		}
-	}
+            if (UpdateNavBtnState != null) {
+                UpdateNavBtnState(backData.Count > 1, fwdData.Count > 0);
+            }
+            if (ViewChanged != null) {
+                ViewChanged(curView.View, curView.Tab, curView.Data);
+            }
+        }
+    }
 }

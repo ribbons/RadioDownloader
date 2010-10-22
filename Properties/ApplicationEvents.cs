@@ -21,64 +21,64 @@ using System.Windows.Forms;
 
 namespace RadioDld.My
 {
-	internal partial class MyApplication
-	{
-		private void MyApplication_Startup(object sender, Microsoft.VisualBasic.ApplicationServices.StartupEventArgs e)
-		{
-			// Add an extra handler to catch unhandled exceptions in other threads
-			if (Debugger.IsAttached == false) {
-				AppDomain.CurrentDomain.UnhandledException += AppDomainExceptionHandler;
-			}
+    internal partial class MyApplication
+    {
+        private void MyApplication_Startup(object sender, Microsoft.VisualBasic.ApplicationServices.StartupEventArgs e)
+        {
+            // Add an extra handler to catch unhandled exceptions in other threads
+            if (Debugger.IsAttached == false) {
+                AppDomain.CurrentDomain.UnhandledException += AppDomainExceptionHandler;
+            }
 
-			// If /exit was passed on the command line, then just exit immediately
-			foreach (string commandLineArg in Environment.GetCommandLineArgs()) {
-				if (commandLineArg.ToUpperInvariant() == "/EXIT") {
-					e.Cancel = true;
-					return;
-				}
-			}
-		}
+            // If /exit was passed on the command line, then just exit immediately
+            foreach (string commandLineArg in Environment.GetCommandLineArgs()) {
+                if (commandLineArg.ToUpperInvariant() == "/EXIT") {
+                    e.Cancel = true;
+                    return;
+                }
+            }
+        }
 
-		private void MyApplication_StartupNextInstance(object sender, Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs e)
-		{
-			foreach (string commandLineArg in e.CommandLine) {
-				if (commandLineArg.ToUpperInvariant() == "/EXIT") {
-					// Close the application
-					My.MyProject.Forms.Main.mnuTrayExit_Click(sender, e);
-					return;
-				}
-			}
+        private void MyApplication_StartupNextInstance(object sender, Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs e)
+        {
+            foreach (string commandLineArg in e.CommandLine) {
+                if (commandLineArg.ToUpperInvariant() == "/EXIT") {
+                    // Close the application
+                    My.MyProject.Forms.Main.mnuTrayExit_Click(sender, e);
+                    return;
+                }
+            }
 
-			// Do the same as a double click on the tray icon
-			My.MyProject.Forms.Main.mnuTrayShow_Click(sender, e);
-		}
+            // Do the same as a double click on the tray icon
+            My.MyProject.Forms.Main.mnuTrayShow_Click(sender, e);
+        }
 
-		private void MyApplication_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
-		{
-			if (My.MyProject.Forms.ReportError.Visible == false) {
-				ErrorReporting report = new ErrorReporting(e.Exception);
-				My.MyProject.Forms.ReportError.AssignReport(report);
-				My.MyProject.Forms.ReportError.ShowDialog();
-			}
-		}
+        private void MyApplication_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
+        {
+            if (My.MyProject.Forms.ReportError.Visible == false) {
+                ErrorReporting report = new ErrorReporting(e.Exception);
+                My.MyProject.Forms.ReportError.AssignReport(report);
+                My.MyProject.Forms.ReportError.ShowDialog();
+            }
+        }
 
-		private void AppDomainExceptionHandler(object sender, System.UnhandledExceptionEventArgs e)
-		{
-			Exception unhandledExp = null;
+        private void AppDomainExceptionHandler(object sender, System.UnhandledExceptionEventArgs e)
+        {
+            Exception unhandledExp = null;
 
-			try {
-				unhandledExp = (Exception)e.ExceptionObject;
-			} catch (InvalidCastException) {
-				// The ExceptionObject isn't a child of System.Exception, so we don't know
-				// how to report it.  Instead, let the standard .net dialog appear.
-				return;
-			}
+            try {
+                unhandledExp = (Exception)e.ExceptionObject;
+            } catch (InvalidCastException) {
+                // The ExceptionObject isn't a child of System.Exception, so we don't know
+                // how to report it.  Instead, let the standard .net dialog appear.
+                return;
+            }
 
-			if (My.MyProject.Forms.ReportError.Visible == false) {
-				ErrorReporting report = new ErrorReporting(unhandledExp);
-				My.MyProject.Forms.ReportError.AssignReport(report);
-				My.MyProject.Forms.ReportError.ShowDialog();
-			}
-		}
-	}
+            if (My.MyProject.Forms.ReportError.Visible == false) {
+                ErrorReporting report = new ErrorReporting(unhandledExp);
+                My.MyProject.Forms.ReportError.AssignReport(report);
+                My.MyProject.Forms.ReportError.ShowDialog();
+            }
+        }
+    }
 }

@@ -17,14 +17,14 @@ using System;
 namespace RadioDld
 {
 
-	internal class DldProgData
-	{
-		public Guid PluginId { get; set; }
-		public string ProgExtId { get; set; }
-		public int EpId { get; set; }
-		public string EpisodeExtId { get; set; }
-		public ProgrammeInfo ProgInfo { get; set; }
-		public EpisodeInfo EpisodeInfo { get; set; }
-		public string FinalName { get; set; }
-	}
+    internal class DldProgData
+    {
+        public Guid PluginId { get; set; }
+        public string ProgExtId { get; set; }
+        public int EpId { get; set; }
+        public string EpisodeExtId { get; set; }
+        public ProgrammeInfo ProgInfo { get; set; }
+        public EpisodeInfo EpisodeInfo { get; set; }
+        public string FinalName { get; set; }
+    }
 }

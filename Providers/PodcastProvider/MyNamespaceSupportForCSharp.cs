@@ -11,7 +11,7 @@ using Microsoft.VisualBasic.ApplicationServices;
 
 namespace PodcastProvider.My
 {
-	partial class MyApplication : ApplicationBase
-	{
-	}
+    partial class MyApplication : ApplicationBase
+    {
+    }
 }

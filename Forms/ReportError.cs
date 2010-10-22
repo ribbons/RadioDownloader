@@ -22,44 +22,44 @@ namespace RadioDld
 
 
     internal partial class ReportError : Form
-	{
+    {
 
-		private ErrorReporting report;
-		public void AssignReport(ErrorReporting report)
-		{
-			this.report = report;
-		}
+        private ErrorReporting report;
+        public void AssignReport(ErrorReporting report)
+        {
+            this.report = report;
+        }
 
-		private void cmdSend_Click(System.Object sender, System.EventArgs e)
-		{
-			try {
-				this.Visible = false;
-				report.SendReport(Properties.Settings.Default.ErrorReportURL);
-			} catch {
-				// No way of reporting errors that have happened here, so just give up
-			}
+        private void cmdSend_Click(System.Object sender, System.EventArgs e)
+        {
+            try {
+                this.Visible = false;
+                report.SendReport(Properties.Settings.Default.ErrorReportURL);
+            } catch {
+                // No way of reporting errors that have happened here, so just give up
+            }
 
-			this.Close();
-		}
+            this.Close();
+        }
 
-		private void lnkWhatData_LinkClicked(System.Object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
-		{
-			Interaction.MsgBox(report.ToString());
-		}
+        private void lnkWhatData_LinkClicked(System.Object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+        {
+            Interaction.MsgBox(report.ToString());
+        }
 
-		private void cmdDontSend_Click(System.Object sender, System.EventArgs e)
-		{
-			this.Close();
-		}
+        private void cmdDontSend_Click(System.Object sender, System.EventArgs e)
+        {
+            this.Close();
+        }
 
-		private void Error_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
-		{
-			System.Environment.Exit(0);
-			// As there has been an error, call 'end' to blow away the rest of the app reasonably tidily
-		}
-		public ReportError()
-		{
-			InitializeComponent();
-		}
-	}
+        private void Error_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            System.Environment.Exit(0);
+            // As there has been an error, call 'end' to blow away the rest of the app reasonably tidily
+        }
+        public ReportError()
+        {
+            InitializeComponent();
+        }
+    }
 }

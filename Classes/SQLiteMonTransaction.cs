@@ -20,71 +20,71 @@ using System.Diagnostics;
 namespace RadioDld
 {
 
-	public class SQLiteMonTransaction : IDisposable
-	{
+    public class SQLiteMonTransaction : IDisposable
+    {
 
-		private static Dictionary<SQLiteTransaction, string> readerInfo = new Dictionary<SQLiteTransaction, string>();
+        private static Dictionary<SQLiteTransaction, string> readerInfo = new Dictionary<SQLiteTransaction, string>();
 
-		private static object readerInfoLock = new object();
-		private bool isDisposed;
+        private static object readerInfoLock = new object();
+        private bool isDisposed;
 
-		private SQLiteTransaction wrappedTrans;
-		public SQLiteMonTransaction(SQLiteTransaction transaction)
-		{
-			wrappedTrans = transaction;
+        private SQLiteTransaction wrappedTrans;
+        public SQLiteMonTransaction(SQLiteTransaction transaction)
+        {
+            wrappedTrans = transaction;
 
-			StackTrace trace = new StackTrace(true);
+            StackTrace trace = new StackTrace(true);
 
-			lock (readerInfoLock) {
-				readerInfo.Add(wrappedTrans, trace.ToString());
-			}
-		}
+            lock (readerInfoLock) {
+                readerInfo.Add(wrappedTrans, trace.ToString());
+            }
+        }
 
-		public static Exception AddTransactionsInfo(Exception exp)
-		{
-			string info = string.Empty;
+        public static Exception AddTransactionsInfo(Exception exp)
+        {
+            string info = string.Empty;
 
-			lock (readerInfoLock) {
-				foreach (string entry in readerInfo.Values) {
-					info += entry + Environment.NewLine;
-				}
-			}
+            lock (readerInfoLock) {
+                foreach (string entry in readerInfo.Values) {
+                    info += entry + Environment.NewLine;
+                }
+            }
 
-			if (!string.IsNullOrEmpty(info)) {
-				exp.Data.Add("transactions", info);
-			}
+            if (!string.IsNullOrEmpty(info)) {
+                exp.Data.Add("transactions", info);
+            }
 
-			return exp;
-		}
+            return exp;
+        }
 
-		public SQLiteTransaction Trans {
-			get { return wrappedTrans; }
-		}
+        public SQLiteTransaction Trans {
+            get { return wrappedTrans; }
+        }
 
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!this.isDisposed) {
-				if (disposing) {
-					lock (readerInfoLock) {
-						readerInfo.Remove(wrappedTrans);
-					}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.isDisposed) {
+                if (disposing) {
+                    lock (readerInfoLock) {
+                        readerInfo.Remove(wrappedTrans);
+                    }
 
-					wrappedTrans.Dispose();
-				}
-			}
+                    wrappedTrans.Dispose();
+                }
+            }
 
-			this.isDisposed = true;
-		}
+            this.isDisposed = true;
+        }
 
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         ~SQLiteMonTransaction()
-		{
-			Dispose(false);
-		}
-	}
+        {
+            Dispose(false);
+        }
+    }
 }

@@ -1,7 +1,7 @@
 namespace RadioDld
 {
-	partial class ReportError
-	{
+    partial class ReportError
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -27,7 +27,7 @@ namespace RadioDld
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-		{
+        {
             this.cmdSend = new System.Windows.Forms.Button();
             this.cmdDontSend = new System.Windows.Forms.Button();
             this.lblWhiteBar = new System.Windows.Forms.Label();
@@ -205,18 +205,18 @@ namespace RadioDld
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
         internal System.Windows.Forms.Button cmdSend;
         internal System.Windows.Forms.Button cmdDontSend;
-		internal System.Windows.Forms.Label lblWhiteBar;
-		internal System.Windows.Forms.Label lblTopMessage;
-		internal System.Windows.Forms.Label lblTopMessage2;
-		internal System.Windows.Forms.Label lblTopBorder;
-		internal System.Windows.Forms.PictureBox PictureBox1;
-		internal System.Windows.Forms.Label lblIfYouWere;
-		internal System.Windows.Forms.Label lblPleaseTell;
-		internal System.Windows.Forms.Label lblWeHaveCreated;
-		internal System.Windows.Forms.Label lblWeWill;
+        internal System.Windows.Forms.Label lblWhiteBar;
+        internal System.Windows.Forms.Label lblTopMessage;
+        internal System.Windows.Forms.Label lblTopMessage2;
+        internal System.Windows.Forms.Label lblTopBorder;
+        internal System.Windows.Forms.PictureBox PictureBox1;
+        internal System.Windows.Forms.Label lblIfYouWere;
+        internal System.Windows.Forms.Label lblPleaseTell;
+        internal System.Windows.Forms.Label lblWeHaveCreated;
+        internal System.Windows.Forms.Label lblWeWill;
         internal System.Windows.Forms.LinkLabel lnkWhatData;
 
         #endregion

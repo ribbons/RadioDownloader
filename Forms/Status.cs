@@ -21,142 +21,142 @@ namespace RadioDld
 {
 
     internal partial class Status : Form
-	{
-		private Thread showThread;
+    {
+        private Thread showThread;
 
-		private TaskbarNotify tbarNotif;
+        private TaskbarNotify tbarNotif;
 
         public Status()
         {
             InitializeComponent();
         }
 
-		public new void Show()
-		{
-			showThread = new Thread(ShowFormThread);
-			showThread.Start();
-		}
+        public new void Show()
+        {
+            showThread = new Thread(ShowFormThread);
+            showThread.Start();
+        }
 
-		private void ShowFormThread()
-		{
-			if (OsUtils.WinSevenOrLater()) {
-				tbarNotif = new TaskbarNotify();
-			}
+        private void ShowFormThread()
+        {
+            if (OsUtils.WinSevenOrLater()) {
+                tbarNotif = new TaskbarNotify();
+            }
 
-			base.ShowDialog();
-		}
+            base.ShowDialog();
+        }
 
-		public string StatusText {
-			get { return lblStatus.Text; }
-			set {
-				if (this.IsHandleCreated) {
+        public string StatusText {
+            get { return lblStatus.Text; }
+            set {
+                if (this.IsHandleCreated) {
                     this.Invoke((MethodInvoker)delegate { SetStatusText_FormThread(value); });
-				} else {
-					SetStatusText_FormThread(value);
-				}
-			}
-		}
+                } else {
+                    SetStatusText_FormThread(value);
+                }
+            }
+        }
 
-		private void SetStatusText_FormThread(string text)
-		{
-			lblStatus.Text = text;
-		}
+        private void SetStatusText_FormThread(string text)
+        {
+            lblStatus.Text = text;
+        }
 
-		public bool ProgressBarMarquee {
-			get { return prgProgress.Style == ProgressBarStyle.Marquee; }
-			set {
-				if (this.IsHandleCreated) {
+        public bool ProgressBarMarquee {
+            get { return prgProgress.Style == ProgressBarStyle.Marquee; }
+            set {
+                if (this.IsHandleCreated) {
                     this.Invoke((MethodInvoker)delegate { SetProgressBarMarquee_FormThread(value); });
-				} else {
-					SetProgressBarMarquee_FormThread(value);
-				}
-			}
-		}
+                } else {
+                    SetProgressBarMarquee_FormThread(value);
+                }
+            }
+        }
 
-		private void SetProgressBarMarquee_FormThread(bool marquee)
-		{
-			prgProgress.Style = marquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
+        private void SetProgressBarMarquee_FormThread(bool marquee)
+        {
+            prgProgress.Style = marquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
 
-			if (OsUtils.WinSevenOrLater() & this.IsHandleCreated) {
-				if (marquee) {
-					tbarNotif.SetProgressMarquee(this);
-				} else {
-					tbarNotif.SetProgressNone(this);
-				}
-			}
-		}
+            if (OsUtils.WinSevenOrLater() & this.IsHandleCreated) {
+                if (marquee) {
+                    tbarNotif.SetProgressMarquee(this);
+                } else {
+                    tbarNotif.SetProgressNone(this);
+                }
+            }
+        }
 
-		public int ProgressBarMax {
-			get { return prgProgress.Maximum; }
-			set {
-				if (this.IsHandleCreated) {
+        public int ProgressBarMax {
+            get { return prgProgress.Maximum; }
+            set {
+                if (this.IsHandleCreated) {
                     this.Invoke((MethodInvoker)delegate { SetProgressBarMax_FormThread(value); });
-				} else {
-					SetProgressBarMax_FormThread(value);
-				}
-			}
-		}
+                } else {
+                    SetProgressBarMax_FormThread(value);
+                }
+            }
+        }
 
-		private void SetProgressBarMax_FormThread(int value)
-		{
-			prgProgress.Maximum = value;
-		}
+        private void SetProgressBarMax_FormThread(int value)
+        {
+            prgProgress.Maximum = value;
+        }
 
-		public int ProgressBarValue {
-			get { return prgProgress.Value; }
-			set {
-				if (this.IsHandleCreated) {
+        public int ProgressBarValue {
+            get { return prgProgress.Value; }
+            set {
+                if (this.IsHandleCreated) {
                     this.Invoke((MethodInvoker)delegate { SetProgressBarValue_FormThread(value); });
-				} else {
-					SetProgressBarValue_FormThread(value);
-				}
-			}
-		}
+                } else {
+                    SetProgressBarValue_FormThread(value);
+                }
+            }
+        }
 
-		private void SetProgressBarValue_FormThread(int value)
-		{
-			prgProgress.Value = value;
+        private void SetProgressBarValue_FormThread(int value)
+        {
+            prgProgress.Value = value;
 
-			if (OsUtils.WinSevenOrLater() & this.IsHandleCreated) {
-				tbarNotif.SetProgressValue(this, value, prgProgress.Maximum);
-			}
-		}
+            if (OsUtils.WinSevenOrLater() & this.IsHandleCreated) {
+                tbarNotif.SetProgressValue(this, value, prgProgress.Maximum);
+            }
+        }
 
-		public new void Hide()
-		{
-			if (this.IsHandleCreated) {
+        public new void Hide()
+        {
+            if (this.IsHandleCreated) {
                 this.Invoke((MethodInvoker)delegate { HideForm_FormThread(); });
-			} else {
-				HideForm_FormThread();
-			}
-		}
+            } else {
+                HideForm_FormThread();
+            }
+        }
 
-		private void HideForm_FormThread()
-		{
-			base.Hide();
-		}
+        private void HideForm_FormThread()
+        {
+            base.Hide();
+        }
 
-		private void Status_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
-		{
-			e.Cancel = true;
-		}
+        private void Status_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            e.Cancel = true;
+        }
 
-		private void Status_Load(System.Object sender, System.EventArgs e)
-		{
-			this.Font = SystemFonts.MessageBoxFont;
-		}
+        private void Status_Load(System.Object sender, System.EventArgs e)
+        {
+            this.Font = SystemFonts.MessageBoxFont;
+        }
 
-		private void Status_Shown(object sender, System.EventArgs e)
-		{
-			if (OsUtils.WinSevenOrLater()) {
-				if (prgProgress.Style == ProgressBarStyle.Marquee) {
-					tbarNotif.SetProgressMarquee(this);
-				} else {
-					if (prgProgress.Value != 0) {
-						tbarNotif.SetProgressValue(this, prgProgress.Value, prgProgress.Maximum);
-					}
-				}
-			}
-		}
-	}
+        private void Status_Shown(object sender, System.EventArgs e)
+        {
+            if (OsUtils.WinSevenOrLater()) {
+                if (prgProgress.Style == ProgressBarStyle.Marquee) {
+                    tbarNotif.SetProgressMarquee(this);
+                } else {
+                    if (prgProgress.Value != 0) {
+                        tbarNotif.SetProgressValue(this, prgProgress.Value, prgProgress.Maximum);
+                    }
+                }
+            }
+        }
+    }
 }

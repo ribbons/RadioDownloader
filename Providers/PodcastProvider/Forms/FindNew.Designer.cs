@@ -1,7 +1,7 @@
 namespace PodcastProvider
 {
-	partial class FindNew
-	{
+    partial class FindNew
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -27,7 +27,7 @@ namespace PodcastProvider
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-		{
+        {
             this.pnlFindNew = new System.Windows.Forms.Panel();
             this.lblResult = new System.Windows.Forms.Label();
             this.lblInstructions = new System.Windows.Forms.Label();
@@ -99,13 +99,13 @@ namespace PodcastProvider
             this.pnlFindNew.PerformLayout();
             this.ResumeLayout(false);
 
-		}
-		internal System.Windows.Forms.Panel pnlFindNew;
+        }
+        internal System.Windows.Forms.Panel pnlFindNew;
         internal System.Windows.Forms.TextBox txtFeedURL;
         internal System.Windows.Forms.Button cmdViewEps;
-		internal System.Windows.Forms.Label lblInstructions;
-		internal System.Windows.Forms.Label lblResult;
+        internal System.Windows.Forms.Label lblInstructions;
+        internal System.Windows.Forms.Label lblResult;
 
         #endregion
-	}
+    }
 }

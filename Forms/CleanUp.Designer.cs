@@ -1,7 +1,7 @@
 namespace RadioDld
 {
-	partial class CleanUp
-	{
+    partial class CleanUp
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -27,7 +27,7 @@ namespace RadioDld
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-		{
+        {
             this.cmdOK = new System.Windows.Forms.Button();
             this.cmdCancel = new System.Windows.Forms.Button();
             this.lblExplainOrphan = new System.Windows.Forms.Label();
@@ -123,11 +123,11 @@ namespace RadioDld
             this.ResumeLayout(false);
             this.PerformLayout();
 
-		}
+        }
         internal System.Windows.Forms.Button cmdOK;
         internal System.Windows.Forms.Button cmdCancel;
         internal System.Windows.Forms.Label lblExplainOrphan;
-		internal System.Windows.Forms.RadioButton radType;
+        internal System.Windows.Forms.RadioButton radType;
 
         #endregion
     }

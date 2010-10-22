@@ -1,7 +1,7 @@
 namespace RadioDld
 {
-	partial class UpdateNotify
-	{
+    partial class UpdateNotify
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -26,8 +26,8 @@ namespace RadioDld
         /// Required method for Designer support - do not modify
         /// the contents of this method with the code editor.
         /// </summary>
-		private void InitializeComponent()
-		{
+        private void InitializeComponent()
+        {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdateNotify));
             this.uxMessage = new System.Windows.Forms.Label();
             this.uxYes = new System.Windows.Forms.Button();
@@ -90,10 +90,10 @@ namespace RadioDld
             this.Load += new System.EventHandler(this.Update_Load);
             this.ResumeLayout(false);
 
-		}
-		internal System.Windows.Forms.Label uxMessage;
-		internal System.Windows.Forms.Button uxYes;
-		internal System.Windows.Forms.Button uxNo;
+        }
+        internal System.Windows.Forms.Label uxMessage;
+        internal System.Windows.Forms.Button uxYes;
+        internal System.Windows.Forms.Button uxNo;
 
         #endregion
     }

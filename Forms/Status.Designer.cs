@@ -1,7 +1,7 @@
 namespace RadioDld
 {
-	partial class Status
-	{
+    partial class Status
+    {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -27,7 +27,7 @@ namespace RadioDld
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent()
-		{
+        {
             this.lblStatus = new System.Windows.Forms.Label();
             this.prgProgress = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
@@ -70,9 +70,9 @@ namespace RadioDld
             this.Shown += new System.EventHandler(this.Status_Shown);
             this.ResumeLayout(false);
 
-		}
-		private System.Windows.Forms.Label lblStatus;
-		private System.Windows.Forms.ProgressBar prgProgress;
+        }
+        private System.Windows.Forms.Label lblStatus;
+        private System.Windows.Forms.ProgressBar prgProgress;
 
         #endregion
     }

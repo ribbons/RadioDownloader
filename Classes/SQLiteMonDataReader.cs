@@ -20,112 +20,112 @@ using System.Diagnostics;
 namespace RadioDld
 {
 
-	public class SQLiteMonDataReader : IDisposable
-	{
+    public class SQLiteMonDataReader : IDisposable
+    {
 
-		private static Dictionary<SQLiteDataReader, string> readerInfo = new Dictionary<SQLiteDataReader, string>();
+        private static Dictionary<SQLiteDataReader, string> readerInfo = new Dictionary<SQLiteDataReader, string>();
 
-		private static object readerInfoLock = new object();
-		private bool isDisposed;
+        private static object readerInfoLock = new object();
+        private bool isDisposed;
 
-		private SQLiteDataReader wrappedReader;
-		public SQLiteMonDataReader(SQLiteDataReader reader)
-		{
-			wrappedReader = reader;
+        private SQLiteDataReader wrappedReader;
+        public SQLiteMonDataReader(SQLiteDataReader reader)
+        {
+            wrappedReader = reader;
 
-			StackTrace trace = new StackTrace(true);
+            StackTrace trace = new StackTrace(true);
 
-			lock (readerInfoLock) {
-				readerInfo.Add(wrappedReader, trace.ToString());
-			}
-		}
+            lock (readerInfoLock) {
+                readerInfo.Add(wrappedReader, trace.ToString());
+            }
+        }
 
-		public static Exception AddReadersInfo(Exception exp)
-		{
-			string info = string.Empty;
+        public static Exception AddReadersInfo(Exception exp)
+        {
+            string info = string.Empty;
 
-			lock (readerInfoLock) {
-				foreach (string entry in readerInfo.Values) {
-					info += entry + Environment.NewLine;
-				}
-			}
+            lock (readerInfoLock) {
+                foreach (string entry in readerInfo.Values) {
+                    info += entry + Environment.NewLine;
+                }
+            }
 
-			if (!string.IsNullOrEmpty(info)) {
-				exp.Data.Add("readers", info);
-			}
+            if (!string.IsNullOrEmpty(info)) {
+                exp.Data.Add("readers", info);
+            }
 
-			return exp;
-		}
+            return exp;
+        }
 
-		public int GetOrdinal(string name)
-		{
-			return wrappedReader.GetOrdinal(name);
-		}
+        public int GetOrdinal(string name)
+        {
+            return wrappedReader.GetOrdinal(name);
+        }
 
-		public bool GetBoolean(int i)
-		{
-			return wrappedReader.GetBoolean(i);
-		}
+        public bool GetBoolean(int i)
+        {
+            return wrappedReader.GetBoolean(i);
+        }
 
-		public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
-		{
-			return wrappedReader.GetBytes(i, fieldOffset, buffer, bufferOffset, length);
-		}
+        public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
+        {
+            return wrappedReader.GetBytes(i, fieldOffset, buffer, bufferOffset, length);
+        }
 
-		public System.DateTime GetDateTime(int i)
-		{
-			return wrappedReader.GetDateTime(i);
-		}
+        public System.DateTime GetDateTime(int i)
+        {
+            return wrappedReader.GetDateTime(i);
+        }
 
-		public int GetInt32(int i)
-		{
-			return wrappedReader.GetInt32(i);
-		}
+        public int GetInt32(int i)
+        {
+            return wrappedReader.GetInt32(i);
+        }
 
-		public string GetString(int i)
-		{
-			return wrappedReader.GetString(i);
-		}
+        public string GetString(int i)
+        {
+            return wrappedReader.GetString(i);
+        }
 
-		public object GetValue(int i)
-		{
-			return wrappedReader.GetValue(i);
-		}
+        public object GetValue(int i)
+        {
+            return wrappedReader.GetValue(i);
+        }
 
-		public bool IsDBNull(int i)
-		{
-			return wrappedReader.IsDBNull(i);
-		}
+        public bool IsDBNull(int i)
+        {
+            return wrappedReader.IsDBNull(i);
+        }
 
-		public bool Read()
-		{
-			return wrappedReader.Read();
-		}
+        public bool Read()
+        {
+            return wrappedReader.Read();
+        }
 
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!this.isDisposed) {
-				if (disposing) {
-					lock (readerInfoLock) {
-						readerInfo.Remove(wrappedReader);
-					}
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.isDisposed) {
+                if (disposing) {
+                    lock (readerInfoLock) {
+                        readerInfo.Remove(wrappedReader);
+                    }
 
-					wrappedReader.Dispose();
-				}
-			}
+                    wrappedReader.Dispose();
+                }
+            }
 
-			this.isDisposed = true;
-		}
+            this.isDisposed = true;
+        }
 
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         ~SQLiteMonDataReader()
-		{
-			Dispose(false);
-		}
-	}
+        {
+            Dispose(false);
+        }
+    }
 }

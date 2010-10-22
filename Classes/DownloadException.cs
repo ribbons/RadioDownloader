@@ -20,106 +20,106 @@ using System.Security.Permissions;
 namespace RadioDld
 {
 
-	[Serializable()]
-	public class DldErrorDataItem
-	{
-		public string Name { get; set; }
-		public string Data { get; set; }
+    [Serializable()]
+    public class DldErrorDataItem
+    {
+        public string Name { get; set; }
+        public string Data { get; set; }
 
-		protected DldErrorDataItem()
-		{
-			// Do nothing, just needed for deserialisation
-		}
+        protected DldErrorDataItem()
+        {
+            // Do nothing, just needed for deserialisation
+        }
 
-		public DldErrorDataItem(string name, string data)
-		{
-			this.Name = name;
-			this.Data = data;
-		}
-	}
+        public DldErrorDataItem(string name, string data)
+        {
+            this.Name = name;
+            this.Data = data;
+        }
+    }
 }
 namespace RadioDld
 {
 
-	public enum ErrorType
-	{
-		UnknownError = 0,
-		LocalProblem = 1,
-		ShorterThanExpected = 2,
-		NotAvailable = 3,
-		RemoveFromList = 4,
-		NotAvailableInLocation = 5,
-		NetworkProblem = 6,
-		RemoteProblem = 7
-	}
+    public enum ErrorType
+    {
+        UnknownError = 0,
+        LocalProblem = 1,
+        ShorterThanExpected = 2,
+        NotAvailable = 3,
+        RemoveFromList = 4,
+        NotAvailableInLocation = 5,
+        NetworkProblem = 6,
+        RemoteProblem = 7
+    }
 }
 namespace RadioDld
 {
 
-	[Serializable()]
-	public class DownloadException : Exception
-	{
-		private readonly ErrorType type;
+    [Serializable()]
+    public class DownloadException : Exception
+    {
+        private readonly ErrorType type;
 
-		private readonly List<DldErrorDataItem> extraDetails;
-		public DownloadException() : base()
-		{
+        private readonly List<DldErrorDataItem> extraDetails;
+        public DownloadException() : base()
+        {
 
-			this.type = ErrorType.UnknownError;
-		}
+            this.type = ErrorType.UnknownError;
+        }
 
-		public DownloadException(string message) : base(message)
-		{
+        public DownloadException(string message) : base(message)
+        {
 
-			this.type = ErrorType.UnknownError;
-		}
+            this.type = ErrorType.UnknownError;
+        }
 
-		public DownloadException(string message, Exception innerException) : base(message, innerException)
-		{
+        public DownloadException(string message, Exception innerException) : base(message, innerException)
+        {
 
-			this.type = ErrorType.UnknownError;
-		}
+            this.type = ErrorType.UnknownError;
+        }
 
-		public DownloadException(ErrorType type)
-		{
-			this.type = type;
-		}
+        public DownloadException(ErrorType type)
+        {
+            this.type = type;
+        }
 
-		public DownloadException(ErrorType type, string message) : base(message)
-		{
+        public DownloadException(ErrorType type, string message) : base(message)
+        {
 
-			this.type = type;
-		}
+            this.type = type;
+        }
 
-		public DownloadException(ErrorType type, string message, List<DldErrorDataItem> extraDetails) : base(message)
-		{
+        public DownloadException(ErrorType type, string message, List<DldErrorDataItem> extraDetails) : base(message)
+        {
 
-			this.type = type;
-			this.extraDetails = extraDetails;
-		}
+            this.type = type;
+            this.extraDetails = extraDetails;
+        }
 
-		protected DownloadException(SerializationInfo info, StreamingContext context) : base(info, context)
-		{
+        protected DownloadException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
 
-			this.type = (ErrorType)info.GetValue("type", typeof(ErrorType));
-			this.extraDetails = (List<DldErrorDataItem>)info.GetValue("extraDetails", typeof(List<DldErrorDataItem>));
-		}
+            this.type = (ErrorType)info.GetValue("type", typeof(ErrorType));
+            this.extraDetails = (List<DldErrorDataItem>)info.GetValue("extraDetails", typeof(List<DldErrorDataItem>));
+        }
 
-		[SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-		public override void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			base.GetObjectData(info, context);
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
 
-			info.AddValue("type", type);
-			info.AddValue("extraDetails", extraDetails);
-		}
+            info.AddValue("type", type);
+            info.AddValue("extraDetails", extraDetails);
+        }
 
-		public ErrorType TypeOfError {
-			get { return type; }
-		}
+        public ErrorType TypeOfError {
+            get { return type; }
+        }
 
-		public List<DldErrorDataItem> ErrorExtraDetails {
-			get { return extraDetails; }
-		}
-	}
+        public List<DldErrorDataItem> ErrorExtraDetails {
+            get { return extraDetails; }
+        }
+    }
 }

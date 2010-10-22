@@ -24,99 +24,99 @@ namespace RadioDld
 {
 
     internal partial class Preferences : Form
-	{
+    {
 
-		private bool cancelClose;
+        private bool cancelClose;
 
         public Preferences()
         {
             InitializeComponent();
         }
 
-		private void cmdChangeFolder_Click(System.Object eventSender, System.EventArgs eventArgs)
-		{
-			FolderBrowserDialog BrowseDialog = new FolderBrowserDialog();
-			BrowseDialog.SelectedPath = txtSaveIn.Text;
-			BrowseDialog.Description = "Choose the folder to save downloaded programmes in:";
+        private void cmdChangeFolder_Click(System.Object eventSender, System.EventArgs eventArgs)
+        {
+            FolderBrowserDialog BrowseDialog = new FolderBrowserDialog();
+            BrowseDialog.SelectedPath = txtSaveIn.Text;
+            BrowseDialog.Description = "Choose the folder to save downloaded programmes in:";
 
-			if (BrowseDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
-				txtSaveIn.Text = BrowseDialog.SelectedPath;
-			}
-		}
+            if (BrowseDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+                txtSaveIn.Text = BrowseDialog.SelectedPath;
+            }
+        }
 
-		private void cmdOK_Click(System.Object eventSender, System.EventArgs eventArgs)
-		{
-			if (string.IsNullOrEmpty(txtFileNameFormat.Text)) {
-				Interaction.MsgBox("Please enter a value for the downloaded programme file name format.", MsgBoxStyle.Exclamation);
-				txtFileNameFormat.Focus();
-				cancelClose = true;
-				return;
-			}
+        private void cmdOK_Click(System.Object eventSender, System.EventArgs eventArgs)
+        {
+            if (string.IsNullOrEmpty(txtFileNameFormat.Text)) {
+                Interaction.MsgBox("Please enter a value for the downloaded programme file name format.", MsgBoxStyle.Exclamation);
+                txtFileNameFormat.Focus();
+                cancelClose = true;
+                return;
+            }
 
-			Properties.Settings.Default.RunOnStartup = uxRunOnStartup.Checked;
-			Properties.Settings.Default.SaveFolder = txtSaveIn.Text;
-			Properties.Settings.Default.FileNameFormat = txtFileNameFormat.Text;
-			Properties.Settings.Default.RunAfterCommand = txtRunAfter.Text;
+            Properties.Settings.Default.RunOnStartup = uxRunOnStartup.Checked;
+            Properties.Settings.Default.SaveFolder = txtSaveIn.Text;
+            Properties.Settings.Default.FileNameFormat = txtFileNameFormat.Text;
+            Properties.Settings.Default.RunAfterCommand = txtRunAfter.Text;
 
-			if (OsUtils.WinSevenOrLater()) {
-				Properties.Settings.Default.CloseToSystray = uxCloseToSystray.Checked;
-			}
+            if (OsUtils.WinSevenOrLater()) {
+                Properties.Settings.Default.CloseToSystray = uxCloseToSystray.Checked;
+            }
 
-			OsUtils.ApplyRunOnStartup();
-			Properties.Settings.Default.Save();
-		}
+            OsUtils.ApplyRunOnStartup();
+            Properties.Settings.Default.Save();
+        }
 
-		private void Preferences_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
-		{
-			if (cancelClose) {
-				// Prevent the form from being automatically closed if it failed validation
-				e.Cancel = true;
-				cancelClose = false;
-			}
-		}
+        private void Preferences_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            if (cancelClose) {
+                // Prevent the form from being automatically closed if it failed validation
+                e.Cancel = true;
+                cancelClose = false;
+            }
+        }
 
-		private void Preferences_Load(System.Object eventSender, System.EventArgs eventArgs)
-		{
-			this.Font = SystemFonts.MessageBoxFont;
+        private void Preferences_Load(System.Object eventSender, System.EventArgs eventArgs)
+        {
+            this.Font = SystemFonts.MessageBoxFont;
 
-			uxRunOnStartup.Checked = Properties.Settings.Default.RunOnStartup;
+            uxRunOnStartup.Checked = Properties.Settings.Default.RunOnStartup;
 
-			if (OsUtils.WinSevenOrLater()) {
-				uxCloseToSystray.Checked = Properties.Settings.Default.CloseToSystray;
-			} else {
-				uxCloseToSystray.Checked = true;
-				uxCloseToSystray.Enabled = false;
-			}
+            if (OsUtils.WinSevenOrLater()) {
+                uxCloseToSystray.Checked = Properties.Settings.Default.CloseToSystray;
+            } else {
+                uxCloseToSystray.Checked = true;
+                uxCloseToSystray.Enabled = false;
+            }
 
-			try {
-				txtSaveIn.Text = FileUtils.GetSaveFolder();
-			} catch (DirectoryNotFoundException) {
-				txtSaveIn.Text = Properties.Settings.Default.SaveFolder;
-			}
+            try {
+                txtSaveIn.Text = FileUtils.GetSaveFolder();
+            } catch (DirectoryNotFoundException) {
+                txtSaveIn.Text = Properties.Settings.Default.SaveFolder;
+            }
 
-			txtFileNameFormat.Text = Properties.Settings.Default.FileNameFormat;
-			txtRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
-		}
+            txtFileNameFormat.Text = Properties.Settings.Default.FileNameFormat;
+            txtRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
+        }
 
-		private void txtFileNameFormat_TextChanged(System.Object sender, System.EventArgs e)
-		{
-			lblFilenameFormatResult.Text = "Result: " + FileUtils.CreateSaveFileName(txtFileNameFormat.Text, "Programme Name", "Episode Name", DateAndTime.Now) + ".mp3";
-		}
+        private void txtFileNameFormat_TextChanged(System.Object sender, System.EventArgs e)
+        {
+            lblFilenameFormatResult.Text = "Result: " + FileUtils.CreateSaveFileName(txtFileNameFormat.Text, "Programme Name", "Episode Name", DateAndTime.Now) + ".mp3";
+        }
 
-		private void cmdReset_Click(System.Object sender, System.EventArgs e)
-		{
-			if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes) {
+        private void cmdReset_Click(System.Object sender, System.EventArgs e)
+        {
+            if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes) {
                 Properties.Settings.Default.RunOnStartup = Convert.ToBoolean(Properties.Settings.Default.Properties["RunOnStartup"].DefaultValue, CultureInfo.InvariantCulture);
                 Properties.Settings.Default.CloseToSystray = Convert.ToBoolean(Properties.Settings.Default.Properties["CloseToSystray"].DefaultValue, CultureInfo.InvariantCulture);
-				Properties.Settings.Default.SaveFolder = (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue;
+                Properties.Settings.Default.SaveFolder = (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue;
                 Properties.Settings.Default.FileNameFormat = (string)Properties.Settings.Default.Properties["FileNameFormat"].DefaultValue;
                 Properties.Settings.Default.RunAfterCommand = (string)Properties.Settings.Default.Properties["RunAfterCommand"].DefaultValue;
 
-				OsUtils.ApplyRunOnStartup();
-				Properties.Settings.Default.Save();
+                OsUtils.ApplyRunOnStartup();
+                Properties.Settings.Default.Save();
 
-				this.Close();
-			}
-		}
-	}
+                this.Close();
+            }
+        }
+    }
 }

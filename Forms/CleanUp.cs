@@ -19,39 +19,39 @@ namespace RadioDld
 {
 
     internal partial class CleanUp : Form
-	{
+    {
 
 
-		private Data progData;
+        private Data progData;
 
         public CleanUp()
         {
             InitializeComponent();
         }
 
-		private void CleanUp_Load(System.Object sender, System.EventArgs e)
-		{
-			progData = Data.GetInstance();
-			this.Font = SystemFonts.MessageBoxFont;
-		}
+        private void CleanUp_Load(System.Object sender, System.EventArgs e)
+        {
+            progData = Data.GetInstance();
+            this.Font = SystemFonts.MessageBoxFont;
+        }
 
-		private void cmdCancel_Click(System.Object eventSender, System.EventArgs eventArgs)
-		{
-			this.Close();
-			this.Dispose();
-		}
+        private void cmdCancel_Click(System.Object eventSender, System.EventArgs eventArgs)
+        {
+            this.Close();
+            this.Dispose();
+        }
 
-		private void cmdOK_Click(System.Object sender, System.EventArgs e)
-		{
-			cmdOK.Enabled = false;
-			cmdCancel.Enabled = false;
-			radType.Enabled = false;
-			lblExplainOrphan.Enabled = false;
+        private void cmdOK_Click(System.Object sender, System.EventArgs e)
+        {
+            cmdOK.Enabled = false;
+            cmdCancel.Enabled = false;
+            radType.Enabled = false;
+            lblExplainOrphan.Enabled = false;
 
-			progData.PerformCleanup();
+            progData.PerformCleanup();
 
-			this.Close();
-			this.Dispose();
-		}
-	}
+            this.Close();
+            this.Dispose();
+        }
+    }
 }

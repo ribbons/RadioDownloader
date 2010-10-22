@@ -19,40 +19,40 @@ namespace RadioDld
     using System.Globalization;
     using System.Windows.Forms;
 
-	internal class ListItemComparer : IComparer
-	{
+    internal class ListItemComparer : IComparer
+    {
 
-		public enum ListType
-		{
-			Favourite,
-			Subscription,
-			Download
-		}
+        public enum ListType
+        {
+            Favourite,
+            Subscription,
+            Download
+        }
 
-		private Data dataInstance;
+        private Data dataInstance;
 
-		private ListType compareType;
-		public ListItemComparer(ListType compareType)
-		{
-			dataInstance = Data.GetInstance();
-			this.compareType = compareType;
-		}
+        private ListType compareType;
+        public ListItemComparer(ListType compareType)
+        {
+            dataInstance = Data.GetInstance();
+            this.compareType = compareType;
+        }
 
-		public int Compare(object x, object y)
-		{
+        public int Compare(object x, object y)
+        {
             int itemXId = Convert.ToInt32(((ListViewItem)x).Name, CultureInfo.InvariantCulture);
             int itemYId = Convert.ToInt32(((ListViewItem)y).Name, CultureInfo.InvariantCulture);
 
-			switch (compareType) {
-				case ListType.Favourite:
-					return dataInstance.CompareFavourites(itemXId, itemYId);
-				case ListType.Subscription:
-					return dataInstance.CompareSubscriptions(itemXId, itemYId);
-				case ListType.Download:
-					return dataInstance.CompareDownloads(itemXId, itemYId);
-				default:
-					throw new InvalidOperationException("Unknown compare type of " + compareType.ToString());
-			}
-		}
-	}
+            switch (compareType) {
+                case ListType.Favourite:
+                    return dataInstance.CompareFavourites(itemXId, itemYId);
+                case ListType.Subscription:
+                    return dataInstance.CompareSubscriptions(itemXId, itemYId);
+                case ListType.Download:
+                    return dataInstance.CompareDownloads(itemXId, itemYId);
+                default:
+                    throw new InvalidOperationException("Unknown compare type of " + compareType.ToString());
+            }
+        }
+    }
 }

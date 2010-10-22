@@ -22,36 +22,36 @@ namespace RadioDld
 
 
     internal sealed partial class About : Form
-	{
-		private void About_Load(System.Object sender, System.EventArgs e)
-		{
-			// Set the title of the form.
-			string applicationTitle = null;
-			if (!string.IsNullOrEmpty(RadioDld.My.MyProject.Application.Info.Title)) {
-				applicationTitle = RadioDld.My.MyProject.Application.Info.Title;
-			} else {
-				applicationTitle = System.IO.Path.GetFileNameWithoutExtension(RadioDld.My.MyProject.Application.Info.AssemblyName);
-			}
+    {
+        private void About_Load(System.Object sender, System.EventArgs e)
+        {
+            // Set the title of the form.
+            string applicationTitle = null;
+            if (!string.IsNullOrEmpty(RadioDld.My.MyProject.Application.Info.Title)) {
+                applicationTitle = RadioDld.My.MyProject.Application.Info.Title;
+            } else {
+                applicationTitle = System.IO.Path.GetFileNameWithoutExtension(RadioDld.My.MyProject.Application.Info.AssemblyName);
+            }
 
-			this.Font = SystemFonts.MessageBoxFont;
+            this.Font = SystemFonts.MessageBoxFont;
 
-			this.Text = "About " + applicationTitle;
-			this.LabelNameAndVer.Text = RadioDld.My.MyProject.Application.Info.ProductName + " " + RadioDld.My.MyProject.Application.Info.Version.ToString();
-			this.LabelCopyright.Text = RadioDld.My.MyProject.Application.Info.Copyright;
-		}
+            this.Text = "About " + applicationTitle;
+            this.LabelNameAndVer.Text = RadioDld.My.MyProject.Application.Info.ProductName + " " + RadioDld.My.MyProject.Application.Info.Version.ToString();
+            this.LabelCopyright.Text = RadioDld.My.MyProject.Application.Info.Copyright;
+        }
 
-		private void OKButton_Click(System.Object sender, System.EventArgs e)
-		{
-			this.Close();
-		}
+        private void OKButton_Click(System.Object sender, System.EventArgs e)
+        {
+            this.Close();
+        }
 
-		private void HomepageLink_Click(object sender, System.EventArgs e)
-		{
-			Process.Start("http://www.nerdoftheherd.com/tools/radiodld/");
-		}
-		public About()
-		{
-			InitializeComponent();
-		}
-	}
+        private void HomepageLink_Click(object sender, System.EventArgs e)
+        {
+            Process.Start("http://www.nerdoftheherd.com/tools/radiodld/");
+        }
+        public About()
+        {
+            InitializeComponent();
+        }
+    }
 }
