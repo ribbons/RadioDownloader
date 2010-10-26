@@ -191,7 +191,7 @@ namespace RadioDld
 
         public static void ApplyRunOnStartup()
         {
-            RegistryKey runKey = RadioDld.My.MyProject.Computer.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            RegistryKey runKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
             if (Properties.Settings.Default.RunOnStartup)
             {

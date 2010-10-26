@@ -35,23 +35,6 @@ namespace RadioDld.My
         }
 
         [ThreadStatic]
-        static MyComputer computer;
-
-        public static MyComputer Computer
-        {
-            [DebuggerStepThrough]
-            get
-            {
-                if (computer == null)
-                {
-                    computer = new MyComputer();
-                }
-
-                return computer;
-            }
-        }
-
-        [ThreadStatic]
         static User user;
 
         public static User User

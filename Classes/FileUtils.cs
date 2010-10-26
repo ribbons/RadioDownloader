@@ -39,7 +39,7 @@ namespace RadioDld
 
             try
             {
-                saveFolder = Path.Combine(RadioDld.My.MyProject.Computer.FileSystem.SpecialDirectories.MyDocuments, defaultFolder);
+                saveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), defaultFolder);
             }
             catch (DirectoryNotFoundException)
             {
@@ -53,7 +53,10 @@ namespace RadioDld
 
         public static string GetAppDataFolder()
         {
-            return new DirectoryInfo(RadioDld.My.MyProject.Computer.FileSystem.SpecialDirectories.CurrentUserApplicationData).Parent.FullName;
+            string folderPath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com"), "Radio Downloader");
+            Directory.CreateDirectory(folderPath);
+
+            return folderPath;
         }
 
         public static string FindFreeSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime? episodeDate, string baseSavePath)
