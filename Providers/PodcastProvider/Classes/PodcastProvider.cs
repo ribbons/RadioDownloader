@@ -580,7 +580,6 @@ namespace PodcastProvider
 
         private Bitmap RSSNodeImage(XmlNode xmlNode, XmlNamespaceManager xmlNamespaceMgr)
         {
-            Bitmap functionReturnValue = null;
             CachedWebClient cachedWeb = CachedWebClient.GetInstance();
 
             try
@@ -591,65 +590,47 @@ namespace PodcastProvider
                 {
                     Uri imageUrl = new Uri(xmlImageNode.Attributes["href"].Value);
                     byte[] bteImageData = cachedWeb.DownloadData(imageUrl, intCacheHTTPHours);
-                    functionReturnValue = new Bitmap(new System.IO.MemoryStream(bteImageData));
-                }
-                else
-                {
-                    functionReturnValue = null;
+                    return new Bitmap(new System.IO.MemoryStream(bteImageData));
                 }
             }
             catch
             {
-                functionReturnValue = null;
+                // Ignore errors and try the next option instead
             }
 
-            if (functionReturnValue == null)
+            try
             {
-                try
-                {
-                    XmlNode xmlImageUrlNode = xmlNode.SelectSingleNode("image/url");
+                XmlNode xmlImageUrlNode = xmlNode.SelectSingleNode("image/url");
 
-                    if (xmlImageUrlNode != null)
-                    {
-                        Uri imageUrl = new Uri(xmlImageUrlNode.InnerText);
-                        byte[] bteImageData = cachedWeb.DownloadData(imageUrl, intCacheHTTPHours);
-                        functionReturnValue = new Bitmap(new System.IO.MemoryStream(bteImageData));
-                    }
-                    else
-                    {
-                        functionReturnValue = null;
-                    }
-                }
-                catch
+                if (xmlImageUrlNode != null)
                 {
-                    functionReturnValue = null;
-                }
-
-                if (functionReturnValue == null)
-                {
-                    try
-                    {
-                        XmlNode xmlImageNode = xmlNode.SelectSingleNode("media:thumbnail", xmlNamespaceMgr);
-
-                        if (xmlImageNode != null)
-                        {
-                            Uri imageUrl = new Uri(xmlImageNode.Attributes["url"].Value);
-                            byte[] bteImageData = cachedWeb.DownloadData(imageUrl, intCacheHTTPHours);
-                            functionReturnValue = new Bitmap(new System.IO.MemoryStream(bteImageData));
-                        }
-                        else
-                        {
-                            functionReturnValue = null;
-                        }
-                    }
-                    catch
-                    {
-                        functionReturnValue = null;
-                    }
+                    Uri imageUrl = new Uri(xmlImageUrlNode.InnerText);
+                    byte[] bteImageData = cachedWeb.DownloadData(imageUrl, intCacheHTTPHours);
+                    return new Bitmap(new System.IO.MemoryStream(bteImageData));
                 }
             }
+            catch
+            {
+                // Ignore errors and try the next option instead
+            }
 
-            return functionReturnValue;
+            try
+            {
+                XmlNode xmlImageNode = xmlNode.SelectSingleNode("media:thumbnail", xmlNamespaceMgr);
+
+                if (xmlImageNode != null)
+                {
+                    Uri imageUrl = new Uri(xmlImageNode.Attributes["url"].Value);
+                    byte[] bteImageData = cachedWeb.DownloadData(imageUrl, intCacheHTTPHours);
+                    return new Bitmap(new System.IO.MemoryStream(bteImageData));
+                }
+            }
+            catch
+            {
+                // Ignore errors
+            }
+
+            return null;
         }
 
         private XmlNamespaceManager CreateNamespaceMgr(XmlDocument xmlDocument)

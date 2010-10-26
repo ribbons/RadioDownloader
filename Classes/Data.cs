@@ -1873,7 +1873,6 @@ namespace RadioDld
 
         private Bitmap RetrieveImage(int imgid)
         {
-            Bitmap functionReturnValue = null;
             using (SQLiteCommand command = new SQLiteCommand("select image from images where imgid=@imgid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@imgid", imgid));
@@ -1890,11 +1889,9 @@ namespace RadioDld
                     byte[] content = new byte[dataLength];
 
                     reader.GetBytes(reader.GetOrdinal("image"), 0, content, 0, dataLength);
-                    functionReturnValue = new Bitmap(new MemoryStream(content));
+                    return new Bitmap(new MemoryStream(content));
                 }
             }
-
-            return functionReturnValue;
         }
 
         private List<string> GetAvailableEpisodes(Guid providerId, string progExtId)

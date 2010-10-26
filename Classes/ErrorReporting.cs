@@ -215,14 +215,13 @@ namespace RadioDld
 
         public override string ToString()
         {
-            string functionReturnValue = null;
-            functionReturnValue = "";
+            string stringValue = "";
 
             try
             {
                 foreach (KeyValuePair<string, string> reportField in fields)
                 {
-                    functionReturnValue += reportField.Key + ": " + reportField.Value + Constants.vbCrLf;
+                    stringValue += reportField.Key + ": " + reportField.Value + Constants.vbCrLf;
                 }
             }
             catch
@@ -230,7 +229,7 @@ namespace RadioDld
                 // No way of reporting errors that have happened here, so just give up
             }
 
-            return functionReturnValue;
+            return stringValue;
         }
 
         public void SendReport(string sendUrl)
