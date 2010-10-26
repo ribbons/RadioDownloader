@@ -19,21 +19,21 @@ using System.Windows.Forms;
 
 namespace RadioDld
 {
-
     public class ExtToolStrip : ToolStrip
     {
-
         private const int WM_NCHITTEST = 0x84;
-
         private const int HTTRANSPARENT = -0x1;
-        public ExtToolStrip() : base()
+
+        public ExtToolStrip()
+            : base()
         {
         }
 
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         protected override void WndProc(ref Message m)
         {
-            switch (m.Msg) {
+            switch (m.Msg)
+            {
                 case WM_NCHITTEST:
                     int xPos = ((int)m.LParam << 16) >> 16;
                     int yPos = (int)m.LParam >> 16;
@@ -42,13 +42,17 @@ namespace RadioDld
                     bool onBackground = true;
 
                     // Test to see if the mouse is over any of the toolstrip controls
-                    foreach (ToolStripItem child in this.Items) {
-                        if (child.Bounds.Contains(clientPos) && child.Visible) {
+                    foreach (ToolStripItem child in this.Items)
+                    {
+                        if (child.Bounds.Contains(clientPos) && child.Visible)
+                        {
                             ToolStripControlHost controlHost = child as ToolStripControlHost;
 
-                            if (controlHost != null) {
+                            if (controlHost != null)
+                            {
                                 // This is a control host, so check the click wasn't outside the child control
-                                if (!controlHost.Control.Bounds.Contains(clientPos)) {
+                                if (!controlHost.Control.Bounds.Contains(clientPos))
+                                {
                                     onBackground = true;
                                     break; // TODO: might not be correct. Was : Exit For
                                 }
@@ -59,12 +63,13 @@ namespace RadioDld
                         }
                     }
 
-
-                    if (onBackground) {
+                    if (onBackground)
+                    {
                         // Make the strip transparent to mouse actions in this area
                         m.Result = new IntPtr(HTTRANSPARENT);
                         return;
                     }
+
                     break;
             }
 

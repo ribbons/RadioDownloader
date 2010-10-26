@@ -17,7 +17,6 @@ using System.Collections.Generic;
 
 namespace RadioDld
 {
-
     internal class ViewState
     {
         public enum MainTab
@@ -46,20 +45,30 @@ namespace RadioDld
         }
 
         private Stack<ViewData> backData = new Stack<ViewData>();
-
         private Stack<ViewData> fwdData = new Stack<ViewData>();
+
         public event UpdateNavBtnStateEventHandler UpdateNavBtnState;
+
         public delegate void UpdateNavBtnStateEventHandler(bool enableBack, bool enableFwd);
+
         public event ViewChangedEventHandler ViewChanged;
+
         public delegate void ViewChangedEventHandler(View view, MainTab tab, object data);
 
-        public View CurrentView {
+        public View CurrentView
+        {
             get { return backData.Peek().View; }
         }
 
-        public object CurrentViewData {
-            get { return backData.Peek().Data; }
-            set {
+        public object CurrentViewData
+        {
+            get
+            {
+                return backData.Peek().Data;
+            }
+
+            set
+            {
                 ViewData curView = backData.Peek();
                 curView.Data = value;
             }
@@ -73,7 +82,8 @@ namespace RadioDld
         public void SetView(MainTab tab, View view, object viewData)
         {
             StoreView(tab, view, viewData);
-            if (ViewChanged != null) {
+            if (ViewChanged != null)
+            {
                 ViewChanged(view, tab, viewData);
             }
         }
@@ -94,11 +104,13 @@ namespace RadioDld
 
             backData.Push(storeView);
 
-            if (fwdData.Count > 0) {
+            if (fwdData.Count > 0)
+            {
                 fwdData.Clear();
             }
 
-            if (UpdateNavBtnState != null) {
+            if (UpdateNavBtnState != null)
+            {
                 UpdateNavBtnState(backData.Count > 1, false);
             }
         }
@@ -121,10 +133,13 @@ namespace RadioDld
 
             ViewData curView = backData.Peek();
 
-            if (UpdateNavBtnState != null) {
+            if (UpdateNavBtnState != null)
+            {
                 UpdateNavBtnState(backData.Count > 1, fwdData.Count > 0);
             }
-            if (ViewChanged != null) {
+
+            if (ViewChanged != null)
+            {
                 ViewChanged(curView.View, curView.Tab, curView.Data);
             }
         }
@@ -135,10 +150,13 @@ namespace RadioDld
 
             ViewData curView = backData.Peek();
 
-            if (UpdateNavBtnState != null) {
+            if (UpdateNavBtnState != null)
+            {
                 UpdateNavBtnState(backData.Count > 1, fwdData.Count > 0);
             }
-            if (ViewChanged != null) {
+
+            if (ViewChanged != null)
+            {
                 ViewChanged(curView.View, curView.Tab, curView.Data);
             }
         }

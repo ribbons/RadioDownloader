@@ -17,18 +17,17 @@ using System.Windows.Forms;
 
 namespace RadioDld
 {
-
     public class ToolStripSearchBox : ToolStripControlHost
     {
-
-        public ToolStripSearchBox() : base(new SearchBox())
+        public ToolStripSearchBox()
+            : base(new SearchBox())
         {
         }
 
-        public string CueBanner {
+        public string CueBanner
+        {
             get { return ((SearchBox)this.Control).CueBanner; }
             set { ((SearchBox)this.Control).CueBanner = value; }
         }
     }
 }
-

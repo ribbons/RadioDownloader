@@ -22,10 +22,8 @@ using System.Windows.Forms.VisualStyles;
 
 namespace RadioDld
 {
-
     internal class TabBarRenderer : ToolStripSystemRenderer, IDisposable
     {
-
         [DllImport("gdi32.dll", SetLastError = true)]
         public static extern IntPtr CreateCompatibleDC(IntPtr hdc);
 
@@ -33,8 +31,7 @@ namespace RadioDld
         private static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
 
         [DllImport("gdi32.dll", SetLastError = true)]
-        private static extern IntPtr CreateDIBSection(IntPtr hdc,         [In()]
-ref BITMAPINFO lpbmi, uint usage, ref IntPtr ppvBits, IntPtr hSection, uint offset);
+        private static extern IntPtr CreateDIBSection(IntPtr hdc, [In()] ref BITMAPINFO lpbmi, uint usage, ref IntPtr ppvBits, IntPtr hSection, uint offset);
 
         [DllImport("gdi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -45,14 +42,11 @@ ref BITMAPINFO lpbmi, uint usage, ref IntPtr ppvBits, IntPtr hSection, uint offs
         private static extern bool DeleteDC(IntPtr hdc);
 
         [DllImport("UxTheme.dll", SetLastError = true)]
-        private static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId,         [MarshalAs(UnmanagedType.LPWStr)]
-string pszText, int iCharCount, uint dwFlags, ref RECT pRect,         [In()]
-ref DTTOPTS pOptions);
+        private static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount, uint dwFlags, ref RECT pRect, [In()] ref DTTOPTS pOptions);
 
         [DllImport("msimg32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc,
-        BLENDFUNCTION ftn);
+        private static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION ftn);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct BLENDFUNCTION
@@ -104,34 +98,35 @@ ref DTTOPTS pOptions);
             public int lParam;
         }
 
-
         private const int BI_RGB = 0;
+
         private const int DTT_COMPOSITED = 8192;
         private const int DTT_GLOWSIZE = 2048;
-
         private const int DTT_TEXTCOLOR = 1;
-        private const int AC_SRC_OVER = 0;
 
+        private const int AC_SRC_OVER = 0;
         private const int AC_SRC_ALPHA = 1;
+
         // NAV_BACKBUTTONSTATES / NAV_FORWARDBUTTONSTATES
         private const int NAV_BF_NORMAL = 1;
         private const int NAV_BF_HOT = 2;
         private const int NAV_BF_PRESSED = 3;
-
         private const int NAV_BF_DISABLED = 4;
 
         private const int tabSeparation = 3;
 
         private ToolStrip rendererFor;
-        private bool isDisposed;
 
+        private bool isDisposed;
         private bool isActive = true;
+
         private Brush inactiveTabBkg;
         private Brush hoverTabBkg;
         private Brush pressedTabBkg;
-        private Pen tabBorder = new Pen(SystemColors.ControlDark);
 
+        private Pen tabBorder = new Pen(SystemColors.ControlDark);
         private Pen nonAeroBorder = new Pen(Color.FromArgb(255, 182, 193, 204));
+
         protected override void Initialize(System.Windows.Forms.ToolStrip toolStrip)
         {
             base.Initialize(toolStrip);
@@ -144,33 +139,48 @@ ref DTTOPTS pOptions);
 
         protected override void OnRenderItemImage(System.Windows.Forms.ToolStripItemImageRenderEventArgs e)
         {
-            if (e.Item.DisplayStyle == ToolStripItemDisplayStyle.ImageAndText) {
+            if (e.Item.DisplayStyle == ToolStripItemDisplayStyle.ImageAndText)
+            {
                 e.Graphics.DrawImage(e.Item.Image, e.ImageRectangle);
                 return;
-            } else if (e.Item.DisplayStyle != ToolStripItemDisplayStyle.Image) {
+            }
+            else if (e.Item.DisplayStyle != ToolStripItemDisplayStyle.Image)
+            {
                 base.OnRenderItemImage(e);
                 return;
             }
 
-            if (VisualStyleRenderer.IsSupported) {
+            if (VisualStyleRenderer.IsSupported)
+            {
                 VisualStyleRenderer navigation = null;
                 int stylePart = e.ToolStrip.Items.IndexOf(e.Item) + 1;
 
-                try {
-                    if (e.Item.Enabled == false) {
+                try
+                {
+                    if (e.Item.Enabled == false)
+                    {
                         navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_DISABLED);
-                    } else if (e.Item.Pressed) {
+                    }
+                    else if (e.Item.Pressed)
+                    {
                         navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_PRESSED);
-                    } else if (e.Item.Selected) {
+                    }
+                    else if (e.Item.Selected)
+                    {
                         navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_HOT);
-                    } else {
+                    }
+                    else
+                    {
                         navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_NORMAL);
                     }
-                } catch (ArgumentException) {
+                }
+                catch (ArgumentException)
+                {
                     // The element is not defined in the current theme
                 }
 
-                if (navigation != null) {
+                if (navigation != null)
+                {
                     navigation.DrawBackground(e.Graphics, new Rectangle(0, -2, e.Item.Width, e.Item.Width));
                     return;
                 }
@@ -181,19 +191,27 @@ ref DTTOPTS pOptions);
 
         protected override void OnRenderToolStripBackground(System.Windows.Forms.ToolStripRenderEventArgs e)
         {
-            if (OsUtils.CompositionEnabled()) {
+            if (OsUtils.CompositionEnabled())
+            {
                 // Set the background colour to transparent to make it glass
                 e.Graphics.Clear(Color.Transparent);
-            } else {
-                if (VisualStyleRenderer.IsSupported && OsUtils.WinVistaOrLater()) {
+            }
+            else
+            {
+                if (VisualStyleRenderer.IsSupported && OsUtils.WinVistaOrLater())
+                {
                     // Set the background the same as the title bar to give the illusion of an extended frame
-
-                    if (isActive) {
+                    if (isActive)
+                    {
                         e.Graphics.Clear(SystemColors.GradientActiveCaption);
-                    } else {
+                    }
+                    else
+                    {
                         e.Graphics.Clear(SystemColors.GradientInactiveCaption);
                     }
-                } else {
+                }
+                else
+                {
                     base.OnRenderToolStripBackground(e);
                 }
             }
@@ -201,30 +219,39 @@ ref DTTOPTS pOptions);
 
         protected override void OnRenderButtonBackground(System.Windows.Forms.ToolStripItemRenderEventArgs e)
         {
-            if (e.Item.DisplayStyle == ToolStripItemDisplayStyle.Image) {
+            if (e.Item.DisplayStyle == ToolStripItemDisplayStyle.Image)
+            {
                 // Do not paint a background for icon only buttons
                 return;
             }
 
-            if (inactiveTabBkg == null) {
+            if (inactiveTabBkg == null)
+            {
                 inactiveTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.Control, SystemColors.ControlDark);
                 hoverTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.ControlLight, SystemColors.Control);
                 pressedTabBkg = new SolidBrush(SystemColors.ControlLight);
             }
 
-            using (LinearGradientBrush activeTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.ControlLight, GetActiveTabBtmCol(e.ToolStrip, e.Item))) {
+            using (LinearGradientBrush activeTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.ControlLight, GetActiveTabBtmCol(e.ToolStrip, e.Item)))
+            {
                 ToolStripButton button = (ToolStripButton)e.Item;
                 Brush colour = inactiveTabBkg;
 
-                if (button.Checked) {
+                if (button.Checked)
+                {
                     colour = activeTabBkg;
 
                     // Invalidate between the buttons and the bottom of the toolstrip so that it gets repainted
                     e.ToolStrip.Invalidate(new Rectangle(0, e.Item.Bounds.Bottom, e.ToolStrip.Bounds.Width, e.ToolStrip.Bounds.Height - e.Item.Bounds.Bottom));
-                } else if (e.Item.Selected) {
-                    if (e.Item.Pressed) {
+                }
+                else if (e.Item.Selected)
+                {
+                    if (e.Item.Pressed)
+                    {
                         colour = pressedTabBkg;
-                    } else {
+                    }
+                    else
+                    {
                         colour = hoverTabBkg;
                     }
                 }
@@ -236,7 +263,8 @@ ref DTTOPTS pOptions);
 
                 const int curveSize = 10;
 
-                using (GraphicsPath tab = new GraphicsPath()) {
+                using (GraphicsPath tab = new GraphicsPath())
+                {
                     tab.AddLine(0, height, 0, curveSize);
                     tab.AddArc(0, 0, curveSize, curveSize, 180, 90);
                     tab.AddLine(curveSize, 0, width - curveSize, 0);
@@ -251,7 +279,8 @@ ref DTTOPTS pOptions);
 
         protected override void OnRenderItemText(System.Windows.Forms.ToolStripItemTextRenderEventArgs e)
         {
-            if (OsUtils.CompositionEnabled() == false) {
+            if (OsUtils.CompositionEnabled() == false)
+            {
                 // The OS doesn't support desktop composition, or it isn't enabled
                 base.OnRenderItemText(e);
                 return;
@@ -270,15 +299,15 @@ ref DTTOPTS pOptions);
             IntPtr memoryHdc = CreateCompatibleDC(renderHdc);
 
             // NULL Pointer
-            if (memoryHdc == IntPtr.Zero) {
+            if (memoryHdc == IntPtr.Zero)
+            {
                 throw new Win32Exception();
             }
 
             BITMAPINFO info = default(BITMAPINFO);
             info.biSize = Convert.ToUInt32(Marshal.SizeOf(typeof(BITMAPINFO)));
             info.biWidth = e.TextRectangle.Width;
-            info.biHeight = -e.TextRectangle.Height;
-            // Negative = top-down
+            info.biHeight = -e.TextRectangle.Height; // Negative = top-down
             info.biPlanes = 1;
             info.biBitCount = 32;
             info.biCompression = BI_RGB;
@@ -289,13 +318,15 @@ ref DTTOPTS pOptions);
             IntPtr dib = CreateDIBSection(renderHdc, ref info, 0, ref bits, IntPtr.Zero, 0);
 
             // NULL Pointer
-            if (dib == IntPtr.Zero) {
+            if (dib == IntPtr.Zero)
+            {
                 throw new Win32Exception();
             }
 
             // Select the created DIB into our memory DC for use
             // NULL Pointer
-            if (SelectObject(memoryHdc, dib) == IntPtr.Zero) {
+            if (SelectObject(memoryHdc, dib) == IntPtr.Zero)
+            {
                 throw new Win32Exception();
             }
 
@@ -304,7 +335,8 @@ ref DTTOPTS pOptions);
 
             // And select it into the DC as well
             // NULL Pointer
-            if (SelectObject(memoryHdc, hFont) == IntPtr.Zero) {
+            if (SelectObject(memoryHdc, hFont) == IntPtr.Zero)
+            {
                 throw new Win32Exception();
             }
 
@@ -322,11 +354,11 @@ ref DTTOPTS pOptions);
             DTTOPTS opts = default(DTTOPTS);
             opts.dwSize = Convert.ToUInt32(Marshal.SizeOf(opts));
             opts.dwFlags = DTT_COMPOSITED | DTT_TEXTCOLOR;
-            // Draw alpha blended text of the colour specified
-            opts.crText = Convert.ToUInt32(ColorTranslator.ToWin32(e.TextColor));
+            opts.crText = Convert.ToUInt32(ColorTranslator.ToWin32(e.TextColor)); // Alpha blended text of the colour specified
 
             // Paint the text
-            if (DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, (uint)e.TextFormat, ref textRect, ref opts) != 0) {
+            if (DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, (uint)e.TextFormat, ref textRect, ref opts) != 0)
+            {
                 throw new Win32Exception();
             }
 
@@ -334,26 +366,28 @@ ref DTTOPTS pOptions);
             BLENDFUNCTION blendFunc = default(BLENDFUNCTION);
             blendFunc.BlendOp = AC_SRC_OVER;
             blendFunc.SourceConstantAlpha = 255;
-            // Per-pixel alpha only
-            blendFunc.AlphaFormat = AC_SRC_ALPHA;
+            blendFunc.AlphaFormat = AC_SRC_ALPHA; // Per-pixel alpha only
 
             // Blend the painted text into the render DC
             if (AlphaBlend(renderHdc, e.TextRectangle.Left, e.TextRectangle.Top, e.TextRectangle.Width, e.TextRectangle.Height, memoryHdc, 0, 0, e.TextRectangle.Width, e.TextRectangle.Height,
-            blendFunc) == false) {
+            blendFunc) == false)
+            {
                 throw new Win32Exception();
             }
 
             // Clean up the GDI objects
-
-            if (DeleteObject(hFont) == false) {
+            if (DeleteObject(hFont) == false)
+            {
                 throw new Win32Exception();
             }
 
-            if (DeleteObject(dib) == false) {
+            if (DeleteObject(dib) == false)
+            {
                 throw new Win32Exception();
             }
 
-            if (DeleteDC(memoryHdc) == false) {
+            if (DeleteDC(memoryHdc) == false)
+            {
                 throw new Win32Exception();
             }
 
@@ -362,30 +396,37 @@ ref DTTOPTS pOptions);
 
         protected override void OnRenderToolStripBorder(System.Windows.Forms.ToolStripRenderEventArgs e)
         {
-            if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported) {
-                if (OsUtils.CompositionEnabled() == false) {
+            if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
+            {
+                if (OsUtils.CompositionEnabled() == false)
+                {
                     e.Graphics.DrawLine(nonAeroBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1);
                 }
-            } else {
+            }
+            else
+            {
                 e.Graphics.DrawLine(tabBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1);
             }
 
             ToolStripButton @checked = null;
 
             // Find the currently checked ToolStripButton
-            foreach (ToolStripItem item in e.ToolStrip.Items) {
+            foreach (ToolStripItem item in e.ToolStrip.Items)
+            {
                 ToolStripButton buttonItem = item as ToolStripButton;
 
-                if (buttonItem != null && buttonItem.Checked) {
+                if (buttonItem != null && buttonItem.Checked)
+                {
                     @checked = buttonItem;
                     break; // TODO: might not be correct. Was : Exit For
                 }
             }
 
-            if (@checked != null) {
+            if (@checked != null)
+            {
                 // Extend the bottom of the tab over the client area border, joining the tab onto the main client area
-
-                using (SolidBrush toolbarBkg = new SolidBrush(GetActiveTabBtmCol(e.ToolStrip, @checked))) {
+                using (SolidBrush toolbarBkg = new SolidBrush(GetActiveTabBtmCol(e.ToolStrip, @checked)))
+                {
                     e.Graphics.FillRectangle(toolbarBkg, new Rectangle(@checked.Bounds.Left, @checked.Bounds.Bottom, @checked.Bounds.Width - tabSeparation, e.ToolStrip.Bounds.Bottom - @checked.Bounds.Bottom));
                 }
 
@@ -398,17 +439,20 @@ ref DTTOPTS pOptions);
         {
             Color toolbarColour = SystemColors.Control;
 
-            if (VisualStyleRenderer.IsSupported) {
+            if (VisualStyleRenderer.IsSupported)
+            {
                 // Visual styles are enabled, so draw the correct background behind the toolbars
-
                 Bitmap background = new Bitmap(strip.Width, strip.Height);
                 Graphics graphics = Graphics.FromImage(background);
 
-                try {
+                try
+                {
                     VisualStyleRenderer rebar = new VisualStyleRenderer("Rebar", 0, 0);
                     rebar.DrawBackground(graphics, new Rectangle(0, 0, strip.Width, strip.Height));
                     toolbarColour = background.GetPixel(active.Bounds.Left + Convert.ToInt32(active.Width / 2), 0);
-                } catch (ArgumentException) {
+                }
+                catch (ArgumentException)
+                {
                     // The 'Rebar' background image style did not exist
                 }
             }
@@ -430,9 +474,12 @@ ref DTTOPTS pOptions);
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed) {
-                if (disposing) {
-                    if (inactiveTabBkg != null) {
+            if (!this.isDisposed)
+            {
+                if (disposing)
+                {
+                    if (inactiveTabBkg != null)
+                    {
                         inactiveTabBkg.Dispose();
                         hoverTabBkg.Dispose();
                         pressedTabBkg.Dispose();

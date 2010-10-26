@@ -17,6 +17,7 @@ namespace PodcastProvider
             {
                 components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 

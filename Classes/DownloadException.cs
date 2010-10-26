@@ -19,11 +19,11 @@ using System.Security.Permissions;
 
 namespace RadioDld
 {
-
     [Serializable()]
     public class DldErrorDataItem
     {
         public string Name { get; set; }
+
         public string Data { get; set; }
 
         protected DldErrorDataItem()
@@ -37,9 +37,6 @@ namespace RadioDld
             this.Data = data;
         }
     }
-}
-namespace RadioDld
-{
 
     public enum ErrorType
     {
@@ -52,31 +49,28 @@ namespace RadioDld
         NetworkProblem = 6,
         RemoteProblem = 7
     }
-}
-namespace RadioDld
-{
 
     [Serializable()]
     public class DownloadException : Exception
     {
         private readonly ErrorType type;
-
         private readonly List<DldErrorDataItem> extraDetails;
-        public DownloadException() : base()
-        {
 
+        public DownloadException()
+            : base()
+        {
             this.type = ErrorType.UnknownError;
         }
 
-        public DownloadException(string message) : base(message)
+        public DownloadException(string message)
+            : base(message)
         {
-
             this.type = ErrorType.UnknownError;
         }
 
-        public DownloadException(string message, Exception innerException) : base(message, innerException)
+        public DownloadException(string message, Exception innerException)
+            : base(message, innerException)
         {
-
             this.type = ErrorType.UnknownError;
         }
 
@@ -85,22 +79,22 @@ namespace RadioDld
             this.type = type;
         }
 
-        public DownloadException(ErrorType type, string message) : base(message)
+        public DownloadException(ErrorType type, string message)
+            : base(message)
         {
-
             this.type = type;
         }
 
-        public DownloadException(ErrorType type, string message, List<DldErrorDataItem> extraDetails) : base(message)
+        public DownloadException(ErrorType type, string message, List<DldErrorDataItem> extraDetails)
+            : base(message)
         {
-
             this.type = type;
             this.extraDetails = extraDetails;
         }
 
-        protected DownloadException(SerializationInfo info, StreamingContext context) : base(info, context)
+        protected DownloadException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
         {
-
             this.type = (ErrorType)info.GetValue("type", typeof(ErrorType));
             this.extraDetails = (List<DldErrorDataItem>)info.GetValue("extraDetails", typeof(List<DldErrorDataItem>));
         }
@@ -114,11 +108,13 @@ namespace RadioDld
             info.AddValue("extraDetails", extraDetails);
         }
 
-        public ErrorType TypeOfError {
+        public ErrorType TypeOfError
+        {
             get { return type; }
         }
 
-        public List<DldErrorDataItem> ErrorExtraDetails {
+        public List<DldErrorDataItem> ErrorExtraDetails
+        {
             get { return extraDetails; }
         }
     }

@@ -19,17 +19,18 @@ using System.Windows.Forms;
 
 namespace RadioDld
 {
-
-
     internal sealed partial class About : Form
     {
         private void About_Load(System.Object sender, System.EventArgs e)
         {
             // Set the title of the form.
             string applicationTitle = null;
-            if (!string.IsNullOrEmpty(RadioDld.My.MyProject.Application.Info.Title)) {
+            if (!string.IsNullOrEmpty(RadioDld.My.MyProject.Application.Info.Title))
+            {
                 applicationTitle = RadioDld.My.MyProject.Application.Info.Title;
-            } else {
+            }
+            else
+            {
                 applicationTitle = System.IO.Path.GetFileNameWithoutExtension(RadioDld.My.MyProject.Application.Info.AssemblyName);
             }
 
@@ -49,6 +50,7 @@ namespace RadioDld
         {
             Process.Start("http://www.nerdoftheherd.com/tools/radiodld/");
         }
+
         public About()
         {
             InitializeComponent();

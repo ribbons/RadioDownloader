@@ -23,7 +23,6 @@ using Microsoft.VisualBasic;
 
 namespace RadioDld
 {
-
     public class CachedWebClient
     {
         [Serializable()]
@@ -35,11 +34,11 @@ namespace RadioDld
             public WebResponse Response;
         }
 
-
         private static CachedWebClient instance = new CachedWebClient();
-        [ThreadStatic()]
 
+        [ThreadStatic()]
         private static SQLiteConnection dbConn;
+
         public static CachedWebClient GetInstance()
         {
             return instance;
@@ -52,7 +51,8 @@ namespace RadioDld
 
         private SQLiteConnection FetchDbConn()
         {
-            if (dbConn == null) {
+            if (dbConn == null)
+            {
                 dbConn = new SQLiteConnection("Data Source=" + DatabasePath() + ";Version=3");
                 dbConn.Open();
             }
@@ -65,14 +65,16 @@ namespace RadioDld
             File.Delete(DatabasePath());
 
             // Create the the database and table for caching HTTP requests
-            using (SQLiteCommand command = new SQLiteCommand("create table httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", FetchDbConn())) {
+            using (SQLiteCommand command = new SQLiteCommand("create table httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", FetchDbConn()))
+            {
                 command.ExecuteNonQuery();
             }
         }
 
         private void AddToHTTPCache(Uri uri, bool requestSuccess, byte[] data)
         {
-            using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", FetchDbConn())) {
+            using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", FetchDbConn()))
+            {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
                 command.Parameters.Add(new SQLiteParameter("@lastfetch", DateAndTime.Now));
                 command.Parameters.Add(new SQLiteParameter("@success", requestSuccess));
@@ -83,13 +85,18 @@ namespace RadioDld
 
         private System.DateTime? GetHTTPCacheLastUpdate(Uri uri)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", FetchDbConn())) {
+            using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", FetchDbConn()))
+            {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
 
-                using (SQLiteDataReader reader = command.ExecuteReader()) {
-                    if (reader.Read()) {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
                         return reader.GetDateTime(reader.GetOrdinal("lastfetch"));
-                    } else {
+                    }
+                    else
+                    {
                         return null;
                     }
                 }
@@ -98,11 +105,14 @@ namespace RadioDld
 
         private byte[] GetHTTPCacheContent(Uri uri, ref bool requestSuccess)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select success, data from httpcache where uri=@uri", FetchDbConn())) {
+            using (SQLiteCommand command = new SQLiteCommand("select success, data from httpcache where uri=@uri", FetchDbConn()))
+            {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
 
-                using (SQLiteDataReader reader = command.ExecuteReader()) {
-                    if (reader.Read()) {
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
                         requestSuccess = reader.GetBoolean(reader.GetOrdinal("success"));
 
                         // Get the length of the content by passing nothing to getbytes
@@ -112,7 +122,9 @@ namespace RadioDld
                         reader.GetBytes(reader.GetOrdinal("data"), 0, content, 0, contentLength);
 
                         return content;
-                    } else {
+                    }
+                    else
+                    {
                         return null;
                     }
                 }
@@ -121,21 +133,28 @@ namespace RadioDld
 
         public byte[] DownloadData(Uri uri, int fetchIntervalHrs)
         {
-            if (fetchIntervalHrs == 0) {
+            if (fetchIntervalHrs == 0)
+            {
                 throw new ArgumentException("fetchIntervalHrs cannot be zero.", "fetchIntervalHrs");
             }
 
             System.DateTime? lastFetch = GetHTTPCacheLastUpdate(uri);
 
-            if (lastFetch != null) {
-                if (lastFetch.Value.AddHours(fetchIntervalHrs) > DateAndTime.Now) {
+            if (lastFetch != null)
+            {
+                if (lastFetch.Value.AddHours(fetchIntervalHrs) > DateAndTime.Now)
+                {
                     bool requestSuccess = false;
                     byte[] cacheData = GetHTTPCacheContent(uri, ref requestSuccess);
 
-                    if (cacheData != null) {
-                        if (requestSuccess) {
+                    if (cacheData != null)
+                    {
+                        if (requestSuccess)
+                        {
                             return cacheData;
-                        } else {
+                        }
+                        else
+                        {
                             MemoryStream memoryStream = new MemoryStream(cacheData);
                             System.Runtime.Serialization.Formatters.Binary.BinaryFormatter binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
@@ -156,10 +175,14 @@ namespace RadioDld
 
             byte[] data = null;
 
-            try {
+            try
+            {
                 data = webClient.DownloadData(uri);
-            } catch (WebException webExp) {
-                if (webExp.Status != WebExceptionStatus.NameResolutionFailure & webExp.Status != WebExceptionStatus.Timeout) {
+            }
+            catch (WebException webExp)
+            {
+                if (webExp.Status != WebExceptionStatus.NameResolutionFailure & webExp.Status != WebExceptionStatus.Timeout)
+                {
                     // A WebException doesn't serialise well, as Response and Status get lost,
                     // so store the information in a structure and then recreate it later
                     CacheWebExpInfo cacheException = new CacheWebExpInfo();

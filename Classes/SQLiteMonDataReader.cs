@@ -19,23 +19,22 @@ using System.Diagnostics;
 
 namespace RadioDld
 {
-
     public class SQLiteMonDataReader : IDisposable
     {
-
         private static Dictionary<SQLiteDataReader, string> readerInfo = new Dictionary<SQLiteDataReader, string>();
-
         private static object readerInfoLock = new object();
-        private bool isDisposed;
 
+        private bool isDisposed;
         private SQLiteDataReader wrappedReader;
+
         public SQLiteMonDataReader(SQLiteDataReader reader)
         {
             wrappedReader = reader;
 
             StackTrace trace = new StackTrace(true);
 
-            lock (readerInfoLock) {
+            lock (readerInfoLock)
+            {
                 readerInfo.Add(wrappedReader, trace.ToString());
             }
         }
@@ -44,13 +43,16 @@ namespace RadioDld
         {
             string info = string.Empty;
 
-            lock (readerInfoLock) {
-                foreach (string entry in readerInfo.Values) {
+            lock (readerInfoLock)
+            {
+                foreach (string entry in readerInfo.Values)
+                {
                     info += entry + Environment.NewLine;
                 }
             }
 
-            if (!string.IsNullOrEmpty(info)) {
+            if (!string.IsNullOrEmpty(info))
+            {
                 exp.Data.Add("readers", info);
             }
 
@@ -104,9 +106,12 @@ namespace RadioDld
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed) {
-                if (disposing) {
-                    lock (readerInfoLock) {
+            if (!this.isDisposed)
+            {
+                if (disposing)
+                {
+                    lock (readerInfoLock)
+                    {
                         readerInfo.Remove(wrappedReader);
                     }
 

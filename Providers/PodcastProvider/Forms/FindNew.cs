@@ -19,7 +19,6 @@ using System.Xml;
 
 namespace PodcastProvider
 {
-
     internal partial class FindNew : Form
     {
         public FindNew()
@@ -28,9 +27,11 @@ namespace PodcastProvider
         }
 
         internal PodcastProvider clsPluginInst;
+
         private void cmdViewEps_Click(System.Object sender, System.EventArgs e)
         {
-            try {
+            try
+            {
                 cmdViewEps.Enabled = false;
                 lblResult.ForeColor = System.Drawing.Color.Black;
                 lblResult.Text = "Checking feed...";
@@ -40,9 +41,12 @@ namespace PodcastProvider
                 Uri feedUrl = null;
                 XmlDocument xmlRSS = null;
 
-                try {
+                try
+                {
                     feedUrl = new Uri(txtFeedURL.Text);
-                } catch (UriFormatException) {
+                }
+                catch (UriFormatException)
+                {
                     lblResult.Text = "The specified URL was not valid.";
                     lblResult.ForeColor = System.Drawing.Color.Red;
                     cmdViewEps.Enabled = true;
@@ -50,14 +54,19 @@ namespace PodcastProvider
                 }
 
                 // Test that we can load something from the URL, and it is valid XML
-                try {
+                try
+                {
                     xmlRSS = clsPluginInst.LoadFeedXml(feedUrl);
-                } catch (WebException) {
+                }
+                catch (WebException)
+                {
                     lblResult.Text = "There was a problem requesting the feed from the specified URL.";
                     lblResult.ForeColor = System.Drawing.Color.Red;
                     cmdViewEps.Enabled = true;
                     return;
-                } catch (XmlException) {
+                }
+                catch (XmlException)
+                {
                     lblResult.Text = "The data returned from the specified URL was not a valid RSS feed.";
                     lblResult.ForeColor = System.Drawing.Color.Red;
                     cmdViewEps.Enabled = true;
@@ -68,7 +77,8 @@ namespace PodcastProvider
                 XmlNode xmlCheckTitle = xmlRSS.SelectSingleNode("./rss/channel/title");
                 XmlNode xmlCheckDescription = xmlRSS.SelectSingleNode("./rss/channel/description");
 
-                if (xmlCheckTitle == null | xmlCheckDescription == null) {
+                if (xmlCheckTitle == null | xmlCheckDescription == null)
+                {
                     lblResult.Text = "The RSS feed returned from the specified URL was not valid.";
                     lblResult.ForeColor = System.Drawing.Color.Red;
                     cmdViewEps.Enabled = true;
@@ -82,20 +92,27 @@ namespace PodcastProvider
 
                 lblResult.Text = "";
                 cmdViewEps.Enabled = true;
-            } catch (Exception expException) {
+            }
+            catch (Exception expException)
+            {
                 clsPluginInst.RaiseFindNewException(expException);
             }
         }
 
         private void txtFeedURL_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
-            try {
-                if (e.KeyChar == (char)Keys.Enter) {
-                    if (cmdViewEps.Enabled) {
+            try
+            {
+                if (e.KeyChar == (char)Keys.Enter)
+                {
+                    if (cmdViewEps.Enabled)
+                    {
                         cmdViewEps_Click(sender, e);
                     }
                 }
-            } catch (Exception expException) {
+            }
+            catch (Exception expException)
+            {
                 clsPluginInst.RaiseFindNewException(expException);
             }
         }

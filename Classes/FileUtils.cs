@@ -20,7 +20,6 @@ using Microsoft.VisualBasic;
 
 namespace RadioDld
 {
-
     internal class FileUtils
     {
         public static string GetSaveFolder()
@@ -28,7 +27,8 @@ namespace RadioDld
             string functionReturnValue = null;
             const string defaultFolder = "Downloaded Radio";
 
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.SaveFolder)) {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.SaveFolder))
+            {
                 if (new DirectoryInfo(Properties.Settings.Default.SaveFolder).Exists == false)
                 {
                     throw new DirectoryNotFoundException();
@@ -37,9 +37,12 @@ namespace RadioDld
                 return Properties.Settings.Default.SaveFolder;
             }
 
-            try {
+            try
+            {
                 functionReturnValue = Path.Combine(RadioDld.My.MyProject.Computer.FileSystem.SpecialDirectories.MyDocuments, defaultFolder);
-            } catch (DirectoryNotFoundException) {
+            }
+            catch (DirectoryNotFoundException)
+            {
                 // The user's Documents folder could not be found, so fall back to a folder under the system drive
                 functionReturnValue = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), defaultFolder);
             }
@@ -62,7 +65,8 @@ namespace RadioDld
             // Make sure the save folder exists (to support subfolders in the save file name template)
             Directory.CreateDirectory(Path.GetDirectoryName(savePath));
 
-            while (Directory.GetFiles(Path.GetDirectoryName(savePath), Path.GetFileName(savePath) + ".*").Length > 0) {
+            while (Directory.GetFiles(Path.GetDirectoryName(savePath), Path.GetFileName(savePath) + ".*").Length > 0)
+            {
                 savePath = Path.Combine(baseSavePath, saveName + " (" + Convert.ToString(diffNum, CultureInfo.CurrentCulture) + ")");
                 diffNum += 1;
             }
@@ -72,7 +76,8 @@ namespace RadioDld
 
         public static string CreateSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime? episodeDate)
         {
-            if (string.IsNullOrEmpty(formatString)) {
+            if (string.IsNullOrEmpty(formatString))
+            {
                 // The format string is an empty string, so the output must be an empty string
                 return string.Empty;
             }
@@ -100,8 +105,10 @@ namespace RadioDld
 
             // Replace invalid file name characters with spaces (except for directory separators
             // as this then allows the flexibility of storing the downloads in subdirectories)
-            foreach (char removeChar in Path.GetInvalidFileNameChars()) {
-                if (removeChar != Path.DirectorySeparatorChar) {
+            foreach (char removeChar in Path.GetInvalidFileNameChars())
+            {
+                if (removeChar != Path.DirectorySeparatorChar)
+                {
                     fileName = fileName.Replace(removeChar, ' ');
                 }
             }

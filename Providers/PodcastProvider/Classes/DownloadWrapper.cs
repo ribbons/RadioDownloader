@@ -20,33 +20,44 @@ using Microsoft.VisualBasic.ApplicationServices;
 
 namespace PodcastProvider
 {
-
     internal class DownloadWrapper
     {
         public event DownloadProgressEventHandler DownloadProgress;
+
         public delegate void DownloadProgressEventHandler(object sender, System.Net.DownloadProgressChangedEventArgs e);
+
         private WebClient withEventsField_downloadClient;
 
-        private WebClient downloadClient {
-            get { return withEventsField_downloadClient; }
-            set {
-                if (withEventsField_downloadClient != null) {
+        private WebClient downloadClient
+        {
+            get
+            {
+                return withEventsField_downloadClient;
+            }
+
+            set
+            {
+                if (withEventsField_downloadClient != null)
+                {
                     withEventsField_downloadClient.DownloadProgressChanged -= downloadClient_DownloadProgressChanged;
                     withEventsField_downloadClient.DownloadFileCompleted -= downloadClient_DownloadFileCompleted;
                 }
+
                 withEventsField_downloadClient = value;
-                if (withEventsField_downloadClient != null) {
+                if (withEventsField_downloadClient != null)
+                {
                     withEventsField_downloadClient.DownloadProgressChanged += downloadClient_DownloadProgressChanged;
                     withEventsField_downloadClient.DownloadFileCompleted += downloadClient_DownloadFileCompleted;
                 }
             }
-
         }
+
         private Uri downloadUrl;
         private string destPath;
         private bool downloadComplete;
 
         private Exception downloadError;
+
         public DownloadWrapper(Uri downloadUrl, string destPath)
         {
             this.downloadUrl = downloadUrl;
@@ -56,35 +67,42 @@ namespace PodcastProvider
         public void Download()
         {
             SystemEvents.PowerModeChanged += PowerModeChange;
-            
+
             downloadClient = new WebClient();
             downloadClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
             downloadClient.DownloadFileAsync(downloadUrl, destPath);
         }
 
-        public bool Complete {
+        public bool Complete
+        {
             get { return downloadComplete; }
         }
 
-        public Exception Error {
+        public Exception Error
+        {
             get { return downloadError; }
         }
 
         private void downloadClient_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
-            if (DownloadProgress != null) {
+            if (DownloadProgress != null)
+            {
                 DownloadProgress(this, e);
             }
         }
 
         private void downloadClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            if (e.Cancelled == false) {
+            if (e.Cancelled == false)
+            {
                 SystemEvents.PowerModeChanged -= PowerModeChange;
 
-                if (e.Error != null) {
+                if (e.Error != null)
+                {
                     downloadError = e.Error;
-                } else {
+                }
+                else
+                {
                     downloadComplete = true;
                 }
             }
@@ -92,9 +110,11 @@ namespace PodcastProvider
 
         private void PowerModeChange(object sender, PowerModeChangedEventArgs e)
         {
-            if (e.Mode == PowerModes.Resume) {
+            if (e.Mode == PowerModes.Resume)
+            {
                 // Restart the download, as it is quite likely to have hung during the suspend / hibernate
-                if (downloadClient.IsBusy) {
+                if (downloadClient.IsBusy)
+                {
                     downloadClient.CancelAsync();
 
                     // Pause for 30 seconds to be give the pc a chance to settle down after the suspend. 

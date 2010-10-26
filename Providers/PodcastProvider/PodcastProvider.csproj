@@ -126,10 +126,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Application.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Application.myapp</DependentUpon>
-    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -154,10 +150,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Properties\Application.myapp">
-      <Generator>MyApplicationCodeGenerator</Generator>
-      <LastGenOutput>Application.Designer.cs</LastGenOutput>
-    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -176,7 +168,7 @@
   <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.4\Microsoft.StyleCop.targets" />
   <Target Name="BeforeBuild">
   </Target>
-  <Target Name="AfterBuild">
+  <!-- <Target Name="AfterBuild">
     <Exec Command="&quot;$(ProgramFiles)\Microsoft FxCop 10.0\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /project:&quot;PodcastProvider.FxCop&quot; /console" />
-  </Target>
+  </Target> -->
 </Project>

@@ -27,7 +27,6 @@ using Microsoft.VisualBasic;
 
 namespace RadioDld
 {
-
     internal partial class Main : GlassForm
     {
         private struct FindNewViewData
@@ -35,12 +34,20 @@ namespace RadioDld
             public Guid ProviderID;
             public object View;
         }
+
         private Data withEventsField_progData;
 
-        private Data progData {
-            get { return withEventsField_progData; }
-            set {
-                if (withEventsField_progData != null) {
+        private Data progData
+        {
+            get
+            {
+                return withEventsField_progData;
+            }
+
+            set
+            {
+                if (withEventsField_progData != null)
+                {
                     withEventsField_progData.ProviderAdded -= progData_ProviderAdded;
                     withEventsField_progData.ProgrammeUpdated -= progData_ProgrammeUpdated;
                     withEventsField_progData.EpisodeAdded -= progData_EpisodeAdded;
@@ -58,8 +65,11 @@ namespace RadioDld
                     withEventsField_progData.FindNewViewChange -= progData_FindNewViewChange;
                     withEventsField_progData.FoundNew -= progData_FoundNew;
                 }
+
                 withEventsField_progData = value;
-                if (withEventsField_progData != null) {
+
+                if (withEventsField_progData != null)
+                {
                     withEventsField_progData.ProviderAdded += progData_ProviderAdded;
                     withEventsField_progData.ProgrammeUpdated += progData_ProgrammeUpdated;
                     withEventsField_progData.EpisodeAdded += progData_EpisodeAdded;
@@ -79,31 +89,42 @@ namespace RadioDld
                 }
             }
         }
+
         private ViewState withEventsField_view;
-        private ViewState view {
-            get { return withEventsField_view; }
-            set {
-                if (withEventsField_view != null) {
+
+        private ViewState view
+        {
+            get
+            {
+                return withEventsField_view;
+            }
+
+            set
+            {
+                if (withEventsField_view != null)
+                {
                     withEventsField_view.UpdateNavBtnState -= view_UpdateNavBtnState;
                     withEventsField_view.ViewChanged -= view_ViewChanged;
                 }
+
                 withEventsField_view = value;
-                if (withEventsField_view != null) {
+
+                if (withEventsField_view != null)
+                {
                     withEventsField_view.UpdateNavBtnState += view_UpdateNavBtnState;
                     withEventsField_view.ViewChanged += view_ViewChanged;
                 }
             }
-
         }
+
         private UpdateCheck checkUpdate;
-
         private TaskbarNotify tbarNotif;
-        private Thread searchThread;
 
+        private Thread searchThread;
         private object searchThreadLock = new object();
+
         private Dictionary<int, string> downloadColNames = new Dictionary<int, string>();
         private Dictionary<int, int> downloadColSizes = new Dictionary<int, int>();
-
         private List<Data.DownloadCols> downloadColOrder = new List<Data.DownloadCols>();
 
         private bool windowPosLoaded;
@@ -115,30 +136,44 @@ namespace RadioDld
 
         public void UpdateTrayStatus(bool active)
         {
-            if (OsUtils.WinSevenOrLater()) {
-                if (progData.CountDownloadsErrored() > 0) {
+            if (OsUtils.WinSevenOrLater())
+            {
+                if (progData.CountDownloadsErrored() > 0)
+                {
                     tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_error, "Error");
                     tbarNotif.SetThumbnailTooltip(this, this.Text + ": Error");
-                } else {
-                    if (active == true) {
+                }
+                else
+                {
+                    if (active == true)
+                    {
                         tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_downloading, "Downloading");
                         tbarNotif.SetThumbnailTooltip(this, this.Text + ": Downloading");
-                    } else {
+                    }
+                    else
+                    {
                         tbarNotif.SetOverlayIcon(this, null, string.Empty);
                         tbarNotif.SetThumbnailTooltip(this, null);
                     }
                 }
             }
 
-            if (nicTrayIcon.Visible) {
-                if (progData.CountDownloadsErrored() > 0) {
+            if (nicTrayIcon.Visible)
+            {
+                if (progData.CountDownloadsErrored() > 0)
+                {
                     nicTrayIcon.Icon = Properties.Resources.icon_error;
                     nicTrayIcon.Text = this.Text + ": Error";
-                } else {
-                    if (active == true) {
+                }
+                else
+                {
+                    if (active == true)
+                    {
                         nicTrayIcon.Icon = Properties.Resources.icon_working;
                         nicTrayIcon.Text = this.Text + ": Downloading";
-                    } else {
+                    }
+                    else
+                    {
                         nicTrayIcon.Icon = Properties.Resources.icon_main;
                         nicTrayIcon.Text = this.Text;
                     }
@@ -148,46 +183,62 @@ namespace RadioDld
 
         private void Main_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            switch (e.KeyCode) {
+            switch (e.KeyCode)
+            {
                 case Keys.F1:
                     e.Handled = true;
                     mnuHelpShowHelp_Click(sender, e);
                     break;
                 case Keys.Delete:
-                    if (tbtDelete.Visible) {
+                    if (tbtDelete.Visible)
+                    {
                         e.Handled = true;
                         tbtDelete_Click();
-                    } else if (tbtCancel.Visible) {
+                    }
+                    else if (tbtCancel.Visible)
+                    {
                         e.Handled = true;
                         tbtCancel_Click();
                     }
+
                     break;
                 case Keys.Back:
-                    if (!object.ReferenceEquals(this.ActiveControl.GetType(), typeof(TextBox)) & !object.ReferenceEquals(this.ActiveControl.Parent.GetType(), typeof(ExtToolStrip))) {
-                        if (e.Shift) {
-                            if (tbtForward.Enabled) {
+                    if (!object.ReferenceEquals(this.ActiveControl.GetType(), typeof(TextBox)) & !object.ReferenceEquals(this.ActiveControl.Parent.GetType(), typeof(ExtToolStrip)))
+                    {
+                        if (e.Shift)
+                        {
+                            if (tbtForward.Enabled)
+                            {
                                 e.Handled = true;
                                 tbtForward_Click(sender, e);
                             }
-                        } else {
-                            if (tbtBack.Enabled) {
+                        }
+                        else
+                        {
+                            if (tbtBack.Enabled)
+                            {
                                 e.Handled = true;
                                 tbtBack_Click(sender, e);
                             }
                         }
                     }
+
                     break;
                 case Keys.BrowserBack:
-                    if (tbtBack.Enabled) {
+                    if (tbtBack.Enabled)
+                    {
                         e.Handled = true;
                         tbtBack_Click(sender, e);
                     }
+
                     break;
                 case Keys.BrowserForward:
-                    if (tbtForward.Enabled) {
+                    if (tbtForward.Enabled)
+                    {
                         e.Handled = true;
                         tbtForward_Click(sender, e);
                     }
+
                     break;
             }
         }
@@ -195,32 +246,43 @@ namespace RadioDld
         private void Main_Load(System.Object eventSender, System.EventArgs eventArgs)
         {
             // If this is the first run of a new version of the application, then upgrade the settings from the old version.
-            try {
-                if (Properties.Settings.Default.UpgradeSettings) {
+            try
+            {
+                if (Properties.Settings.Default.UpgradeSettings)
+                {
                     Properties.Settings.Default.Upgrade();
                     Properties.Settings.Default.UpgradeSettings = false;
                     Properties.Settings.Default.Save();
                 }
-            } catch (ConfigurationErrorsException configErrorExp) {
+            }
+            catch (ConfigurationErrorsException configErrorExp)
+            {
                 string fileName = null;
 
-                if (configErrorExp.Filename != null) {
+                if (configErrorExp.Filename != null)
+                {
                     fileName = configErrorExp.Filename;
-                } else if (configErrorExp.InnerException != null && configErrorExp.InnerException is ConfigurationErrorsException) {
+                }
+                else if (configErrorExp.InnerException != null && configErrorExp.InnerException is ConfigurationErrorsException)
+                {
                     ConfigurationErrorsException innerExp = (ConfigurationErrorsException)configErrorExp.InnerException;
 
-                    if (innerExp.Filename != null) {
+                    if (innerExp.Filename != null)
+                    {
                         fileName = innerExp.Filename;
                     }
                 }
 
-                if (fileName != null) {
+                if (fileName != null)
+                {
                     File.Delete(fileName);
                     Interaction.MsgBox("Your Radio Downloader configuration file has been reset as it was corrupt.  This only affects your settings and columns, not your subscriptions or downloads." + Environment.NewLine + Environment.NewLine + "You will need to start Radio Downloader again after closing this message.", MsgBoxStyle.Information);
                     this.Close();
                     this.Dispose();
                     return;
-                } else {
+                }
+                else
+                {
                     throw;
                 }
             }
@@ -232,33 +294,45 @@ namespace RadioDld
             // Make sure that the database exists.  If not, then copy across the empty database from the program's folder.
             System.IO.FileInfo fileExits = new System.IO.FileInfo(Path.Combine(FileUtils.GetAppDataFolder(), "store.db"));
 
-            if (fileExits.Exists == false) {
-                try {
+            if (fileExits.Exists == false)
+            {
+                try
+                {
                     System.IO.File.Copy(Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"));
-                } catch (FileNotFoundException) {
+                }
+                catch (FileNotFoundException)
+                {
                     Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
                     this.Close();
                     this.Dispose();
                     return;
                 }
-            } else {
+            }
+            else
+            {
                 // As the database already exists, copy the specimen database across from the program folder
                 // and then make sure that the current db's structure matches it.
-                try {
+                try
+                {
                     System.IO.File.Copy(Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), true);
-                } catch (FileNotFoundException) {
+                }
+                catch (FileNotFoundException)
+                {
                     Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
                     this.Close();
                     this.Dispose();
                     return;
-                } catch (UnauthorizedAccessException) {
+                }
+                catch (UnauthorizedAccessException)
+                {
                     Interaction.MsgBox("Access was denied when attempting to copy the Radio Downloader template database." + Environment.NewLine + Environment.NewLine + "Check that you have read access to '" + Path.Combine(RadioDld.My.MyProject.Application.Info.DirectoryPath, "store.db") + "' and write access to '" + Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db") + "'.", MsgBoxStyle.Critical);
                     this.Close();
                     this.Dispose();
                     return;
                 }
 
-                using (UpdateDB doDbUpdate = new UpdateDB(Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"))) {
+                using (UpdateDB doDbUpdate = new UpdateDB(Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db")))
+                {
                     doDbUpdate.UpdateStructure();
                 }
             }
@@ -325,12 +399,14 @@ namespace RadioDld
             lstSubscribed.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Subscription);
             lstDownloads.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Download);
 
-            if (OsUtils.WinSevenOrLater()) {
+            if (OsUtils.WinSevenOrLater())
+            {
                 // New style taskbar - initialise the taskbar notification class
                 tbarNotif = new TaskbarNotify();
             }
 
-            if (!OsUtils.WinSevenOrLater() | Properties.Settings.Default.CloseToSystray) {
+            if (!OsUtils.WinSevenOrLater() | Properties.Settings.Default.CloseToSystray)
+            {
                 // Show a system tray icon
                 nicTrayIcon.Visible = true;
             }
@@ -353,15 +429,20 @@ namespace RadioDld
             lblSideMainTitle.Font = new Font(this.Font.FontFamily, Convert.ToSingle(this.Font.SizeInPoints * 1.16), this.Font.Style, GraphicsUnit.Point);
 
             // Scale the max size of the sidebar image for values other than 96 dpi, as it is specified in pixels
-            using (Graphics graphicsForDpi = this.CreateGraphics()) {
+            using (Graphics graphicsForDpi = this.CreateGraphics())
+            {
                 picSidebarImg.MaximumSize = new Size(Convert.ToInt32(picSidebarImg.MaximumSize.Width * (graphicsForDpi.DpiX / 96)), Convert.ToInt32(picSidebarImg.MaximumSize.Height * (graphicsForDpi.DpiY / 96)));
             }
 
-            if (Properties.Settings.Default.MainFormPos != Rectangle.Empty) {
-                if (OsUtils.VisibleOnScreen(Properties.Settings.Default.MainFormPos)) {
+            if (Properties.Settings.Default.MainFormPos != Rectangle.Empty)
+            {
+                if (OsUtils.VisibleOnScreen(Properties.Settings.Default.MainFormPos))
+                {
                     this.StartPosition = FormStartPosition.Manual;
                     this.DesktopBounds = Properties.Settings.Default.MainFormPos;
-                } else {
+                }
+                else
+                {
                     this.Size = Properties.Settings.Default.MainFormPos.Size;
                 }
 
@@ -375,12 +456,14 @@ namespace RadioDld
             tbrHelp.SetWholeDropDown(tbtHelpMenu);
             tbrHelp.Width = tbtHelpMenu.Rectangle.Width;
 
-            if (this.WindowState != FormWindowState.Minimized) {
+            if (this.WindowState != FormWindowState.Minimized)
+            {
                 tblToolbars.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right));
                 tblToolbars.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right);
             }
 
-            if (OsUtils.WinVistaOrLater() & VisualStyleRenderer.IsSupported) {
+            if (OsUtils.WinVistaOrLater() & VisualStyleRenderer.IsSupported)
+            {
                 tbrView.Margin = new Padding(0);
             }
 
@@ -395,18 +478,24 @@ namespace RadioDld
 
         private void Main_FormClosing(System.Object eventSender, System.Windows.Forms.FormClosingEventArgs eventArgs)
         {
-            if (eventArgs.CloseReason == CloseReason.UserClosing) {
-                if (!nicTrayIcon.Visible) {
-                    if (this.WindowState != FormWindowState.Minimized) {
+            if (eventArgs.CloseReason == CloseReason.UserClosing)
+            {
+                if (!nicTrayIcon.Visible)
+                {
+                    if (this.WindowState != FormWindowState.Minimized)
+                    {
                         this.WindowState = FormWindowState.Minimized;
                         eventArgs.Cancel = true;
                     }
-                } else {
+                }
+                else
+                {
                     OsUtils.TrayAnimate(this, true);
                     this.Visible = false;
                     eventArgs.Cancel = true;
 
-                    if (Properties.Settings.Default.ShownTrayBalloon == false) {
+                    if (Properties.Settings.Default.ShownTrayBalloon == false)
+                    {
                         nicTrayIcon.BalloonTipIcon = ToolTipIcon.Info;
                         nicTrayIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + Environment.NewLine + "Click here to hide this message in future.";
                         nicTrayIcon.BalloonTipTitle = "Radio Downloader is still running";
@@ -418,10 +507,13 @@ namespace RadioDld
 
         private void lstProviders_SelectedIndexChanged(System.Object sender, System.EventArgs e)
         {
-            if (lstProviders.SelectedItems.Count > 0) {
+            if (lstProviders.SelectedItems.Count > 0)
+            {
                 Guid pluginId = new Guid(lstProviders.SelectedItems[0].Name);
                 ShowProviderInfo(pluginId);
-            } else {
+            }
+            else
+            {
                 SetViewDefaults();
             }
         }
@@ -431,7 +523,8 @@ namespace RadioDld
             Data.ProviderData info = progData.FetchProviderData(providerId);
             SetSideBar(info.name, info.description, null);
 
-            if (view.CurrentView == ViewState.View.FindNewChooseProvider) {
+            if (view.CurrentView == ViewState.View.FindNewChooseProvider)
+            {
                 SetToolbarButtons(new ToolBarButton[] { tbtChooseProgramme });
             }
         }
@@ -439,7 +532,8 @@ namespace RadioDld
         private void lstProviders_ItemActivate(object sender, System.EventArgs e)
         {
             // Occasionally the event gets fired when there isn't an item selected
-            if (lstProviders.SelectedItems.Count == 0) {
+            if (lstProviders.SelectedItems.Count == 0)
+            {
                 return;
             }
 
@@ -457,7 +551,8 @@ namespace RadioDld
             Data.EpisodeData epInfo = progData.FetchEpisodeData(epid);
             string infoText = "";
 
-            if (epInfo.description != null) {
+            if (epInfo.description != null)
+            {
                 infoText += epInfo.description + Environment.NewLine + Environment.NewLine;
             }
 
@@ -469,15 +564,21 @@ namespace RadioDld
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.Add(tbtDownload);
 
-            if (progInfo.favourite) {
+            if (progInfo.favourite)
+            {
                 buttons.Add(tbtRemFavourite);
-            } else {
+            }
+            else
+            {
                 buttons.Add(tbtAddFavourite);
             }
 
-            if (progInfo.subscribed) {
+            if (progInfo.subscribed)
+            {
                 buttons.Add(tbtUnsubscribe);
-            } else if (!progInfo.singleEpisode) {
+            }
+            else if (!progInfo.singleEpisode)
+            {
                 buttons.Add(tbtSubscribe);
             }
 
@@ -486,25 +587,29 @@ namespace RadioDld
 
         private void lstEpisodes_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (lstEpisodes.SelectedItems.Count > 0) {
+            if (lstEpisodes.SelectedItems.Count > 0)
+            {
                 int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                 ShowEpisodeInfo(epid);
-            } else {
-                SetViewDefaults();
-                // Revert back to programme info in sidebar
+            }
+            else
+            {
+                SetViewDefaults(); // Revert back to programme info in sidebar
             }
         }
 
         private void lstFavourites_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (lstFavourites.SelectedItems.Count > 0) {
+            if (lstFavourites.SelectedItems.Count > 0)
+            {
                 int progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
                 progData.UpdateProgInfoIfRequired(progid);
                 ShowFavouriteInfo(progid);
-            } else {
-                SetViewDefaults();
-                // Revert back to subscribed items view default sidebar and toolbar
+            }
+            else
+            {
+                SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
             }
         }
 
@@ -515,9 +620,12 @@ namespace RadioDld
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.AddRange(new ToolBarButton[] { tbtRemFavourite, tbtCurrentEps });
 
-            if (info.subscribed) {
+            if (info.subscribed)
+            {
                 buttons.Add(tbtUnsubscribe);
-            } else if (!info.singleEpisode) {
+            }
+            else if (!info.singleEpisode)
+            {
                 buttons.Add(tbtSubscribe);
             }
 
@@ -527,14 +635,16 @@ namespace RadioDld
 
         private void lstSubscribed_SelectedIndexChanged(System.Object sender, System.EventArgs e)
         {
-            if (lstSubscribed.SelectedItems.Count > 0) {
+            if (lstSubscribed.SelectedItems.Count > 0)
+            {
                 int progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
                 progData.UpdateProgInfoIfRequired(progid);
                 ShowSubscriptionInfo(progid);
-            } else {
-                SetViewDefaults();
-                // Revert back to subscribed items view default sidebar and toolbar
+            }
+            else
+            {
+                SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
             }
         }
 
@@ -546,9 +656,12 @@ namespace RadioDld
             buttons.Add(tbtUnsubscribe);
             buttons.Add(tbtCurrentEps);
 
-            if (info.favourite) {
+            if (info.favourite)
+            {
                 buttons.Add(tbtRemFavourite);
-            } else {
+            }
+            else
+            {
                 buttons.Add(tbtAddFavourite);
             }
 
@@ -561,14 +674,18 @@ namespace RadioDld
         {
             Data.DownloadCols clickedCol = downloadColOrder[e.Column];
 
-            if (clickedCol == Data.DownloadCols.Progress) {
+            if (clickedCol == Data.DownloadCols.Progress)
+            {
                 return;
             }
 
-            if (progData.DownloadSortByCol != clickedCol) {
+            if (progData.DownloadSortByCol != clickedCol)
+            {
                 progData.DownloadSortByCol = clickedCol;
                 progData.DownloadSortAscending = true;
-            } else {
+            }
+            else
+            {
                 progData.DownloadSortAscending = !progData.DownloadSortAscending;
             }
 
@@ -587,7 +704,8 @@ namespace RadioDld
             string[] oldOrder = new string[lstDownloads.Columns.Count];
 
             // Fetch the pre-reorder column order
-            foreach (ColumnHeader col in lstDownloads.Columns) {
+            foreach (ColumnHeader col in lstDownloads.Columns)
+            {
                 oldOrder[col.DisplayIndex] = ((int)downloadColOrder[col.Index]).ToString(CultureInfo.InvariantCulture);
             }
 
@@ -601,7 +719,8 @@ namespace RadioDld
             // Save the new column order to the preference
             Properties.Settings.Default.DownloadCols = Strings.Join(newOrder.ToArray(), ",");
 
-            if (e.OldDisplayIndex == 0 || e.NewDisplayIndex == 0) {
+            if (e.OldDisplayIndex == 0 || e.NewDisplayIndex == 0)
+            {
                 // The reorder involves column 0 which contains the icons, so re-initialise the list
                 e.Cancel = true;
                 InitDownloadList();
@@ -621,8 +740,10 @@ namespace RadioDld
             string saveColSizes = string.Empty;
 
             // Convert the stored column widths back to a string to save to settings
-            foreach (KeyValuePair<int, int> colSize in downloadColSizes) {
-                if (!string.IsNullOrEmpty(saveColSizes)) {
+            foreach (KeyValuePair<int, int> colSize in downloadColSizes)
+            {
+                if (!string.IsNullOrEmpty(saveColSizes))
+                {
                     saveColSizes += "|";
                 }
 
@@ -635,7 +756,8 @@ namespace RadioDld
         private void lstDownloads_ItemActivate(object sender, System.EventArgs e)
         {
             // Occasionally the event gets fired when there isn't an item selected
-            if (lstDownloads.SelectedItems.Count == 0) {
+            if (lstDownloads.SelectedItems.Count == 0)
+            {
                 return;
             }
 
@@ -644,11 +766,13 @@ namespace RadioDld
 
         private void lstDownloads_SelectedIndexChanged(System.Object sender, System.EventArgs e)
         {
-            if (lstDownloads.SelectedItems.Count > 0) {
+            if (lstDownloads.SelectedItems.Count > 0)
+            {
                 ShowDownloadInfo(Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
-            } else {
-                SetViewDefaults();
-                // Revert back to downloads view default sidebar and toolbar
+            }
+            else
+            {
+                SetViewDefaults(); // Revert back to downloads view default sidebar and toolbar
             }
         }
 
@@ -658,18 +782,23 @@ namespace RadioDld
 
             string infoText = string.Empty;
 
-            if (info.description != null) {
+            if (info.description != null)
+            {
                 infoText += info.description + Environment.NewLine + Environment.NewLine;
             }
 
             infoText += "Date: " + info.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
             infoText += TextUtils.DescDuration(info.duration);
 
-            switch (info.status) {
+            switch (info.status)
+            {
                 case Data.DownloadStatus.Downloaded:
-                    if (File.Exists(info.downloadPath)) {
+                    if (File.Exists(info.downloadPath))
+                    {
                         SetToolbarButtons(new ToolBarButton[] { tbtPlay, tbtDelete });
-                    } else {
+                    }
+                    else
+                    {
                         SetToolbarButtons(new ToolBarButton[] { tbtDelete });
                     }
 
@@ -679,12 +808,14 @@ namespace RadioDld
                     string errorName = "";
                     string errorDetails = info.errorDetails;
 
-                    ToolBarButton[] toolbarButtons = {
+                    ToolBarButton[] toolbarButtons =
+                    {
                         tbtRetry,
                         tbtCancel
                     };
 
-                    switch (info.errorType) {
+                    switch (info.errorType)
+                    {
                         case ErrorType.LocalProblem:
                             errorName = "Local problem";
                             break;
@@ -706,7 +837,8 @@ namespace RadioDld
                         case ErrorType.UnknownError:
                             errorName = "Unknown error";
                             errorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed.";
-                            toolbarButtons = new ToolBarButton[] {
+                            toolbarButtons = new ToolBarButton[]
+                            {
                                 tbtRetry,
                                 tbtCancel,
                                 tbtReportError
@@ -716,7 +848,8 @@ namespace RadioDld
 
                     infoText += Environment.NewLine + Environment.NewLine + "Error: " + errorName;
 
-                    if (!string.IsNullOrEmpty(errorDetails)) {
+                    if (!string.IsNullOrEmpty(errorDetails))
+                    {
                         infoText += Environment.NewLine + Environment.NewLine + errorDetails;
                     }
 
@@ -740,15 +873,20 @@ namespace RadioDld
             txtSideDescript.ScrollBars = RichTextBoxScrollBars.None;
             txtSideDescript.ScrollBars = RichTextBoxScrollBars.Both;
 
-            if (picture != null) {
-                if (picture.Width > picSidebarImg.MaximumSize.Width | picture.Height > picSidebarImg.MaximumSize.Height) {
+            if (picture != null)
+            {
+                if (picture.Width > picSidebarImg.MaximumSize.Width | picture.Height > picSidebarImg.MaximumSize.Height)
+                {
                     int newWidth = 0;
                     int newHeight = 0;
 
-                    if (picture.Width > picture.Height) {
+                    if (picture.Width > picture.Height)
+                    {
                         newWidth = picSidebarImg.MaximumSize.Width;
                         newHeight = (int)((newWidth / (float)picture.Width) * picture.Height);
-                    } else {
+                    }
+                    else
+                    {
                         newHeight = picSidebarImg.MaximumSize.Height;
                         newWidth = (int)((newHeight / (float)picture.Height) * picture.Width);
                     }
@@ -767,7 +905,9 @@ namespace RadioDld
 
                 picSidebarImg.Image = picture;
                 picSidebarImg.Visible = true;
-            } else {
+            }
+            else
+            {
                 picSidebarImg.Visible = false;
             }
         }
@@ -788,19 +928,22 @@ namespace RadioDld
             tbtReportError.Visible = false;
             tbtCleanUp.Visible = false;
 
-            foreach (ToolBarButton button in buttons) {
+            foreach (ToolBarButton button in buttons)
+            {
                 button.Visible = true;
             }
         }
 
         public void mnuTrayShow_Click(System.Object sender, System.EventArgs e)
         {
-            if (this.Visible == false) {
+            if (this.Visible == false)
+            {
                 OsUtils.TrayAnimate(this, false);
                 this.Visible = true;
             }
 
-            if (this.WindowState == FormWindowState.Minimized) {
+            if (this.WindowState == FormWindowState.Minimized)
+            {
                 this.WindowState = FormWindowState.Normal;
             }
 
@@ -812,9 +955,12 @@ namespace RadioDld
             this.Close();
             this.Dispose();
 
-            try {
+            try
+            {
                 Directory.Delete(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"), true);
-            } catch (IOException) {
+            }
+            catch (IOException)
+            {
                 // Ignore an IOException - this just means that a file in the temp folder is still in use.
             }
         }
@@ -851,7 +997,8 @@ namespace RadioDld
 
         private void progData_ProviderAdded(System.Guid providerId)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_ProviderAdded(providerId); });
                 return;
@@ -863,32 +1010,41 @@ namespace RadioDld
             addItem.Name = providerId.ToString();
             addItem.Text = info.name;
 
-            if (info.icon != null) {
+            if (info.icon != null)
+            {
                 imlProviders.Images.Add(providerId.ToString(), info.icon);
                 addItem.ImageKey = providerId.ToString();
-            } else {
+            }
+            else
+            {
                 addItem.ImageKey = "default";
             }
 
             lstProviders.Items.Add(addItem);
 
             // Hide the 'No providers' provider options menu item
-            if (mnuOptionsProviderOptsNoProvs.Visible == true) {
+            if (mnuOptionsProviderOptsNoProvs.Visible == true)
+            {
                 mnuOptionsProviderOptsNoProvs.Visible = false;
             }
 
             MenuItem addMenuItem = new MenuItem(info.name + " Provider");
 
-            if (info.showOptionsHandler != null) {
+            if (info.showOptionsHandler != null)
+            {
                 addMenuItem.Click += info.showOptionsHandler;
-            } else {
+            }
+            else
+            {
                 addMenuItem.Enabled = false;
             }
 
             mnuOptionsProviderOpts.MenuItems.Add(addMenuItem);
 
-            if (view.CurrentView == ViewState.View.FindNewChooseProvider) {
-                if (lstProviders.SelectedItems.Count == 0) {
+            if (view.CurrentView == ViewState.View.FindNewChooseProvider)
+            {
+                if (lstProviders.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -897,18 +1053,24 @@ namespace RadioDld
 
         private void progData_ProgrammeUpdated(int progid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_ProgrammeUpdated(progid); });
                 return;
             }
 
-            if (view.CurrentView == ViewState.View.ProgEpisodes) {
-                if ((int)view.CurrentViewData == progid) {
-                    if (lstEpisodes.SelectedItems.Count == 0) {
+            if (view.CurrentView == ViewState.View.ProgEpisodes)
+            {
+                if ((int)view.CurrentViewData == progid)
+                {
+                    if (lstEpisodes.SelectedItems.Count == 0)
+                    {
                         // Update the displayed programme information
                         ShowProgrammeInfo(progid);
-                    } else {
+                    }
+                    else
+                    {
                         // Update the displayed episode information (in case the subscription status has changed)
                         int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                         ShowEpisodeInfo(epid);
@@ -923,15 +1085,21 @@ namespace RadioDld
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
 
-            if (progInfo.favourite) {
+            if (progInfo.favourite)
+            {
                 buttons.Add(tbtRemFavourite);
-            } else {
+            }
+            else
+            {
                 buttons.Add(tbtAddFavourite);
             }
 
-            if (progInfo.subscribed) {
+            if (progInfo.subscribed)
+            {
                 buttons.Add(tbtUnsubscribe);
-            } else if (!progInfo.singleEpisode) {
+            }
+            else if (!progInfo.singleEpisode)
+            {
                 buttons.Add(tbtSubscribe);
             }
 
@@ -949,7 +1117,8 @@ namespace RadioDld
 
         private void progData_EpisodeAdded(int epid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_EpisodeAdded(epid); });
                 return;
@@ -969,7 +1138,8 @@ namespace RadioDld
 
         private void progData_FavouriteAdded(int progid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_FavouriteAdded(progid); });
                 return;
@@ -979,8 +1149,10 @@ namespace RadioDld
 
             lstFavourites.Items.Add(FavouriteListItem(info, null));
 
-            if (view.CurrentView == ViewState.View.Favourites) {
-                if (lstFavourites.SelectedItems.Count == 0) {
+            if (view.CurrentView == ViewState.View.Favourites)
+            {
+                if (lstFavourites.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -989,7 +1161,8 @@ namespace RadioDld
 
         private void progData_FavouriteUpdated(int progid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_FavouriteUpdated(progid); });
                 return;
@@ -1000,10 +1173,14 @@ namespace RadioDld
 
             item = FavouriteListItem(info, item);
 
-            if (view.CurrentView == ViewState.View.Favourites) {
-                if (lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected) {
+            if (view.CurrentView == ViewState.View.Favourites)
+            {
+                if (lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected)
+                {
                     ShowFavouriteInfo(progid);
-                } else if (lstFavourites.SelectedItems.Count == 0) {
+                }
+                else if (lstFavourites.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -1012,7 +1189,8 @@ namespace RadioDld
 
         private ListViewItem FavouriteListItem(Data.FavouriteData info, ListViewItem item)
         {
-            if (item == null) {
+            if (item == null)
+            {
                 item = new ListViewItem();
                 item.SubItems.Add("");
             }
@@ -1028,7 +1206,8 @@ namespace RadioDld
 
         private void progData_FavouriteRemoved(int progid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_FavouriteRemoved(progid); });
                 return;
@@ -1036,8 +1215,10 @@ namespace RadioDld
 
             lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)].Remove();
 
-            if (view.CurrentView == ViewState.View.Favourites) {
-                if (lstFavourites.SelectedItems.Count == 0) {
+            if (view.CurrentView == ViewState.View.Favourites)
+            {
+                if (lstFavourites.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -1049,9 +1230,12 @@ namespace RadioDld
             item.Name = progid.ToString(CultureInfo.InvariantCulture);
             item.Text = info.name;
 
-            if (info.latestDownload == null) {
+            if (info.latestDownload == null)
+            {
                 item.SubItems[1].Text = "Never";
-            } else {
+            }
+            else
+            {
                 item.SubItems[1].Text = info.latestDownload.Value.ToShortDateString();
             }
 
@@ -1061,7 +1245,8 @@ namespace RadioDld
 
         private void progData_SubscriptionAdded(int progid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_SubscriptionAdded(progid); });
                 return;
@@ -1076,8 +1261,10 @@ namespace RadioDld
             SubscriptionListItem(progid, info, ref addItem);
             lstSubscribed.Items.Add(addItem);
 
-            if (view.CurrentView == ViewState.View.Subscriptions) {
-                if (lstSubscribed.SelectedItems.Count == 0) {
+            if (view.CurrentView == ViewState.View.Subscriptions)
+            {
+                if (lstSubscribed.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -1086,7 +1273,8 @@ namespace RadioDld
 
         private void progData_SubscriptionUpdated(int progid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_SubscriptionUpdated(progid); });
                 return;
@@ -1097,10 +1285,14 @@ namespace RadioDld
 
             SubscriptionListItem(progid, info, ref item);
 
-            if (view.CurrentView == ViewState.View.Subscriptions) {
-                if (lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected) {
+            if (view.CurrentView == ViewState.View.Subscriptions)
+            {
+                if (lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected)
+                {
                     ShowSubscriptionInfo(progid);
-                } else if (lstSubscribed.SelectedItems.Count == 0) {
+                }
+                else if (lstSubscribed.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -1109,7 +1301,8 @@ namespace RadioDld
 
         private void progData_SubscriptionRemoved(int progid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_SubscriptionRemoved(progid); });
                 return;
@@ -1117,8 +1310,10 @@ namespace RadioDld
 
             lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)].Remove();
 
-            if (view.CurrentView == ViewState.View.Subscriptions) {
-                if (lstSubscribed.SelectedItems.Count == 0) {
+            if (view.CurrentView == ViewState.View.Subscriptions)
+            {
+                if (lstSubscribed.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -1127,20 +1322,25 @@ namespace RadioDld
 
         private ListViewItem DownloadListItem(Data.DownloadData info, ListViewItem item)
         {
-            if (item == null) {
+            if (item == null)
+            {
                 item = new ListViewItem();
             }
 
             item.Name = info.epid.ToString(CultureInfo.InvariantCulture);
 
-            if (item.SubItems.Count < downloadColOrder.Count) {
-                for (int addCols = item.SubItems.Count; addCols <= downloadColOrder.Count - 1; addCols++) {
+            if (item.SubItems.Count < downloadColOrder.Count)
+            {
+                for (int addCols = item.SubItems.Count; addCols <= downloadColOrder.Count - 1; addCols++)
+                {
                     item.SubItems.Add("");
                 }
             }
 
-            for (int column = 0; column <= downloadColOrder.Count - 1; column++) {
-                switch (downloadColOrder[column]) {
+            for (int column = 0; column <= downloadColOrder.Count - 1; column++)
+            {
+                switch (downloadColOrder[column])
+                {
                     case Data.DownloadCols.EpisodeName:
                         item.SubItems[column].Text = info.name;
                         break;
@@ -1148,16 +1348,21 @@ namespace RadioDld
                         item.SubItems[column].Text = info.episodeDate.ToShortDateString();
                         break;
                     case Data.DownloadCols.Status:
-                        switch (info.status) {
+                        switch (info.status)
+                        {
                             case Data.DownloadStatus.Waiting:
                                 item.SubItems[column].Text = "Waiting";
                                 break;
                             case Data.DownloadStatus.Downloaded:
-                                if (info.playCount == 0) {
+                                if (info.playCount == 0)
+                                {
                                     item.SubItems[column].Text = "Newly Downloaded";
-                                } else {
+                                }
+                                else
+                                {
                                     item.SubItems[column].Text = "Downloaded";
                                 }
+
                                 break;
                             case Data.DownloadStatus.Errored:
                                 item.SubItems[column].Text = "Error";
@@ -1165,6 +1370,7 @@ namespace RadioDld
                             default:
                                 throw new InvalidDataException("Unknown status of " + info.status.ToString());
                         }
+
                         break;
                     case Data.DownloadCols.Progress:
                         item.SubItems[column].Text = "";
@@ -1172,7 +1378,8 @@ namespace RadioDld
                     case Data.DownloadCols.Duration:
                         string durationText = string.Empty;
 
-                        if (info.duration != 0) {
+                        if (info.duration != 0)
+                        {
                             int mins = Convert.ToInt32(Math.Round(info.duration / (decimal)60, 0));
                             int hours = mins / 60;
                             mins = mins % 60;
@@ -1187,16 +1394,21 @@ namespace RadioDld
                 }
             }
 
-            switch (info.status) {
+            switch (info.status)
+            {
                 case Data.DownloadStatus.Waiting:
                     item.ImageKey = "waiting";
                     break;
                 case Data.DownloadStatus.Downloaded:
-                    if (info.playCount == 0) {
+                    if (info.playCount == 0)
+                    {
                         item.ImageKey = "downloaded_new";
-                    } else {
+                    }
+                    else
+                    {
                         item.ImageKey = "downloaded";
                     }
+
                     break;
                 case Data.DownloadStatus.Errored:
                     item.ImageKey = "error";
@@ -1210,7 +1422,8 @@ namespace RadioDld
 
         private void progData_DownloadAdded(int epid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_DownloadAdded(epid); });
                 return;
@@ -1219,8 +1432,10 @@ namespace RadioDld
             Data.DownloadData info = progData.FetchDownloadData(epid);
             lstDownloads.Items.Add(DownloadListItem(info, null));
 
-            if (view.CurrentView == ViewState.View.Downloads) {
-                if (lstDownloads.SelectedItems.Count == 0) {
+            if (view.CurrentView == ViewState.View.Downloads)
+            {
+                if (lstDownloads.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -1229,7 +1444,8 @@ namespace RadioDld
 
         private void progData_DownloadProgress(int epid, int percent, string statusText, ProgressIcon icon)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_DownloadProgress(epid, percent, statusText, icon); });
                 return;
@@ -1237,23 +1453,28 @@ namespace RadioDld
 
             ListViewItem item = lstDownloads.Items[Convert.ToString(epid, CultureInfo.InvariantCulture)];
 
-            if (item == null) {
+            if (item == null)
+            {
                 return;
             }
 
-            if (downloadColOrder.Contains(Data.DownloadCols.Status)) {
+            if (downloadColOrder.Contains(Data.DownloadCols.Status))
+            {
                 item.SubItems[downloadColOrder.IndexOf(Data.DownloadCols.Status)].Text = statusText;
             }
 
-            if (downloadColOrder.Contains(Data.DownloadCols.Progress)) {
+            if (downloadColOrder.Contains(Data.DownloadCols.Progress))
+            {
                 prgDldProg.Value = percent;
 
-                if (lstDownloads.Controls.Count == 0) {
+                if (lstDownloads.Controls.Count == 0)
+                {
                     lstDownloads.AddProgressBar(ref prgDldProg, item, downloadColOrder.IndexOf(Data.DownloadCols.Progress));
                 }
             }
 
-            switch (icon) {
+            switch (icon)
+            {
                 case ProgressIcon.Downloading:
                     item.ImageKey = "downloading";
                     break;
@@ -1265,7 +1486,8 @@ namespace RadioDld
 
         private void progData_DownloadRemoved(int epid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_DownloadRemoved(epid); });
                 return;
@@ -1273,9 +1495,12 @@ namespace RadioDld
 
             ListViewItem item = lstDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
 
-            if (item != null) {
-                if (downloadColOrder.Contains(Data.DownloadCols.Progress)) {
-                    if (lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null) {
+            if (item != null)
+            {
+                if (downloadColOrder.Contains(Data.DownloadCols.Progress))
+                {
+                    if (lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null)
+                    {
                         lstDownloads.RemoveProgressBar(ref prgDldProg);
                     }
                 }
@@ -1283,8 +1508,10 @@ namespace RadioDld
                 item.Remove();
             }
 
-            if (view.CurrentView == ViewState.View.Downloads) {
-                if (lstDownloads.SelectedItems.Count == 0) {
+            if (view.CurrentView == ViewState.View.Downloads)
+            {
+                if (lstDownloads.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -1293,7 +1520,8 @@ namespace RadioDld
 
         private void progData_DownloadUpdated(int epid)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_DownloadUpdated(epid); });
                 return;
@@ -1304,8 +1532,10 @@ namespace RadioDld
             ListViewItem item = lstDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
             item = DownloadListItem(info, item);
 
-            if (downloadColOrder.Contains(Data.DownloadCols.Progress)) {
-                if (lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null) {
+            if (downloadColOrder.Contains(Data.DownloadCols.Progress))
+            {
+                if (lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null)
+                {
                     lstDownloads.RemoveProgressBar(ref prgDldProg);
                 }
             }
@@ -1313,10 +1543,14 @@ namespace RadioDld
             // Update the downloads list sorting, as the order may now have changed
             lstDownloads.Sort();
 
-            if (view.CurrentView == ViewState.View.Downloads) {
-                if (item.Selected) {
+            if (view.CurrentView == ViewState.View.Downloads)
+            {
+                if (item.Selected)
+                {
                     ShowDownloadInfo(epid);
-                } else if (lstDownloads.SelectedItems.Count == 0) {
+                }
+                else if (lstDownloads.SelectedItems.Count == 0)
+                {
                     // Update the displayed statistics
                     SetViewDefaults();
                 }
@@ -1325,19 +1559,25 @@ namespace RadioDld
 
         private void progData_DownloadProgressTotal(bool downloading, int percent)
         {
-            if (this.InvokeRequired) {
+            if (this.InvokeRequired)
+            {
                 // Events will sometimes be fired on a different thread to the ui
                 this.BeginInvoke((MethodInvoker)delegate { progData_DownloadProgressTotal(downloading, percent); });
                 return;
             }
 
-            if (this.IsDisposed == false) {
+            if (this.IsDisposed == false)
+            {
                 UpdateTrayStatus(downloading);
 
-                if (OsUtils.WinSevenOrLater()) {
-                    if (downloading) {
+                if (OsUtils.WinSevenOrLater())
+                {
+                    if (downloading)
+                    {
                         tbarNotif.SetProgressValue(this, percent, 100);
-                    } else {
+                    }
+                    else
+                    {
                         tbarNotif.SetProgressNone(this);
                     }
                 }
@@ -1359,11 +1599,16 @@ namespace RadioDld
 
         private void Main_Shown(object sender, System.EventArgs e)
         {
-            foreach (string commandLineArg in Environment.GetCommandLineArgs()) {
-                if (commandLineArg.ToUpperInvariant() == "/HIDEMAINWINDOW") {
-                    if (OsUtils.WinSevenOrLater()) {
+            foreach (string commandLineArg in Environment.GetCommandLineArgs())
+            {
+                if (commandLineArg.ToUpperInvariant() == "/HIDEMAINWINDOW")
+                {
+                    if (OsUtils.WinSevenOrLater())
+                    {
                         this.WindowState = FormWindowState.Minimized;
-                    } else {
+                    }
+                    else
+                    {
                         OsUtils.TrayAnimate(this, true);
                         this.Visible = false;
                     }
@@ -1373,12 +1618,15 @@ namespace RadioDld
 
         private void Main_Move_Resize(object sender, System.EventArgs e)
         {
-            if (windowPosLoaded) {
-                if (this.WindowState == FormWindowState.Normal) {
+            if (windowPosLoaded)
+            {
+                if (this.WindowState == FormWindowState.Normal)
+                {
                     Properties.Settings.Default.MainFormPos = this.DesktopBounds;
                 }
 
-                if (this.WindowState != FormWindowState.Minimized) {
+                if (this.WindowState != FormWindowState.Minimized)
+                {
                     Properties.Settings.Default.MainFormState = this.WindowState;
                 }
             }
@@ -1386,19 +1634,22 @@ namespace RadioDld
 
         private void tmrCheckForUpdates_Tick(System.Object sender, System.EventArgs e)
         {
-            if (checkUpdate.IsUpdateAvailable()) {
-                if (Properties.Settings.Default.LastUpdatePrompt.AddDays(7) < DateAndTime.Now) {
+            if (checkUpdate.IsUpdateAvailable())
+            {
+                if (Properties.Settings.Default.LastUpdatePrompt.AddDays(7) < DateAndTime.Now)
+                {
                     Properties.Settings.Default.LastUpdatePrompt = DateAndTime.Now;
-                    Properties.Settings.Default.Save();
-                    // Save the last prompt time in case of unexpected termination
+                    Properties.Settings.Default.Save(); // Save the last prompt time in case of unexpected termination
 
                     UpdateNotify showUpdate = new UpdateNotify();
 
-                    if (this.WindowState == FormWindowState.Minimized | this.Visible == false) {
+                    if (this.WindowState == FormWindowState.Minimized | this.Visible == false)
+                    {
                         showUpdate.StartPosition = FormStartPosition.CenterScreen;
                     }
 
-                    if (showUpdate.ShowDialog(this) == DialogResult.Yes) {
+                    if (showUpdate.ShowDialog(this) == DialogResult.Yes)
+                    {
                         Process.Start("http://www.nerdoftheherd.com/tools/radiodld/update.php?prevver=" + RadioDld.My.MyProject.Application.Info.Version.ToString());
                     }
                 }
@@ -1409,7 +1660,8 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView) {
+            switch (view.CurrentView)
+            {
                 case ViewState.View.ProgEpisodes:
                     progid = (int)view.CurrentViewData;
                     break;
@@ -1418,9 +1670,12 @@ namespace RadioDld
                     break;
             }
 
-            if (progData.AddFavourite(progid)) {
+            if (progData.AddFavourite(progid))
+            {
                 view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites, null);
-            } else {
+            }
+            else
+            {
                 Interaction.MsgBox("You already have this programme in your list of favourites!", MsgBoxStyle.Exclamation);
             }
         }
@@ -1429,7 +1684,8 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView) {
+            switch (view.CurrentView)
+            {
                 case ViewState.View.ProgEpisodes:
                     progid = (int)view.CurrentViewData;
                     break;
@@ -1441,7 +1697,8 @@ namespace RadioDld
                     break;
             }
 
-            if (Interaction.MsgBox("Are you sure you would like to remove this programme from your list of favourites?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes) {
+            if (Interaction.MsgBox("Are you sure you would like to remove this programme from your list of favourites?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
+            {
                 progData.RemoveFavourite(progid);
             }
         }
@@ -1450,7 +1707,8 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView) {
+            switch (view.CurrentView)
+            {
                 case ViewState.View.ProgEpisodes:
                     progid = (int)view.CurrentViewData;
                     break;
@@ -1459,9 +1717,12 @@ namespace RadioDld
                     break;
             }
 
-            if (progData.AddSubscription(progid)) {
+            if (progData.AddSubscription(progid))
+            {
                 view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions, null);
-            } else {
+            }
+            else
+            {
                 Interaction.MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation);
             }
         }
@@ -1470,7 +1731,8 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView) {
+            switch (view.CurrentView)
+            {
                 case ViewState.View.ProgEpisodes:
                     progid = (int)view.CurrentViewData;
                     break;
@@ -1482,7 +1744,8 @@ namespace RadioDld
                     break;
             }
 
-            if (Interaction.MsgBox("Are you sure you would like to stop having new episodes of this programme downloaded automatically?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes) {
+            if (Interaction.MsgBox("Are you sure you would like to stop having new episodes of this programme downloaded automatically?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
+            {
                 progData.RemoveSubscription(progid);
             }
         }
@@ -1491,7 +1754,8 @@ namespace RadioDld
         {
             int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-            if (Interaction.MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes) {
+            if (Interaction.MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
+            {
                 progData.DownloadRemove(epid);
             }
         }
@@ -1501,8 +1765,10 @@ namespace RadioDld
             int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
             Data.DownloadData info = progData.FetchDownloadData(epid);
 
-            if (info.status == Data.DownloadStatus.Downloaded) {
-                if (File.Exists(info.downloadPath)) {
+            if (info.status == Data.DownloadStatus.Downloaded)
+            {
+                if (File.Exists(info.downloadPath))
+                {
                     Process.Start(info.downloadPath);
 
                     // Bump the play count of this item up by one
@@ -1519,20 +1785,30 @@ namespace RadioDld
             bool fileExists = File.Exists(info.downloadPath);
             string delQuestion = "Are you sure that you would like to delete this episode";
 
-            if (fileExists) {
+            if (fileExists)
+            {
                 delQuestion += " and the associated audio file";
             }
 
-            if (Interaction.MsgBox(delQuestion + "?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes) {
-                if (fileExists) {
-                    try {
+            if (Interaction.MsgBox(delQuestion + "?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
+            {
+                if (fileExists)
+                {
+                    try
+                    {
                         File.Delete(info.downloadPath);
-                    } catch (IOException) {
-                        if (Interaction.MsgBox("There was a problem deleting the audio file for this episode, as the file is in use by another application." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation | MsgBoxStyle.YesNo) == MsgBoxResult.No) {
+                    }
+                    catch (IOException)
+                    {
+                        if (Interaction.MsgBox("There was a problem deleting the audio file for this episode, as the file is in use by another application." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation | MsgBoxStyle.YesNo) == MsgBoxResult.No)
+                        {
                             return;
                         }
-                    } catch (UnauthorizedAccessException) {
-                        if (Interaction.MsgBox("There was a problem deleting the audio file for this episode, as the file is either read-only or you do not have the permissions required." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation | MsgBoxStyle.YesNo) == MsgBoxResult.No) {
+                    }
+                    catch (UnauthorizedAccessException)
+                    {
+                        if (Interaction.MsgBox("There was a problem deleting the audio file for this episode, as the file is either read-only or you do not have the permissions required." + Environment.NewLine + Environment.NewLine + "Would you like to delete the episode from the list anyway?", MsgBoxStyle.Exclamation | MsgBoxStyle.YesNo) == MsgBoxResult.No)
+                        {
                             return;
                         }
                     }
@@ -1551,9 +1827,12 @@ namespace RadioDld
         {
             int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-            if (progData.AddDownload(epid)) {
+            if (progData.AddDownload(epid))
+            {
                 view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
-            } else {
+            }
+            else
+            {
                 Interaction.MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation);
             }
         }
@@ -1562,7 +1841,8 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView) {
+            switch (view.CurrentView)
+            {
                 case ViewState.View.Favourites:
                     progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
@@ -1632,7 +1912,8 @@ namespace RadioDld
             tbtSubscriptions.Checked = false;
             tbtDownloads.Checked = false;
 
-            switch (tab) {
+            switch (tab)
+            {
                 case ViewState.MainTab.FindProgramme:
                     tbtFindNew.Checked = true;
                     break;
@@ -1660,19 +1941,23 @@ namespace RadioDld
             lstDownloads.Visible = false;
             ttxSearch.Visible = false;
 
-            switch (view) {
+            switch (view)
+            {
                 case ViewState.View.FindNewChooseProvider:
                     lstProviders.Visible = true;
                     lstProviders.Focus();
 
-                    if (lstProviders.SelectedItems.Count > 0) {
+                    if (lstProviders.SelectedItems.Count > 0)
+                    {
                         ShowProviderInfo(new Guid(lstProviders.SelectedItems[0].Name));
                     }
+
                     break;
                 case ViewState.View.FindNewProviderForm:
                     FindNewViewData FindViewData = (FindNewViewData)data;
 
-                    if (pnlPluginSpace.Controls.Count > 0) {
+                    if (pnlPluginSpace.Controls.Count > 0)
+                    {
                         pnlPluginSpace.Controls[0].Dispose();
                         pnlPluginSpace.Controls.Clear();
                     }
@@ -1685,10 +1970,8 @@ namespace RadioDld
                 case ViewState.View.ProgEpisodes:
                     lstEpisodes.Visible = true;
                     progData.CancelEpisodeListing();
-                    lstEpisodes.Items.Clear();
-                    // Clear before DoEvents so that old items don't flash up on screen
-                    Application.DoEvents();
-                    // Give any queued BeginInvoke calls a chance to be processed
+                    lstEpisodes.Items.Clear(); // Clear before DoEvents so that old items don't flash up on screen
+                    Application.DoEvents(); // Give any queued BeginInvoke calls a chance to be processed
                     lstEpisodes.Items.Clear();
                     progData.InitEpisodeList((int)data);
                     break;
@@ -1696,22 +1979,29 @@ namespace RadioDld
                     lstFavourites.Visible = true;
                     lstFavourites.Focus();
 
-                    if (lstFavourites.SelectedItems.Count > 0) {
+                    if (lstFavourites.SelectedItems.Count > 0)
+                    {
                         ShowFavouriteInfo(Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture));
                     }
+
                     break;
                 case ViewState.View.Subscriptions:
                     lstSubscribed.Visible = true;
                     lstSubscribed.Focus();
 
-                    if (lstSubscribed.SelectedItems.Count > 0) {
+                    if (lstSubscribed.SelectedItems.Count > 0)
+                    {
                         ShowSubscriptionInfo(Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture));
                     }
+
                     break;
                 case ViewState.View.Downloads:
-                    if (data == null) {
+                    if (data == null)
+                    {
                         ttxSearch.Text = string.Empty;
-                    } else {
+                    }
+                    else
+                    {
                         ttxSearch.Text = (string)data;
                         PerformSearch(view, ttxSearch.Text);
                     }
@@ -1720,16 +2010,19 @@ namespace RadioDld
                     lstDownloads.Visible = true;
                     lstDownloads.Focus();
 
-                    if (lstDownloads.SelectedItems.Count > 0) {
+                    if (lstDownloads.SelectedItems.Count > 0)
+                    {
                         ShowDownloadInfo(Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
                     }
+
                     break;
             }
         }
 
         private void SetViewDefaults()
         {
-            switch (view.CurrentView) {
+            switch (view.CurrentView)
+            {
                 case ViewState.View.FindNewChooseProvider:
                     SetToolbarButtons(new ToolBarButton[] { });
                     SetSideBar(Convert.ToString(lstProviders.Items.Count, CultureInfo.CurrentCulture) + " provider" + (lstProviders.Items.Count == 1 ? "" : "s"), "", null);
@@ -1753,23 +2046,29 @@ namespace RadioDld
                 case ViewState.View.Downloads:
                     SetToolbarButtons(new ToolBarButton[] { tbtCleanUp });
 
-                    if (!string.IsNullOrEmpty(progData.DownloadQuery)) {
+                    if (!string.IsNullOrEmpty(progData.DownloadQuery))
+                    {
                         SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " result" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
-                    } else {
+                    }
+                    else
+                    {
                         string description = string.Empty;
                         int newCount = progData.CountDownloadsNew();
                         int errorCount = progData.CountDownloadsErrored();
 
-                        if (newCount > 0) {
+                        if (newCount > 0)
+                        {
                             description += "Newly downloaded: " + Convert.ToString(newCount, CultureInfo.CurrentCulture) + Environment.NewLine;
                         }
 
-                        if (errorCount > 0) {
+                        if (errorCount > 0)
+                        {
                             description += "Errored: " + Convert.ToString(errorCount, CultureInfo.CurrentCulture);
                         }
 
                         SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " download" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), description, null);
                     }
+
                     break;
             }
         }
@@ -1786,7 +2085,8 @@ namespace RadioDld
 
         private void tbrToolbar_ButtonClick(System.Object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
         {
-            switch (e.Button.Name) {
+            switch (e.Button.Name)
+            {
                 case "tbtChooseProgramme":
                     tbtChooseProgramme_Click();
                     break;
@@ -1831,21 +2131,25 @@ namespace RadioDld
 
         private void tblToolbars_Resize(object sender, System.EventArgs e)
         {
-            if (this.WindowState != FormWindowState.Minimized) {
+            if (this.WindowState != FormWindowState.Minimized)
+            {
                 tblToolbars.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right));
                 tblToolbars.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right);
 
-                if (VisualStyleRenderer.IsSupported) {
+                if (VisualStyleRenderer.IsSupported)
+                {
                     // Visual styles are enabled, so draw the correct background behind the toolbars
-
                     Bitmap bmpBackground = new Bitmap(tblToolbars.Width, tblToolbars.Height);
                     Graphics graGraphics = Graphics.FromImage(bmpBackground);
 
-                    try {
+                    try
+                    {
                         VisualStyleRenderer vsrRebar = new VisualStyleRenderer("Rebar", 0, 0);
                         vsrRebar.DrawBackground(graGraphics, new Rectangle(0, 0, tblToolbars.Width, tblToolbars.Height));
                         tblToolbars.BackgroundImage = bmpBackground;
-                    } catch (ArgumentException) {
+                    }
+                    catch (ArgumentException)
+                    {
                         // The 'Rebar' background image style did not exist, so don't try to draw it.
                     }
                 }
@@ -1864,8 +2168,7 @@ namespace RadioDld
 
         private void txtSideDescript_Resize(object sender, System.EventArgs e)
         {
-            txtSideDescript.Refresh();
-            // Make sure the scrollbars update correctly
+            txtSideDescript.Refresh(); // Make sure the scrollbars update correctly
         }
 
         private void picSideBarBorder_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
@@ -1879,7 +2182,8 @@ namespace RadioDld
             chooser.Columns = Properties.Settings.Default.DownloadCols;
             chooser.StoreNameList(downloadColNames);
 
-            if (chooser.ShowDialog(this) == DialogResult.OK) {
+            if (chooser.ShowDialog(this) == DialogResult.OK)
+            {
                 Properties.Settings.Default.DownloadCols = chooser.Columns;
                 InitDownloadList();
             }
@@ -1897,16 +2201,17 @@ namespace RadioDld
 
         private void InitFavouriteList()
         {
-            if (lstFavourites.SelectedItems.Count > 0) {
-                SetViewDefaults();
-                // Revert back to default sidebar and toolbar
+            if (lstFavourites.SelectedItems.Count > 0)
+            {
+                SetViewDefaults(); // Revert back to default sidebar and toolbar
             }
 
             // Convert the list of FavouriteData items to an array of ListItems
             List<Data.FavouriteData> initData = progData.FetchFavouriteList();
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
-            for (int convItems = 0; convItems <= initData.Count - 1; convItems++) {
+            for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
+            {
                 initItems[convItems] = FavouriteListItem(initData[convItems], null);
             }
 
@@ -1916,9 +2221,9 @@ namespace RadioDld
 
         private void InitDownloadList()
         {
-            if (lstDownloads.SelectedItems.Count > 0) {
-                SetViewDefaults();
-                // Revert back to default sidebar and toolbar
+            if (lstDownloads.SelectedItems.Count > 0)
+            {
+                SetViewDefaults(); // Revert back to default sidebar and toolbar
             }
 
             downloadColSizes.Clear();
@@ -1929,19 +2234,23 @@ namespace RadioDld
             string newItems = string.Empty;
 
             // Find any columns without widths defined in the current setting
-            foreach (string sizePair in Strings.Split(Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue.ToString(), "|")) {
-                if (!("|" + Properties.Settings.Default.DownloadColSizes).Contains("|" + Strings.Split(sizePair, ",")[0] + ",")) {
+            foreach (string sizePair in Strings.Split(Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue.ToString(), "|"))
+            {
+                if (!("|" + Properties.Settings.Default.DownloadColSizes).Contains("|" + Strings.Split(sizePair, ",")[0] + ","))
+                {
                     newItems += "|" + sizePair;
                 }
             }
 
             // Append the new column sizes to the end of the setting
-            if (!string.IsNullOrEmpty(newItems)) {
+            if (!string.IsNullOrEmpty(newItems))
+            {
                 Properties.Settings.Default.DownloadColSizes += newItems;
             }
 
             // Fetch the column sizes into downloadColSizes for ease of access
-            foreach (string sizePair in Strings.Split(Properties.Settings.Default.DownloadColSizes, "|")) {
+            foreach (string sizePair in Strings.Split(Properties.Settings.Default.DownloadColSizes, "|"))
+            {
                 string[] splitPair = Strings.Split(sizePair, ",");
                 int pixelSize = Convert.ToInt32(float.Parse(splitPair[1], CultureInfo.InvariantCulture) * this.CurrentAutoScaleDimensions.Width);
 
@@ -1949,10 +2258,12 @@ namespace RadioDld
             }
 
             // Set up the columns specified in the DownloadCols setting
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.DownloadCols)) {
+            if (!string.IsNullOrEmpty(Properties.Settings.Default.DownloadCols))
+            {
                 string[] columns = Strings.Split(Properties.Settings.Default.DownloadCols, ",");
 
-                foreach (string column in columns) {
+                foreach (string column in columns)
+                {
                     int colVal = int.Parse(column, CultureInfo.InvariantCulture);
                     downloadColOrder.Add((Data.DownloadCols)colVal);
                     lstDownloads.Columns.Add(downloadColNames[colVal], downloadColSizes[colVal]);
@@ -1968,7 +2279,8 @@ namespace RadioDld
             List<Data.DownloadData> initData = progData.FetchDownloadList(true);
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
-            for (int convItems = 0; convItems <= initData.Count - 1; convItems++) {
+            for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
+            {
                 initItems[convItems] = DownloadListItem(initData[convItems], null);
             }
 
@@ -1978,11 +2290,15 @@ namespace RadioDld
 
         private void ttxSearch_TextChanged(object sender, System.EventArgs e)
         {
-            lock (searchThreadLock) {
-                if (string.IsNullOrEmpty(ttxSearch.Text)) {
+            lock (searchThreadLock)
+            {
+                if (string.IsNullOrEmpty(ttxSearch.Text))
+                {
                     searchThread = null;
                     PerformSearch(view.CurrentView, ttxSearch.Text);
-                } else {
+                }
+                else
+                {
                     searchThread = new Thread(() => SearchWait(view.CurrentView, ttxSearch.Text));
                     searchThread.IsBackground = true;
                     searchThread.Start();
@@ -1994,8 +2310,10 @@ namespace RadioDld
         {
             Thread.Sleep(500);
 
-            lock (searchThreadLock) {
-                if (!object.ReferenceEquals(Thread.CurrentThread, searchThread)) {
+            lock (searchThreadLock)
+            {
+                if (!object.ReferenceEquals(Thread.CurrentThread, searchThread))
+                {
                     // A search thread was created more recently, stop this thread
                     return;
                 }
@@ -2006,15 +2324,23 @@ namespace RadioDld
 
         private void PerformSearch(ViewState.View origView, string search)
         {
-            if (view.CurrentView == origView) {
-                if (string.IsNullOrEmpty(search)) {
-                    if (view.CurrentViewData != null) {
+            if (view.CurrentView == origView)
+            {
+                if (string.IsNullOrEmpty(search))
+                {
+                    if (view.CurrentViewData != null)
+                    {
                         view.StoreView(null);
                     }
-                } else {
-                    if (view.CurrentViewData == null) {
+                }
+                else
+                {
+                    if (view.CurrentViewData == null)
+                    {
                         view.StoreView(search);
-                    } else {
+                    }
+                    else
+                    {
                         view.CurrentViewData = search;
                     }
                 }

@@ -19,12 +19,10 @@ using Microsoft.VisualBasic;
 
 namespace RadioDld
 {
-
-
     internal partial class ReportError : Form
     {
-
         private ErrorReporting report;
+
         public void AssignReport(ErrorReporting report)
         {
             this.report = report;
@@ -32,10 +30,13 @@ namespace RadioDld
 
         private void cmdSend_Click(System.Object sender, System.EventArgs e)
         {
-            try {
+            try
+            {
                 this.Visible = false;
                 report.SendReport(Properties.Settings.Default.ErrorReportURL);
-            } catch {
+            }
+            catch
+            {
                 // No way of reporting errors that have happened here, so just give up
             }
 
@@ -54,9 +55,10 @@ namespace RadioDld
 
         private void Error_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
         {
-            System.Environment.Exit(0);
-            // As there has been an error, call 'end' to blow away the rest of the app reasonably tidily
+            // As there has been an error, blow away the rest of the app reasonably tidily
+            System.Environment.Exit(1);
         }
+
         public ReportError()
         {
             InitializeComponent();

@@ -20,22 +20,21 @@ using System.Windows.Forms;
 
 namespace RadioDld
 {
-
     internal class ExtToolBar : ToolBar
     {
         // Window Messages
         private const int WM_USER = 0x400;
-
         private const int TB_SETBUTTONINFO = WM_USER + 64;
+
         // TBBUTTONINFO Mask Flags
         private const uint TBIF_STYLE = 0x8;
         private const int TBIF_SIZE = 0x40;
-
         private const uint TBIF_BYINDEX = 0x80000000;
+
         // TBBUTTONINFO Style Flags
         private const int BTNS_AUTOSIZE = 0x10;
-
         private const int BTNS_WHOLEDROPDOWN = 0x80;
+
         // API Structs
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
         private struct TBBUTTONINFO
@@ -57,15 +56,17 @@ namespace RadioDld
         private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref TBBUTTONINFO lParam);
 
         // Variables
-
         private List<ToolBarButton> wholeDropDownButtons = new List<ToolBarButton>();
+
         public void SetWholeDropDown(ToolBarButton button)
         {
-            if (button == null) {
+            if (button == null)
+            {
                 throw new ArgumentNullException("button");
             }
 
-            if (wholeDropDownButtons.Contains(button) == false) {
+            if (wholeDropDownButtons.Contains(button) == false)
+            {
                 wholeDropDownButtons.Add(button);
             }
 
@@ -80,18 +81,22 @@ namespace RadioDld
 
         protected override void WndProc(ref Message m)
         {
-            switch (m.Msg) {
+            switch (m.Msg)
+            {
                 case TB_SETBUTTONINFO:
                     TBBUTTONINFO tbrInfo = default(TBBUTTONINFO);
                     tbrInfo = (TBBUTTONINFO)Marshal.PtrToStructure(m.LParam, typeof(TBBUTTONINFO));
 
-                    if ((tbrInfo.dwMask & TBIF_SIZE) == TBIF_SIZE) {
+                    if ((tbrInfo.dwMask & TBIF_SIZE) == TBIF_SIZE)
+                    {
                         // If the .net wrapper is trying to set the size, then prevent this
                         tbrInfo.dwMask = tbrInfo.dwMask ^ TBIF_SIZE;
                     }
 
-                    if ((tbrInfo.dwMask & TBIF_STYLE) == TBIF_STYLE) {
-                        if ((tbrInfo.fsStyle & BTNS_AUTOSIZE) != BTNS_AUTOSIZE) {
+                    if ((tbrInfo.dwMask & TBIF_STYLE) == TBIF_STYLE)
+                    {
+                        if ((tbrInfo.fsStyle & BTNS_AUTOSIZE) != BTNS_AUTOSIZE)
+                        {
                             // Make sure that the autosize style is set for all buttons, and doesn't
                             // get inadvertantly unset at any point by the .net wrapper
                             tbrInfo.fsStyle = (byte)(tbrInfo.fsStyle | BTNS_AUTOSIZE);
@@ -107,23 +112,30 @@ namespace RadioDld
 
         protected override bool ProcessMnemonic(char inputChar)
         {
-            foreach (ToolBarButton checkButton in this.Buttons) {
-                if (checkButton.Visible && IsMnemonic(inputChar, checkButton.Text)) {
-                    if (wholeDropDownButtons.Contains(checkButton)) {
+            foreach (ToolBarButton checkButton in this.Buttons)
+            {
+                if (checkButton.Visible && IsMnemonic(inputChar, checkButton.Text))
+                {
+                    if (wholeDropDownButtons.Contains(checkButton))
+                    {
                         // Give the toolbar button a pressed appearance
                         checkButton.Pushed = true;
+
                         // Set the whole dropdown flag again as setting pushed will have cleared it
                         SetWholeDropDown(checkButton);
 
                         // Calculate where the menu should be shown
                         Point menuLocation = new Point(checkButton.Rectangle.Left, checkButton.Rectangle.Bottom);
+
                         // Show the menu (modally)
                         ((ContextMenu)checkButton.DropDownMenu).Show(this, menuLocation);
 
                         // Remove the pressed appearance
                         checkButton.Pushed = false;
                         SetWholeDropDown(checkButton);
-                    } else {
+                    }
+                    else
+                    {
                         // Just fire the click code for the button
                         this.OnButtonClick(new ToolBarButtonClickEventArgs(checkButton));
                     }

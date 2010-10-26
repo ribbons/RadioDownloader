@@ -17,11 +17,8 @@ using System.Windows.Forms;
 
 namespace RadioDld
 {
-
     internal partial class CleanUp : Form
     {
-
-
         private Data progData;
 
         public CleanUp()

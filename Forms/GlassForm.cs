@@ -21,16 +21,14 @@ using System.Windows.Forms.VisualStyles;
 
 namespace RadioDld
 {
-
     public class GlassForm : Form
     {
-
         private const int WM_NCHITTEST = 0x84;
-
         private const int WM_DWMCOMPOSITIONCHANGED = 0x31e;
-        private const int HTCLIENT = 0x1;
 
+        private const int HTCLIENT = 0x1;
         private const int HTCAPTION = 0x2;
+
         [StructLayout(LayoutKind.Sequential)]
         private struct MARGINS
         {
@@ -44,8 +42,8 @@ namespace RadioDld
         private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
 
         private bool glassSet;
-
         private MARGINS glassMargins;
+
         public void SetGlassMargins(int leftMargin, int rightMargin, int topMargin, int bottomMargin)
         {
             glassMargins = new MARGINS();
@@ -62,22 +60,28 @@ namespace RadioDld
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         protected override void WndProc(ref System.Windows.Forms.Message m)
         {
-            switch (m.Msg) {
+            switch (m.Msg)
+            {
                 case WM_DWMCOMPOSITIONCHANGED:
-                    if (glassSet) {
+                    if (glassSet)
+                    {
                         ExtendFrameIntoClientArea();
                     }
+
                     break;
                 case WM_NCHITTEST:
                     DefWndProc(ref m);
 
-                    if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported && glassSet) {
-                        if ((int)m.Result == HTCLIENT) {
+                    if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported && glassSet)
+                    {
+                        if ((int)m.Result == HTCLIENT)
+                        {
                             // Pretend that the mouse was over the title bar, making the form draggable
                             m.Result = new IntPtr(HTCAPTION);
                             return;
                         }
                     }
+
                     break;
             }
 
@@ -86,11 +90,13 @@ namespace RadioDld
 
         private void ExtendFrameIntoClientArea()
         {
-            if (!OsUtils.CompositionEnabled()) {
+            if (!OsUtils.CompositionEnabled())
+            {
                 return;
             }
 
-            if (DwmExtendFrameIntoClientArea(this.Handle, ref glassMargins) != 0) {
+            if (DwmExtendFrameIntoClientArea(this.Handle, ref glassMargins) != 0)
+            {
                 throw new Win32Exception();
             }
         }

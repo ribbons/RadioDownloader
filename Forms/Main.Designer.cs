@@ -17,6 +17,7 @@ namespace RadioDld
             {
                 components.Dispose();
             }
+
             base.Dispose(disposing);
         }
 

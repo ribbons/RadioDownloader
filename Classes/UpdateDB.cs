@@ -21,15 +21,13 @@ using Microsoft.VisualBasic;
 
 namespace RadioDld
 {
-
     internal class UpdateDB : IDisposable
     {
-
-
         private bool isDisposed;
-        private SQLiteConnection specConn;
 
+        private SQLiteConnection specConn;
         private SQLiteConnection updateConn;
+
         private enum UpdateType
         {
             None,
@@ -37,9 +35,9 @@ namespace RadioDld
             Update
         }
 
-        public UpdateDB(string specDbPath, string updateDbPath) : base()
+        public UpdateDB(string specDbPath, string updateDbPath)
+            : base()
         {
-
             specConn = new SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False");
             specConn.Open();
 
@@ -51,71 +49,94 @@ namespace RadioDld
         {
             UpdateType updateReqd = default(UpdateType);
 
-            using (SQLiteCommand specCommand = new SQLiteCommand("select name, sql from sqlite_master where type='table'", specConn)) {
-                using (SQLiteCommand checkUpdateCmd = new SQLiteCommand("select sql from sqlite_master where type='table' and name=@name", updateConn)) {
-
+            using (SQLiteCommand specCommand = new SQLiteCommand("select name, sql from sqlite_master where type='table'", specConn))
+            {
+                using (SQLiteCommand checkUpdateCmd = new SQLiteCommand("select sql from sqlite_master where type='table' and name=@name", updateConn))
+                {
                     SQLiteParameter nameParam = new SQLiteParameter("@name");
                     checkUpdateCmd.Parameters.Add(nameParam);
 
-                    using (SQLiteDataReader specReader = specCommand.ExecuteReader()) {
+                    using (SQLiteDataReader specReader = specCommand.ExecuteReader())
+                    {
                         int nameOrd = specReader.GetOrdinal("name");
                         int sqlOrd = specReader.GetOrdinal("sql");
 
-                        while (specReader.Read()) {
+                        while (specReader.Read())
+                        {
                             string specName = specReader.GetString(nameOrd);
                             string specSql = specReader.GetString(sqlOrd);
 
                             nameParam.Value = specName;
 
-                            using (SQLiteDataReader checkUpdateRdr = checkUpdateCmd.ExecuteReader()) {
-                                if (checkUpdateRdr.Read() == false) {
+                            using (SQLiteDataReader checkUpdateRdr = checkUpdateCmd.ExecuteReader())
+                            {
+                                if (checkUpdateRdr.Read() == false)
+                                {
                                     // The table doesn't exist
                                     updateReqd = UpdateType.Create;
-                                } else {
-                                    if (specSql == checkUpdateRdr.GetString(checkUpdateRdr.GetOrdinal("sql"))) {
+                                }
+                                else
+                                {
+                                    if (specSql == checkUpdateRdr.GetString(checkUpdateRdr.GetOrdinal("sql")))
+                                    {
                                         // The table does not require an update
                                         updateReqd = UpdateType.None;
-                                    } else {
+                                    }
+                                    else
+                                    {
                                         // The structure of the table doesn't match, so update it
                                         updateReqd = UpdateType.Update;
                                     }
                                 }
                             }
 
-                            if (updateReqd == UpdateType.Create) {
+                            if (updateReqd == UpdateType.Create)
+                            {
                                 // Create the table
-                                using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, updateConn)) {
+                                using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, updateConn))
+                                {
                                     updateCommand.ExecuteNonQuery();
                                 }
-                            } else if (updateReqd == UpdateType.Update) {
+                            }
+                            else if (updateReqd == UpdateType.Update)
+                            {
                                 // Fetch a list of common column names for transferring the data
                                 string columnNames = ColNames(specName);
 
                                 // Start a transaction, so we can roll back if there is an error
-                                using (SQLiteTransaction trans = updateConn.BeginTransaction()) {
-                                    try {
+                                using (SQLiteTransaction trans = updateConn.BeginTransaction())
+                                {
+                                    try
+                                    {
                                         // Rename the existing table to table_name_old
-                                        using (SQLiteCommand updateCommand = new SQLiteCommand("alter table [" + specName + "] rename to [" + specName + "_old]", updateConn, trans)) {
+                                        using (SQLiteCommand updateCommand = new SQLiteCommand("alter table [" + specName + "] rename to [" + specName + "_old]", updateConn, trans))
+                                        {
                                             updateCommand.ExecuteNonQuery();
                                         }
 
                                         // Create the new table with the correct structure
-                                        using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, updateConn, trans)) {
+                                        using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, updateConn, trans))
+                                        {
                                             updateCommand.ExecuteNonQuery();
                                         }
 
                                         // Copy across the data (discarding rows which violate any new constraints)
-                                        if (!string.IsNullOrEmpty(columnNames)) {
-                                            using (SQLiteCommand updateCommand = new SQLiteCommand("insert or ignore into [" + specName + "] (" + columnNames + ") select " + columnNames + " from [" + specName + "_old]", updateConn, trans)) {
+                                        if (!string.IsNullOrEmpty(columnNames))
+                                        {
+                                            using (SQLiteCommand updateCommand = new SQLiteCommand("insert or ignore into [" + specName + "] (" + columnNames + ") select " + columnNames + " from [" + specName + "_old]", updateConn, trans))
+                                            {
                                                 updateCommand.ExecuteNonQuery();
                                             }
                                         }
 
                                         // Delete the old table
-                                        using (SQLiteCommand updateCommand = new SQLiteCommand("drop table [" + specName + "_old]", updateConn, trans)) {
+                                        using (SQLiteCommand updateCommand = new SQLiteCommand("drop table [" + specName + "_old]", updateConn, trans))
+                                        {
                                             updateCommand.ExecuteNonQuery();
                                         }
-                                    } catch (SQLiteException) {
+                                    }
+                                    catch (SQLiteException)
+                                    {
                                         trans.Rollback();
                                         throw;
                                     }
@@ -138,15 +159,20 @@ namespace RadioDld
             List<string> resultCols = new List<string>();
 
             // Store an intersect of the from and to columns in resultCols
-            foreach (string fromCol in fromCols) {
-                if (toCols.Contains(fromCol)) {
+            foreach (string fromCol in fromCols)
+            {
+                if (toCols.Contains(fromCol))
+                {
                     resultCols.Add(fromCol);
                 }
             }
 
-            if (resultCols.Count > 0) {
+            if (resultCols.Count > 0)
+            {
                 return "[" + Strings.Join(resultCols.ToArray(), "], [") + "]";
-            } else {
+            }
+            else
+            {
                 return "";
             }
         }
@@ -155,7 +181,8 @@ namespace RadioDld
         {
             List<string> returnList = new List<string>();
 
-            string[] restrictionValues = {
+            string[] restrictionValues =
+            {
                 null,
                 null,
                 tableName,
@@ -163,7 +190,8 @@ namespace RadioDld
             };
             DataTable columns = connection.GetSchema(System.Data.SQLite.SQLiteMetaDataCollectionNames.Columns, restrictionValues);
 
-            foreach (DataRow columnRow in columns.Rows) {
+            foreach (DataRow columnRow in columns.Rows)
+            {
                 returnList.Add(columnRow["COLUMN_NAME"].ToString());
             }
 
@@ -172,8 +200,10 @@ namespace RadioDld
 
         private void Dispose(bool disposing)
         {
-            if (!this.isDisposed) {
-                if (disposing) {
+            if (!this.isDisposed)
+            {
+                if (disposing)
+                {
                     specConn.Dispose();
                     updateConn.Dispose();
                 }

@@ -23,7 +23,6 @@ using Microsoft.Win32;
 
 namespace RadioDld
 {
-
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct RECT
     {
@@ -32,9 +31,6 @@ namespace RadioDld
         public int right;
         public int bottom;
     }
-}
-namespace RadioDld
-{
 
     internal class OsUtils
     {
@@ -68,9 +64,12 @@ namespace RadioDld
         {
             OperatingSystem curOs = System.Environment.OSVersion;
 
-            if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 6) && (curOs.Version.Minor >= 1)) || (curOs.Version.Major > 6))) {
+            if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 6) && (curOs.Version.Minor >= 1)) || (curOs.Version.Major > 6)))
+            {
                 return true;
-            } else {
+            }
+            else
+            {
                 return false;
             }
         }
@@ -79,9 +78,12 @@ namespace RadioDld
         {
             OperatingSystem curOs = System.Environment.OSVersion;
 
-            if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 6) && (curOs.Version.Minor >= 0)) || (curOs.Version.Major > 6))) {
+            if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 6) && (curOs.Version.Minor >= 0)) || (curOs.Version.Major > 6)))
+            {
                 return true;
-            } else {
+            }
+            else
+            {
                 return false;
             }
         }
@@ -90,9 +92,12 @@ namespace RadioDld
         {
             OperatingSystem curOs = System.Environment.OSVersion;
 
-            if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 5) && (curOs.Version.Minor >= 1)) || (curOs.Version.Major > 5))) {
+            if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 5) && (curOs.Version.Minor >= 1)) || (curOs.Version.Major > 5)))
+            {
                 return true;
-            } else {
+            }
+            else
+            {
                 return false;
             }
         }
@@ -106,49 +111,62 @@ namespace RadioDld
             // Get taskbar handle
             taskbarHwnd = FindWindow("Shell_traywnd", null);
 
-            if (taskbarHwnd == IntPtr.Zero) {
+            if (taskbarHwnd == IntPtr.Zero)
+            {
                 throw new Win32Exception();
             }
 
             // Get system tray handle
             trayHwnd = GetWindow(taskbarHwnd, GW_CHILD);
 
-            do {
-                if (trayHwnd == IntPtr.Zero) {
+            do
+            {
+                if (trayHwnd == IntPtr.Zero)
+                {
                     throw new Win32Exception();
                 }
 
-                if (GetClassName(trayHwnd, className, className.Capacity) == 0) {
+                if (GetClassName(trayHwnd, className, className.Capacity) == 0)
+                {
                     throw new Win32Exception();
                 }
 
-                if (className.ToString() == "TrayNotifyWnd") {
+                if (className.ToString() == "TrayNotifyWnd")
+                {
                     break; // TODO: might not be correct. Was : Exit Do
                 }
 
                 trayHwnd = GetWindow(trayHwnd, GW_HWNDNEXT);
-            } while (true);
+            }
+            while (true);
 
             RECT systray = default(RECT);
             RECT window = default(RECT);
 
             // Fetch the location of the systray from its window handle
-            if (GetWindowRect(trayHwnd, ref systray) == false) {
+            if (GetWindowRect(trayHwnd, ref systray) == false)
+            {
                 throw new Win32Exception();
             }
 
             // Fetch the location of the window from its window handle
-            if (GetWindowRect(form.Handle, ref window) == false) {
+            if (GetWindowRect(form.Handle, ref window) == false)
+            {
                 throw new Win32Exception();
             }
 
             // Perform the animation
-            if (down == true) {
-                if (DrawAnimatedRects(form.Handle, IDANI_CLOSE | IDANI_CAPTION, ref window, ref systray) == false) {
+            if (down == true)
+            {
+                if (DrawAnimatedRects(form.Handle, IDANI_CLOSE | IDANI_CAPTION, ref window, ref systray) == false)
+                {
                     throw new Win32Exception();
                 }
-            } else {
-                if (DrawAnimatedRects(form.Handle, IDANI_OPEN | IDANI_CAPTION, ref systray, ref window) == false) {
+            }
+            else
+            {
+                if (DrawAnimatedRects(form.Handle, IDANI_OPEN | IDANI_CAPTION, ref systray, ref window) == false)
+                {
                     throw new Win32Exception();
                 }
             }
@@ -156,13 +174,15 @@ namespace RadioDld
 
         public static bool CompositionEnabled()
         {
-            if (!WinVistaOrLater()) {
+            if (!WinVistaOrLater())
+            {
                 return false;
             }
 
             bool enabled = false;
 
-            if (DwmIsCompositionEnabled(ref enabled) != 0) {
+            if (DwmIsCompositionEnabled(ref enabled) != 0)
+            {
                 throw new Win32Exception();
             }
 
@@ -173,10 +193,14 @@ namespace RadioDld
         {
             RegistryKey runKey = RadioDld.My.MyProject.Computer.Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-            if (Properties.Settings.Default.RunOnStartup) {
+            if (Properties.Settings.Default.RunOnStartup)
+            {
                 runKey.SetValue(RadioDld.My.MyProject.Application.Info.Title, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
-            } else {
-                if (runKey.GetValue(RadioDld.My.MyProject.Application.Info.Title) != null) {
+            }
+            else
+            {
+                if (runKey.GetValue(RadioDld.My.MyProject.Application.Info.Title) != null)
+                {
                     runKey.DeleteValue(RadioDld.My.MyProject.Application.Info.Title);
                 }
             }
@@ -184,8 +208,10 @@ namespace RadioDld
 
         public static bool VisibleOnScreen(Rectangle location)
         {
-            foreach (Screen thisScreen in Screen.AllScreens) {
-                if ((thisScreen.WorkingArea.IntersectsWith(location))) {
+            foreach (Screen thisScreen in Screen.AllScreens)
+            {
+                if ((thisScreen.WorkingArea.IntersectsWith(location)))
+                {
                     return true;
                 }
             }

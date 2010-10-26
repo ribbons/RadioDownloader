@@ -22,10 +22,8 @@ using Microsoft.VisualBasic;
 
 namespace RadioDld
 {
-
     internal partial class Preferences : Form
     {
-
         private bool cancelClose;
 
         public Preferences()
@@ -39,14 +37,16 @@ namespace RadioDld
             BrowseDialog.SelectedPath = txtSaveIn.Text;
             BrowseDialog.Description = "Choose the folder to save downloaded programmes in:";
 
-            if (BrowseDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) {
+            if (BrowseDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
                 txtSaveIn.Text = BrowseDialog.SelectedPath;
             }
         }
 
         private void cmdOK_Click(System.Object eventSender, System.EventArgs eventArgs)
         {
-            if (string.IsNullOrEmpty(txtFileNameFormat.Text)) {
+            if (string.IsNullOrEmpty(txtFileNameFormat.Text))
+            {
                 Interaction.MsgBox("Please enter a value for the downloaded programme file name format.", MsgBoxStyle.Exclamation);
                 txtFileNameFormat.Focus();
                 cancelClose = true;
@@ -58,7 +58,8 @@ namespace RadioDld
             Properties.Settings.Default.FileNameFormat = txtFileNameFormat.Text;
             Properties.Settings.Default.RunAfterCommand = txtRunAfter.Text;
 
-            if (OsUtils.WinSevenOrLater()) {
+            if (OsUtils.WinSevenOrLater())
+            {
                 Properties.Settings.Default.CloseToSystray = uxCloseToSystray.Checked;
             }
 
@@ -68,7 +69,8 @@ namespace RadioDld
 
         private void Preferences_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
         {
-            if (cancelClose) {
+            if (cancelClose)
+            {
                 // Prevent the form from being automatically closed if it failed validation
                 e.Cancel = true;
                 cancelClose = false;
@@ -81,16 +83,22 @@ namespace RadioDld
 
             uxRunOnStartup.Checked = Properties.Settings.Default.RunOnStartup;
 
-            if (OsUtils.WinSevenOrLater()) {
+            if (OsUtils.WinSevenOrLater())
+            {
                 uxCloseToSystray.Checked = Properties.Settings.Default.CloseToSystray;
-            } else {
+            }
+            else
+            {
                 uxCloseToSystray.Checked = true;
                 uxCloseToSystray.Enabled = false;
             }
 
-            try {
+            try
+            {
                 txtSaveIn.Text = FileUtils.GetSaveFolder();
-            } catch (DirectoryNotFoundException) {
+            }
+            catch (DirectoryNotFoundException)
+            {
                 txtSaveIn.Text = Properties.Settings.Default.SaveFolder;
             }
 
@@ -105,7 +113,8 @@ namespace RadioDld
 
         private void cmdReset_Click(System.Object sender, System.EventArgs e)
         {
-            if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes) {
+            if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes)
+            {
                 Properties.Settings.Default.RunOnStartup = Convert.ToBoolean(Properties.Settings.Default.Properties["RunOnStartup"].DefaultValue, CultureInfo.InvariantCulture);
                 Properties.Settings.Default.CloseToSystray = Convert.ToBoolean(Properties.Settings.Default.Properties["CloseToSystray"].DefaultValue, CultureInfo.InvariantCulture);
                 Properties.Settings.Default.SaveFolder = (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue;

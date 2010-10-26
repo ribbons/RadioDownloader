@@ -1,10 +1,3 @@
-using Microsoft.VisualBasic;
-using System;
-using System.Collections;
-using System.Data;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Forms;
 // Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
 // Copyright © 2007-2010 Matt Robinson
 //
@@ -19,6 +12,9 @@ using System.Windows.Forms;
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
+using System;
+using System.Diagnostics;
+
 namespace RadioDld.My
 {
     internal partial class MyApplication
@@ -26,13 +22,16 @@ namespace RadioDld.My
         private void MyApplication_Startup(object sender, Microsoft.VisualBasic.ApplicationServices.StartupEventArgs e)
         {
             // Add an extra handler to catch unhandled exceptions in other threads
-            if (Debugger.IsAttached == false) {
+            if (Debugger.IsAttached == false)
+            {
                 AppDomain.CurrentDomain.UnhandledException += AppDomainExceptionHandler;
             }
 
             // If /exit was passed on the command line, then just exit immediately
-            foreach (string commandLineArg in Environment.GetCommandLineArgs()) {
-                if (commandLineArg.ToUpperInvariant() == "/EXIT") {
+            foreach (string commandLineArg in Environment.GetCommandLineArgs())
+            {
+                if (commandLineArg.ToUpperInvariant() == "/EXIT")
+                {
                     e.Cancel = true;
                     return;
                 }
@@ -41,8 +40,10 @@ namespace RadioDld.My
 
         private void MyApplication_StartupNextInstance(object sender, Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs e)
         {
-            foreach (string commandLineArg in e.CommandLine) {
-                if (commandLineArg.ToUpperInvariant() == "/EXIT") {
+            foreach (string commandLineArg in e.CommandLine)
+            {
+                if (commandLineArg.ToUpperInvariant() == "/EXIT")
+                {
                     // Close the application
                     My.MyProject.Forms.Main.mnuTrayExit_Click(sender, e);
                     return;
@@ -55,7 +56,8 @@ namespace RadioDld.My
 
         private void MyApplication_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
         {
-            if (My.MyProject.Forms.ReportError.Visible == false) {
+            if (My.MyProject.Forms.ReportError.Visible == false)
+            {
                 ErrorReporting report = new ErrorReporting(e.Exception);
                 My.MyProject.Forms.ReportError.AssignReport(report);
                 My.MyProject.Forms.ReportError.ShowDialog();
@@ -66,15 +68,19 @@ namespace RadioDld.My
         {
             Exception unhandledExp = null;
 
-            try {
+            try
+            {
                 unhandledExp = (Exception)e.ExceptionObject;
-            } catch (InvalidCastException) {
+            }
+            catch (InvalidCastException)
+            {
                 // The ExceptionObject isn't a child of System.Exception, so we don't know
                 // how to report it.  Instead, let the standard .net dialog appear.
                 return;
             }
 
-            if (My.MyProject.Forms.ReportError.Visible == false) {
+            if (My.MyProject.Forms.ReportError.Visible == false)
+            {
                 ErrorReporting report = new ErrorReporting(unhandledExp);
                 My.MyProject.Forms.ReportError.AssignReport(report);
                 My.MyProject.Forms.ReportError.ShowDialog();

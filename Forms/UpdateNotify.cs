@@ -18,7 +18,6 @@ using System.Windows.Forms;
 
 namespace RadioDld
 {
-
     public partial class UpdateNotify : Form
     {
         public UpdateNotify()

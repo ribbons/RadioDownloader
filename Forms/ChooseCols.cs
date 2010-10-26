@@ -22,29 +22,35 @@ using Microsoft.VisualBasic;
 
 namespace RadioDld
 {
-
     internal partial class ChooseCols : Form
     {
         private List<int> columnOrder;
-
         private Dictionary<int, string> columnNames;
-        public string Columns {
-            get {
+
+        public string Columns
+        {
+            get
+            {
                 string[] stringCols = new string[columnOrder.Count];
 
-                for (int column = 0; column <= columnOrder.Count - 1; column++) {
+                for (int column = 0; column <= columnOrder.Count - 1; column++)
+                {
                     stringCols[column] = columnOrder[column].ToString(CultureInfo.InvariantCulture);
                 }
 
                 return Strings.Join(stringCols, ",");
             }
-            set {
+
+            set
+            {
                 columnOrder = new List<int>();
 
-                if (!string.IsNullOrEmpty(value)) {
+                if (!string.IsNullOrEmpty(value))
+                {
                     string[] stringCols = Strings.Split(value, ",");
 
-                    foreach (string column in stringCols) {
+                    foreach (string column in stringCols)
+                    {
                         columnOrder.Add(Convert.ToInt32(column, CultureInfo.InvariantCulture));
                     }
                 }
@@ -58,16 +64,20 @@ namespace RadioDld
 
         private void ChooseCols_Load(System.Object sender, System.EventArgs e)
         {
-            if (columnOrder == null) {
+            if (columnOrder == null)
+            {
                 throw new InvalidOperationException("Column order is not set");
-            } else if (columnNames == null) {
+            }
+            else if (columnNames == null)
+            {
                 throw new InvalidOperationException("Column names are not set");
             }
 
             this.Font = SystemFonts.MessageBoxFont;
 
             // Add the current columns to the top of the list, in order
-            foreach (int column in columnOrder) {
+            foreach (int column in columnOrder)
+            {
                 ListViewItem addCol = new ListViewItem(columnNames[column]);
                 addCol.Name = column.ToString(CultureInfo.InvariantCulture);
                 addCol.Checked = true;
@@ -76,8 +86,10 @@ namespace RadioDld
             }
 
             // Add the rest of the columns to the list in their defined order
-            foreach (int column in columnNames.Keys) {
-                if (columnOrder.Contains(column) == false) {
+            foreach (int column in columnNames.Keys)
+            {
+                if (columnOrder.Contains(column) == false)
+                {
                     ListViewItem addCol = new ListViewItem(columnNames[column]);
                     addCol.Name = column.ToString(CultureInfo.InvariantCulture);
                     addCol.Checked = false;
@@ -91,8 +103,10 @@ namespace RadioDld
         {
             columnOrder.Clear();
 
-            foreach (ListViewItem item in ColumnsList.Items) {
-                if (item.Checked) {
+            foreach (ListViewItem item in ColumnsList.Items)
+            {
+                if (item.Checked)
+                {
                     columnOrder.Add(int.Parse(item.Name, CultureInfo.InvariantCulture));
                 }
             }
@@ -110,28 +124,40 @@ namespace RadioDld
 
         private void UpdateButtonState()
         {
-            if (ColumnsList.SelectedItems.Count == 0) {
+            if (ColumnsList.SelectedItems.Count == 0)
+            {
                 MoveUp.Enabled = false;
                 MoveDown.Enabled = false;
                 ShowButton.Enabled = false;
                 HideButton.Enabled = false;
-            } else {
-                if (ColumnsList.SelectedItems[0].Index == 0) {
+            }
+            else
+            {
+                if (ColumnsList.SelectedItems[0].Index == 0)
+                {
                     MoveUp.Enabled = false;
-                } else {
+                }
+                else
+                {
                     MoveUp.Enabled = true;
                 }
 
-                if (ColumnsList.SelectedItems[0].Index == ColumnsList.Items.Count - 1) {
+                if (ColumnsList.SelectedItems[0].Index == ColumnsList.Items.Count - 1)
+                {
                     MoveDown.Enabled = false;
-                } else {
+                }
+                else
+                {
                     MoveDown.Enabled = true;
                 }
 
-                if (ColumnsList.SelectedItems[0].Checked) {
+                if (ColumnsList.SelectedItems[0].Checked)
+                {
                     ShowButton.Enabled = false;
                     HideButton.Enabled = true;
-                } else {
+                }
+                else
+                {
                     ShowButton.Enabled = true;
                     HideButton.Enabled = false;
                 }
@@ -165,6 +191,7 @@ namespace RadioDld
             ColumnsList.Items.Remove(moveItem);
             ColumnsList.Items.Insert(origIndex + 1, moveItem);
         }
+
         public ChooseCols()
         {
             InitializeComponent();

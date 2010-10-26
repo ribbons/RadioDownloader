@@ -19,7 +19,6 @@ using System.Windows.Forms;
 
 namespace RadioDld
 {
-
     internal class TaskbarNotify
     {
         [Flags()]
@@ -55,24 +54,39 @@ namespace RadioDld
         private interface ITaskbarList3
         {
             void HrInit();
+
             void AddTab(IntPtr hwnd);
+
             void DeleteTab(IntPtr hwnd);
+
             void ActivateTab(IntPtr hwnd);
+
             void SetActivateAlt(IntPtr hwnd);
+
             void MarkFullscreenWindow(IntPtr hwnd, bool fFullscreen);
+
             void SetProgressValue(IntPtr hwnd, UInt64 ullCompleted, UInt64 ullTotal);
+
             void SetProgressState(IntPtr hwnd, TBPFLAG tbpFlags);
+
             void RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
+
             void UnregisterTab(IntPtr hwndTab);
+
             void SetTabOrder(IntPtr hwndTab, int hwndInsertBefore);
+
             void SetTabActive(IntPtr hwndTab, int hwndMDI, TBATFLAG tbatFlags);
+
             void ThumbBarAddButtons(IntPtr hwnd, UInt32 cButtons, THUMBBUTTON[] pButton);
+
             void ThumbBarUpdateButtons(IntPtr hwnd, UInt32 cButtons, THUMBBUTTON[] pButton);
+
             void ThumbBarSetImageList(IntPtr hwnd, IntPtr himl);
-            void SetOverlayIcon(IntPtr hwnd, IntPtr hIcon,             [MarshalAs(UnmanagedType.LPWStr)]
-string pszDescription);
-            void SetThumbnailTooltip(IntPtr hwnd,             [MarshalAs(UnmanagedType.LPWStr)]
-string pszTip);
+
+            void SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription);
+
+            void SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
+
             void SetThumbnailClip(IntPtr hwnd, RECT prcClip);
         }
 
@@ -81,8 +95,8 @@ string pszTip);
         {
         }
 
-
         private ITaskbarList3 taskBarListInst;
+
         public TaskbarNotify()
         {
             taskBarListInst = (ITaskbarList3)new TaskbarList();
@@ -91,9 +105,12 @@ string pszTip);
 
         public void SetOverlayIcon(Form parentWin, Icon icon, string description)
         {
-            try {
+            try
+            {
                 taskBarListInst.SetOverlayIcon(parentWin.Handle, icon == null ? IntPtr.Zero : icon.Handle, description);
-            } catch (COMException) {
+            }
+            catch (COMException)
+            {
                 // Ignore COMExceptions, as they seem to be erroneously thrown sometimes when calling SetOverlayIcon
             }
         }
@@ -105,11 +122,13 @@ string pszTip);
 
         public void SetProgressValue(Form parentWin, long value, long total)
         {
-            if (value < 0) {
+            if (value < 0)
+            {
                 throw new ArgumentException("value must not be negative", "value");
             }
 
-            if (total < 0) {
+            if (total < 0)
+            {
                 throw new ArgumentException("total must not be negative", "total");
             }
 
