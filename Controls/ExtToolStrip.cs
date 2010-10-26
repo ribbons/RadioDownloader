@@ -54,12 +54,12 @@ namespace RadioDld
                                 if (!controlHost.Control.Bounds.Contains(clientPos))
                                 {
                                     onBackground = true;
-                                    break; // TODO: might not be correct. Was : Exit For
+                                    break;
                                 }
                             }
 
                             onBackground = false;
-                            break; // TODO: might not be correct. Was : Exit For
+                            break;
                         }
                     }
 

@@ -416,7 +416,7 @@ namespace PodcastProvider
                             if (strPubDate.StartsWith(strDay, StringComparison.OrdinalIgnoreCase))
                             {
                                 strPubDate = strPubDate.Substring(strDay.Length).Trim();
-                                break; // TODO: might not be correct. Was : Exit For
+                                break;
                             }
                         }
 

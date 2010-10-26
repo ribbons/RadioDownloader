@@ -133,7 +133,7 @@ namespace RadioDld
 
                 if (className.ToString() == "TrayNotifyWnd")
                 {
-                    break; // TODO: might not be correct. Was : Exit Do
+                    break;
                 }
 
                 trayHwnd = GetWindow(trayHwnd, GW_HWNDNEXT);

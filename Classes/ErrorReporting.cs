@@ -128,7 +128,7 @@ namespace RadioDld
                         if (thisExpProperty.Name == baseProperty.Name)
                         {
                             extraProperty = false;
-                            break; // TODO: might not be correct. Was : Exit For
+                            break;
                         }
                     }
 
@@ -140,7 +140,7 @@ namespace RadioDld
                             if (overloadChkProp.Name == thisExpProperty.Name)
                             {
                                 overloadedProp = true;
-                                break; // TODO: might not be correct. Was : Exit For
+                                break;
                             }
                         }
                     }

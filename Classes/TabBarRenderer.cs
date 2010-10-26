@@ -418,7 +418,7 @@ namespace RadioDld
                 if (buttonItem != null && buttonItem.Checked)
                 {
                     @checked = buttonItem;
-                    break; // TODO: might not be correct. Was : Exit For
+                    break;
                 }
             }
 

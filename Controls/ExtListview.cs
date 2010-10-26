@@ -155,7 +155,7 @@ namespace RadioDld
 
                 if (header.Index == subItem)
                 {
-                    break; // TODO: might not be correct. Was : Exit For
+                    break;
                 }
 
                 subItemX += header.Width;
@@ -333,7 +333,7 @@ namespace RadioDld
                 case WM_PAINT:
                     if (View != View.Details)
                     {
-                        break; // TODO: might not be correct. Was : Exit Select
+                        break;
                     }
 
                     // Calculate the position of all embedded controls
