@@ -35,88 +35,8 @@ namespace RadioDld
             public object View;
         }
 
-        private Data withEventsField_progData;
-
-        private Data progData
-        {
-            get
-            {
-                return withEventsField_progData;
-            }
-
-            set
-            {
-                if (withEventsField_progData != null)
-                {
-                    withEventsField_progData.ProviderAdded -= progData_ProviderAdded;
-                    withEventsField_progData.ProgrammeUpdated -= progData_ProgrammeUpdated;
-                    withEventsField_progData.EpisodeAdded -= progData_EpisodeAdded;
-                    withEventsField_progData.FavouriteAdded -= progData_FavouriteAdded;
-                    withEventsField_progData.FavouriteUpdated -= progData_FavouriteUpdated;
-                    withEventsField_progData.FavouriteRemoved -= progData_FavouriteRemoved;
-                    withEventsField_progData.SubscriptionAdded -= progData_SubscriptionAdded;
-                    withEventsField_progData.SubscriptionUpdated -= progData_SubscriptionUpdated;
-                    withEventsField_progData.SubscriptionRemoved -= progData_SubscriptionRemoved;
-                    withEventsField_progData.DownloadAdded -= progData_DownloadAdded;
-                    withEventsField_progData.DownloadProgress -= progData_DownloadProgress;
-                    withEventsField_progData.DownloadRemoved -= progData_DownloadRemoved;
-                    withEventsField_progData.DownloadUpdated -= progData_DownloadUpdated;
-                    withEventsField_progData.DownloadProgressTotal -= progData_DownloadProgressTotal;
-                    withEventsField_progData.FindNewViewChange -= progData_FindNewViewChange;
-                    withEventsField_progData.FoundNew -= progData_FoundNew;
-                }
-
-                withEventsField_progData = value;
-
-                if (withEventsField_progData != null)
-                {
-                    withEventsField_progData.ProviderAdded += progData_ProviderAdded;
-                    withEventsField_progData.ProgrammeUpdated += progData_ProgrammeUpdated;
-                    withEventsField_progData.EpisodeAdded += progData_EpisodeAdded;
-                    withEventsField_progData.FavouriteAdded += progData_FavouriteAdded;
-                    withEventsField_progData.FavouriteUpdated += progData_FavouriteUpdated;
-                    withEventsField_progData.FavouriteRemoved += progData_FavouriteRemoved;
-                    withEventsField_progData.SubscriptionAdded += progData_SubscriptionAdded;
-                    withEventsField_progData.SubscriptionUpdated += progData_SubscriptionUpdated;
-                    withEventsField_progData.SubscriptionRemoved += progData_SubscriptionRemoved;
-                    withEventsField_progData.DownloadAdded += progData_DownloadAdded;
-                    withEventsField_progData.DownloadProgress += progData_DownloadProgress;
-                    withEventsField_progData.DownloadRemoved += progData_DownloadRemoved;
-                    withEventsField_progData.DownloadUpdated += progData_DownloadUpdated;
-                    withEventsField_progData.DownloadProgressTotal += progData_DownloadProgressTotal;
-                    withEventsField_progData.FindNewViewChange += progData_FindNewViewChange;
-                    withEventsField_progData.FoundNew += progData_FoundNew;
-                }
-            }
-        }
-
-        private ViewState withEventsField_view;
-
-        private ViewState view
-        {
-            get
-            {
-                return withEventsField_view;
-            }
-
-            set
-            {
-                if (withEventsField_view != null)
-                {
-                    withEventsField_view.UpdateNavBtnState -= view_UpdateNavBtnState;
-                    withEventsField_view.ViewChanged -= view_ViewChanged;
-                }
-
-                withEventsField_view = value;
-
-                if (withEventsField_view != null)
-                {
-                    withEventsField_view.UpdateNavBtnState += view_UpdateNavBtnState;
-                    withEventsField_view.ViewChanged += view_ViewChanged;
-                }
-            }
-        }
-
+        private Data progData;
+        private ViewState view;
         private UpdateCheck checkUpdate;
         private TaskbarNotify tbarNotif;
 
@@ -386,9 +306,27 @@ namespace RadioDld
             downloadColNames.Add((int)Data.DownloadCols.Status, "Status");
 
             view = new ViewState();
+            view.UpdateNavBtnState += view_UpdateNavBtnState;
+            view.ViewChanged += view_ViewChanged;
             view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
 
             progData = Data.GetInstance();
+            progData.ProviderAdded += progData_ProviderAdded;
+            progData.ProgrammeUpdated += progData_ProgrammeUpdated;
+            progData.EpisodeAdded += progData_EpisodeAdded;
+            progData.FavouriteAdded += progData_FavouriteAdded;
+            progData.FavouriteUpdated += progData_FavouriteUpdated;
+            progData.FavouriteRemoved += progData_FavouriteRemoved;
+            progData.SubscriptionAdded += progData_SubscriptionAdded;
+            progData.SubscriptionUpdated += progData_SubscriptionUpdated;
+            progData.SubscriptionRemoved += progData_SubscriptionRemoved;
+            progData.DownloadAdded += progData_DownloadAdded;
+            progData.DownloadProgress += progData_DownloadProgress;
+            progData.DownloadRemoved += progData_DownloadRemoved;
+            progData.DownloadUpdated += progData_DownloadUpdated;
+            progData.DownloadProgressTotal += progData_DownloadProgressTotal;
+            progData.FindNewViewChange += progData_FindNewViewChange;
+            progData.FoundNew += progData_FoundNew;
 
             progData.InitProviderList();
             InitFavouriteList();

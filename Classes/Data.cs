@@ -119,61 +119,9 @@ namespace RadioDld
         private object episodeListThreadLock = new object();
         private DldProgData curDldProgData;
         private Thread downloadThread;
-        private IRadioProvider withEventsField_DownloadPluginInst;
 
-        private IRadioProvider DownloadPluginInst
-        {
-            get
-            {
-                return withEventsField_DownloadPluginInst;
-            }
-
-            set
-            {
-                if (withEventsField_DownloadPluginInst != null)
-                {
-                    withEventsField_DownloadPluginInst.Finished -= DownloadPluginInst_Finished;
-                    withEventsField_DownloadPluginInst.Progress -= DownloadPluginInst_Progress;
-                }
-
-                withEventsField_DownloadPluginInst = value;
-
-                if (withEventsField_DownloadPluginInst != null)
-                {
-                    withEventsField_DownloadPluginInst.Finished += DownloadPluginInst_Finished;
-                    withEventsField_DownloadPluginInst.Progress += DownloadPluginInst_Progress;
-                }
-            }
-        }
-
-        private IRadioProvider withEventsField_FindNewPluginInst;
-
-        private IRadioProvider FindNewPluginInst
-        {
-            get
-            {
-                return withEventsField_FindNewPluginInst;
-            }
-
-            set
-            {
-                if (withEventsField_FindNewPluginInst != null)
-                {
-                    withEventsField_FindNewPluginInst.FindNewException -= FindNewPluginInst_FindNewException;
-                    withEventsField_FindNewPluginInst.FindNewViewChange -= FindNewPluginInst_FindNewViewChange;
-                    withEventsField_FindNewPluginInst.FoundNew -= FindNewPluginInst_FoundNew;
-                }
-
-                withEventsField_FindNewPluginInst = value;
-
-                if (withEventsField_FindNewPluginInst != null)
-                {
-                    withEventsField_FindNewPluginInst.FindNewException += FindNewPluginInst_FindNewException;
-                    withEventsField_FindNewPluginInst.FindNewViewChange += FindNewPluginInst_FindNewViewChange;
-                    withEventsField_FindNewPluginInst.FoundNew += FindNewPluginInst_FoundNew;
-                }
-            }
-        }
+        private IRadioProvider DownloadPluginInst;
+        private IRadioProvider FindNewPluginInst;
 
         private Dictionary<int, int> favouriteSortCache;
         private object favouriteSortCacheLock = new object();
@@ -576,6 +524,8 @@ namespace RadioDld
         public void DownloadProgThread()
         {
             DownloadPluginInst = pluginsInst.GetPluginInstance(curDldProgData.PluginId);
+            DownloadPluginInst.Finished += DownloadPluginInst_Finished;
+            DownloadPluginInst.Progress += DownloadPluginInst_Progress;
 
             try
             {
@@ -1680,6 +1630,9 @@ namespace RadioDld
             if (pluginsInst.PluginExists(pluginID))
             {
                 FindNewPluginInst = pluginsInst.GetPluginInstance(pluginID);
+                FindNewPluginInst.FindNewException += FindNewPluginInst_FindNewException;
+                FindNewPluginInst.FindNewViewChange += FindNewPluginInst_FindNewViewChange;
+                FindNewPluginInst.FoundNew += FindNewPluginInst_FoundNew;
                 return FindNewPluginInst.GetFindNewPanel(view);
             }
             else

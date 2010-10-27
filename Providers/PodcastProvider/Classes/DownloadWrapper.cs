@@ -26,31 +26,7 @@ namespace PodcastProvider
 
         public delegate void DownloadProgressEventHandler(object sender, System.Net.DownloadProgressChangedEventArgs e);
 
-        private WebClient withEventsField_downloadClient;
-
-        private WebClient downloadClient
-        {
-            get
-            {
-                return withEventsField_downloadClient;
-            }
-
-            set
-            {
-                if (withEventsField_downloadClient != null)
-                {
-                    withEventsField_downloadClient.DownloadProgressChanged -= downloadClient_DownloadProgressChanged;
-                    withEventsField_downloadClient.DownloadFileCompleted -= downloadClient_DownloadFileCompleted;
-                }
-
-                withEventsField_downloadClient = value;
-                if (withEventsField_downloadClient != null)
-                {
-                    withEventsField_downloadClient.DownloadProgressChanged += downloadClient_DownloadProgressChanged;
-                    withEventsField_downloadClient.DownloadFileCompleted += downloadClient_DownloadFileCompleted;
-                }
-            }
-        }
+        private WebClient downloadClient;
 
         private Uri downloadUrl;
         private string destPath;
@@ -69,6 +45,9 @@ namespace PodcastProvider
             SystemEvents.PowerModeChanged += PowerModeChange;
 
             downloadClient = new WebClient();
+            downloadClient.DownloadProgressChanged += downloadClient_DownloadProgressChanged;
+            downloadClient.DownloadFileCompleted += downloadClient_DownloadFileCompleted;
+
             downloadClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
             downloadClient.DownloadFileAsync(downloadUrl, destPath);
         }

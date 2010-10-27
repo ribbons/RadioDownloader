@@ -47,29 +47,7 @@ namespace PodcastProvider
         public event FinishedEventHandler Finished;
 
         internal const int intCacheHTTPHours = 2;
-        private DownloadWrapper withEventsField_doDownload;
-
-        private DownloadWrapper doDownload
-        {
-            get
-            {
-                return withEventsField_doDownload;
-            }
-
-            set
-            {
-                if (withEventsField_doDownload != null)
-                {
-                    withEventsField_doDownload.DownloadProgress -= doDownload_DownloadProgress;
-                }
-
-                withEventsField_doDownload = value;
-                if (withEventsField_doDownload != null)
-                {
-                    withEventsField_doDownload.DownloadProgress += doDownload_DownloadProgress;
-                }
-            }
-        }
+        private DownloadWrapper doDownload;
 
         public Guid ProviderId
         {
@@ -471,6 +449,7 @@ namespace PodcastProvider
             finalName += "." + extension;
 
             doDownload = new DownloadWrapper(downloadUrl, downloadFileName);
+            doDownload.DownloadProgress += doDownload_DownloadProgress;
             doDownload.Download();
 
             while ((!doDownload.Complete) & doDownload.Error == null)

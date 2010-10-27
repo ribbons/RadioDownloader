@@ -48,71 +48,8 @@ namespace RadioDld
 
         private string _cueBanner;
 
-        private TextBox withEventsField_textBox;
-
-        private TextBox textBox
-        {
-            get
-            {
-                return withEventsField_textBox;
-            }
-
-            set
-            {
-                if (withEventsField_textBox != null)
-                {
-                    withEventsField_textBox.MouseEnter -= textBox_MouseEnter;
-                    withEventsField_textBox.MouseLeave -= textBox_MouseLeave;
-                    withEventsField_textBox.GotFocus -= textBox_GotFocus;
-                    withEventsField_textBox.LostFocus -= textBox_LostFocus;
-                    withEventsField_textBox.TextChanged -= textBox_TextChanged;
-                    withEventsField_textBox.KeyDown -= textBox_KeyDown;
-                }
-
-                withEventsField_textBox = value;
-                if (withEventsField_textBox != null)
-                {
-                    withEventsField_textBox.MouseEnter += textBox_MouseEnter;
-                    withEventsField_textBox.MouseLeave += textBox_MouseLeave;
-                    withEventsField_textBox.GotFocus += textBox_GotFocus;
-                    withEventsField_textBox.LostFocus += textBox_LostFocus;
-                    withEventsField_textBox.TextChanged += textBox_TextChanged;
-                    withEventsField_textBox.KeyDown += textBox_KeyDown;
-                }
-            }
-        }
-
-        private PictureBox withEventsField_button;
-
-        private PictureBox button
-        {
-            get
-            {
-                return withEventsField_button;
-            }
-
-            set
-            {
-                if (withEventsField_button != null)
-                {
-                    withEventsField_button.MouseEnter -= button_MouseEnter;
-                    withEventsField_button.MouseLeave -= button_MouseLeave;
-                    withEventsField_button.MouseDown -= button_MouseDown;
-                    withEventsField_button.MouseUp -= button_MouseUp;
-                    withEventsField_button.MouseClick -= button_MouseClick;
-                }
-
-                withEventsField_button = value;
-                if (withEventsField_button != null)
-                {
-                    withEventsField_button.MouseEnter += button_MouseEnter;
-                    withEventsField_button.MouseLeave += button_MouseLeave;
-                    withEventsField_button.MouseDown += button_MouseDown;
-                    withEventsField_button.MouseUp += button_MouseUp;
-                    withEventsField_button.MouseClick += button_MouseClick;
-                }
-            }
-        }
+        private TextBox textBox;
+        private PictureBox button;
 
         public SearchBox()
             : base()
@@ -130,12 +67,25 @@ namespace RadioDld
             textBox.BorderStyle = BorderStyle.None;
             this.Controls.Add(textBox);
 
+            textBox.MouseEnter += textBox_MouseEnter;
+            textBox.MouseLeave += textBox_MouseLeave;
+            textBox.GotFocus += textBox_GotFocus;
+            textBox.LostFocus += textBox_LostFocus;
+            textBox.TextChanged += textBox_TextChanged;
+            textBox.KeyDown += textBox_KeyDown;
+
             // Create a picturebox to display the search icon and cancel 'button'
             button = new PictureBox();
             button.BackColor = Color.Transparent;
             button.Image = Properties.Resources.search_icon;
             button.SizeMode = PictureBoxSizeMode.AutoSize;
             this.Controls.Add(button);
+
+            button.MouseEnter += button_MouseEnter;
+            button.MouseLeave += button_MouseLeave;
+            button.MouseDown += button_MouseDown;
+            button.MouseUp += button_MouseUp;
+            button.MouseClick += button_MouseClick;
 
             // Work out the height that the search box should be displayed
             if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
