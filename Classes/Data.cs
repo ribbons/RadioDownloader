@@ -282,103 +282,106 @@ namespace RadioDld
                 "tblSubscribed"
             };
 
-            My.MyProject.Forms.Status.StatusText = "Removing unused tables...";
-            My.MyProject.Forms.Status.ProgressBarMarquee = false;
-            My.MyProject.Forms.Status.ProgressBarValue = 0;
-            My.MyProject.Forms.Status.ProgressBarMax = unusedTables.GetUpperBound(0) + 1;
-            My.MyProject.Forms.Status.Show();
-            Application.DoEvents();
-
-            // Delete the unused (v0.4 era) tables if they exist
-            foreach (string unusedTable in unusedTables)
+            using (Status showStatus = new Status())
             {
-                My.MyProject.Forms.Status.StatusText = "Removing unused table " + Convert.ToString(count, CultureInfo.CurrentCulture) + " of " + Convert.ToString(unusedTables.GetUpperBound(0) + 1, CultureInfo.CurrentCulture) + "...";
-                My.MyProject.Forms.Status.ProgressBarValue = count;
+                showStatus.StatusText = "Removing unused tables...";
+                showStatus.ProgressBarMarquee = false;
+                showStatus.ProgressBarValue = 0;
+                showStatus.ProgressBarMax = unusedTables.GetUpperBound(0) + 1;
+                showStatus.Show();
                 Application.DoEvents();
 
-                lock (dbUpdateLock)
+                // Delete the unused (v0.4 era) tables if they exist
+                foreach (string unusedTable in unusedTables)
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("drop table if exists " + unusedTable, FetchDbConn()))
+                    showStatus.StatusText = "Removing unused table " + Convert.ToString(count, CultureInfo.CurrentCulture) + " of " + Convert.ToString(unusedTables.GetUpperBound(0) + 1, CultureInfo.CurrentCulture) + "...";
+                    showStatus.ProgressBarValue = count;
+                    Application.DoEvents();
+
+                    lock (dbUpdateLock)
                     {
-                        command.ExecuteNonQuery();
-                    }
-                }
-
-                count += 1;
-            }
-
-            My.MyProject.Forms.Status.StatusText = "Finished removing unused tables";
-            My.MyProject.Forms.Status.ProgressBarValue = count;
-            Application.DoEvents();
-
-            // Work through the images and re-save them to ensure they are compressed
-            List<int> compressImages = new List<int>();
-
-            using (SQLiteCommand command = new SQLiteCommand("select imgid from images", FetchDbConn()))
-            {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    while (reader.Read())
-                    {
-                        compressImages.Add(reader.GetInt32(reader.GetOrdinal("imgid")));
-                    }
-                }
-            }
-
-            My.MyProject.Forms.Status.StatusText = "Compressing images...";
-            My.MyProject.Forms.Status.ProgressBarValue = 0;
-            My.MyProject.Forms.Status.ProgressBarMax = compressImages.Count;
-            Application.DoEvents();
-
-            using (SQLiteCommand deleteCmd = new SQLiteCommand("delete from images where imgid=@imgid", FetchDbConn()))
-            {
-                using (SQLiteCommand updateProgs = new SQLiteCommand("update programmes set image=@newimgid where image=@oldimgid", FetchDbConn()))
-                {
-                    using (SQLiteCommand updateEps = new SQLiteCommand("update episodes set image=@newimgid where image=@oldimgid", FetchDbConn()))
-                    {
-                        int newImageID = 0;
-                        Bitmap image = null;
-                        count = 1;
-
-                        lock (dbUpdateLock)
+                        using (SQLiteCommand command = new SQLiteCommand("drop table if exists " + unusedTable, FetchDbConn()))
                         {
-                            foreach (int oldImageID in compressImages)
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    count += 1;
+                }
+
+                showStatus.StatusText = "Finished removing unused tables";
+                showStatus.ProgressBarValue = count;
+                Application.DoEvents();
+
+                // Work through the images and re-save them to ensure they are compressed
+                List<int> compressImages = new List<int>();
+
+                using (SQLiteCommand command = new SQLiteCommand("select imgid from images", FetchDbConn()))
+                {
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                    {
+                        while (reader.Read())
+                        {
+                            compressImages.Add(reader.GetInt32(reader.GetOrdinal("imgid")));
+                        }
+                    }
+                }
+
+                showStatus.StatusText = "Compressing images...";
+                showStatus.ProgressBarValue = 0;
+                showStatus.ProgressBarMax = compressImages.Count;
+                Application.DoEvents();
+
+                using (SQLiteCommand deleteCmd = new SQLiteCommand("delete from images where imgid=@imgid", FetchDbConn()))
+                {
+                    using (SQLiteCommand updateProgs = new SQLiteCommand("update programmes set image=@newimgid where image=@oldimgid", FetchDbConn()))
+                    {
+                        using (SQLiteCommand updateEps = new SQLiteCommand("update episodes set image=@newimgid where image=@oldimgid", FetchDbConn()))
+                        {
+                            int newImageID = 0;
+                            Bitmap image = null;
+                            count = 1;
+
+                            lock (dbUpdateLock)
                             {
-                                My.MyProject.Forms.Status.StatusText = "Compressing image " + Convert.ToString(count, CultureInfo.CurrentCulture) + " of " + Convert.ToString(compressImages.Count, CultureInfo.CurrentCulture) + "...";
-                                My.MyProject.Forms.Status.ProgressBarValue = count - 1;
-                                Application.DoEvents();
+                                foreach (int oldImageID in compressImages)
+                                {
+                                    showStatus.StatusText = "Compressing image " + Convert.ToString(count, CultureInfo.CurrentCulture) + " of " + Convert.ToString(compressImages.Count, CultureInfo.CurrentCulture) + "...";
+                                    showStatus.ProgressBarValue = count - 1;
+                                    Application.DoEvents();
 
-                                image = RetrieveImage(oldImageID);
+                                    image = RetrieveImage(oldImageID);
 
-                                deleteCmd.Parameters.Add(new SQLiteParameter("@imgid", oldImageID));
-                                deleteCmd.ExecuteNonQuery();
+                                    deleteCmd.Parameters.Add(new SQLiteParameter("@imgid", oldImageID));
+                                    deleteCmd.ExecuteNonQuery();
 
-                                newImageID = StoreImage(image).Value;
-                                Application.DoEvents();
+                                    newImageID = StoreImage(image).Value;
+                                    Application.DoEvents();
 
-                                updateProgs.Parameters.Add(new SQLiteParameter("@oldimgid", oldImageID));
-                                updateProgs.Parameters.Add(new SQLiteParameter("@newimgid", newImageID));
+                                    updateProgs.Parameters.Add(new SQLiteParameter("@oldimgid", oldImageID));
+                                    updateProgs.Parameters.Add(new SQLiteParameter("@newimgid", newImageID));
 
-                                updateProgs.ExecuteNonQuery();
+                                    updateProgs.ExecuteNonQuery();
 
-                                updateEps.Parameters.Add(new SQLiteParameter("@oldimgid", oldImageID));
-                                updateEps.Parameters.Add(new SQLiteParameter("@newimgid", newImageID));
+                                    updateEps.Parameters.Add(new SQLiteParameter("@oldimgid", oldImageID));
+                                    updateEps.Parameters.Add(new SQLiteParameter("@newimgid", newImageID));
 
-                                updateEps.ExecuteNonQuery();
+                                    updateEps.ExecuteNonQuery();
 
-                                count += 1;
+                                    count += 1;
+                                }
                             }
                         }
                     }
                 }
+
+                showStatus.StatusText = "Finished compressing images";
+                showStatus.ProgressBarValue = compressImages.Count;
+                Application.DoEvents();
+
+                showStatus.Hide();
+                Application.DoEvents();
             }
-
-            My.MyProject.Forms.Status.StatusText = "Finished compressing images";
-            My.MyProject.Forms.Status.ProgressBarValue = compressImages.Count;
-            Application.DoEvents();
-
-            My.MyProject.Forms.Status.Hide();
-            Application.DoEvents();
         }
 
         public void StartDownload()
@@ -1588,24 +1591,27 @@ namespace RadioDld
 
             if (runVacuum)
             {
-                My.MyProject.Forms.Status.StatusText = "Compacting Database..." + Environment.NewLine + Environment.NewLine + "This may take some time if you have downloaded a lot of programmes.";
-                My.MyProject.Forms.Status.ProgressBarMarquee = true;
-                My.MyProject.Forms.Status.Show();
-                Application.DoEvents();
-
-                // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-                lock (dbUpdateLock)
+                using (Status showStatus = new Status())
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
+                    showStatus.StatusText = "Compacting Database..." + Environment.NewLine + Environment.NewLine + "This may take some time if you have downloaded a lot of programmes.";
+                    showStatus.ProgressBarMarquee = true;
+                    showStatus.Show();
+                    Application.DoEvents();
+
+                    // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
+                    lock (dbUpdateLock)
                     {
-                        command.ExecuteNonQuery();
+                        using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
+                        {
+                            command.ExecuteNonQuery();
+                        }
                     }
+
+                    SetDBSetting("lastvacuum", DateAndTime.Now.ToString("O", CultureInfo.InvariantCulture));
+
+                    showStatus.Hide();
+                    Application.DoEvents();
                 }
-
-                SetDBSetting("lastvacuum", DateAndTime.Now.ToString("O", CultureInfo.InvariantCulture));
-
-                My.MyProject.Forms.Status.Hide();
-                Application.DoEvents();
             }
         }
 
@@ -1631,10 +1637,11 @@ namespace RadioDld
 
             if (unhandled)
             {
-                if (My.MyProject.Forms.ReportError.Visible == false)
+                ErrorReporting report = new ErrorReporting(exception);
+
+                using (ReportError showError = new ReportError())
                 {
-                    My.MyProject.Forms.ReportError.AssignReport(reportException);
-                    My.MyProject.Forms.ReportError.ShowDialog();
+                    showError.ShowReport(report);
                 }
             }
             else

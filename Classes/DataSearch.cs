@@ -57,58 +57,60 @@ namespace RadioDld
             dataInstance = instance;
 
             Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
-
             tableCols.Add("downloads", new String[] { "name", "description" });
 
-            if (CheckIndex(tableCols) == false)
+            using (Status showStatus = new Status())
             {
-                // Close & clean up the connection used for testing
-                dbConn.Close();
-                dbConn.Dispose();
-                dbConn = null;
-
-                // Clean up the old index
-                File.Delete(DatabasePath());
-
-                My.MyProject.Forms.Status.StatusText = "Building search index...";
-                My.MyProject.Forms.Status.ProgressBarMarquee = false;
-                My.MyProject.Forms.Status.ProgressBarValue = 0;
-                My.MyProject.Forms.Status.ProgressBarMax = 100 * tableCols.Count;
-                My.MyProject.Forms.Status.Show();
-
-                lock (updateIndexLock)
+                if (CheckIndex(tableCols) == false)
                 {
-                    using (SQLiteTransaction trans = FetchDbConn().BeginTransaction())
+                    // Close & clean up the connection used for testing
+                    dbConn.Close();
+                    dbConn.Dispose();
+                    dbConn = null;
+
+                    // Clean up the old index
+                    File.Delete(DatabasePath());
+
+                    showStatus.StatusText = "Building search index...";
+                    showStatus.ProgressBarMarquee = false;
+                    showStatus.ProgressBarValue = 0;
+                    showStatus.ProgressBarMax = 100 * tableCols.Count;
+                    showStatus.Show();
+
+                    lock (updateIndexLock)
                     {
-                        // Create the index tables
-                        foreach (KeyValuePair<string, string[]> table in tableCols)
+                        using (SQLiteTransaction trans = FetchDbConn().BeginTransaction())
                         {
-                            using (SQLiteCommand command = new SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn(), trans))
+                            // Create the index tables
+                            foreach (KeyValuePair<string, string[]> table in tableCols)
                             {
-                                command.ExecuteNonQuery();
+                                using (SQLiteCommand command = new SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn(), trans))
+                                {
+                                    command.ExecuteNonQuery();
+                                }
                             }
+
+                            showStatus.StatusText = "Building search index for downloads...";
+
+                            int progress = 1;
+                            List<Data.DownloadData> downloadItems = dataInstance.FetchDownloadList(false);
+
+                            foreach (Data.DownloadData downloadItem in downloadItems)
+                            {
+                                AddDownload(downloadItem);
+
+                                showStatus.ProgressBarValue = Convert.ToInt32((progress / downloadItems.Count) * 100);
+                                progress += 1;
+                            }
+
+                            showStatus.ProgressBarValue = 100;
+
+                            trans.Commit();
                         }
-
-                        My.MyProject.Forms.Status.StatusText = "Building search index for downloads...";
-
-                        int progress = 1;
-                        List<Data.DownloadData> downloadItems = dataInstance.FetchDownloadList(false);
-
-                        foreach (Data.DownloadData downloadItem in downloadItems)
-                        {
-                            AddDownload(downloadItem);
-
-                            My.MyProject.Forms.Status.ProgressBarValue = Convert.ToInt32((progress / downloadItems.Count) * 100);
-                            progress += 1;
-                        }
-
-                        My.MyProject.Forms.Status.ProgressBarValue = 100;
-
-                        trans.Commit();
                     }
-                }
 
-                My.MyProject.Forms.Status.Hide();
+                    showStatus.Hide();
+                }
             }
         }
 

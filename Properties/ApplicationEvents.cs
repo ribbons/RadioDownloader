@@ -56,11 +56,11 @@ namespace RadioDld.My
 
         private void MyApplication_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
         {
-            if (My.MyProject.Forms.ReportError.Visible == false)
+            ErrorReporting report = new ErrorReporting(e.Exception);
+
+            using (ReportError showError = new ReportError())
             {
-                ErrorReporting report = new ErrorReporting(e.Exception);
-                My.MyProject.Forms.ReportError.AssignReport(report);
-                My.MyProject.Forms.ReportError.ShowDialog();
+                showError.ShowReport(report);
             }
         }
 
@@ -79,11 +79,11 @@ namespace RadioDld.My
                 return;
             }
 
-            if (My.MyProject.Forms.ReportError.Visible == false)
+            ErrorReporting report = new ErrorReporting(unhandledExp);
+
+            using (ReportError showError = new ReportError())
             {
-                ErrorReporting report = new ErrorReporting(unhandledExp);
-                My.MyProject.Forms.ReportError.AssignReport(report);
-                My.MyProject.Forms.ReportError.ShowDialog();
+                showError.ShowDialog();
             }
         }
     }

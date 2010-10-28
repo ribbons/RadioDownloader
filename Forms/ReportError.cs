@@ -23,9 +23,30 @@ namespace RadioDld
     {
         private ErrorReporting report;
 
-        public void AssignReport(ErrorReporting report)
+        private static Object showingLock = new Object();
+        private static bool showing = false;
+
+        public void ShowReport(ErrorReporting report)
         {
             this.report = report;
+
+            lock (showingLock)
+            {
+                if (showing)
+                {
+                    // Another instance of this form is currently being shown
+                    return;
+                }
+
+                showing = true;
+            }
+
+            this.ShowDialog();
+
+            lock (showingLock)
+            {
+                showing = false;
+            }
         }
 
         private void cmdSend_Click(System.Object sender, System.EventArgs e)

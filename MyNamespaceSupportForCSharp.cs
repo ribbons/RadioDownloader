@@ -70,61 +70,6 @@ namespace RadioDld.My
 
         internal sealed class MyForms
         {
-            global::RadioDld.CleanUp CleanUp_instance;
-            bool CleanUp_isCreating;
-
-            public global::RadioDld.CleanUp CleanUp
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref CleanUp_instance, ref CleanUp_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref CleanUp_instance, value); }
-            }
-
-            global::RadioDld.About About_instance;
-            bool About_isCreating;
-
-            public global::RadioDld.About About
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref About_instance, ref About_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref About_instance, value); }
-            }
-
-            global::RadioDld.Status Status_instance;
-            bool Status_isCreating;
-
-            public global::RadioDld.Status Status
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref Status_instance, ref Status_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref Status_instance, value); }
-            }
-
-            global::RadioDld.ReportError ReportError_instance;
-            bool ReportError_isCreating;
-
-            public global::RadioDld.ReportError ReportError
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref ReportError_instance, ref ReportError_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref ReportError_instance, value); }
-            }
-
-            global::RadioDld.UpdateNotify UpdateNotify_instance;
-            bool UpdateNotify_isCreating;
-
-            public global::RadioDld.UpdateNotify UpdateNotify
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref UpdateNotify_instance, ref UpdateNotify_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref UpdateNotify_instance, value); }
-            }
-
             global::RadioDld.Main Main_instance;
             bool Main_isCreating;
 
@@ -134,39 +79,6 @@ namespace RadioDld.My
                 get { return GetForm(ref Main_instance, ref Main_isCreating); }
                 [DebuggerStepThrough]
                 set { SetForm(ref Main_instance, value); }
-            }
-
-            global::RadioDld.Preferences Preferences_instance;
-            bool Preferences_isCreating;
-
-            public global::RadioDld.Preferences Preferences
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref Preferences_instance, ref Preferences_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref Preferences_instance, value); }
-            }
-
-            global::RadioDld.GlassForm GlassForm_instance;
-            bool GlassForm_isCreating;
-
-            public global::RadioDld.GlassForm GlassForm
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref GlassForm_instance, ref GlassForm_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref GlassForm_instance, value); }
-            }
-
-            global::RadioDld.ChooseCols ChooseCols_instance;
-            bool ChooseCols_isCreating;
-
-            public global::RadioDld.ChooseCols ChooseCols
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref ChooseCols_instance, ref ChooseCols_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref ChooseCols_instance, value); }
             }
 
             [DebuggerStepThrough]

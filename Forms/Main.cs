@@ -1579,16 +1579,17 @@ namespace RadioDld
                     Properties.Settings.Default.LastUpdatePrompt = DateAndTime.Now;
                     Properties.Settings.Default.Save(); // Save the last prompt time in case of unexpected termination
 
-                    UpdateNotify showUpdate = new UpdateNotify();
-
-                    if (this.WindowState == FormWindowState.Minimized | this.Visible == false)
+                    using (UpdateNotify showUpdate = new UpdateNotify())
                     {
-                        showUpdate.StartPosition = FormStartPosition.CenterScreen;
-                    }
+                        if (this.WindowState == FormWindowState.Minimized | this.Visible == false)
+                        {
+                            showUpdate.StartPosition = FormStartPosition.CenterScreen;
+                        }
 
-                    if (showUpdate.ShowDialog(this) == DialogResult.Yes)
-                    {
-                        Process.Start("http://www.nerdoftheherd.com/tools/radiodld/update.php?prevver=" + RadioDld.My.MyProject.Application.Info.Version.ToString());
+                        if (showUpdate.ShowDialog(this) == DialogResult.Yes)
+                        {
+                            Process.Start("http://www.nerdoftheherd.com/tools/radiodld/update.php?prevver=" + RadioDld.My.MyProject.Application.Info.Version.ToString());
+                        }
                     }
                 }
             }
@@ -1809,7 +1810,10 @@ namespace RadioDld
 
         private void mnuOptionsShowOpts_Click(System.Object sender, System.EventArgs e)
         {
-            My.MyProject.Forms.Preferences.ShowDialog();
+            using (Preferences prefs = new Preferences())
+            {
+                prefs.ShowDialog();
+            }
         }
 
         private void mnuOptionsExit_Click(System.Object sender, System.EventArgs e)
@@ -1819,7 +1823,10 @@ namespace RadioDld
 
         private void mnuHelpAbout_Click(System.Object sender, System.EventArgs e)
         {
-            My.MyProject.Forms.About.ShowDialog();
+            using (About about = new About())
+            {
+                about.ShowDialog();
+            }
         }
 
         private void mnuHelpShowHelp_Click(System.Object sender, System.EventArgs e)
@@ -1834,7 +1841,10 @@ namespace RadioDld
 
         private void tbtCleanUp_Click()
         {
-            My.MyProject.Forms.CleanUp.ShowDialog();
+            using (CleanUp cleanUp = new CleanUp())
+            {
+                cleanUp.ShowDialog();
+            }
         }
 
         private void view_UpdateNavBtnState(bool enableBack, bool enableFwd)
@@ -2116,14 +2126,16 @@ namespace RadioDld
 
         private void mnuListHdrsColumns_Click(System.Object sender, System.EventArgs e)
         {
-            ChooseCols chooser = new ChooseCols();
-            chooser.Columns = Properties.Settings.Default.DownloadCols;
-            chooser.StoreNameList(downloadColNames);
-
-            if (chooser.ShowDialog(this) == DialogResult.OK)
+            using (ChooseCols chooser = new ChooseCols())
             {
-                Properties.Settings.Default.DownloadCols = chooser.Columns;
-                InitDownloadList();
+                chooser.Columns = Properties.Settings.Default.DownloadCols;
+                chooser.StoreNameList(downloadColNames);
+
+                if (chooser.ShowDialog(this) == DialogResult.OK)
+                {
+                    Properties.Settings.Default.DownloadCols = chooser.Columns;
+                    InitDownloadList();
+                }
             }
         }
 
