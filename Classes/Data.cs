@@ -104,7 +104,6 @@ namespace RadioDld
         }
 
         [ThreadStatic()]
-
         private static SQLiteConnection dbConn;
         private static Data dataInstance;
 
@@ -136,6 +135,7 @@ namespace RadioDld
         private object downloadSortCacheLock = new object();
 
         private object findDownloadLock = new object();
+        private int lastProgressVal = -1;
 
         public event ProviderAddedEventHandler ProviderAdded;
 
@@ -523,6 +523,8 @@ namespace RadioDld
 
         public void DownloadProgThread()
         {
+            lastProgressVal = -1;
+            
             DownloadPluginInst = pluginsInst.GetPluginInstance(curDldProgData.PluginId);
             DownloadPluginInst.Finished += DownloadPluginInst_Finished;
             DownloadPluginInst.Progress += DownloadPluginInst_Progress;
@@ -1490,33 +1492,15 @@ namespace RadioDld
             StartDownloadAsync();
         }
 
-        readonly Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag static_DownloadPluginInst_Progress_lastNum_Init = new Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag();
-        int static_DownloadPluginInst_Progress_lastNum;
-
         private void DownloadPluginInst_Progress(int percent, string statusText, ProgressIcon icon)
         {
-            lock (static_DownloadPluginInst_Progress_lastNum_Init)
-            {
-                try
-                {
-                    if (InitStaticVariableHelper(static_DownloadPluginInst_Progress_lastNum_Init))
-                    {
-                        static_DownloadPluginInst_Progress_lastNum = -1;
-                    }
-                }
-                finally
-                {
-                    static_DownloadPluginInst_Progress_lastNum_Init.State = 1;
-                }
-            }
-
             // Don't raise the progress event if the value is the same as last time, or is outside the range
-            if (percent == static_DownloadPluginInst_Progress_lastNum || percent < 0 || percent > 100)
+            if (percent == lastProgressVal || percent < 0 || percent > 100)
             {
                 return;
             }
 
-            static_DownloadPluginInst_Progress_lastNum = percent;
+            lastProgressVal = percent;
 
             if (search.DownloadIsVisible(curDldProgData.EpId))
             {
@@ -2510,23 +2494,6 @@ namespace RadioDld
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
-            }
-        }
-
-        static bool InitStaticVariableHelper(Microsoft.VisualBasic.CompilerServices.StaticLocalInitFlag flag)
-        {
-            if (flag.State == 0)
-            {
-                flag.State = 2;
-                return true;
-            }
-            else if (flag.State == 2)
-            {
-                throw new Microsoft.VisualBasic.CompilerServices.IncompleteInitialization();
-            }
-            else
-            {
-                return false;
             }
         }
     }
