@@ -47,7 +47,7 @@ namespace RadioDld
                 saveFolder = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), defaultFolder);
             }
 
-            Directory.CreateDirectory(GetSaveFolder());
+            Directory.CreateDirectory(saveFolder);
             return saveFolder;
         }
 
