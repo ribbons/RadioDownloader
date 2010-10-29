@@ -44,7 +44,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\mono\</OutputPath>
-    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>True</DebugSymbols>
     <DefineDebug>True</DefineDebug>
     <DefineTrace>True</DefineTrace>
@@ -60,7 +61,8 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>bin\mono\</OutputPath>
-    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>False</DebugSymbols>
     <DefineDebug>False</DefineDebug>
     <DefineTrace>True</DefineTrace>
@@ -98,7 +100,8 @@
     <OutputPath>bin\win32\</OutputPath>
     <DefineConstants>
     </DefineConstants>
-    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
@@ -115,7 +118,8 @@
     <OutputPath>bin\win_x64\</OutputPath>
     <DefineConstants>
     </DefineConstants>
-    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugType>full</DebugType>
     <PlatformTarget>x64</PlatformTarget>
     <WarningsAsErrors>
@@ -128,7 +132,8 @@
     <OutputPath>bin\win_x64\</OutputPath>
     <DefineConstants>
     </DefineConstants>
-    <DocumentationFile>Radio Downloader.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x64</PlatformTarget>
