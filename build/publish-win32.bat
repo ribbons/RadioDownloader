@@ -5,8 +5,6 @@ rem Batch file to build and sign and Radio Downloader and provider, and build an
 set sdklocation=%programfiles%\Microsoft SDKs\Windows\v7.1
 if not exist "%sdklocation%" goto nosdk
 
-set timestampserver=http://timestamp.verisign.com/scripts/timstamp.dll
-
 rem Required to run the SDK setenv script
 setlocal ENABLEEXTENSIONS
 setlocal ENABLEDELAYEDEXPANSION
@@ -15,17 +13,14 @@ rem Set up an x86 Release build environment
 call "%sdklocation%\Bin\setenv.cmd" /Release /x86
 if ERRORLEVEL 1 goto failed
 
-rem Clean and build Radio Downloader and the provider
+set timestampserver=http://timestamp.verisign.com/scripts/timstamp.dll
 
-msbuild /p:Configuration=Release /p:Platform=win32 /t:Clean
-if ERRORLEVEL 1 goto failed
-
-msbuild /p:Configuration=Release /p:Platform=win32
+call build-win32.bat
 if ERRORLEVEL 1 goto failed
 
 rem Sign Radio Downloader and the provider
 
-signtool sign /t %timestampserver% "bin\win32\Radio Downloader.exe" "bin\win32\PodcastProvider.dll"
+signtool sign /t %timestampserver% "..\bin\win32\Radio Downloader.exe" "..\bin\win32\PodcastProvider.dll"
 if ERRORLEVEL 1 set signfailed=1
 
 rem Unregister HKCU JScript and VBScript which cause problems with installer validation
@@ -37,15 +32,15 @@ reg delete "HKCU\SOFTWARE\Classes\Wow6432Node\CLSID\{F414C260-6AC0-11CF-B6D1-00A
 
 rem Clean and build the installer
 
-msbuild /p:Configuration=Release /t:Clean "installer/Radio Downloader.wixproj"
+msbuild /p:Configuration=Release /t:Clean "..\installer\Radio Downloader.wixproj"
 if ERRORLEVEL 1 goto failed
 
-msbuild /p:Configuration=Release "installer/Radio Downloader.wixproj"
+msbuild /p:Configuration=Release "..\installer\Radio Downloader.wixproj"
 if ERRORLEVEL 1 goto failed
 
 rem Sign the installer
 
-signtool sign /t %timestampserver% /d "Radio Downloader" "installer\Radio Downloader.msi"
+signtool sign /t %timestampserver% /d "Radio Downloader" "..\installer\Radio Downloader.msi"
 if ERRORLEVEL 1 set signfailed=1
 
 if not "%signfailed%" == "" goto signfailed

@@ -173,7 +173,4 @@
   <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.4\Microsoft.StyleCop.targets" />
   <Target Name="BeforeBuild">
   </Target>
-  <!-- <Target Name="AfterBuild">
-    <Exec Command="&quot;$(ProgramFiles)\Microsoft FxCop 10.0\FxCopCmd.exe&quot; /file:&quot;$(TargetPath)&quot; /project:&quot;PodcastProvider.FxCop&quot; /console" />
-  </Target> -->
 </Project>
