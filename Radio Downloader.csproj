@@ -10,7 +10,7 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <AssemblyName>Radio Downloader</AssemblyName>
     <OutputType>WinExe</OutputType>
-    <StartupObject>RadioDld.My.MyApplication</StartupObject>
+    <StartupObject>RadioDld.AppInstance</StartupObject>
     <AssemblyMajorVersion>0</AssemblyMajorVersion>
     <AssemblyMinorVersion>0</AssemblyMinorVersion>
     <AssemblyRevisionNumber>43</AssemblyRevisionNumber>
@@ -175,6 +175,7 @@
     <Import Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\AppInstance.cs" />
     <Compile Include="Classes\DataNotFoundException.cs" />
     <Compile Include="Classes\DownloadException.cs" />
     <Compile Include="Classes\FileUtils.cs" />
@@ -239,7 +240,6 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="MyNamespaceSupportForCSharp.cs" />
-    <Compile Include="Properties\ApplicationEvents.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\Data.cs">
       <SubType>Code</SubType>
@@ -266,10 +266,6 @@
     </Compile>
     <Compile Include="Forms\Preferences.cs">
       <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Properties\Application.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -330,10 +326,6 @@
       <DependentUpon>Status.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Content Include="Properties\Application.myapp">
-      <Generator>MyApplicationCodeGenerator</Generator>
-      <LastGenOutput>Application.Designer.cs</LastGenOutput>
-    </Content>
     <None Include="Resources\toolbar\choose programme_16.png" />
     <None Include="Resources\icons\Icon 64.png" />
     <None Include="Resources\icons\Icon 32.png" />

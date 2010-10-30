@@ -2300,5 +2300,21 @@ namespace RadioDld
                 SetViewDefaults();
             }
         }
+
+        public void App_StartupNextInstance(object sender, Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs e)
+        {
+            foreach (string commandLineArg in e.CommandLine)
+            {
+                if (commandLineArg.ToUpperInvariant() == "/EXIT")
+                {
+                    // Close the application
+                    mnuTrayExit_Click(sender, e);
+                    return;
+                }
+            }
+
+            // Do the same as a double click on the tray icon
+            mnuTrayShow_Click(sender, e);
+        }
     }
 }

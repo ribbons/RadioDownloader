@@ -1,4 +1,4 @@
-// Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
+﻿// Utility to automatically download radio programmes, using a plugin framework for provider specific implementation.
 // Copyright © 2007-2010 Matt Robinson
 //
 // This program is free software; you can redistribute it and/or modify it under the terms of the GNU General
@@ -14,19 +14,44 @@
 
 using System;
 using System.Diagnostics;
+using System.Windows.Forms;
+using Microsoft.VisualBasic.ApplicationServices;
 
-namespace RadioDld.My
+namespace RadioDld
 {
-    internal partial class MyApplication
+    class AppInstance : WindowsFormsApplicationBase
     {
-        private void MyApplication_Startup(object sender, Microsoft.VisualBasic.ApplicationServices.StartupEventArgs e)
+        [STAThread]
+        public static void Main(string[] args)
         {
-            // Add an extra handler to catch unhandled exceptions in other threads
-            if (Debugger.IsAttached == false)
+            Application.SetCompatibleTextRenderingDefault(false);
+            new AppInstance().Run(args);
+        }
+
+        private AppInstance()
+        {
+            this.IsSingleInstance = true;
+            this.EnableVisualStyles = true;
+            this.SaveMySettingsOnExit = true;
+            this.ShutdownStyle = ShutdownMode.AfterMainFormCloses;
+
+            Startup += App_Startup;
+
+            if (!Debugger.IsAttached)
             {
+                UnhandledException += App_UnhandledException;
                 AppDomain.CurrentDomain.UnhandledException += AppDomainExceptionHandler;
             }
+        }
 
+        protected override void OnCreateMainForm()
+        {
+            this.MainForm = new Main();
+            StartupNextInstance += ((Main)this.MainForm).App_StartupNextInstance;
+        }
+
+        private void App_Startup(object sender, StartupEventArgs e)
+        {
             // If /exit was passed on the command line, then just exit immediately
             foreach (string commandLineArg in Environment.GetCommandLineArgs())
             {
@@ -38,23 +63,7 @@ namespace RadioDld.My
             }
         }
 
-        private void MyApplication_StartupNextInstance(object sender, Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs e)
-        {
-            foreach (string commandLineArg in e.CommandLine)
-            {
-                if (commandLineArg.ToUpperInvariant() == "/EXIT")
-                {
-                    // Close the application
-                    My.MyProject.Forms.Main.mnuTrayExit_Click(sender, e);
-                    return;
-                }
-            }
-
-            // Do the same as a double click on the tray icon
-            My.MyProject.Forms.Main.mnuTrayShow_Click(sender, e);
-        }
-
-        private void MyApplication_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
+        private void App_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
         {
             ErrorReporting report = new ErrorReporting(e.Exception);
 

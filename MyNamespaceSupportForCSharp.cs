@@ -50,93 +50,10 @@ namespace RadioDld.My
                 return user;
             }
         }
-
-        [ThreadStatic]
-        static MyForms forms;
-
-        public static MyForms Forms
-        {
-            [DebuggerStepThrough]
-            get
-            {
-                if (forms == null)
-                {
-                    forms = new MyForms();
-                }
-
-                return forms;
-            }
-        }
-
-        internal sealed class MyForms
-        {
-            global::RadioDld.Main Main_instance;
-            bool Main_isCreating;
-
-            public global::RadioDld.Main Main
-            {
-                [DebuggerStepThrough]
-                get { return GetForm(ref Main_instance, ref Main_isCreating); }
-                [DebuggerStepThrough]
-                set { SetForm(ref Main_instance, value); }
-            }
-
-            [DebuggerStepThrough]
-            static T GetForm<T>(ref T instance, ref bool isCreating) where T : Form, new()
-            {
-                if (instance == null || instance.IsDisposed)
-                {
-                    if (isCreating)
-                    {
-                        throw new InvalidOperationException(Utils.GetResourceString("WinForms_RecursiveFormCreate", new string[0]));
-                    }
-
-                    isCreating = true;
-
-                    try
-                    {
-                        instance = new T();
-                    }
-                    catch (System.Reflection.TargetInvocationException ex)
-                    {
-                        throw new InvalidOperationException(Utils.GetResourceString("WinForms_SeeInnerException", new string[] { ex.InnerException.Message }), ex.InnerException);
-                    }
-                    finally
-                    {
-                        isCreating = false;
-                    }
-                }
-
-                return instance;
-            }
-
-            [DebuggerStepThrough]
-            static void SetForm<T>(ref T instance, T value) where T : Form
-            {
-                if (instance != value)
-                {
-                    if (value == null)
-                    {
-                        instance.Dispose();
-                        instance = null;
-                    }
-                    else
-                    {
-                        throw new ArgumentException("Property can only be set to null");
-                    }
-                }
-            }
-        }
     }
 
     partial class MyApplication : WindowsFormsApplicationBase
     {
-        [STAThread]
-        public static void Main(string[] args)
-        {
-            Application.SetCompatibleTextRenderingDefault(UseCompatibleTextRendering);
-            MyProject.Application.Run(args);
-        }
     }
 
     partial class MyComputer : Computer
