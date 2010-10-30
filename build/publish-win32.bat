@@ -11,7 +11,6 @@ setlocal ENABLEDELAYEDEXPANSION
 
 rem Set up an x86 Release build environment
 call "%sdklocation%\Bin\setenv.cmd" /Release /x86
-if ERRORLEVEL 1 goto failed
 
 set timestampserver=http://timestamp.verisign.com/scripts/timstamp.dll
 

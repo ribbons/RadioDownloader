@@ -11,7 +11,6 @@ setlocal ENABLEDELAYEDEXPANSION
 
 rem Set up an x86 Release build environment
 call "%sdklocation%\Bin\setenv.cmd" /Release /x86
-if ERRORLEVEL 1 exit /B 1
 
 rem Build Radio Downloader and the providers
 
