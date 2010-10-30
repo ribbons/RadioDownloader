@@ -16,6 +16,7 @@ using System;
 using System.Net;
 
 using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace RadioDld
 {
@@ -36,7 +37,7 @@ namespace RadioDld
             }
 
             WebClient checkUpdate = new WebClient();
-            checkUpdate.Headers.Add("user-agent", RadioDld.My.MyProject.Application.Info.AssemblyName + " " + RadioDld.My.MyProject.Application.Info.Version.ToString());
+            checkUpdate.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
 
             string versionInfo = null;
 
@@ -58,7 +59,7 @@ namespace RadioDld
                 versionInfo = Strings.Split(versionInfo, Constants.vbCrLf)[0];
 
                 // There is a new version available
-                if (String.Compare(versionInfo, RadioDld.My.MyProject.Application.Info.Version.ToString(), StringComparison.Ordinal) > 0)
+                if (String.Compare(versionInfo, new ApplicationBase().Info.Version.ToString(), StringComparison.Ordinal) > 0)
                 {
                     return true;
                 }

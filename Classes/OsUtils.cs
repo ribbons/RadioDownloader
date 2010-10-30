@@ -20,6 +20,7 @@ using System.Text;
 using System.Windows.Forms;
 
 using Microsoft.Win32;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace RadioDld
 {
@@ -195,13 +196,13 @@ namespace RadioDld
 
             if (Properties.Settings.Default.RunOnStartup)
             {
-                runKey.SetValue(RadioDld.My.MyProject.Application.Info.Title, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
+                runKey.SetValue(new ApplicationBase().Info.Title, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
             }
             else
             {
-                if (runKey.GetValue(RadioDld.My.MyProject.Application.Info.Title) != null)
+                if (runKey.GetValue(new ApplicationBase().Info.Title) != null)
                 {
-                    runKey.DeleteValue(RadioDld.My.MyProject.Application.Info.Title);
+                    runKey.DeleteValue(new ApplicationBase().Info.Title);
                 }
             }
         }

@@ -23,6 +23,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace RadioDld
 {
@@ -234,7 +235,7 @@ namespace RadioDld
             VacuumDatabase();
 
             // Setup an instance of the plugins class
-            pluginsInst = new Plugins(RadioDld.My.MyProject.Application.Info.DirectoryPath);
+            pluginsInst = new Plugins(new ApplicationBase().Info.DirectoryPath);
 
             // Fetch the version of the database
             int currentVer = 0;

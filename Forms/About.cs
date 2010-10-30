@@ -16,6 +16,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.Windows.Forms;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace RadioDld
 {
@@ -25,20 +26,20 @@ namespace RadioDld
         {
             // Set the title of the form.
             string applicationTitle = null;
-            if (!string.IsNullOrEmpty(RadioDld.My.MyProject.Application.Info.Title))
+            if (!string.IsNullOrEmpty(new ApplicationBase().Info.Title))
             {
-                applicationTitle = RadioDld.My.MyProject.Application.Info.Title;
+                applicationTitle = new ApplicationBase().Info.Title;
             }
             else
             {
-                applicationTitle = System.IO.Path.GetFileNameWithoutExtension(RadioDld.My.MyProject.Application.Info.AssemblyName);
+                applicationTitle = System.IO.Path.GetFileNameWithoutExtension(new ApplicationBase().Info.AssemblyName);
             }
 
             this.Font = SystemFonts.MessageBoxFont;
 
             this.Text = "About " + applicationTitle;
-            this.LabelNameAndVer.Text = RadioDld.My.MyProject.Application.Info.ProductName + " " + RadioDld.My.MyProject.Application.Info.Version.ToString();
-            this.LabelCopyright.Text = RadioDld.My.MyProject.Application.Info.Copyright;
+            this.LabelNameAndVer.Text = new ApplicationBase().Info.ProductName + " " + new ApplicationBase().Info.Version.ToString();
+            this.LabelCopyright.Text = new ApplicationBase().Info.Copyright;
         }
 
         private void OKButton_Click(System.Object sender, System.EventArgs e)

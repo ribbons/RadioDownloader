@@ -20,6 +20,7 @@ using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace RadioDld
 {
@@ -171,7 +172,7 @@ namespace RadioDld
 
             Debug.Print("Cached WebClient: Fetching " + uri.ToString());
             WebClient webClient = new WebClient();
-            webClient.Headers.Add("user-agent", RadioDld.My.MyProject.Application.Info.AssemblyName + " " + RadioDld.My.MyProject.Application.Info.Version.ToString());
+            webClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
 
             byte[] data = null;
 

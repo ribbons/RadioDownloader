@@ -24,6 +24,7 @@ using System.Web;
 using System.Xml.Serialization;
 
 using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.ApplicationServices;
 
 namespace RadioDld
 {
@@ -35,7 +36,7 @@ namespace RadioDld
         {
             try
             {
-                fields.Add("version", RadioDld.My.MyProject.Application.Info.Version.ToString());
+                fields.Add("version", new ApplicationBase().Info.Version.ToString());
                 fields.Add("errortext", errorText);
                 fields.Add("errordetails", errorDetails);
 
