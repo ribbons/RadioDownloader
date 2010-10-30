@@ -33,30 +33,9 @@ namespace RadioDld.My
                 return application;
             }
         }
-
-        [ThreadStatic]
-        static User user;
-
-        public static User User
-        {
-            [DebuggerStepThrough]
-            get
-            {
-                if (user == null)
-                {
-                    user = new User();
-                }
-
-                return user;
-            }
-        }
     }
 
     partial class MyApplication : WindowsFormsApplicationBase
-    {
-    }
-
-    partial class MyComputer : Computer
     {
     }
 }
