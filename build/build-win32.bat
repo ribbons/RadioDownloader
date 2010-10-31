@@ -24,6 +24,12 @@ rem Run FxCop on the built assemblies
 "%ProgramFiles(x86)%\Microsoft FxCop 10.0\FxCopCmd.exe" "/project:../Radio Downloader.FxCop" "/out:../obj/FxCopViolations.xml"
 if ERRORLEVEL 1 exit /B 1
 
+rem Make sure the FxCop violations file exists even when there are no violations
+if not exist ..\obj\FxCopViolations.xml (
+	echo ^<?xml version="1.0" encoding="utf-8"?^> > ..\obj\FxCopViolations.xml
+	echo ^<FxCopReport /^> >> ..\obj\FxCopViolations.xml
+)
+
 goto :EOF
 
 :nosdk
