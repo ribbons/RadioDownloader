@@ -434,12 +434,12 @@ namespace RadioDld
             this.tbtSubscribe,
             this.tbtUnsubscribe,
             this.tbtCurrentEps,
+            this.tbtCleanUp,
             this.tbtCancel,
             this.tbtPlay,
             this.tbtDelete,
             this.tbtRetry,
-            this.tbtReportError,
-            this.tbtCleanUp});
+            this.tbtReportError});
             this.tbrToolbar.ButtonSize = new System.Drawing.Size(135, 22);
             this.tbrToolbar.Divider = false;
             this.tbrToolbar.DropDownArrows = true;

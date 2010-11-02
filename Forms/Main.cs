@@ -721,6 +721,9 @@ namespace RadioDld
 
             string infoText = string.Empty;
 
+            List<ToolBarButton> buttons = new List<ToolBarButton>();
+            buttons.Add(tbtCleanUp);
+
             if (info.description != null)
             {
                 infoText += info.description + Environment.NewLine + Environment.NewLine;
@@ -734,24 +737,19 @@ namespace RadioDld
                 case Data.DownloadStatus.Downloaded:
                     if (File.Exists(info.downloadPath))
                     {
-                        SetToolbarButtons(new ToolBarButton[] { tbtPlay, tbtDelete });
-                    }
-                    else
-                    {
-                        SetToolbarButtons(new ToolBarButton[] { tbtDelete });
+                        buttons.Add(tbtPlay);
                     }
 
+                    buttons.Add(tbtDelete);
                     infoText += Environment.NewLine + "Play count: " + info.playCount.ToString(CultureInfo.CurrentCulture);
+
                     break;
                 case Data.DownloadStatus.Errored:
                     string errorName = "";
                     string errorDetails = info.errorDetails;
 
-                    ToolBarButton[] toolbarButtons =
-                    {
-                        tbtRetry,
-                        tbtCancel
-                    };
+                    buttons.Add(tbtRetry);
+                    buttons.Add(tbtCancel);
 
                     switch (info.errorType)
                     {
@@ -776,12 +774,7 @@ namespace RadioDld
                         case ErrorType.UnknownError:
                             errorName = "Unknown error";
                             errorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed.";
-                            toolbarButtons = new ToolBarButton[]
-                            {
-                                tbtRetry,
-                                tbtCancel,
-                                tbtReportError
-                            };
+                            buttons.Add(tbtReportError);
                             break;
                     }
 
@@ -792,13 +785,13 @@ namespace RadioDld
                         infoText += Environment.NewLine + Environment.NewLine + errorDetails;
                     }
 
-                    SetToolbarButtons(toolbarButtons);
                     break;
                 default:
-                    SetToolbarButtons(new ToolBarButton[] { tbtCancel });
+                    buttons.Add(tbtCancel);
                     break;
             }
 
+            SetToolbarButtons(buttons.ToArray());
             SetSideBar(info.name, infoText, progData.FetchEpisodeImage(epid));
         }
 
