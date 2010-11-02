@@ -499,13 +499,12 @@ namespace RadioDld
                                         }
                                     }
 
-                                    var _with1 = curDldProgData;
-                                    _with1.PluginId = pluginId;
-                                    _with1.ProgExtId = reader.GetString(reader.GetOrdinal("progextid"));
-                                    _with1.EpId = epid;
-                                    _with1.EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
-                                    _with1.ProgInfo = progInfo;
-                                    _with1.EpisodeInfo = epiEpInfo;
+                                    curDldProgData.PluginId = pluginId;
+                                    curDldProgData.ProgExtId = reader.GetString(reader.GetOrdinal("progextid"));
+                                    curDldProgData.EpId = epid;
+                                    curDldProgData.EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
+                                    curDldProgData.ProgInfo = progInfo;
+                                    curDldProgData.EpisodeInfo = epiEpInfo;
 
                                     if ((DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == DownloadStatus.Errored)
                                     {
@@ -538,7 +537,6 @@ namespace RadioDld
                 // Make sure that the temp folder still exists
                 Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"));
 
-                var _with2 = curDldProgData;
                 try
                 {
                     curDldProgData.FinalName = FileUtils.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, curDldProgData.ProgInfo.Name, curDldProgData.EpisodeInfo.Name, curDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder());
@@ -554,7 +552,7 @@ namespace RadioDld
                     return;
                 }
 
-                DownloadPluginInst.DownloadProgramme(_with2.ProgExtId, _with2.EpisodeExtId, _with2.ProgInfo, _with2.EpisodeInfo, _with2.FinalName);
+                DownloadPluginInst.DownloadProgramme(curDldProgData.ProgExtId, curDldProgData.EpisodeExtId, curDldProgData.ProgInfo, curDldProgData.EpisodeInfo, curDldProgData.FinalName);
             }
             catch (ThreadAbortException)
             {
@@ -1921,11 +1919,10 @@ namespace RadioDld
                         {
                             foreach (KeyValuePair<string, string> extItem in episodeInfoReturn.EpisodeInfo.ExtInfo)
                             {
-                                var _with3 = addExtInfoCmd;
-                                _with3.Parameters.Add(new SQLiteParameter("@epid", epid));
-                                _with3.Parameters.Add(new SQLiteParameter("@name", extItem.Key));
-                                _with3.Parameters.Add(new SQLiteParameter("@value", extItem.Value));
-                                _with3.ExecuteNonQuery();
+                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@epid", epid));
+                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@name", extItem.Key));
+                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@value", extItem.Value));
+                                addExtInfoCmd.ExecuteNonQuery();
                             }
                         }
                     }
