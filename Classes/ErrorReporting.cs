@@ -40,7 +40,7 @@ namespace RadioDld
                 fields.Add("errortext", errorText);
                 fields.Add("errordetails", errorDetails);
 
-                string loadedAssemblies = "";
+                string loadedAssemblies = string.Empty;
 
                 foreach (Assembly loadedAssembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
@@ -216,7 +216,7 @@ namespace RadioDld
 
         public override string ToString()
         {
-            string stringValue = "";
+            string stringValue = string.Empty;
 
             try
             {
@@ -240,7 +240,7 @@ namespace RadioDld
                 WebClient sendClient = new WebClient();
                 sendClient.Headers.Add("Content-Type", "application/x-www-form-urlencoded");
 
-                string postData = "";
+                string postData = string.Empty;
 
                 foreach (KeyValuePair<string, string> reportField in fields)
                 {

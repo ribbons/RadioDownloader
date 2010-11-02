@@ -455,11 +455,6 @@
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
         </Rule>
-        <Rule Name="UseStringEmptyForEmptyStrings">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="UseBuiltInTypeAlias">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>

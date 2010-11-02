@@ -294,6 +294,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\UpdateNotify.resx">
       <DependentUpon>UpdateNotify.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <SubType>Designer</SubType>
@@ -316,6 +317,7 @@
     <None Include="Resources\search\search_14.png" />
     <EmbeddedResource Include="Forms\ChooseCols.resx">
       <DependentUpon>ChooseCols.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\CleanUp.resX">
       <DependentUpon>CleanUp.cs</DependentUpon>

@@ -90,7 +90,7 @@ namespace PodcastProvider
 
                 clsPluginInst.RaiseFoundNew(feedUrl.ToString());
 
-                lblResult.Text = "";
+                lblResult.Text = string.Empty;
                 cmdViewEps.Enabled = true;
             }
             catch (Exception expException)

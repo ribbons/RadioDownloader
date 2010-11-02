@@ -488,7 +488,7 @@ namespace RadioDld
         {
             Data.ProgrammeData progInfo = progData.FetchProgrammeData((int)view.CurrentViewData);
             Data.EpisodeData epInfo = progData.FetchEpisodeData(epid);
-            string infoText = "";
+            string infoText = string.Empty;
 
             if (epInfo.description != null)
             {
@@ -745,7 +745,7 @@ namespace RadioDld
 
                     break;
                 case Data.DownloadStatus.Errored:
-                    string errorName = "";
+                    string errorName = string.Empty;
                     string errorDetails = info.errorDetails;
 
                     buttons.Add(tbtRetry);
@@ -1059,7 +1059,7 @@ namespace RadioDld
             Data.EpisodeData info = progData.FetchEpisodeData(epid);
 
             ListViewItem addItem = new ListViewItem();
-            addItem.SubItems.Add("");
+            addItem.SubItems.Add(string.Empty);
 
             EpisodeListItem(epid, info, ref addItem);
 
@@ -1124,7 +1124,7 @@ namespace RadioDld
             if (item == null)
             {
                 item = new ListViewItem();
-                item.SubItems.Add("");
+                item.SubItems.Add(string.Empty);
             }
 
             item.Name = info.progid.ToString(CultureInfo.InvariantCulture);
@@ -1187,8 +1187,8 @@ namespace RadioDld
             Data.SubscriptionData info = progData.FetchSubscriptionData(progid);
 
             ListViewItem addItem = new ListViewItem();
-            addItem.SubItems.Add("");
-            addItem.SubItems.Add("");
+            addItem.SubItems.Add(string.Empty);
+            addItem.SubItems.Add(string.Empty);
 
             SubscriptionListItem(progid, info, ref addItem);
             lstSubscribed.Items.Add(addItem);
@@ -1265,7 +1265,7 @@ namespace RadioDld
             {
                 for (int addCols = item.SubItems.Count; addCols <= downloadColOrder.Count - 1; addCols++)
                 {
-                    item.SubItems.Add("");
+                    item.SubItems.Add(string.Empty);
                 }
             }
 
@@ -1305,7 +1305,7 @@ namespace RadioDld
 
                         break;
                     case Data.DownloadCols.Progress:
-                        item.SubItems[column].Text = "";
+                        item.SubItems[column].Text = string.Empty;
                         break;
                     case Data.DownloadCols.Duration:
                         string durationText = string.Empty;
@@ -1967,7 +1967,7 @@ namespace RadioDld
             {
                 case ViewState.View.FindNewChooseProvider:
                     SetToolbarButtons(new ToolBarButton[] { });
-                    SetSideBar(Convert.ToString(lstProviders.Items.Count, CultureInfo.CurrentCulture) + " provider" + (lstProviders.Items.Count == 1 ? "" : "s"), "", null);
+                    SetSideBar(Convert.ToString(lstProviders.Items.Count, CultureInfo.CurrentCulture) + " provider" + (lstProviders.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     break;
                 case ViewState.View.FindNewProviderForm:
                     FindNewViewData FindViewData = (FindNewViewData)view.CurrentViewData;
@@ -1979,11 +1979,11 @@ namespace RadioDld
                     break;
                 case ViewState.View.Favourites:
                     SetToolbarButtons(new ToolBarButton[] { });
-                    SetSideBar(Convert.ToString(lstFavourites.Items.Count, CultureInfo.CurrentCulture) + " favourite" + (lstFavourites.Items.Count == 1 ? "" : "s"), "", null);
+                    SetSideBar(Convert.ToString(lstFavourites.Items.Count, CultureInfo.CurrentCulture) + " favourite" + (lstFavourites.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     break;
                 case ViewState.View.Subscriptions:
                     SetToolbarButtons(new ToolBarButton[] { });
-                    SetSideBar(Convert.ToString(lstSubscribed.Items.Count, CultureInfo.CurrentCulture) + " subscription" + (lstSubscribed.Items.Count == 1 ? "" : "s"), "", null);
+                    SetSideBar(Convert.ToString(lstSubscribed.Items.Count, CultureInfo.CurrentCulture) + " subscription" + (lstSubscribed.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     break;
                 case ViewState.View.Downloads:
                     SetToolbarButtons(new ToolBarButton[] { tbtCleanUp });

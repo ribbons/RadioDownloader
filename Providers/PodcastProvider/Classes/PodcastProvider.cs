@@ -280,7 +280,7 @@ namespace PodcastProvider
 
                         // Strip out any HTML tags
                         Regex RegExpression = new Regex("<(.|\\n)+?>");
-                        episodeInfoReturn.EpisodeInfo.Description = RegExpression.Replace(description, "");
+                        episodeInfoReturn.EpisodeInfo.Description = RegExpression.Replace(description, string.Empty);
                     }
 
                     try
@@ -531,7 +531,7 @@ namespace PodcastProvider
 
         private string ItemNodeToEpisodeID(XmlNode xmlItem)
         {
-            string strItemID = "";
+            string strItemID = string.Empty;
             XmlNode xmlItemID = xmlItem.SelectSingleNode("./guid");
 
             if (xmlItemID != null)

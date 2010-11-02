@@ -173,7 +173,7 @@ namespace RadioDld
             }
             else
             {
-                return "";
+                return string.Empty;
             }
         }
 
