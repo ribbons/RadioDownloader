@@ -31,7 +31,7 @@ namespace RadioDld
             InitializeComponent();
         }
 
-        private void cmdChangeFolder_Click(System.Object eventSender, System.EventArgs eventArgs)
+        private void cmdChangeFolder_Click(object eventSender, System.EventArgs eventArgs)
         {
             FolderBrowserDialog BrowseDialog = new FolderBrowserDialog();
             BrowseDialog.SelectedPath = txtSaveIn.Text;
@@ -43,7 +43,7 @@ namespace RadioDld
             }
         }
 
-        private void cmdOK_Click(System.Object eventSender, System.EventArgs eventArgs)
+        private void cmdOK_Click(object eventSender, System.EventArgs eventArgs)
         {
             if (string.IsNullOrEmpty(txtFileNameFormat.Text))
             {
@@ -77,7 +77,7 @@ namespace RadioDld
             }
         }
 
-        private void Preferences_Load(System.Object eventSender, System.EventArgs eventArgs)
+        private void Preferences_Load(object eventSender, System.EventArgs eventArgs)
         {
             this.Font = SystemFonts.MessageBoxFont;
 
@@ -106,12 +106,12 @@ namespace RadioDld
             txtRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
         }
 
-        private void txtFileNameFormat_TextChanged(System.Object sender, System.EventArgs e)
+        private void txtFileNameFormat_TextChanged(object sender, System.EventArgs e)
         {
             lblFilenameFormatResult.Text = "Result: " + FileUtils.CreateSaveFileName(txtFileNameFormat.Text, "Programme Name", "Episode Name", DateAndTime.Now) + ".mp3";
         }
 
-        private void cmdReset_Click(System.Object sender, System.EventArgs e)
+        private void cmdReset_Click(object sender, System.EventArgs e)
         {
             if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes)
             {

@@ -28,7 +28,7 @@ namespace PodcastProvider
 
         internal PodcastProvider clsPluginInst;
 
-        private void cmdViewEps_Click(System.Object sender, System.EventArgs e)
+        private void cmdViewEps_Click(object sender, System.EventArgs e)
         {
             try
             {

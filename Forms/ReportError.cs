@@ -23,7 +23,7 @@ namespace RadioDld
     {
         private ErrorReporting report;
 
-        private static Object showingLock = new Object();
+        private static object showingLock = new object();
         private static bool showing = false;
 
         public void ShowReport(ErrorReporting report)
@@ -49,7 +49,7 @@ namespace RadioDld
             }
         }
 
-        private void cmdSend_Click(System.Object sender, System.EventArgs e)
+        private void cmdSend_Click(object sender, System.EventArgs e)
         {
             try
             {
@@ -64,12 +64,12 @@ namespace RadioDld
             this.Close();
         }
 
-        private void lnkWhatData_LinkClicked(System.Object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+        private void lnkWhatData_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
             Interaction.MsgBox(report.ToString());
         }
 
-        private void cmdDontSend_Click(System.Object sender, System.EventArgs e)
+        private void cmdDontSend_Click(object sender, System.EventArgs e)
         {
             this.Close();
         }

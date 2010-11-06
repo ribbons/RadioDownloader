@@ -26,19 +26,19 @@ namespace RadioDld
             InitializeComponent();
         }
 
-        private void CleanUp_Load(System.Object sender, System.EventArgs e)
+        private void CleanUp_Load(object sender, System.EventArgs e)
         {
             progData = Data.GetInstance();
             this.Font = SystemFonts.MessageBoxFont;
         }
 
-        private void cmdCancel_Click(System.Object eventSender, System.EventArgs eventArgs)
+        private void cmdCancel_Click(object eventSender, System.EventArgs eventArgs)
         {
             this.Close();
             this.Dispose();
         }
 
-        private void cmdOK_Click(System.Object sender, System.EventArgs e)
+        private void cmdOK_Click(object sender, System.EventArgs e)
         {
             cmdOK.Enabled = false;
             cmdCancel.Enabled = false;

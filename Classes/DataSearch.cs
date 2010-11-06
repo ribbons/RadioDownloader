@@ -57,7 +57,7 @@ namespace RadioDld
             dataInstance = instance;
 
             Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
-            tableCols.Add("downloads", new String[] { "name", "description" });
+            tableCols.Add("downloads", new string[] { "name", "description" });
 
             using (Status showStatus = new Status())
             {

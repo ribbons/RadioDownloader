@@ -164,7 +164,7 @@ namespace RadioDld
             }
         }
 
-        private void Main_Load(System.Object eventSender, System.EventArgs eventArgs)
+        private void Main_Load(object eventSender, System.EventArgs eventArgs)
         {
             // If this is the first run of a new version of the application, then upgrade the settings from the old version.
             try
@@ -415,7 +415,7 @@ namespace RadioDld
             tmrCheckForUpdates.Enabled = true;
         }
 
-        private void Main_FormClosing(System.Object eventSender, System.Windows.Forms.FormClosingEventArgs eventArgs)
+        private void Main_FormClosing(object eventSender, System.Windows.Forms.FormClosingEventArgs eventArgs)
         {
             if (eventArgs.CloseReason == CloseReason.UserClosing)
             {
@@ -444,7 +444,7 @@ namespace RadioDld
             }
         }
 
-        private void lstProviders_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+        private void lstProviders_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (lstProviders.SelectedItems.Count > 0)
             {
@@ -572,7 +572,7 @@ namespace RadioDld
             SetSideBar(info.name, info.description, progData.FetchProgrammeImage(progid));
         }
 
-        private void lstSubscribed_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+        private void lstSubscribed_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (lstSubscribed.SelectedItems.Count > 0)
             {
@@ -703,7 +703,7 @@ namespace RadioDld
             tbtPlay_Click();
         }
 
-        private void lstDownloads_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+        private void lstDownloads_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             if (lstDownloads.SelectedItems.Count > 0)
             {
@@ -866,7 +866,7 @@ namespace RadioDld
             }
         }
 
-        public void mnuTrayShow_Click(System.Object sender, System.EventArgs e)
+        public void mnuTrayShow_Click(object sender, System.EventArgs e)
         {
             if (this.Visible == false)
             {
@@ -882,7 +882,7 @@ namespace RadioDld
             this.Activate();
         }
 
-        public void mnuTrayExit_Click(System.Object eventSender, System.EventArgs eventArgs)
+        public void mnuTrayExit_Click(object eventSender, System.EventArgs eventArgs)
         {
             this.Close();
             this.Dispose();
@@ -902,27 +902,27 @@ namespace RadioDld
             Properties.Settings.Default.ShownTrayBalloon = true;
         }
 
-        private void nicTrayIcon_MouseDoubleClick(System.Object sender, System.Windows.Forms.MouseEventArgs e)
+        private void nicTrayIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             mnuTrayShow_Click(sender, e);
         }
 
-        private void tbtFindNew_Click(System.Object sender, System.EventArgs e)
+        private void tbtFindNew_Click(object sender, System.EventArgs e)
         {
             view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
         }
 
-        private void tbtFavourites_Click(System.Object sender, System.EventArgs e)
+        private void tbtFavourites_Click(object sender, System.EventArgs e)
         {
             view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites);
         }
 
-        private void tbtSubscriptions_Click(System.Object sender, System.EventArgs e)
+        private void tbtSubscriptions_Click(object sender, System.EventArgs e)
         {
             view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions);
         }
 
-        private void tbtDownloads_Click(System.Object sender, System.EventArgs e)
+        private void tbtDownloads_Click(object sender, System.EventArgs e)
         {
             view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
         }
@@ -1564,7 +1564,7 @@ namespace RadioDld
             }
         }
 
-        private void tmrCheckForUpdates_Tick(System.Object sender, System.EventArgs e)
+        private void tmrCheckForUpdates_Tick(object sender, System.EventArgs e)
         {
             if (checkUpdate.IsUpdateAvailable())
             {
@@ -1802,7 +1802,7 @@ namespace RadioDld
             view.SetView(ViewState.View.FindNewProviderForm, viewData);
         }
 
-        private void mnuOptionsShowOpts_Click(System.Object sender, System.EventArgs e)
+        private void mnuOptionsShowOpts_Click(object sender, System.EventArgs e)
         {
             using (Preferences prefs = new Preferences())
             {
@@ -1810,12 +1810,12 @@ namespace RadioDld
             }
         }
 
-        private void mnuOptionsExit_Click(System.Object sender, System.EventArgs e)
+        private void mnuOptionsExit_Click(object sender, System.EventArgs e)
         {
             mnuTrayExit_Click(mnuTrayExit, e);
         }
 
-        private void mnuHelpAbout_Click(System.Object sender, System.EventArgs e)
+        private void mnuHelpAbout_Click(object sender, System.EventArgs e)
         {
             using (About about = new About())
             {
@@ -1823,12 +1823,12 @@ namespace RadioDld
             }
         }
 
-        private void mnuHelpShowHelp_Click(System.Object sender, System.EventArgs e)
+        private void mnuHelpShowHelp_Click(object sender, System.EventArgs e)
         {
             Process.Start("http://www.nerdoftheherd.com/tools/radiodld/help/");
         }
 
-        private void mnuHelpReportBug_Click(System.Object sender, System.EventArgs e)
+        private void mnuHelpReportBug_Click(object sender, System.EventArgs e)
         {
             Process.Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php");
         }
@@ -2015,17 +2015,17 @@ namespace RadioDld
             }
         }
 
-        private void tbtBack_Click(System.Object sender, System.EventArgs e)
+        private void tbtBack_Click(object sender, System.EventArgs e)
         {
             view.NavBack();
         }
 
-        private void tbtForward_Click(System.Object sender, System.EventArgs e)
+        private void tbtForward_Click(object sender, System.EventArgs e)
         {
             view.NavFwd();
         }
 
-        private void tbrToolbar_ButtonClick(System.Object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
+        private void tbrToolbar_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
         {
             switch (e.Button.Name)
             {
@@ -2118,7 +2118,7 @@ namespace RadioDld
             e.Graphics.DrawLine(new Pen(Color.FromArgb(255, 167, 186, 197)), 0, 0, 0, picSideBarBorder.Height);
         }
 
-        private void mnuListHdrsColumns_Click(System.Object sender, System.EventArgs e)
+        private void mnuListHdrsColumns_Click(object sender, System.EventArgs e)
         {
             using (ChooseCols chooser = new ChooseCols())
             {
@@ -2133,7 +2133,7 @@ namespace RadioDld
             }
         }
 
-        private void mnuListHdrsReset_Click(System.Object sender, System.EventArgs e)
+        private void mnuListHdrsReset_Click(object sender, System.EventArgs e)
         {
             Properties.Settings.Default.DownloadCols = (string)Properties.Settings.Default.Properties["DownloadCols"].DefaultValue;
             Properties.Settings.Default.DownloadColSizes = (string)Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue;

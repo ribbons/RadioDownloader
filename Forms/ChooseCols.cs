@@ -62,7 +62,7 @@ namespace RadioDld
             this.columnNames = columnNames;
         }
 
-        private void ChooseCols_Load(System.Object sender, System.EventArgs e)
+        private void ChooseCols_Load(object sender, System.EventArgs e)
         {
             if (columnOrder == null)
             {
@@ -117,7 +117,7 @@ namespace RadioDld
             UpdateButtonState();
         }
 
-        private void ColumnsList_SelectedIndexChanged(System.Object sender, System.EventArgs e)
+        private void ColumnsList_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             UpdateButtonState();
         }
@@ -164,17 +164,17 @@ namespace RadioDld
             }
         }
 
-        private void ShowButton_Click(System.Object sender, System.EventArgs e)
+        private void ShowButton_Click(object sender, System.EventArgs e)
         {
             ColumnsList.SelectedItems[0].Checked = true;
         }
 
-        private void HideButton_Click(System.Object sender, System.EventArgs e)
+        private void HideButton_Click(object sender, System.EventArgs e)
         {
             ColumnsList.SelectedItems[0].Checked = false;
         }
 
-        private void MoveUp_Click(System.Object sender, System.EventArgs e)
+        private void MoveUp_Click(object sender, System.EventArgs e)
         {
             ListViewItem moveItem = ColumnsList.SelectedItems[0];
             int origIndex = ColumnsList.SelectedItems[0].Index;
@@ -183,7 +183,7 @@ namespace RadioDld
             ColumnsList.Items.Insert(origIndex - 1, moveItem);
         }
 
-        private void MoveDown_Click(System.Object sender, System.EventArgs e)
+        private void MoveDown_Click(object sender, System.EventArgs e)
         {
             ListViewItem moveItem = ColumnsList.SelectedItems[0];
             int origIndex = ColumnsList.SelectedItems[0].Index;

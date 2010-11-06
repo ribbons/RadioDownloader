@@ -184,7 +184,7 @@ namespace RadioDld
             e.Cancel = true;
         }
 
-        private void Status_Load(System.Object sender, System.EventArgs e)
+        private void Status_Load(object sender, System.EventArgs e)
         {
             this.Font = SystemFonts.MessageBoxFont;
         }

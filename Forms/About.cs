@@ -22,7 +22,7 @@ namespace RadioDld
 {
     internal sealed partial class About : Form
     {
-        private void About_Load(System.Object sender, System.EventArgs e)
+        private void About_Load(object sender, System.EventArgs e)
         {
             // Set the title of the form.
             string applicationTitle = null;
@@ -42,7 +42,7 @@ namespace RadioDld
             this.LabelCopyright.Text = new ApplicationBase().Info.Copyright;
         }
 
-        private void OKButton_Click(System.Object sender, System.EventArgs e)
+        private void OKButton_Click(object sender, System.EventArgs e)
         {
             this.Close();
         }

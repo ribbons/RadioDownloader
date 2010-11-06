@@ -25,7 +25,7 @@ namespace RadioDld
             InitializeComponent();
         }
         
-        private void Update_Load(System.Object sender, System.EventArgs e)
+        private void Update_Load(object sender, System.EventArgs e)
         {
             this.Font = SystemFonts.MessageBoxFont;
         }

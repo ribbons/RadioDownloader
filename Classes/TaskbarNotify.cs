@@ -41,13 +41,13 @@ namespace RadioDld
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         private struct THUMBBUTTON
         {
-            public UInt32 dwMask;
-            public UInt32 iId;
-            public UInt32 iBitmap;
+            public uint dwMask;
+            public uint iId;
+            public uint iBitmap;
             public IntPtr hIcon;
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
-            public UInt16[] szTip;
-            public UInt32 dwFlags;
+            public ushort[] szTip;
+            public uint dwFlags;
         }
 
         [ComImport(), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF")]
@@ -65,7 +65,7 @@ namespace RadioDld
 
             void MarkFullscreenWindow(IntPtr hwnd, bool fFullscreen);
 
-            void SetProgressValue(IntPtr hwnd, UInt64 ullCompleted, UInt64 ullTotal);
+            void SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
 
             void SetProgressState(IntPtr hwnd, TBPFLAG tbpFlags);
 
@@ -77,9 +77,9 @@ namespace RadioDld
 
             void SetTabActive(IntPtr hwndTab, int hwndMDI, TBATFLAG tbatFlags);
 
-            void ThumbBarAddButtons(IntPtr hwnd, UInt32 cButtons, THUMBBUTTON[] pButton);
+            void ThumbBarAddButtons(IntPtr hwnd, uint cButtons, THUMBBUTTON[] pButton);
 
-            void ThumbBarUpdateButtons(IntPtr hwnd, UInt32 cButtons, THUMBBUTTON[] pButton);
+            void ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, THUMBBUTTON[] pButton);
 
             void ThumbBarSetImageList(IntPtr hwnd, IntPtr himl);
 
