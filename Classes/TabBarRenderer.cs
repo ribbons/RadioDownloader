@@ -369,8 +369,7 @@ namespace RadioDld
             blendFunc.AlphaFormat = AC_SRC_ALPHA; // Per-pixel alpha only
 
             // Blend the painted text into the render DC
-            if (AlphaBlend(renderHdc, e.TextRectangle.Left, e.TextRectangle.Top, e.TextRectangle.Width, e.TextRectangle.Height, memoryHdc, 0, 0, e.TextRectangle.Width, e.TextRectangle.Height,
-            blendFunc) == false)
+            if (!AlphaBlend(renderHdc, e.TextRectangle.Left, e.TextRectangle.Top, e.TextRectangle.Width, e.TextRectangle.Height, memoryHdc, 0, 0, e.TextRectangle.Width, e.TextRectangle.Height, blendFunc))
             {
                 throw new Win32Exception();
             }
