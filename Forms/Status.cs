@@ -42,7 +42,7 @@ namespace RadioDld
                 tbarNotif = new TaskbarNotify();
             }
 
-            base.ShowDialog();
+            this.ShowDialog();
         }
 
         public string StatusText
