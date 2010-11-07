@@ -12,14 +12,14 @@
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Windows.Forms;
-using Microsoft.VisualBasic.ApplicationServices;
-
 namespace RadioDld
 {
+    using System;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.Windows.Forms;
+    using Microsoft.VisualBasic.ApplicationServices;
+
     internal sealed partial class About : Form
     {
         private void About_Load(object sender, System.EventArgs e)

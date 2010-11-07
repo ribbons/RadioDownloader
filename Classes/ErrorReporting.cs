@@ -12,22 +12,21 @@
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Net;
-using System.Reflection;
-using System.Web;
-using System.Xml.Serialization;
-
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.ApplicationServices;
-
 namespace RadioDld
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Globalization;
+    using System.IO;
+    using System.Net;
+    using System.Reflection;
+    using System.Web;
+    using System.Xml.Serialization;
+    using Microsoft.VisualBasic;
+    using Microsoft.VisualBasic.ApplicationServices;
+
     internal class ErrorReporting
     {
         Dictionary<string, string> fields = new Dictionary<string, string>();

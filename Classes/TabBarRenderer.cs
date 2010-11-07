@@ -12,16 +12,16 @@
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-
 namespace RadioDld
 {
+    using System;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.Drawing.Drawing2D;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
+    using System.Windows.Forms.VisualStyles;
+
     internal class TabBarRenderer : ToolStripSystemRenderer, IDisposable
     {
         [DllImport("gdi32.dll", SetLastError = true)]

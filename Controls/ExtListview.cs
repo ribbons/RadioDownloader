@@ -12,16 +12,16 @@
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Globalization;
-using System.Runtime.InteropServices;
-using System.Windows.Forms;
-
 namespace RadioDld
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.Globalization;
+    using System.Runtime.InteropServices;
+    using System.Windows.Forms;
+
     // Parts of the code in this class are based on code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
     internal class ExtListView : ListView
     {

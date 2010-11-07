@@ -12,22 +12,21 @@
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Threading;
-using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-
-using Microsoft.VisualBasic;
-using Microsoft.VisualBasic.ApplicationServices;
-
 namespace RadioDld
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Configuration;
+    using System.Diagnostics;
+    using System.Drawing;
+    using System.Globalization;
+    using System.IO;
+    using System.Threading;
+    using System.Windows.Forms;
+    using System.Windows.Forms.VisualStyles;
+    using Microsoft.VisualBasic;
+    using Microsoft.VisualBasic.ApplicationServices;
+
     internal partial class Main : GlassForm
     {
         private struct FindNewViewData

@@ -12,18 +12,17 @@
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-using System;
-using System.ComponentModel;
-using System.Drawing;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows.Forms;
-
-using Microsoft.Win32;
-using Microsoft.VisualBasic.ApplicationServices;
-
 namespace RadioDld
 {
+    using System;
+    using System.ComponentModel;
+    using System.Drawing;
+    using System.Runtime.InteropServices;
+    using System.Text;
+    using System.Windows.Forms;
+    using Microsoft.VisualBasic.ApplicationServices;
+    using Microsoft.Win32;
+
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct RECT
     {

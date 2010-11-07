@@ -12,24 +12,23 @@
 // You should have received a copy of the GNU General Public License along with this program; if not, write
 // to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Globalization;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Web;
-using System.Windows.Forms;
-using System.Xml;
-
-using Microsoft.VisualBasic;
-using RadioDld;
-
 namespace PodcastProvider
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Drawing;
+    using System.Globalization;
+    using System.IO;
+    using System.Net;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Web;
+    using System.Windows.Forms;
+    using System.Xml;
+    using Microsoft.VisualBasic;
+    using RadioDld;
+
     public class PodcastProvider : IRadioProvider
     {
         public event FindNewViewChangeEventHandler FindNewViewChange
