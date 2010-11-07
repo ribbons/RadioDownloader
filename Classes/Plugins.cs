@@ -117,14 +117,14 @@ namespace RadioDld
 
         public bool PluginExists(Guid pluginID)
         {
-            return availablePlugins.ContainsKey(pluginID);
+            return this.availablePlugins.ContainsKey(pluginID);
         }
 
         public IRadioProvider GetPluginInstance(Guid pluginID)
         {
-            if (PluginExists(pluginID))
+            if (this.PluginExists(pluginID))
             {
-                return CreateInstance(availablePlugins[pluginID]);
+                return this.CreateInstance(this.availablePlugins[pluginID]);
             }
             else
             {
@@ -134,8 +134,8 @@ namespace RadioDld
 
         public Guid[] GetPluginIdList()
         {
-            Guid[] pluginIDs = new Guid[availablePlugins.Keys.Count];
-            availablePlugins.Keys.CopyTo(pluginIDs, 0);
+            Guid[] pluginIDs = new Guid[this.availablePlugins.Keys.Count];
+            this.availablePlugins.Keys.CopyTo(pluginIDs, 0);
 
             return pluginIDs;
         }
@@ -154,7 +154,7 @@ namespace RadioDld
                 try
                 {
                     thisDll = Assembly.LoadFrom(dll);
-                    ExamineAssembly(thisDll);
+                    this.ExamineAssembly(thisDll);
                 }
                 catch
                 {
@@ -192,8 +192,8 @@ namespace RadioDld
                             try
                             {
                                 IRadioProvider pluginInst = null;
-                                pluginInst = CreateInstance(pluginInfo);
-                                availablePlugins.Add(pluginInst.ProviderId, pluginInfo);
+                                pluginInst = this.CreateInstance(pluginInfo);
+                                this.availablePlugins.Add(pluginInst.ProviderId, pluginInfo);
                             }
                             catch
                             {

@@ -23,12 +23,12 @@ namespace RadioDld
 
         public CleanUp()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void CleanUp_Load(object sender, System.EventArgs e)
         {
-            progData = Data.GetInstance();
+            this.progData = Data.GetInstance();
             this.Font = SystemFonts.MessageBoxFont;
         }
 
@@ -40,12 +40,12 @@ namespace RadioDld
 
         private void cmdOK_Click(object sender, System.EventArgs e)
         {
-            cmdOK.Enabled = false;
-            cmdCancel.Enabled = false;
-            radType.Enabled = false;
-            lblExplainOrphan.Enabled = false;
+            this.cmdOK.Enabled = false;
+            this.cmdCancel.Enabled = false;
+            this.radType.Enabled = false;
+            this.lblExplainOrphan.Enabled = false;
 
-            progData.PerformCleanup();
+            this.progData.PerformCleanup();
 
             this.Close();
             this.Dispose();

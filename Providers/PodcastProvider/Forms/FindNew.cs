@@ -23,7 +23,7 @@ namespace PodcastProvider
     {
         public FindNew()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         internal PodcastProvider clsPluginInst;
@@ -32,9 +32,9 @@ namespace PodcastProvider
         {
             try
             {
-                cmdViewEps.Enabled = false;
-                lblResult.ForeColor = System.Drawing.Color.Black;
-                lblResult.Text = "Checking feed...";
+                this.cmdViewEps.Enabled = false;
+                this.lblResult.ForeColor = System.Drawing.Color.Black;
+                this.lblResult.Text = "Checking feed...";
 
                 Application.DoEvents();
 
@@ -43,33 +43,33 @@ namespace PodcastProvider
 
                 try
                 {
-                    feedUrl = new Uri(txtFeedURL.Text);
+                    feedUrl = new Uri(this.txtFeedURL.Text);
                 }
                 catch (UriFormatException)
                 {
-                    lblResult.Text = "The specified URL was not valid.";
-                    lblResult.ForeColor = System.Drawing.Color.Red;
-                    cmdViewEps.Enabled = true;
+                    this.lblResult.Text = "The specified URL was not valid.";
+                    this.lblResult.ForeColor = System.Drawing.Color.Red;
+                    this.cmdViewEps.Enabled = true;
                     return;
                 }
 
                 // Test that we can load something from the URL, and it is valid XML
                 try
                 {
-                    xmlRSS = clsPluginInst.LoadFeedXml(feedUrl);
+                    xmlRSS = this.clsPluginInst.LoadFeedXml(feedUrl);
                 }
                 catch (WebException)
                 {
-                    lblResult.Text = "There was a problem requesting the feed from the specified URL.";
-                    lblResult.ForeColor = System.Drawing.Color.Red;
-                    cmdViewEps.Enabled = true;
+                    this.lblResult.Text = "There was a problem requesting the feed from the specified URL.";
+                    this.lblResult.ForeColor = System.Drawing.Color.Red;
+                    this.cmdViewEps.Enabled = true;
                     return;
                 }
                 catch (XmlException)
                 {
-                    lblResult.Text = "The data returned from the specified URL was not a valid RSS feed.";
-                    lblResult.ForeColor = System.Drawing.Color.Red;
-                    cmdViewEps.Enabled = true;
+                    this.lblResult.Text = "The data returned from the specified URL was not a valid RSS feed.";
+                    this.lblResult.ForeColor = System.Drawing.Color.Red;
+                    this.cmdViewEps.Enabled = true;
                     return;
                 }
 
@@ -79,23 +79,23 @@ namespace PodcastProvider
 
                 if (xmlCheckTitle == null | xmlCheckDescription == null)
                 {
-                    lblResult.Text = "The RSS feed returned from the specified URL was not valid.";
-                    lblResult.ForeColor = System.Drawing.Color.Red;
-                    cmdViewEps.Enabled = true;
+                    this.lblResult.Text = "The RSS feed returned from the specified URL was not valid.";
+                    this.lblResult.ForeColor = System.Drawing.Color.Red;
+                    this.cmdViewEps.Enabled = true;
                     return;
                 }
 
-                lblResult.Text = "Loading information...";
+                this.lblResult.Text = "Loading information...";
                 Application.DoEvents();
 
-                clsPluginInst.RaiseFoundNew(feedUrl.ToString());
+                this.clsPluginInst.RaiseFoundNew(feedUrl.ToString());
 
-                lblResult.Text = string.Empty;
-                cmdViewEps.Enabled = true;
+                this.lblResult.Text = string.Empty;
+                this.cmdViewEps.Enabled = true;
             }
             catch (Exception expException)
             {
-                clsPluginInst.RaiseFindNewException(expException);
+                this.clsPluginInst.RaiseFindNewException(expException);
             }
         }
 
@@ -105,15 +105,15 @@ namespace PodcastProvider
             {
                 if (e.KeyChar == (char)Keys.Enter)
                 {
-                    if (cmdViewEps.Enabled)
+                    if (this.cmdViewEps.Enabled)
                     {
-                        cmdViewEps_Click(sender, e);
+                        this.cmdViewEps_Click(sender, e);
                     }
                 }
             }
             catch (Exception expException)
             {
-                clsPluginInst.RaiseFindNewException(expException);
+                this.clsPluginInst.RaiseFindNewException(expException);
             }
         }
     }

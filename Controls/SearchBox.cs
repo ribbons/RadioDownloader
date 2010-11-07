@@ -54,38 +54,38 @@ namespace RadioDld
         public SearchBox()
             : base()
         {
-            TextChanged += SearchBox_TextChanged;
-            Resize += SearchBox_Resize;
-            Paint += SearchBox_Paint;
-            HandleCreated += SearchBox_HandleCreated;
+            TextChanged += this.SearchBox_TextChanged;
+            Resize += this.SearchBox_Resize;
+            Paint += this.SearchBox_Paint;
+            HandleCreated += this.SearchBox_HandleCreated;
 
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 
             // Create the child textbox control for the user to type in, without a border
-            textBox = new TextBox();
-            this.themeHeight = textBox.Height + 2;
-            textBox.BorderStyle = BorderStyle.None;
-            this.Controls.Add(textBox);
+            this.textBox = new TextBox();
+            this.themeHeight = this.textBox.Height + 2;
+            this.textBox.BorderStyle = BorderStyle.None;
+            this.Controls.Add(this.textBox);
 
-            textBox.MouseEnter += textBox_MouseEnter;
-            textBox.MouseLeave += textBox_MouseLeave;
-            textBox.GotFocus += textBox_GotFocus;
-            textBox.LostFocus += textBox_LostFocus;
-            textBox.TextChanged += textBox_TextChanged;
-            textBox.KeyDown += textBox_KeyDown;
+            this.textBox.MouseEnter += this.textBox_MouseEnter;
+            this.textBox.MouseLeave += this.textBox_MouseLeave;
+            this.textBox.GotFocus += this.textBox_GotFocus;
+            this.textBox.LostFocus += this.textBox_LostFocus;
+            this.textBox.TextChanged += this.textBox_TextChanged;
+            this.textBox.KeyDown += this.textBox_KeyDown;
 
             // Create a picturebox to display the search icon and cancel 'button'
-            button = new PictureBox();
-            button.BackColor = Color.Transparent;
-            button.Image = Properties.Resources.search_icon;
-            button.SizeMode = PictureBoxSizeMode.AutoSize;
-            this.Controls.Add(button);
+            this.button = new PictureBox();
+            this.button.BackColor = Color.Transparent;
+            this.button.Image = Properties.Resources.search_icon;
+            this.button.SizeMode = PictureBoxSizeMode.AutoSize;
+            this.Controls.Add(this.button);
 
-            button.MouseEnter += button_MouseEnter;
-            button.MouseLeave += button_MouseLeave;
-            button.MouseDown += button_MouseDown;
-            button.MouseUp += button_MouseUp;
-            button.MouseClick += button_MouseClick;
+            this.button.MouseEnter += this.button_MouseEnter;
+            this.button.MouseLeave += this.button_MouseLeave;
+            this.button.MouseDown += this.button_MouseDown;
+            this.button.MouseUp += this.button_MouseUp;
+            this.button.MouseClick += this.button_MouseClick;
 
             // Work out the height that the search box should be displayed
             if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
@@ -103,13 +103,13 @@ namespace RadioDld
         {
             get
             {
-                return _cueBanner;
+                return this._cueBanner;
             }
 
             set
             {
-                _cueBanner = value;
-                SendMessage(textBox.Handle, EM_SETCUEBANNER, IntPtr.Zero, _cueBanner);
+                this._cueBanner = value;
+                SendMessage(this.textBox.Handle, EM_SETCUEBANNER, IntPtr.Zero, this._cueBanner);
             }
         }
 
@@ -123,7 +123,7 @@ namespace RadioDld
                     throw new Win32Exception();
                 }
 
-                if (SetWindowTheme(textBox.Handle, "SearchBoxEditComposited", null) != 0)
+                if (SetWindowTheme(this.textBox.Handle, "SearchBoxEditComposited", null) != 0)
                 {
                     throw new Win32Exception();
                 }
@@ -139,7 +139,7 @@ namespace RadioDld
                 if (OsUtils.WinVistaOrLater())
                 {
                     // Fetch the correct style based on the current state
-                    searchBoxStyle = new VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, boxState);
+                    searchBoxStyle = new VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, this.boxState);
                 }
                 else
                 {
@@ -180,75 +180,75 @@ namespace RadioDld
 
         private void textBox_MouseEnter(object sender, System.EventArgs e)
         {
-            if (boxState == SBB_NORMAL)
+            if (this.boxState == SBB_NORMAL)
             {
-                boxState = SBB_HOT;
+                this.boxState = SBB_HOT;
             }
 
             if (VisualStyleRenderer.IsSupported)
             {
                 // Repaint the control and child textbox
                 this.Invalidate();
-                textBox.Invalidate();
+                this.textBox.Invalidate();
             }
         }
 
         private void textBox_MouseLeave(object sender, System.EventArgs e)
         {
-            if (boxState == SBB_HOT)
+            if (this.boxState == SBB_HOT)
             {
-                boxState = SBB_NORMAL;
+                this.boxState = SBB_NORMAL;
             }
 
             if (VisualStyleRenderer.IsSupported)
             {
                 // Repaint the control and child textbox
                 this.Invalidate();
-                textBox.Invalidate();
+                this.textBox.Invalidate();
             }
         }
 
         private void textBox_GotFocus(object sender, System.EventArgs e)
         {
-            boxState = SBB_FOCUSED;
+            this.boxState = SBB_FOCUSED;
             this.Invalidate(); // Repaint the control
         }
 
         private void textBox_LostFocus(object sender, System.EventArgs e)
         {
-            boxState = SBB_NORMAL;
+            this.boxState = SBB_NORMAL;
             this.Invalidate(); // Repaint the control
         }
 
         private void button_MouseEnter(object sender, System.EventArgs e)
         {
-            buttonHover = true;
+            this.buttonHover = true;
 
             if (!string.IsNullOrEmpty(this.Text))
             {
-                button.Image = Properties.Resources.search_close_hover;
+                this.button.Image = Properties.Resources.search_close_hover;
             }
 
-            textBox_MouseEnter(sender, e);
+            this.textBox_MouseEnter(sender, e);
         }
 
         private void button_MouseLeave(object sender, System.EventArgs e)
         {
-            buttonHover = false;
+            this.buttonHover = false;
 
             if (!string.IsNullOrEmpty(this.Text))
             {
-                button.Image = Properties.Resources.search_close;
+                this.button.Image = Properties.Resources.search_close;
             }
 
-            textBox_MouseLeave(sender, e);
+            this.textBox_MouseLeave(sender, e);
         }
 
         private void button_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.Text))
             {
-                button.Image = Properties.Resources.search_close_pressed;
+                this.button.Image = Properties.Resources.search_close_pressed;
             }
         }
 
@@ -256,15 +256,15 @@ namespace RadioDld
         {
             if (!string.IsNullOrEmpty(this.Text))
             {
-                button.Image = Properties.Resources.search_close_hover;
+                this.button.Image = Properties.Resources.search_close_hover;
             }
         }
 
         private void button_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            if (!string.IsNullOrEmpty(textBox.Text))
+            if (!string.IsNullOrEmpty(this.textBox.Text))
             {
-                textBox.Text = string.Empty;
+                this.textBox.Text = string.Empty;
             }
         }
 
@@ -277,51 +277,51 @@ namespace RadioDld
             }
 
             // Vertically center the search / cancel button on the right hand side
-            button.Left = this.Width - (button.Width + 6);
-            button.Top = Convert.ToInt32((this.Height - button.Height) / 2) + 1;
+            this.button.Left = this.Width - (this.button.Width + 6);
+            this.button.Top = Convert.ToInt32((this.Height - this.button.Height) / 2) + 1;
 
             // Use the rest of the space for the textbox
-            textBox.Top = 4;
-            textBox.Width = button.Left - (textBox.Left + 4);
+            this.textBox.Top = 4;
+            this.textBox.Width = this.button.Left - (this.textBox.Left + 4);
 
             if (OsUtils.WinVistaOrLater() & VisualStyleRenderer.IsSupported)
             {
                 // The textbox is given extra padding as part of the visual style
-                textBox.Left = 2;
+                this.textBox.Left = 2;
             }
             else
             {
-                textBox.Left = 6;
+                this.textBox.Left = 6;
             }
         }
 
         private void SearchBox_TextChanged(object sender, System.EventArgs e)
         {
-            if (textBox.Text != this.Text)
+            if (this.textBox.Text != this.Text)
             {
-                textBox.Text = this.Text;
+                this.textBox.Text = this.Text;
             }
         }
 
         private void textBox_TextChanged(object sender, System.EventArgs e)
         {
             // Hook up changes to the child textbox through this control
-            this.Text = textBox.Text;
+            this.Text = this.textBox.Text;
 
             // Update the displayed icon
             if (string.IsNullOrEmpty(this.Text))
             {
-                button.Image = Properties.Resources.search_icon;
+                this.button.Image = Properties.Resources.search_icon;
             }
             else
             {
-                if (buttonHover)
+                if (this.buttonHover)
                 {
-                    button.Image = Properties.Resources.search_close_hover;
+                    this.button.Image = Properties.Resources.search_close_hover;
                 }
                 else
                 {
-                    button.Image = Properties.Resources.search_close;
+                    this.button.Image = Properties.Resources.search_close;
                 }
             }
         }
@@ -330,7 +330,7 @@ namespace RadioDld
         {
             if (e.KeyCode == Keys.Escape)
             {
-                textBox.Text = string.Empty;
+                this.textBox.Text = string.Empty;
             }
         }
 
@@ -340,8 +340,8 @@ namespace RadioDld
             {
                 if (disposing)
                 {
-                    textBox.Dispose();
-                    button.Dispose();
+                    this.textBox.Dispose();
+                    this.button.Dispose();
                 }
             }
 

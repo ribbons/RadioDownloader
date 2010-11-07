@@ -54,7 +54,7 @@ namespace RadioDld
         {
             if (dbConn == null)
             {
-                dbConn = new SQLiteConnection("Data Source=" + DatabasePath() + ";Version=3");
+                dbConn = new SQLiteConnection("Data Source=" + this.DatabasePath() + ";Version=3");
                 dbConn.Open();
             }
 
@@ -63,10 +63,10 @@ namespace RadioDld
 
         private CachedWebClient()
         {
-            File.Delete(DatabasePath());
+            File.Delete(this.DatabasePath());
 
             // Create the the database and table for caching HTTP requests
-            using (SQLiteCommand command = new SQLiteCommand("create table httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("create table httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", this.FetchDbConn()))
             {
                 command.ExecuteNonQuery();
             }
@@ -74,7 +74,7 @@ namespace RadioDld
 
         private void AddToHTTPCache(Uri uri, bool requestSuccess, byte[] data)
         {
-            using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", this.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
                 command.Parameters.Add(new SQLiteParameter("@lastfetch", DateAndTime.Now));
@@ -86,7 +86,7 @@ namespace RadioDld
 
         private System.DateTime? GetHTTPCacheLastUpdate(Uri uri)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", this.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
 
@@ -106,7 +106,7 @@ namespace RadioDld
 
         private byte[] GetHTTPCacheContent(Uri uri, ref bool requestSuccess)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select success, data from httpcache where uri=@uri", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select success, data from httpcache where uri=@uri", this.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
 
@@ -139,14 +139,14 @@ namespace RadioDld
                 throw new ArgumentException("fetchIntervalHrs cannot be zero.", "fetchIntervalHrs");
             }
 
-            System.DateTime? lastFetch = GetHTTPCacheLastUpdate(uri);
+            System.DateTime? lastFetch = this.GetHTTPCacheLastUpdate(uri);
 
             if (lastFetch != null)
             {
                 if (lastFetch.Value.AddHours(fetchIntervalHrs) > DateAndTime.Now)
                 {
                     bool requestSuccess = false;
-                    byte[] cacheData = GetHTTPCacheContent(uri, ref requestSuccess);
+                    byte[] cacheData = this.GetHTTPCacheContent(uri, ref requestSuccess);
 
                     if (cacheData != null)
                     {
@@ -197,21 +197,21 @@ namespace RadioDld
 
                     // Serialise the CacheWebException and store it in the cache
                     formatter.Serialize(stream, cacheException);
-                    AddToHTTPCache(uri, false, stream.ToArray());
+                    this.AddToHTTPCache(uri, false, stream.ToArray());
                 }
 
                 // Re-throw the WebException
                 throw;
             }
 
-            AddToHTTPCache(uri, true, data);
+            this.AddToHTTPCache(uri, true, data);
 
             return data;
         }
 
         public string DownloadString(Uri uri, int fetchIntervalHrs)
         {
-            return Encoding.UTF8.GetString(DownloadData(uri, fetchIntervalHrs));
+            return Encoding.UTF8.GetString(this.DownloadData(uri, fetchIntervalHrs));
         }
     }
 }

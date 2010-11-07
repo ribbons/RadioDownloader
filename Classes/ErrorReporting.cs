@@ -36,9 +36,9 @@ namespace RadioDld
         {
             try
             {
-                fields.Add("version", new ApplicationBase().Info.Version.ToString());
-                fields.Add("errortext", errorText);
-                fields.Add("errordetails", errorDetails);
+                this.fields.Add("version", new ApplicationBase().Info.Version.ToString());
+                this.fields.Add("errortext", errorText);
+                this.fields.Add("errordetails", errorDetails);
 
                 string loadedAssemblies = string.Empty;
 
@@ -49,7 +49,7 @@ namespace RadioDld
                     loadedAssemblies += "CodeBase: " + loadedAssembly.CodeBase + Constants.vbCrLf + Constants.vbCrLf;
                 }
 
-                fields.Add("loadedassemblies", loadedAssemblies);
+                this.fields.Add("loadedassemblies", loadedAssemblies);
             }
             catch
             {
@@ -64,7 +64,7 @@ namespace RadioDld
             {
                 foreach (KeyValuePair<string, string> extraItem in extraFields)
                 {
-                    fields.Add(extraItem.Key, extraItem.Value);
+                    this.fields.Add(extraItem.Key, extraItem.Value);
                 }
             }
             catch
@@ -78,7 +78,7 @@ namespace RadioDld
         {
             try
             {
-                fields["errortext"] = errorPrefix + ": " + fields["errortext"];
+                this.fields["errortext"] = errorPrefix + ": " + this.fields["errortext"];
             }
             catch
             {
@@ -98,7 +98,7 @@ namespace RadioDld
                     uncaughtException = SQLiteMonTransaction.AddTransactionsInfo(uncaughtException);
                 }
 
-                fields.Add("exceptiontostring", uncaughtException.ToString());
+                this.fields.Add("exceptiontostring", uncaughtException.ToString());
 
                 // Set up a list of types which do not need to be serialized
                 List<Type> notSerialize = new List<Type>();
@@ -177,7 +177,7 @@ namespace RadioDld
                                         XmlSerializer valueSerializer = new XmlSerializer(propertyValue.GetType());
 
                                         valueSerializer.Serialize(valueStringWriter, propertyValue);
-                                        fields.Add(fieldName, valueStringWriter.ToString());
+                                        this.fields.Add(fieldName, valueStringWriter.ToString());
 
                                         continue;
                                     }
@@ -192,7 +192,7 @@ namespace RadioDld
                                 }
                             }
 
-                            fields.Add(fieldName, propertyValue.ToString());
+                            this.fields.Add(fieldName, propertyValue.ToString());
                         }
                     }
                 }
@@ -203,7 +203,7 @@ namespace RadioDld
                     {
                         if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) & object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
                         {
-                            fields.Add("expdata:Data:" + (string)dataEntry.Key, (string)dataEntry.Value);
+                            this.fields.Add("expdata:Data:" + (string)dataEntry.Key, (string)dataEntry.Value);
                         }
                     }
                 }
@@ -220,7 +220,7 @@ namespace RadioDld
 
             try
             {
-                foreach (KeyValuePair<string, string> reportField in fields)
+                foreach (KeyValuePair<string, string> reportField in this.fields)
                 {
                     stringValue += reportField.Key + ": " + reportField.Value + Constants.vbCrLf;
                 }
@@ -242,7 +242,7 @@ namespace RadioDld
 
                 string postData = string.Empty;
 
-                foreach (KeyValuePair<string, string> reportField in fields)
+                foreach (KeyValuePair<string, string> reportField in this.fields)
                 {
                     postData += "&" + HttpUtility.UrlEncode(reportField.Key) + "=" + HttpUtility.UrlEncode(reportField.Value);
                 }

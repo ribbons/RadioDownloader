@@ -57,41 +57,42 @@ namespace RadioDld
 
         public View CurrentView
         {
-            get { return backData.Peek().View; }
+            get { return this.backData.Peek().View; }
         }
 
         public object CurrentViewData
         {
             get
             {
-                return backData.Peek().Data;
+                return this.backData.Peek().Data;
             }
 
             set
             {
-                ViewData curView = backData.Peek();
+                ViewData curView = this.backData.Peek();
                 curView.Data = value;
             }
         }
 
         public void SetView(MainTab tab, View view)
         {
-            SetView(tab, view, null);
+            this.SetView(tab, view, null);
         }
 
         public void SetView(MainTab tab, View view, object viewData)
         {
-            StoreView(tab, view, viewData);
-            if (ViewChanged != null)
+            this.StoreView(tab, view, viewData);
+
+            if (this.ViewChanged != null)
             {
-                ViewChanged(view, tab, viewData);
+                this.ViewChanged(view, tab, viewData);
             }
         }
 
         public void SetView(View view, object viewData)
         {
-            ViewData currentView = backData.Peek();
-            SetView(currentView.Tab, view, viewData);
+            ViewData currentView = this.backData.Peek();
+            this.SetView(currentView.Tab, view, viewData);
         }
 
         public void StoreView(MainTab tab, View view, object viewData)
@@ -102,62 +103,62 @@ namespace RadioDld
             storeView.View = view;
             storeView.Data = viewData;
 
-            backData.Push(storeView);
+            this.backData.Push(storeView);
 
-            if (fwdData.Count > 0)
+            if (this.fwdData.Count > 0)
             {
-                fwdData.Clear();
+                this.fwdData.Clear();
             }
 
-            if (UpdateNavBtnState != null)
+            if (this.UpdateNavBtnState != null)
             {
-                UpdateNavBtnState(backData.Count > 1, false);
+                this.UpdateNavBtnState(this.backData.Count > 1, false);
             }
         }
 
         public void StoreView(View view, object viewData)
         {
-            ViewData currentView = backData.Peek();
-            StoreView(currentView.Tab, view, viewData);
+            ViewData currentView = this.backData.Peek();
+            this.StoreView(currentView.Tab, view, viewData);
         }
 
         public void StoreView(object viewData)
         {
-            ViewData currentView = backData.Peek();
-            StoreView(currentView.Tab, currentView.View, viewData);
+            ViewData currentView = this.backData.Peek();
+            this.StoreView(currentView.Tab, currentView.View, viewData);
         }
 
         public void NavBack()
         {
-            fwdData.Push(backData.Pop());
+            this.fwdData.Push(this.backData.Pop());
 
-            ViewData curView = backData.Peek();
+            ViewData curView = this.backData.Peek();
 
-            if (UpdateNavBtnState != null)
+            if (this.UpdateNavBtnState != null)
             {
-                UpdateNavBtnState(backData.Count > 1, fwdData.Count > 0);
+                this.UpdateNavBtnState(this.backData.Count > 1, this.fwdData.Count > 0);
             }
 
-            if (ViewChanged != null)
+            if (this.ViewChanged != null)
             {
-                ViewChanged(curView.View, curView.Tab, curView.Data);
+                this.ViewChanged(curView.View, curView.Tab, curView.Data);
             }
         }
 
         public void NavFwd()
         {
-            backData.Push(fwdData.Pop());
+            this.backData.Push(this.fwdData.Pop());
 
-            ViewData curView = backData.Peek();
+            ViewData curView = this.backData.Peek();
 
-            if (UpdateNavBtnState != null)
+            if (this.UpdateNavBtnState != null)
             {
-                UpdateNavBtnState(backData.Count > 1, fwdData.Count > 0);
+                this.UpdateNavBtnState(this.backData.Count > 1, this.fwdData.Count > 0);
             }
 
-            if (ViewChanged != null)
+            if (this.ViewChanged != null)
             {
-                ViewChanged(curView.View, curView.Tab, curView.Data);
+                this.ViewChanged(curView.View, curView.Tab, curView.Data);
             }
         }
     }

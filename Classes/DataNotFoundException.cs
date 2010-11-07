@@ -28,19 +28,19 @@ namespace RadioDld
         public DataNotFoundException()
             : base()
         {
-            NotFoundId = null;
+            this.NotFoundId = null;
         }
 
         public DataNotFoundException(string message)
             : base(message)
         {
-            NotFoundId = null;
+            this.NotFoundId = null;
         }
 
         public DataNotFoundException(string message, Exception innerException)
             : base(message, innerException)
         {
-            NotFoundId = null;
+            this.NotFoundId = null;
         }
 
         public DataNotFoundException(int notFoundId)
@@ -71,7 +71,7 @@ namespace RadioDld
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("NotFoundId", NotFoundId);
+            info.AddValue("NotFoundId", this.NotFoundId);
         }
     }
 }

@@ -35,12 +35,12 @@ namespace RadioDld
             this.SaveMySettingsOnExit = true;
             this.ShutdownStyle = ShutdownMode.AfterMainFormCloses;
 
-            Startup += App_Startup;
+            Startup += this.App_Startup;
 
             if (!Debugger.IsAttached)
             {
-                UnhandledException += App_UnhandledException;
-                AppDomain.CurrentDomain.UnhandledException += AppDomainExceptionHandler;
+                UnhandledException += this.App_UnhandledException;
+                AppDomain.CurrentDomain.UnhandledException += this.AppDomainExceptionHandler;
             }
         }
 

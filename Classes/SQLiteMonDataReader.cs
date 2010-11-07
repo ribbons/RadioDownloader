@@ -29,13 +29,13 @@ namespace RadioDld
 
         public SQLiteMonDataReader(SQLiteDataReader reader)
         {
-            wrappedReader = reader;
+            this.wrappedReader = reader;
 
             StackTrace trace = new StackTrace(true);
 
             lock (readerInfoLock)
             {
-                readerInfo.Add(wrappedReader, trace.ToString());
+                readerInfo.Add(this.wrappedReader, trace.ToString());
             }
         }
 
@@ -61,47 +61,47 @@ namespace RadioDld
 
         public int GetOrdinal(string name)
         {
-            return wrappedReader.GetOrdinal(name);
+            return this.wrappedReader.GetOrdinal(name);
         }
 
         public bool GetBoolean(int i)
         {
-            return wrappedReader.GetBoolean(i);
+            return this.wrappedReader.GetBoolean(i);
         }
 
         public long GetBytes(int i, long fieldOffset, byte[] buffer, int bufferOffset, int length)
         {
-            return wrappedReader.GetBytes(i, fieldOffset, buffer, bufferOffset, length);
+            return this.wrappedReader.GetBytes(i, fieldOffset, buffer, bufferOffset, length);
         }
 
         public System.DateTime GetDateTime(int i)
         {
-            return wrappedReader.GetDateTime(i);
+            return this.wrappedReader.GetDateTime(i);
         }
 
         public int GetInt32(int i)
         {
-            return wrappedReader.GetInt32(i);
+            return this.wrappedReader.GetInt32(i);
         }
 
         public string GetString(int i)
         {
-            return wrappedReader.GetString(i);
+            return this.wrappedReader.GetString(i);
         }
 
         public object GetValue(int i)
         {
-            return wrappedReader.GetValue(i);
+            return this.wrappedReader.GetValue(i);
         }
 
         public bool IsDBNull(int i)
         {
-            return wrappedReader.IsDBNull(i);
+            return this.wrappedReader.IsDBNull(i);
         }
 
         public bool Read()
         {
-            return wrappedReader.Read();
+            return this.wrappedReader.Read();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -112,10 +112,10 @@ namespace RadioDld
                 {
                     lock (readerInfoLock)
                     {
-                        readerInfo.Remove(wrappedReader);
+                        readerInfo.Remove(this.wrappedReader);
                     }
 
-                    wrappedReader.Dispose();
+                    this.wrappedReader.Dispose();
                 }
             }
 
@@ -124,13 +124,13 @@ namespace RadioDld
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~SQLiteMonDataReader()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
     }
 }

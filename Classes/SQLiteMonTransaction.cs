@@ -29,13 +29,13 @@ namespace RadioDld
 
         public SQLiteMonTransaction(SQLiteTransaction transaction)
         {
-            wrappedTrans = transaction;
+            this.wrappedTrans = transaction;
 
             StackTrace trace = new StackTrace(true);
 
             lock (readerInfoLock)
             {
-                readerInfo.Add(wrappedTrans, trace.ToString());
+                readerInfo.Add(this.wrappedTrans, trace.ToString());
             }
         }
 
@@ -61,7 +61,7 @@ namespace RadioDld
 
         public SQLiteTransaction Trans
         {
-            get { return wrappedTrans; }
+            get { return this.wrappedTrans; }
         }
 
         protected virtual void Dispose(bool disposing)
@@ -72,10 +72,10 @@ namespace RadioDld
                 {
                     lock (readerInfoLock)
                     {
-                        readerInfo.Remove(wrappedTrans);
+                        readerInfo.Remove(this.wrappedTrans);
                     }
 
-                    wrappedTrans.Dispose();
+                    this.wrappedTrans.Dispose();
                 }
             }
 
@@ -84,13 +84,13 @@ namespace RadioDld
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~SQLiteMonTransaction()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
     }
 }

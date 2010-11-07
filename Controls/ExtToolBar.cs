@@ -65,9 +65,9 @@ namespace RadioDld
                 throw new ArgumentNullException("button");
             }
 
-            if (wholeDropDownButtons.Contains(button) == false)
+            if (this.wholeDropDownButtons.Contains(button) == false)
             {
-                wholeDropDownButtons.Add(button);
+                this.wholeDropDownButtons.Add(button);
             }
 
             TBBUTTONINFO buttonInfo = default(TBBUTTONINFO);
@@ -116,13 +116,13 @@ namespace RadioDld
             {
                 if (checkButton.Visible && IsMnemonic(inputChar, checkButton.Text))
                 {
-                    if (wholeDropDownButtons.Contains(checkButton))
+                    if (this.wholeDropDownButtons.Contains(checkButton))
                     {
                         // Give the toolbar button a pressed appearance
                         checkButton.Pushed = true;
 
                         // Set the whole dropdown flag again as setting pushed will have cleared it
-                        SetWholeDropDown(checkButton);
+                        this.SetWholeDropDown(checkButton);
 
                         // Calculate where the menu should be shown
                         Point menuLocation = new Point(checkButton.Rectangle.Left, checkButton.Rectangle.Bottom);
@@ -132,7 +132,7 @@ namespace RadioDld
 
                         // Remove the pressed appearance
                         checkButton.Pushed = false;
-                        SetWholeDropDown(checkButton);
+                        this.SetWholeDropDown(checkButton);
                     }
                     else
                     {

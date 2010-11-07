@@ -33,7 +33,7 @@ namespace RadioDld
 
         public ListItemComparer(ListType compareType)
         {
-            dataInstance = Data.GetInstance();
+            this.dataInstance = Data.GetInstance();
             this.compareType = compareType;
         }
 
@@ -42,16 +42,16 @@ namespace RadioDld
             int itemXId = Convert.ToInt32(((ListViewItem)x).Name, CultureInfo.InvariantCulture);
             int itemYId = Convert.ToInt32(((ListViewItem)y).Name, CultureInfo.InvariantCulture);
 
-            switch (compareType)
+            switch (this.compareType)
             {
                 case ListType.Favourite:
-                    return dataInstance.CompareFavourites(itemXId, itemYId);
+                    return this.dataInstance.CompareFavourites(itemXId, itemYId);
                 case ListType.Subscription:
-                    return dataInstance.CompareSubscriptions(itemXId, itemYId);
+                    return this.dataInstance.CompareSubscriptions(itemXId, itemYId);
                 case ListType.Download:
-                    return dataInstance.CompareDownloads(itemXId, itemYId);
+                    return this.dataInstance.CompareDownloads(itemXId, itemYId);
                 default:
-                    throw new InvalidOperationException("Unknown compare type of " + compareType.ToString());
+                    throw new InvalidOperationException("Unknown compare type of " + this.compareType.ToString());
             }
         }
     }

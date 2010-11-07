@@ -31,11 +31,11 @@ namespace RadioDld
         {
             get
             {
-                string[] stringCols = new string[columnOrder.Count];
+                string[] stringCols = new string[this.columnOrder.Count];
 
-                for (int column = 0; column <= columnOrder.Count - 1; column++)
+                for (int column = 0; column <= this.columnOrder.Count - 1; column++)
                 {
-                    stringCols[column] = columnOrder[column].ToString(CultureInfo.InvariantCulture);
+                    stringCols[column] = this.columnOrder[column].ToString(CultureInfo.InvariantCulture);
                 }
 
                 return Strings.Join(stringCols, ",");
@@ -43,7 +43,7 @@ namespace RadioDld
 
             set
             {
-                columnOrder = new List<int>();
+                this.columnOrder = new List<int>();
 
                 if (!string.IsNullOrEmpty(value))
                 {
@@ -51,7 +51,7 @@ namespace RadioDld
 
                     foreach (string column in stringCols)
                     {
-                        columnOrder.Add(Convert.ToInt32(column, CultureInfo.InvariantCulture));
+                        this.columnOrder.Add(Convert.ToInt32(column, CultureInfo.InvariantCulture));
                     }
                 }
             }
@@ -64,11 +64,11 @@ namespace RadioDld
 
         private void ChooseCols_Load(object sender, System.EventArgs e)
         {
-            if (columnOrder == null)
+            if (this.columnOrder == null)
             {
                 throw new InvalidOperationException("Column order is not set");
             }
-            else if (columnNames == null)
+            else if (this.columnNames == null)
             {
                 throw new InvalidOperationException("Column names are not set");
             }
@@ -76,125 +76,125 @@ namespace RadioDld
             this.Font = SystemFonts.MessageBoxFont;
 
             // Add the current columns to the top of the list, in order
-            foreach (int column in columnOrder)
+            foreach (int column in this.columnOrder)
             {
-                ListViewItem addCol = new ListViewItem(columnNames[column]);
+                ListViewItem addCol = new ListViewItem(this.columnNames[column]);
                 addCol.Name = column.ToString(CultureInfo.InvariantCulture);
                 addCol.Checked = true;
 
-                ColumnsList.Items.Add(addCol);
+                this.ColumnsList.Items.Add(addCol);
             }
 
             // Add the rest of the columns to the list in their defined order
-            foreach (int column in columnNames.Keys)
+            foreach (int column in this.columnNames.Keys)
             {
-                if (columnOrder.Contains(column) == false)
+                if (this.columnOrder.Contains(column) == false)
                 {
-                    ListViewItem addCol = new ListViewItem(columnNames[column]);
+                    ListViewItem addCol = new ListViewItem(this.columnNames[column]);
                     addCol.Name = column.ToString(CultureInfo.InvariantCulture);
                     addCol.Checked = false;
 
-                    ColumnsList.Items.Add(addCol);
+                    this.ColumnsList.Items.Add(addCol);
                 }
             }
         }
 
         private void Okay_Click(object sender, System.EventArgs e)
         {
-            columnOrder.Clear();
+            this.columnOrder.Clear();
 
-            foreach (ListViewItem item in ColumnsList.Items)
+            foreach (ListViewItem item in this.ColumnsList.Items)
             {
                 if (item.Checked)
                 {
-                    columnOrder.Add(int.Parse(item.Name, CultureInfo.InvariantCulture));
+                    this.columnOrder.Add(int.Parse(item.Name, CultureInfo.InvariantCulture));
                 }
             }
         }
 
         private void ColumnsList_ItemChecked(object sender, System.Windows.Forms.ItemCheckedEventArgs e)
         {
-            UpdateButtonState();
+            this.UpdateButtonState();
         }
 
         private void ColumnsList_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            UpdateButtonState();
+            this.UpdateButtonState();
         }
 
         private void UpdateButtonState()
         {
-            if (ColumnsList.SelectedItems.Count == 0)
+            if (this.ColumnsList.SelectedItems.Count == 0)
             {
-                MoveUp.Enabled = false;
-                MoveDown.Enabled = false;
-                ShowButton.Enabled = false;
-                HideButton.Enabled = false;
+                this.MoveUp.Enabled = false;
+                this.MoveDown.Enabled = false;
+                this.ShowButton.Enabled = false;
+                this.HideButton.Enabled = false;
             }
             else
             {
-                if (ColumnsList.SelectedItems[0].Index == 0)
+                if (this.ColumnsList.SelectedItems[0].Index == 0)
                 {
-                    MoveUp.Enabled = false;
+                    this.MoveUp.Enabled = false;
                 }
                 else
                 {
-                    MoveUp.Enabled = true;
+                    this.MoveUp.Enabled = true;
                 }
 
-                if (ColumnsList.SelectedItems[0].Index == ColumnsList.Items.Count - 1)
+                if (this.ColumnsList.SelectedItems[0].Index == this.ColumnsList.Items.Count - 1)
                 {
-                    MoveDown.Enabled = false;
+                    this.MoveDown.Enabled = false;
                 }
                 else
                 {
-                    MoveDown.Enabled = true;
+                    this.MoveDown.Enabled = true;
                 }
 
-                if (ColumnsList.SelectedItems[0].Checked)
+                if (this.ColumnsList.SelectedItems[0].Checked)
                 {
-                    ShowButton.Enabled = false;
-                    HideButton.Enabled = true;
+                    this.ShowButton.Enabled = false;
+                    this.HideButton.Enabled = true;
                 }
                 else
                 {
-                    ShowButton.Enabled = true;
-                    HideButton.Enabled = false;
+                    this.ShowButton.Enabled = true;
+                    this.HideButton.Enabled = false;
                 }
             }
         }
 
         private void ShowButton_Click(object sender, System.EventArgs e)
         {
-            ColumnsList.SelectedItems[0].Checked = true;
+            this.ColumnsList.SelectedItems[0].Checked = true;
         }
 
         private void HideButton_Click(object sender, System.EventArgs e)
         {
-            ColumnsList.SelectedItems[0].Checked = false;
+            this.ColumnsList.SelectedItems[0].Checked = false;
         }
 
         private void MoveUp_Click(object sender, System.EventArgs e)
         {
-            ListViewItem moveItem = ColumnsList.SelectedItems[0];
-            int origIndex = ColumnsList.SelectedItems[0].Index;
+            ListViewItem moveItem = this.ColumnsList.SelectedItems[0];
+            int origIndex = this.ColumnsList.SelectedItems[0].Index;
 
-            ColumnsList.Items.Remove(moveItem);
-            ColumnsList.Items.Insert(origIndex - 1, moveItem);
+            this.ColumnsList.Items.Remove(moveItem);
+            this.ColumnsList.Items.Insert(origIndex - 1, moveItem);
         }
 
         private void MoveDown_Click(object sender, System.EventArgs e)
         {
-            ListViewItem moveItem = ColumnsList.SelectedItems[0];
-            int origIndex = ColumnsList.SelectedItems[0].Index;
+            ListViewItem moveItem = this.ColumnsList.SelectedItems[0];
+            int origIndex = this.ColumnsList.SelectedItems[0].Index;
 
-            ColumnsList.Items.Remove(moveItem);
-            ColumnsList.Items.Insert(origIndex + 1, moveItem);
+            this.ColumnsList.Items.Remove(moveItem);
+            this.ColumnsList.Items.Insert(origIndex + 1, moveItem);
         }
 
         public ChooseCols()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

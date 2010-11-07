@@ -54,7 +54,7 @@ namespace RadioDld
             try
             {
                 this.Visible = false;
-                report.SendReport(Properties.Settings.Default.ErrorReportURL);
+                this.report.SendReport(Properties.Settings.Default.ErrorReportURL);
             }
             catch
             {
@@ -66,7 +66,7 @@ namespace RadioDld
 
         private void lnkWhatData_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
-            Interaction.MsgBox(report.ToString());
+            Interaction.MsgBox(this.report.ToString());
         }
 
         private void cmdDontSend_Click(object sender, System.EventArgs e)
@@ -82,7 +82,7 @@ namespace RadioDld
 
         public ReportError()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

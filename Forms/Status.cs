@@ -26,20 +26,20 @@ namespace RadioDld
 
         public Status()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         public new void Show()
         {
-            showThread = new Thread(ShowFormThread);
-            showThread.Start();
+            this.showThread = new Thread(this.ShowFormThread);
+            this.showThread.Start();
         }
 
         private void ShowFormThread()
         {
             if (OsUtils.WinSevenOrLater())
             {
-                tbarNotif = new TaskbarNotify();
+                this.tbarNotif = new TaskbarNotify();
             }
 
             this.ShowDialog();
@@ -49,60 +49,60 @@ namespace RadioDld
         {
             get
             {
-                return lblStatus.Text;
+                return this.lblStatus.Text;
             }
 
             set
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { SetStatusText_FormThread(value); });
+                    this.Invoke((MethodInvoker)delegate { this.SetStatusText_FormThread(value); });
                 }
                 else
                 {
-                    SetStatusText_FormThread(value);
+                    this.SetStatusText_FormThread(value);
                 }
             }
         }
 
         private void SetStatusText_FormThread(string text)
         {
-            lblStatus.Text = text;
+            this.lblStatus.Text = text;
         }
 
         public bool ProgressBarMarquee
         {
             get
             {
-                return prgProgress.Style == ProgressBarStyle.Marquee;
+                return this.prgProgress.Style == ProgressBarStyle.Marquee;
             }
 
             set
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { SetProgressBarMarquee_FormThread(value); });
+                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarMarquee_FormThread(value); });
                 }
                 else
                 {
-                    SetProgressBarMarquee_FormThread(value);
+                    this.SetProgressBarMarquee_FormThread(value);
                 }
             }
         }
 
         private void SetProgressBarMarquee_FormThread(bool marquee)
         {
-            prgProgress.Style = marquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
+            this.prgProgress.Style = marquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
 
             if (OsUtils.WinSevenOrLater() & this.IsHandleCreated)
             {
                 if (marquee)
                 {
-                    tbarNotif.SetProgressMarquee(this);
+                    this.tbarNotif.SetProgressMarquee(this);
                 }
                 else
                 {
-                    tbarNotif.SetProgressNone(this);
+                    this.tbarNotif.SetProgressNone(this);
                 }
             }
         }
@@ -111,54 +111,54 @@ namespace RadioDld
         {
             get
             {
-                return prgProgress.Maximum;
+                return this.prgProgress.Maximum;
             }
 
             set
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { SetProgressBarMax_FormThread(value); });
+                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarMax_FormThread(value); });
                 }
                 else
                 {
-                    SetProgressBarMax_FormThread(value);
+                    this.SetProgressBarMax_FormThread(value);
                 }
             }
         }
 
         private void SetProgressBarMax_FormThread(int value)
         {
-            prgProgress.Maximum = value;
+            this.prgProgress.Maximum = value;
         }
 
         public int ProgressBarValue
         {
             get
             {
-                return prgProgress.Value;
+                return this.prgProgress.Value;
             }
 
             set
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { SetProgressBarValue_FormThread(value); });
+                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarValue_FormThread(value); });
                 }
                 else
                 {
-                    SetProgressBarValue_FormThread(value);
+                    this.SetProgressBarValue_FormThread(value);
                 }
             }
         }
 
         private void SetProgressBarValue_FormThread(int value)
         {
-            prgProgress.Value = value;
+            this.prgProgress.Value = value;
 
             if (OsUtils.WinSevenOrLater() & this.IsHandleCreated)
             {
-                tbarNotif.SetProgressValue(this, value, prgProgress.Maximum);
+                this.tbarNotif.SetProgressValue(this, value, this.prgProgress.Maximum);
             }
         }
 
@@ -166,11 +166,11 @@ namespace RadioDld
         {
             if (this.IsHandleCreated)
             {
-                this.Invoke((MethodInvoker)delegate { HideForm_FormThread(); });
+                this.Invoke((MethodInvoker)delegate { this.HideForm_FormThread(); });
             }
             else
             {
-                HideForm_FormThread();
+                this.HideForm_FormThread();
             }
         }
 
@@ -193,15 +193,15 @@ namespace RadioDld
         {
             if (OsUtils.WinSevenOrLater())
             {
-                if (prgProgress.Style == ProgressBarStyle.Marquee)
+                if (this.prgProgress.Style == ProgressBarStyle.Marquee)
                 {
-                    tbarNotif.SetProgressMarquee(this);
+                    this.tbarNotif.SetProgressMarquee(this);
                 }
                 else
                 {
-                    if (prgProgress.Value != 0)
+                    if (this.prgProgress.Value != 0)
                     {
-                        tbarNotif.SetProgressValue(this, prgProgress.Value, prgProgress.Maximum);
+                        this.tbarNotif.SetProgressValue(this, this.prgProgress.Value, this.prgProgress.Maximum);
                     }
                 }
             }

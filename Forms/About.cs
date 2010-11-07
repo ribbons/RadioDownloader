@@ -54,7 +54,7 @@ namespace RadioDld
 
         public About()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
     }
 }

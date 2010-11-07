@@ -42,31 +42,31 @@ namespace PodcastProvider
 
         public void Download()
         {
-            SystemEvents.PowerModeChanged += PowerModeChange;
+            SystemEvents.PowerModeChanged += this.PowerModeChange;
 
-            downloadClient = new WebClient();
-            downloadClient.DownloadProgressChanged += downloadClient_DownloadProgressChanged;
-            downloadClient.DownloadFileCompleted += downloadClient_DownloadFileCompleted;
+            this.downloadClient = new WebClient();
+            this.downloadClient.DownloadProgressChanged += this.downloadClient_DownloadProgressChanged;
+            this.downloadClient.DownloadFileCompleted += this.downloadClient_DownloadFileCompleted;
 
-            downloadClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
-            downloadClient.DownloadFileAsync(downloadUrl, destPath);
+            this.downloadClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
+            this.downloadClient.DownloadFileAsync(this.downloadUrl, this.destPath);
         }
 
         public bool Complete
         {
-            get { return downloadComplete; }
+            get { return this.downloadComplete; }
         }
 
         public Exception Error
         {
-            get { return downloadError; }
+            get { return this.downloadError; }
         }
 
         private void downloadClient_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
-            if (DownloadProgress != null)
+            if (this.DownloadProgress != null)
             {
-                DownloadProgress(this, e);
+                this.DownloadProgress(this, e);
             }
         }
 
@@ -74,15 +74,15 @@ namespace PodcastProvider
         {
             if (e.Cancelled == false)
             {
-                SystemEvents.PowerModeChanged -= PowerModeChange;
+                SystemEvents.PowerModeChanged -= this.PowerModeChange;
 
                 if (e.Error != null)
                 {
-                    downloadError = e.Error;
+                    this.downloadError = e.Error;
                 }
                 else
                 {
-                    downloadComplete = true;
+                    this.downloadComplete = true;
                 }
             }
         }
@@ -92,15 +92,15 @@ namespace PodcastProvider
             if (e.Mode == PowerModes.Resume)
             {
                 // Restart the download, as it is quite likely to have hung during the suspend / hibernate
-                if (downloadClient.IsBusy)
+                if (this.downloadClient.IsBusy)
                 {
-                    downloadClient.CancelAsync();
+                    this.downloadClient.CancelAsync();
 
                     // Pause for 30 seconds to be give the pc a chance to settle down after the suspend. 
                     System.Threading.Thread.Sleep(30000);
 
                     // Restart the download
-                    downloadClient.DownloadFileAsync(downloadUrl, destPath);
+                    this.downloadClient.DownloadFileAsync(this.downloadUrl, this.destPath);
                 }
             }
         }

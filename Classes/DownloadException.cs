@@ -104,18 +104,18 @@ namespace RadioDld
         {
             base.GetObjectData(info, context);
 
-            info.AddValue("type", type);
-            info.AddValue("extraDetails", extraDetails);
+            info.AddValue("type", this.type);
+            info.AddValue("extraDetails", this.extraDetails);
         }
 
         public ErrorType TypeOfError
         {
-            get { return type; }
+            get { return this.type; }
         }
 
         public List<DldErrorDataItem> ErrorExtraDetails
         {
-            get { return extraDetails; }
+            get { return this.extraDetails; }
         }
     }
 }

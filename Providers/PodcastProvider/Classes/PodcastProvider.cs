@@ -97,7 +97,7 @@ namespace PodcastProvider
 
             try
             {
-                xmlRSS = LoadFeedXml(new Uri(progExtId));
+                xmlRSS = this.LoadFeedXml(new Uri(progExtId));
             }
             catch (WebException)
             {
@@ -110,7 +110,7 @@ namespace PodcastProvider
 
             try
             {
-                xmlNamespaceMgr = CreateNamespaceMgr(xmlRSS);
+                xmlNamespaceMgr = this.CreateNamespaceMgr(xmlRSS);
             }
             catch
             {
@@ -133,7 +133,7 @@ namespace PodcastProvider
             }
 
             getProgInfo.ProgrammeInfo.Description = xmlDescription.InnerText;
-            getProgInfo.ProgrammeInfo.Image = RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr);
+            getProgInfo.ProgrammeInfo.Image = this.RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr);
 
             getProgInfo.Success = true;
             return getProgInfo;
@@ -146,7 +146,7 @@ namespace PodcastProvider
 
             try
             {
-                xmlRSS = LoadFeedXml(new Uri(progExtId));
+                xmlRSS = this.LoadFeedXml(new Uri(progExtId));
             }
             catch (WebException)
             {
@@ -169,7 +169,7 @@ namespace PodcastProvider
 
             foreach (XmlNode xmlItem in xmlItems)
             {
-                strItemID = ItemNodeToEpisodeID(xmlItem);
+                strItemID = this.ItemNodeToEpisodeID(xmlItem);
 
                 if (!string.IsNullOrEmpty(strItemID))
                 {
@@ -190,7 +190,7 @@ namespace PodcastProvider
 
             try
             {
-                xmlRSS = LoadFeedXml(new Uri(progExtId));
+                xmlRSS = this.LoadFeedXml(new Uri(progExtId));
             }
             catch (WebException)
             {
@@ -203,7 +203,7 @@ namespace PodcastProvider
 
             try
             {
-                xmlNamespaceMgr = CreateNamespaceMgr(xmlRSS);
+                xmlNamespaceMgr = this.CreateNamespaceMgr(xmlRSS);
             }
             catch
             {
@@ -222,7 +222,7 @@ namespace PodcastProvider
 
             foreach (XmlNode xmlItem in xmlItems)
             {
-                strItemID = ItemNodeToEpisodeID(xmlItem);
+                strItemID = this.ItemNodeToEpisodeID(xmlItem);
 
                 if (strItemID == episodeExtId)
                 {
@@ -415,11 +415,11 @@ namespace PodcastProvider
                         episodeInfoReturn.EpisodeInfo.Date = DateAndTime.Now;
                     }
 
-                    episodeInfoReturn.EpisodeInfo.Image = RSSNodeImage(xmlItem, xmlNamespaceMgr);
+                    episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(xmlItem, xmlNamespaceMgr);
 
                     if (episodeInfoReturn.EpisodeInfo.Image == null)
                     {
-                        episodeInfoReturn.EpisodeInfo.Image = RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr);
+                        episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr);
                     }
 
                     episodeInfoReturn.EpisodeInfo.ExtInfo = dicExtInfo;
@@ -448,20 +448,20 @@ namespace PodcastProvider
             string downloadFileName = Path.Combine(System.IO.Path.GetTempPath(), Path.Combine("RadioDownloader", finalName.Substring(fileNamePos + 1) + "." + extension));
             finalName += "." + extension;
 
-            doDownload = new DownloadWrapper(downloadUrl, downloadFileName);
-            doDownload.DownloadProgress += doDownload_DownloadProgress;
-            doDownload.Download();
+            this.doDownload = new DownloadWrapper(downloadUrl, downloadFileName);
+            this.doDownload.DownloadProgress += this.doDownload_DownloadProgress;
+            this.doDownload.Download();
 
-            while ((!doDownload.Complete) & doDownload.Error == null)
+            while ((!this.doDownload.Complete) & this.doDownload.Error == null)
             {
                 Thread.Sleep(500);
             }
 
-            if (doDownload.Error != null)
+            if (this.doDownload.Error != null)
             {
-                if (doDownload.Error is WebException)
+                if (this.doDownload.Error is WebException)
                 {
-                    WebException webExp = (WebException)doDownload.Error;
+                    WebException webExp = (WebException)this.doDownload.Error;
 
                     if (webExp.Status == WebExceptionStatus.NameResolutionFailure)
                     {
@@ -478,34 +478,35 @@ namespace PodcastProvider
                     }
                 }
 
-                throw doDownload.Error;
+                throw this.doDownload.Error;
             }
 
-            if (Progress != null)
+            if (this.Progress != null)
             {
-                Progress(100, "Downloading...", ProgressIcon.Downloading);
+                this.Progress(100, "Downloading...", ProgressIcon.Downloading);
             }
 
             File.Move(downloadFileName, finalName);
-            if (Finished != null)
+
+            if (this.Finished != null)
             {
-                Finished(extension);
+                this.Finished(extension);
             }
         }
 
         internal void RaiseFindNewException(Exception expException)
         {
-            if (FindNewException != null)
+            if (this.FindNewException != null)
             {
-                FindNewException(expException, true);
+                this.FindNewException(expException, true);
             }
         }
 
         internal void RaiseFoundNew(string strExtID)
         {
-            if (FoundNew != null)
+            if (this.FoundNew != null)
             {
-                FoundNew(strExtID);
+                this.FoundNew(strExtID);
             }
         }
 
@@ -636,9 +637,9 @@ namespace PodcastProvider
                 intPercent = 99;
             }
 
-            if (Progress != null)
+            if (this.Progress != null)
             {
-                Progress(intPercent, "Downloading...", ProgressIcon.Downloading);
+                this.Progress(intPercent, "Downloading...", ProgressIcon.Downloading);
             }
         }
     }

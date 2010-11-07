@@ -128,7 +128,7 @@ namespace RadioDld
                 throw new ArgumentNullException("listItem");
             }
 
-            int[] order = GetColumnOrder();
+            int[] order = this.GetColumnOrder();
 
             if (order == null)
             {
@@ -168,7 +168,7 @@ namespace RadioDld
 
         public void AddProgressBar(ref ProgressBar progress, ListViewItem parentItem, int column)
         {
-            AddProgressBar(ref progress, parentItem, column, DockStyle.Fill);
+            this.AddProgressBar(ref progress, parentItem, column, DockStyle.Fill);
         }
 
         public void AddProgressBar(ref ProgressBar progress, ListViewItem parentItem, int column, DockStyle dstDock)
@@ -190,10 +190,10 @@ namespace RadioDld
             control.dock = dstDock;
             control.item = parentItem;
 
-            embeddedControls.Add(control);
+            this.embeddedControls.Add(control);
 
             // Add a Click event handler to select the ListView row when an embedded control is clicked
-            progress.Click += embeddedControl_Click;
+            progress.Click += this.embeddedControl_Click;
 
             this.Controls.Add(progress);
         }
@@ -205,13 +205,13 @@ namespace RadioDld
                 throw new ArgumentNullException("progressBar");
             }
 
-            for (int process = 0; process <= embeddedControls.Count - 1; process++)
+            for (int process = 0; process <= this.embeddedControls.Count - 1; process++)
             {
-                if (embeddedControls[process].progress.Equals(progressBar))
+                if (this.embeddedControls[process].progress.Equals(progressBar))
                 {
-                    progressBar.Click -= embeddedControl_Click;
+                    progressBar.Click -= this.embeddedControl_Click;
                     this.Controls.Remove(progressBar);
-                    embeddedControls.RemoveAt(process);
+                    this.embeddedControls.RemoveAt(process);
                     return;
                 }
             }
@@ -221,7 +221,7 @@ namespace RadioDld
 
         public ProgressBar GetProgressBar(ListViewItem parentItem, int column)
         {
-            foreach (EmbeddedProgress control in embeddedControls)
+            foreach (EmbeddedProgress control in this.embeddedControls)
             {
                 if (control.item.Equals(parentItem) & control.column == column)
                 {
@@ -234,16 +234,16 @@ namespace RadioDld
 
         public void RemoveAllControls()
         {
-            for (int process = 0; process <= embeddedControls.Count - 1; process++)
+            for (int process = 0; process <= this.embeddedControls.Count - 1; process++)
             {
-                EmbeddedProgress control = embeddedControls[process];
+                EmbeddedProgress control = this.embeddedControls[process];
 
                 control.progress.Visible = false;
-                control.progress.Click -= embeddedControl_Click;
+                control.progress.Click -= this.embeddedControl_Click;
                 this.Controls.Remove(control.progress);
             }
 
-            embeddedControls.Clear();
+            this.embeddedControls.Clear();
         }
 
         public void ShowSortOnHeader(int column, SortOrder order)
@@ -297,7 +297,7 @@ namespace RadioDld
 
                     // Remove the focus rectangle from the control (and as a side effect, all other controls on the
                     // form) if the last input event came from the mouse, or add them if it came from the keyboard.
-                    SendMessage(this.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), new IntPtr(0));
+                    SendMessage(this.Handle, WM_CHANGEUISTATE, this.MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), new IntPtr(0));
                     break;
                 case LVM_SETEXTENDEDLISTVIEWSTYLE:
                     if (OsUtils.WinXpOrLater())
@@ -315,7 +315,7 @@ namespace RadioDld
                 case WM_SETFOCUS:
                     // Remove the focus rectangle from the control (and as a side effect, all other controls on the
                     // form) if the last input event came from the mouse, or add them if it came from the keyboard.
-                    SendMessage(this.Handle, WM_CHANGEUISTATE, MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), IntPtr.Zero);
+                    SendMessage(this.Handle, WM_CHANGEUISTATE, this.MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), IntPtr.Zero);
                     break;
                 case WM_NOTIFY:
                     // Test to see if the notification was for a right-click in the header
@@ -323,9 +323,9 @@ namespace RadioDld
                     {
                         // Fire an event to indicate the click has occurred.  Set the column number
                         // to -1 for all clicks, as this information isn't currently required.
-                        if (ColumnRightClick != null)
+                        if (this.ColumnRightClick != null)
                         {
-                            ColumnRightClick(this, new ColumnClickEventArgs(-1));
+                            this.ColumnRightClick(this, new ColumnClickEventArgs(-1));
                         }
                     }
 
@@ -337,7 +337,7 @@ namespace RadioDld
                     }
 
                     // Calculate the position of all embedded controls
-                    foreach (EmbeddedProgress emcControl in embeddedControls)
+                    foreach (EmbeddedProgress emcControl in this.embeddedControls)
                     {
                         Rectangle rect = this.GetSubItemBounds(emcControl.item, emcControl.column);
 
@@ -388,7 +388,7 @@ namespace RadioDld
         private void embeddedControl_Click(object sender, EventArgs e)
         {
             // When a progress bar is clicked the ListViewItem holding it is selected
-            foreach (EmbeddedProgress control in embeddedControls)
+            foreach (EmbeddedProgress control in this.embeddedControls)
             {
                 if (control.progress.Equals((ProgressBar)sender))
                 {

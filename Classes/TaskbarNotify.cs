@@ -99,15 +99,15 @@ namespace RadioDld
 
         public TaskbarNotify()
         {
-            taskBarListInst = (ITaskbarList3)new TaskbarList();
-            taskBarListInst.HrInit();
+            this.taskBarListInst = (ITaskbarList3)new TaskbarList();
+            this.taskBarListInst.HrInit();
         }
 
         public void SetOverlayIcon(Form parentWin, Icon icon, string description)
         {
             try
             {
-                taskBarListInst.SetOverlayIcon(parentWin.Handle, icon == null ? IntPtr.Zero : icon.Handle, description);
+                this.taskBarListInst.SetOverlayIcon(parentWin.Handle, icon == null ? IntPtr.Zero : icon.Handle, description);
             }
             catch (COMException)
             {
@@ -117,7 +117,7 @@ namespace RadioDld
 
         public void SetThumbnailTooltip(Form parentWin, string tooltip)
         {
-            taskBarListInst.SetThumbnailTooltip(parentWin.Handle, tooltip);
+            this.taskBarListInst.SetThumbnailTooltip(parentWin.Handle, tooltip);
         }
 
         public void SetProgressValue(Form parentWin, long value, long total)
@@ -132,18 +132,18 @@ namespace RadioDld
                 throw new ArgumentException("total must not be negative", "total");
             }
 
-            taskBarListInst.SetProgressValue(parentWin.Handle, Convert.ToUInt64(value), Convert.ToUInt64(total));
-            taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NORMAL);
+            this.taskBarListInst.SetProgressValue(parentWin.Handle, Convert.ToUInt64(value), Convert.ToUInt64(total));
+            this.taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NORMAL);
         }
 
         public void SetProgressMarquee(Form parentWin)
         {
-            taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_INDETERMINATE);
+            this.taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_INDETERMINATE);
         }
 
         public void SetProgressNone(Form parentWin)
         {
-            taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NOPROGRESS);
+            this.taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NOPROGRESS);
         }
     }
 }

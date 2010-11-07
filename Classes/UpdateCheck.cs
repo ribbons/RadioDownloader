@@ -43,7 +43,7 @@ namespace RadioDld
 
             try
             {
-                versionInfo = checkUpdate.DownloadString(versionInfoURL);
+                versionInfo = checkUpdate.DownloadString(this.versionInfoURL);
             }
             catch (WebException)
             {

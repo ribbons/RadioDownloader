@@ -52,51 +52,51 @@ namespace RadioDld
 
         public Main()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         public void UpdateTrayStatus(bool active)
         {
             if (OsUtils.WinSevenOrLater())
             {
-                if (progData.CountDownloadsErrored() > 0)
+                if (this.progData.CountDownloadsErrored() > 0)
                 {
-                    tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_error, "Error");
-                    tbarNotif.SetThumbnailTooltip(this, this.Text + ": Error");
+                    this.tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_error, "Error");
+                    this.tbarNotif.SetThumbnailTooltip(this, this.Text + ": Error");
                 }
                 else
                 {
                     if (active == true)
                     {
-                        tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_downloading, "Downloading");
-                        tbarNotif.SetThumbnailTooltip(this, this.Text + ": Downloading");
+                        this.tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_downloading, "Downloading");
+                        this.tbarNotif.SetThumbnailTooltip(this, this.Text + ": Downloading");
                     }
                     else
                     {
-                        tbarNotif.SetOverlayIcon(this, null, string.Empty);
-                        tbarNotif.SetThumbnailTooltip(this, null);
+                        this.tbarNotif.SetOverlayIcon(this, null, string.Empty);
+                        this.tbarNotif.SetThumbnailTooltip(this, null);
                     }
                 }
             }
 
-            if (nicTrayIcon.Visible)
+            if (this.nicTrayIcon.Visible)
             {
-                if (progData.CountDownloadsErrored() > 0)
+                if (this.progData.CountDownloadsErrored() > 0)
                 {
-                    nicTrayIcon.Icon = Properties.Resources.icon_error;
-                    nicTrayIcon.Text = this.Text + ": Error";
+                    this.nicTrayIcon.Icon = Properties.Resources.icon_error;
+                    this.nicTrayIcon.Text = this.Text + ": Error";
                 }
                 else
                 {
                     if (active == true)
                     {
-                        nicTrayIcon.Icon = Properties.Resources.icon_working;
-                        nicTrayIcon.Text = this.Text + ": Downloading";
+                        this.nicTrayIcon.Icon = Properties.Resources.icon_working;
+                        this.nicTrayIcon.Text = this.Text + ": Downloading";
                     }
                     else
                     {
-                        nicTrayIcon.Icon = Properties.Resources.icon_main;
-                        nicTrayIcon.Text = this.Text;
+                        this.nicTrayIcon.Icon = Properties.Resources.icon_main;
+                        this.nicTrayIcon.Text = this.Text;
                     }
                 }
             }
@@ -108,15 +108,15 @@ namespace RadioDld
             {
                 case Keys.F1:
                     e.Handled = true;
-                    mnuHelpShowHelp_Click(sender, e);
+                    this.mnuHelpShowHelp_Click(sender, e);
                     break;
                 case Keys.Delete:
-                    if (tbtDelete.Visible)
+                    if (this.tbtDelete.Visible)
                     {
                         e.Handled = true;
-                        tbtDelete_Click();
+                        this.tbtDelete_Click();
                     }
-                    else if (tbtCancel.Visible)
+                    else if (this.tbtCancel.Visible)
                     {
                         e.Handled = true;
                         tbtCancel_Click();
@@ -128,36 +128,36 @@ namespace RadioDld
                     {
                         if (e.Shift)
                         {
-                            if (tbtForward.Enabled)
+                            if (this.tbtForward.Enabled)
                             {
                                 e.Handled = true;
-                                tbtForward_Click(sender, e);
+                                this.tbtForward_Click(sender, e);
                             }
                         }
                         else
                         {
-                            if (tbtBack.Enabled)
+                            if (this.tbtBack.Enabled)
                             {
                                 e.Handled = true;
-                                tbtBack_Click(sender, e);
+                                this.tbtBack_Click(sender, e);
                             }
                         }
                     }
 
                     break;
                 case Keys.BrowserBack:
-                    if (tbtBack.Enabled)
+                    if (this.tbtBack.Enabled)
                     {
                         e.Handled = true;
-                        tbtBack_Click(sender, e);
+                        this.tbtBack_Click(sender, e);
                     }
 
                     break;
                 case Keys.BrowserForward:
-                    if (tbtForward.Enabled)
+                    if (this.tbtForward.Enabled)
                     {
                         e.Handled = true;
-                        tbtForward_Click(sender, e);
+                        this.tbtForward_Click(sender, e);
                     }
 
                     break;
@@ -258,119 +258,119 @@ namespace RadioDld
                 }
             }
 
-            imlListIcons.Images.Add("downloading", Properties.Resources.list_downloading);
-            imlListIcons.Images.Add("waiting", Properties.Resources.list_waiting);
-            imlListIcons.Images.Add("converting", Properties.Resources.list_converting);
-            imlListIcons.Images.Add("downloaded_new", Properties.Resources.list_downloaded_new);
-            imlListIcons.Images.Add("downloaded", Properties.Resources.list_downloaded);
-            imlListIcons.Images.Add("subscribed", Properties.Resources.list_subscribed);
-            imlListIcons.Images.Add("error", Properties.Resources.list_error);
-            imlListIcons.Images.Add("favourite", Properties.Resources.list_favourite);
+            this.imlListIcons.Images.Add("downloading", Properties.Resources.list_downloading);
+            this.imlListIcons.Images.Add("waiting", Properties.Resources.list_waiting);
+            this.imlListIcons.Images.Add("converting", Properties.Resources.list_converting);
+            this.imlListIcons.Images.Add("downloaded_new", Properties.Resources.list_downloaded_new);
+            this.imlListIcons.Images.Add("downloaded", Properties.Resources.list_downloaded);
+            this.imlListIcons.Images.Add("subscribed", Properties.Resources.list_subscribed);
+            this.imlListIcons.Images.Add("error", Properties.Resources.list_error);
+            this.imlListIcons.Images.Add("favourite", Properties.Resources.list_favourite);
 
-            imlProviders.Images.Add("default", Properties.Resources.provider_default);
+            this.imlProviders.Images.Add("default", Properties.Resources.provider_default);
 
-            imlToolbar.Images.Add("choose_programme", Properties.Resources.toolbar_choose_programme);
-            imlToolbar.Images.Add("clean_up", Properties.Resources.toolbar_clean_up);
-            imlToolbar.Images.Add("current_episodes", Properties.Resources.toolbar_current_episodes);
-            imlToolbar.Images.Add("delete", Properties.Resources.toolbar_delete);
-            imlToolbar.Images.Add("download", Properties.Resources.toolbar_download);
-            imlToolbar.Images.Add("help", Properties.Resources.toolbar_help);
-            imlToolbar.Images.Add("options", Properties.Resources.toolbar_options);
-            imlToolbar.Images.Add("play", Properties.Resources.toolbar_play);
-            imlToolbar.Images.Add("report_error", Properties.Resources.toolbar_report_error);
-            imlToolbar.Images.Add("retry", Properties.Resources.toolbar_retry);
-            imlToolbar.Images.Add("subscribe", Properties.Resources.toolbar_subscribe);
-            imlToolbar.Images.Add("unsubscribe", Properties.Resources.toolbar_unsubscribe);
-            imlToolbar.Images.Add("add_favourite", Properties.Resources.toolbar_add_favourite);
-            imlToolbar.Images.Add("remove_favourite", Properties.Resources.toolbar_remove_favourite);
+            this.imlToolbar.Images.Add("choose_programme", Properties.Resources.toolbar_choose_programme);
+            this.imlToolbar.Images.Add("clean_up", Properties.Resources.toolbar_clean_up);
+            this.imlToolbar.Images.Add("current_episodes", Properties.Resources.toolbar_current_episodes);
+            this.imlToolbar.Images.Add("delete", Properties.Resources.toolbar_delete);
+            this.imlToolbar.Images.Add("download", Properties.Resources.toolbar_download);
+            this.imlToolbar.Images.Add("help", Properties.Resources.toolbar_help);
+            this.imlToolbar.Images.Add("options", Properties.Resources.toolbar_options);
+            this.imlToolbar.Images.Add("play", Properties.Resources.toolbar_play);
+            this.imlToolbar.Images.Add("report_error", Properties.Resources.toolbar_report_error);
+            this.imlToolbar.Images.Add("retry", Properties.Resources.toolbar_retry);
+            this.imlToolbar.Images.Add("subscribe", Properties.Resources.toolbar_subscribe);
+            this.imlToolbar.Images.Add("unsubscribe", Properties.Resources.toolbar_unsubscribe);
+            this.imlToolbar.Images.Add("add_favourite", Properties.Resources.toolbar_add_favourite);
+            this.imlToolbar.Images.Add("remove_favourite", Properties.Resources.toolbar_remove_favourite);
 
-            tbrToolbar.ImageList = imlToolbar;
-            tbrHelp.ImageList = imlToolbar;
-            lstProviders.LargeImageList = imlProviders;
-            lstFavourites.SmallImageList = imlListIcons;
-            lstSubscribed.SmallImageList = imlListIcons;
-            lstDownloads.SmallImageList = imlListIcons;
+            this.tbrToolbar.ImageList = this.imlToolbar;
+            this.tbrHelp.ImageList = this.imlToolbar;
+            this.lstProviders.LargeImageList = this.imlProviders;
+            this.lstFavourites.SmallImageList = this.imlListIcons;
+            this.lstSubscribed.SmallImageList = this.imlListIcons;
+            this.lstDownloads.SmallImageList = this.imlListIcons;
 
-            lstEpisodes.Columns.Add("Date", Convert.ToInt32(0.179 * lstEpisodes.Width));
-            lstEpisodes.Columns.Add("Episode Name", Convert.ToInt32(0.786 * lstEpisodes.Width));
-            lstFavourites.Columns.Add("Programme Name", Convert.ToInt32(0.661 * lstFavourites.Width));
-            lstFavourites.Columns.Add("Provider", Convert.ToInt32(0.304 * lstFavourites.Width));
-            lstSubscribed.Columns.Add("Programme Name", Convert.ToInt32(0.482 * lstSubscribed.Width));
-            lstSubscribed.Columns.Add("Last Download", Convert.ToInt32(0.179 * lstSubscribed.Width));
-            lstSubscribed.Columns.Add("Provider", Convert.ToInt32(0.304 * lstSubscribed.Width));
+            this.lstEpisodes.Columns.Add("Date", Convert.ToInt32(0.179 * this.lstEpisodes.Width));
+            this.lstEpisodes.Columns.Add("Episode Name", Convert.ToInt32(0.786 * this.lstEpisodes.Width));
+            this.lstFavourites.Columns.Add("Programme Name", Convert.ToInt32(0.661 * this.lstFavourites.Width));
+            this.lstFavourites.Columns.Add("Provider", Convert.ToInt32(0.304 * this.lstFavourites.Width));
+            this.lstSubscribed.Columns.Add("Programme Name", Convert.ToInt32(0.482 * this.lstSubscribed.Width));
+            this.lstSubscribed.Columns.Add("Last Download", Convert.ToInt32(0.179 * this.lstSubscribed.Width));
+            this.lstSubscribed.Columns.Add("Provider", Convert.ToInt32(0.304 * this.lstSubscribed.Width));
 
             // NB - these are defined in alphabetical order to save sorting later
-            downloadColNames.Add((int)Data.DownloadCols.EpisodeDate, "Date");
-            downloadColNames.Add((int)Data.DownloadCols.Duration, "Duration");
-            downloadColNames.Add((int)Data.DownloadCols.EpisodeName, "Episode Name");
-            downloadColNames.Add((int)Data.DownloadCols.Progress, "Progress");
-            downloadColNames.Add((int)Data.DownloadCols.Status, "Status");
+            this.downloadColNames.Add((int)Data.DownloadCols.EpisodeDate, "Date");
+            this.downloadColNames.Add((int)Data.DownloadCols.Duration, "Duration");
+            this.downloadColNames.Add((int)Data.DownloadCols.EpisodeName, "Episode Name");
+            this.downloadColNames.Add((int)Data.DownloadCols.Progress, "Progress");
+            this.downloadColNames.Add((int)Data.DownloadCols.Status, "Status");
 
-            view = new ViewState();
-            view.UpdateNavBtnState += view_UpdateNavBtnState;
-            view.ViewChanged += view_ViewChanged;
-            view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
+            this.view = new ViewState();
+            this.view.UpdateNavBtnState += this.view_UpdateNavBtnState;
+            this.view.ViewChanged += this.view_ViewChanged;
+            this.view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
 
-            progData = Data.GetInstance();
-            progData.ProviderAdded += progData_ProviderAdded;
-            progData.ProgrammeUpdated += progData_ProgrammeUpdated;
-            progData.EpisodeAdded += progData_EpisodeAdded;
-            progData.FavouriteAdded += progData_FavouriteAdded;
-            progData.FavouriteUpdated += progData_FavouriteUpdated;
-            progData.FavouriteRemoved += progData_FavouriteRemoved;
-            progData.SubscriptionAdded += progData_SubscriptionAdded;
-            progData.SubscriptionUpdated += progData_SubscriptionUpdated;
-            progData.SubscriptionRemoved += progData_SubscriptionRemoved;
-            progData.DownloadAdded += progData_DownloadAdded;
-            progData.DownloadProgress += progData_DownloadProgress;
-            progData.DownloadRemoved += progData_DownloadRemoved;
-            progData.DownloadUpdated += progData_DownloadUpdated;
-            progData.DownloadProgressTotal += progData_DownloadProgressTotal;
-            progData.FindNewViewChange += progData_FindNewViewChange;
-            progData.FoundNew += progData_FoundNew;
+            this.progData = Data.GetInstance();
+            this.progData.ProviderAdded += this.progData_ProviderAdded;
+            this.progData.ProgrammeUpdated += this.progData_ProgrammeUpdated;
+            this.progData.EpisodeAdded += this.progData_EpisodeAdded;
+            this.progData.FavouriteAdded += this.progData_FavouriteAdded;
+            this.progData.FavouriteUpdated += this.progData_FavouriteUpdated;
+            this.progData.FavouriteRemoved += this.progData_FavouriteRemoved;
+            this.progData.SubscriptionAdded += this.progData_SubscriptionAdded;
+            this.progData.SubscriptionUpdated += this.progData_SubscriptionUpdated;
+            this.progData.SubscriptionRemoved += this.progData_SubscriptionRemoved;
+            this.progData.DownloadAdded += this.progData_DownloadAdded;
+            this.progData.DownloadProgress += this.progData_DownloadProgress;
+            this.progData.DownloadRemoved += this.progData_DownloadRemoved;
+            this.progData.DownloadUpdated += this.progData_DownloadUpdated;
+            this.progData.DownloadProgressTotal += this.progData_DownloadProgressTotal;
+            this.progData.FindNewViewChange += this.progData_FindNewViewChange;
+            this.progData.FoundNew += this.progData_FoundNew;
 
-            progData.InitProviderList();
-            InitFavouriteList();
-            progData.InitSubscriptionList();
-            InitDownloadList();
+            this.progData.InitProviderList();
+            this.InitFavouriteList();
+            this.progData.InitSubscriptionList();
+            this.InitDownloadList();
 
-            lstFavourites.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Favourite);
-            lstSubscribed.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Subscription);
-            lstDownloads.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Download);
+            this.lstFavourites.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Favourite);
+            this.lstSubscribed.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Subscription);
+            this.lstDownloads.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Download);
 
             if (OsUtils.WinSevenOrLater())
             {
                 // New style taskbar - initialise the taskbar notification class
-                tbarNotif = new TaskbarNotify();
+                this.tbarNotif = new TaskbarNotify();
             }
 
             if (!OsUtils.WinSevenOrLater() | Properties.Settings.Default.CloseToSystray)
             {
                 // Show a system tray icon
-                nicTrayIcon.Visible = true;
+                this.nicTrayIcon.Visible = true;
             }
 
             // Set up the initial notification status
-            UpdateTrayStatus(false);
+            this.UpdateTrayStatus(false);
 
-            checkUpdate = new UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + new ApplicationBase().Info.Version.ToString());
+            this.checkUpdate = new UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + new ApplicationBase().Info.Version.ToString());
 
-            picSideBarBorder.Width = 2;
+            this.picSideBarBorder.Width = 2;
 
-            lstProviders.Dock = DockStyle.Fill;
-            pnlPluginSpace.Dock = DockStyle.Fill;
-            lstEpisodes.Dock = DockStyle.Fill;
-            lstFavourites.Dock = DockStyle.Fill;
-            lstSubscribed.Dock = DockStyle.Fill;
-            lstDownloads.Dock = DockStyle.Fill;
+            this.lstProviders.Dock = DockStyle.Fill;
+            this.pnlPluginSpace.Dock = DockStyle.Fill;
+            this.lstEpisodes.Dock = DockStyle.Fill;
+            this.lstFavourites.Dock = DockStyle.Fill;
+            this.lstSubscribed.Dock = DockStyle.Fill;
+            this.lstDownloads.Dock = DockStyle.Fill;
 
             this.Font = SystemFonts.MessageBoxFont;
-            lblSideMainTitle.Font = new Font(this.Font.FontFamily, Convert.ToSingle(this.Font.SizeInPoints * 1.16), this.Font.Style, GraphicsUnit.Point);
+            this.lblSideMainTitle.Font = new Font(this.Font.FontFamily, Convert.ToSingle(this.Font.SizeInPoints * 1.16), this.Font.Style, GraphicsUnit.Point);
 
             // Scale the max size of the sidebar image for values other than 96 dpi, as it is specified in pixels
             using (Graphics graphicsForDpi = this.CreateGraphics())
             {
-                picSidebarImg.MaximumSize = new Size(Convert.ToInt32(picSidebarImg.MaximumSize.Width * (graphicsForDpi.DpiX / 96)), Convert.ToInt32(picSidebarImg.MaximumSize.Height * (graphicsForDpi.DpiY / 96)));
+                this.picSidebarImg.MaximumSize = new Size(Convert.ToInt32(this.picSidebarImg.MaximumSize.Width * (graphicsForDpi.DpiX / 96)), Convert.ToInt32(this.picSidebarImg.MaximumSize.Height * (graphicsForDpi.DpiY / 96)));
             }
 
             if (Properties.Settings.Default.MainFormPos != Rectangle.Empty)
@@ -388,38 +388,38 @@ namespace RadioDld
                 this.WindowState = Properties.Settings.Default.MainFormState;
             }
 
-            windowPosLoaded = true;
+            this.windowPosLoaded = true;
 
-            tblToolbars.Height = tbrToolbar.Height;
-            tbrToolbar.SetWholeDropDown(tbtOptionsMenu);
-            tbrHelp.SetWholeDropDown(tbtHelpMenu);
-            tbrHelp.Width = tbtHelpMenu.Rectangle.Width;
+            this.tblToolbars.Height = this.tbrToolbar.Height;
+            this.tbrToolbar.SetWholeDropDown(this.tbtOptionsMenu);
+            this.tbrHelp.SetWholeDropDown(this.tbtHelpMenu);
+            this.tbrHelp.Width = this.tbtHelpMenu.Rectangle.Width;
 
             if (this.WindowState != FormWindowState.Minimized)
             {
-                tblToolbars.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right));
-                tblToolbars.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right);
+                this.tblToolbars.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, this.tblToolbars.Width - (this.tbtHelpMenu.Rectangle.Width + this.tbrHelp.Margin.Right));
+                this.tblToolbars.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, this.tbtHelpMenu.Rectangle.Width + this.tbrHelp.Margin.Right);
             }
 
             if (OsUtils.WinVistaOrLater() & VisualStyleRenderer.IsSupported)
             {
-                tbrView.Margin = new Padding(0);
+                this.tbrView.Margin = new Padding(0);
             }
 
-            this.SetGlassMargins(0, 0, tbrView.Height, 0);
-            tbrView.Renderer = new TabBarRenderer();
+            this.SetGlassMargins(0, 0, this.tbrView.Height, 0);
+            this.tbrView.Renderer = new TabBarRenderer();
 
             OsUtils.ApplyRunOnStartup();
 
-            progData.StartDownload();
-            tmrCheckForUpdates.Enabled = true;
+            this.progData.StartDownload();
+            this.tmrCheckForUpdates.Enabled = true;
         }
 
         private void Main_FormClosing(object eventSender, System.Windows.Forms.FormClosingEventArgs eventArgs)
         {
             if (eventArgs.CloseReason == CloseReason.UserClosing)
             {
-                if (!nicTrayIcon.Visible)
+                if (!this.nicTrayIcon.Visible)
                 {
                     if (this.WindowState != FormWindowState.Minimized)
                     {
@@ -435,10 +435,10 @@ namespace RadioDld
 
                     if (Properties.Settings.Default.ShownTrayBalloon == false)
                     {
-                        nicTrayIcon.BalloonTipIcon = ToolTipIcon.Info;
-                        nicTrayIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + Environment.NewLine + "Click here to hide this message in future.";
-                        nicTrayIcon.BalloonTipTitle = "Radio Downloader is still running";
-                        nicTrayIcon.ShowBalloonTip(30000);
+                        this.nicTrayIcon.BalloonTipIcon = ToolTipIcon.Info;
+                        this.nicTrayIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + Environment.NewLine + "Click here to hide this message in future.";
+                        this.nicTrayIcon.BalloonTipTitle = "Radio Downloader is still running";
+                        this.nicTrayIcon.ShowBalloonTip(30000);
                     }
                 }
             }
@@ -446,48 +446,48 @@ namespace RadioDld
 
         private void lstProviders_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (lstProviders.SelectedItems.Count > 0)
+            if (this.lstProviders.SelectedItems.Count > 0)
             {
-                Guid pluginId = new Guid(lstProviders.SelectedItems[0].Name);
-                ShowProviderInfo(pluginId);
+                Guid pluginId = new Guid(this.lstProviders.SelectedItems[0].Name);
+                this.ShowProviderInfo(pluginId);
             }
             else
             {
-                SetViewDefaults();
+                this.SetViewDefaults();
             }
         }
 
         private void ShowProviderInfo(Guid providerId)
         {
-            Data.ProviderData info = progData.FetchProviderData(providerId);
-            SetSideBar(info.name, info.description, null);
+            Data.ProviderData info = this.progData.FetchProviderData(providerId);
+            this.SetSideBar(info.name, info.description, null);
 
-            if (view.CurrentView == ViewState.View.FindNewChooseProvider)
+            if (this.view.CurrentView == ViewState.View.FindNewChooseProvider)
             {
-                SetToolbarButtons(new ToolBarButton[] { tbtChooseProgramme });
+                this.SetToolbarButtons(new ToolBarButton[] { this.tbtChooseProgramme });
             }
         }
 
         private void lstProviders_ItemActivate(object sender, System.EventArgs e)
         {
             // Occasionally the event gets fired when there isn't an item selected
-            if (lstProviders.SelectedItems.Count == 0)
+            if (this.lstProviders.SelectedItems.Count == 0)
             {
                 return;
             }
 
-            tbtChooseProgramme_Click();
+            this.tbtChooseProgramme_Click();
         }
 
         private void lstEpisodes_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e)
         {
-            progData.EpisodeSetAutoDownload(Convert.ToInt32(lstEpisodes.Items[e.Index].Name, CultureInfo.InvariantCulture), e.NewValue == CheckState.Checked);
+            this.progData.EpisodeSetAutoDownload(Convert.ToInt32(this.lstEpisodes.Items[e.Index].Name, CultureInfo.InvariantCulture), e.NewValue == CheckState.Checked);
         }
 
         private void ShowEpisodeInfo(int epid)
         {
-            Data.ProgrammeData progInfo = progData.FetchProgrammeData((int)view.CurrentViewData);
-            Data.EpisodeData epInfo = progData.FetchEpisodeData(epid);
+            Data.ProgrammeData progInfo = this.progData.FetchProgrammeData((int)this.view.CurrentViewData);
+            Data.EpisodeData epInfo = this.progData.FetchEpisodeData(epid);
             string infoText = string.Empty;
 
             if (epInfo.description != null)
@@ -498,154 +498,154 @@ namespace RadioDld
             infoText += "Date: " + epInfo.episodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
             infoText += TextUtils.DescDuration(epInfo.duration);
 
-            SetSideBar(epInfo.name, infoText, progData.FetchEpisodeImage(epid));
+            this.SetSideBar(epInfo.name, infoText, this.progData.FetchEpisodeImage(epid));
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
-            buttons.Add(tbtDownload);
+            buttons.Add(this.tbtDownload);
 
             if (progInfo.favourite)
             {
-                buttons.Add(tbtRemFavourite);
+                buttons.Add(this.tbtRemFavourite);
             }
             else
             {
-                buttons.Add(tbtAddFavourite);
+                buttons.Add(this.tbtAddFavourite);
             }
 
             if (progInfo.subscribed)
             {
-                buttons.Add(tbtUnsubscribe);
+                buttons.Add(this.tbtUnsubscribe);
             }
             else if (!progInfo.singleEpisode)
             {
-                buttons.Add(tbtSubscribe);
+                buttons.Add(this.tbtSubscribe);
             }
 
-            SetToolbarButtons(buttons.ToArray());
+            this.SetToolbarButtons(buttons.ToArray());
         }
 
         private void lstEpisodes_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (lstEpisodes.SelectedItems.Count > 0)
+            if (this.lstEpisodes.SelectedItems.Count > 0)
             {
-                int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-                ShowEpisodeInfo(epid);
+                int epid = Convert.ToInt32(this.lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                this.ShowEpisodeInfo(epid);
             }
             else
             {
-                SetViewDefaults(); // Revert back to programme info in sidebar
+                this.SetViewDefaults(); // Revert back to programme info in sidebar
             }
         }
 
         private void lstFavourites_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (lstFavourites.SelectedItems.Count > 0)
+            if (this.lstFavourites.SelectedItems.Count > 0)
             {
-                int progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                int progid = Convert.ToInt32(this.lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-                progData.UpdateProgInfoIfRequired(progid);
-                ShowFavouriteInfo(progid);
+                this.progData.UpdateProgInfoIfRequired(progid);
+                this.ShowFavouriteInfo(progid);
             }
             else
             {
-                SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
+                this.SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
             }
         }
 
         private void ShowFavouriteInfo(int progid)
         {
-            Data.FavouriteData info = progData.FetchFavouriteData(progid);
+            Data.FavouriteData info = this.progData.FetchFavouriteData(progid);
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
-            buttons.AddRange(new ToolBarButton[] { tbtRemFavourite, tbtCurrentEps });
+            buttons.AddRange(new ToolBarButton[] { this.tbtRemFavourite, this.tbtCurrentEps });
 
             if (info.subscribed)
             {
-                buttons.Add(tbtUnsubscribe);
+                buttons.Add(this.tbtUnsubscribe);
             }
             else if (!info.singleEpisode)
             {
-                buttons.Add(tbtSubscribe);
+                buttons.Add(this.tbtSubscribe);
             }
 
-            SetToolbarButtons(buttons.ToArray());
-            SetSideBar(info.name, info.description, progData.FetchProgrammeImage(progid));
+            this.SetToolbarButtons(buttons.ToArray());
+            this.SetSideBar(info.name, info.description, this.progData.FetchProgrammeImage(progid));
         }
 
         private void lstSubscribed_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (lstSubscribed.SelectedItems.Count > 0)
+            if (this.lstSubscribed.SelectedItems.Count > 0)
             {
-                int progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                int progid = Convert.ToInt32(this.lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-                progData.UpdateProgInfoIfRequired(progid);
-                ShowSubscriptionInfo(progid);
+                this.progData.UpdateProgInfoIfRequired(progid);
+                this.ShowSubscriptionInfo(progid);
             }
             else
             {
-                SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
+                this.SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
             }
         }
 
         private void ShowSubscriptionInfo(int progid)
         {
-            Data.SubscriptionData info = progData.FetchSubscriptionData(progid);
+            Data.SubscriptionData info = this.progData.FetchSubscriptionData(progid);
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
-            buttons.Add(tbtUnsubscribe);
-            buttons.Add(tbtCurrentEps);
+            buttons.Add(this.tbtUnsubscribe);
+            buttons.Add(this.tbtCurrentEps);
 
             if (info.favourite)
             {
-                buttons.Add(tbtRemFavourite);
+                buttons.Add(this.tbtRemFavourite);
             }
             else
             {
-                buttons.Add(tbtAddFavourite);
+                buttons.Add(this.tbtAddFavourite);
             }
 
-            SetToolbarButtons(buttons.ToArray());
+            this.SetToolbarButtons(buttons.ToArray());
 
-            SetSideBar(info.name, info.description, progData.FetchProgrammeImage(progid));
+            this.SetSideBar(info.name, info.description, this.progData.FetchProgrammeImage(progid));
         }
 
         private void lstDownloads_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
         {
-            Data.DownloadCols clickedCol = downloadColOrder[e.Column];
+            Data.DownloadCols clickedCol = this.downloadColOrder[e.Column];
 
             if (clickedCol == Data.DownloadCols.Progress)
             {
                 return;
             }
 
-            if (progData.DownloadSortByCol != clickedCol)
+            if (this.progData.DownloadSortByCol != clickedCol)
             {
-                progData.DownloadSortByCol = clickedCol;
-                progData.DownloadSortAscending = true;
+                this.progData.DownloadSortByCol = clickedCol;
+                this.progData.DownloadSortAscending = true;
             }
             else
             {
-                progData.DownloadSortAscending = !progData.DownloadSortAscending;
+                this.progData.DownloadSortAscending = !this.progData.DownloadSortAscending;
             }
 
             // Set the column header to display the new sort order
-            lstDownloads.ShowSortOnHeader(downloadColOrder.IndexOf(progData.DownloadSortByCol), progData.DownloadSortAscending ? SortOrder.Ascending : SortOrder.Descending);
+            this.lstDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(this.progData.DownloadSortByCol), this.progData.DownloadSortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Save the current sort
-            Properties.Settings.Default.DownloadColSortBy = (int)progData.DownloadSortByCol;
-            Properties.Settings.Default.DownloadColSortAsc = progData.DownloadSortAscending;
+            Properties.Settings.Default.DownloadColSortBy = (int)this.progData.DownloadSortByCol;
+            Properties.Settings.Default.DownloadColSortAsc = this.progData.DownloadSortAscending;
 
-            lstDownloads.Sort();
+            this.lstDownloads.Sort();
         }
 
         private void lstDownloads_ColumnReordered(object sender, System.Windows.Forms.ColumnReorderedEventArgs e)
         {
-            string[] oldOrder = new string[lstDownloads.Columns.Count];
+            string[] oldOrder = new string[this.lstDownloads.Columns.Count];
 
             // Fetch the pre-reorder column order
-            foreach (ColumnHeader col in lstDownloads.Columns)
+            foreach (ColumnHeader col in this.lstDownloads.Columns)
             {
-                oldOrder[col.DisplayIndex] = ((int)downloadColOrder[col.Index]).ToString(CultureInfo.InvariantCulture);
+                oldOrder[col.DisplayIndex] = ((int)this.downloadColOrder[col.Index]).ToString(CultureInfo.InvariantCulture);
             }
 
             List<string> newOrder = new List<string>(oldOrder);
@@ -662,24 +662,24 @@ namespace RadioDld
             {
                 // The reorder involves column 0 which contains the icons, so re-initialise the list
                 e.Cancel = true;
-                InitDownloadList();
+                this.InitDownloadList();
             }
         }
 
         private void lstDownloads_ColumnRightClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
         {
-            mnuListHdrs.Show(lstDownloads, lstDownloads.PointToClient(Cursor.Position));
+            this.mnuListHdrs.Show(this.lstDownloads, this.lstDownloads.PointToClient(Cursor.Position));
         }
 
         private void lstDownloads_ColumnWidthChanged(object sender, System.Windows.Forms.ColumnWidthChangedEventArgs e)
         {
             // Save the updated column's width
-            downloadColSizes[(int)downloadColOrder[e.ColumnIndex]] = lstDownloads.Columns[e.ColumnIndex].Width;
+            this.downloadColSizes[(int)this.downloadColOrder[e.ColumnIndex]] = this.lstDownloads.Columns[e.ColumnIndex].Width;
 
             string saveColSizes = string.Empty;
 
             // Convert the stored column widths back to a string to save to settings
-            foreach (KeyValuePair<int, int> colSize in downloadColSizes)
+            foreach (KeyValuePair<int, int> colSize in this.downloadColSizes)
             {
                 if (!string.IsNullOrEmpty(saveColSizes))
                 {
@@ -695,34 +695,34 @@ namespace RadioDld
         private void lstDownloads_ItemActivate(object sender, System.EventArgs e)
         {
             // Occasionally the event gets fired when there isn't an item selected
-            if (lstDownloads.SelectedItems.Count == 0)
+            if (this.lstDownloads.SelectedItems.Count == 0)
             {
                 return;
             }
 
-            tbtPlay_Click();
+            this.tbtPlay_Click();
         }
 
         private void lstDownloads_SelectedIndexChanged(object sender, System.EventArgs e)
         {
-            if (lstDownloads.SelectedItems.Count > 0)
+            if (this.lstDownloads.SelectedItems.Count > 0)
             {
-                ShowDownloadInfo(Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
+                this.ShowDownloadInfo(Convert.ToInt32(this.lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
             }
             else
             {
-                SetViewDefaults(); // Revert back to downloads view default sidebar and toolbar
+                this.SetViewDefaults(); // Revert back to downloads view default sidebar and toolbar
             }
         }
 
         private void ShowDownloadInfo(int epid)
         {
-            Data.DownloadData info = progData.FetchDownloadData(epid);
+            Data.DownloadData info = this.progData.FetchDownloadData(epid);
 
             string infoText = string.Empty;
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
-            buttons.Add(tbtCleanUp);
+            buttons.Add(this.tbtCleanUp);
 
             if (info.description != null)
             {
@@ -737,10 +737,10 @@ namespace RadioDld
                 case Data.DownloadStatus.Downloaded:
                     if (File.Exists(info.downloadPath))
                     {
-                        buttons.Add(tbtPlay);
+                        buttons.Add(this.tbtPlay);
                     }
 
-                    buttons.Add(tbtDelete);
+                    buttons.Add(this.tbtDelete);
                     infoText += Environment.NewLine + "Play count: " + info.playCount.ToString(CultureInfo.CurrentCulture);
 
                     break;
@@ -748,8 +748,8 @@ namespace RadioDld
                     string errorName = string.Empty;
                     string errorDetails = info.errorDetails;
 
-                    buttons.Add(tbtRetry);
-                    buttons.Add(tbtCancel);
+                    buttons.Add(this.tbtRetry);
+                    buttons.Add(this.tbtCancel);
 
                     switch (info.errorType)
                     {
@@ -774,7 +774,7 @@ namespace RadioDld
                         case ErrorType.UnknownError:
                             errorName = "Unknown error";
                             errorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed.";
-                            buttons.Add(tbtReportError);
+                            buttons.Add(this.tbtReportError);
                             break;
                     }
 
@@ -787,39 +787,38 @@ namespace RadioDld
 
                     break;
                 default:
-                    buttons.Add(tbtCancel);
+                    buttons.Add(this.tbtCancel);
                     break;
             }
 
-            SetToolbarButtons(buttons.ToArray());
-            SetSideBar(info.name, infoText, progData.FetchEpisodeImage(epid));
+            this.SetToolbarButtons(buttons.ToArray());
+            this.SetSideBar(info.name, infoText, this.progData.FetchEpisodeImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
         {
-            lblSideMainTitle.Text = title;
-
-            txtSideDescript.Text = description;
+            this.lblSideMainTitle.Text = title;
+            this.txtSideDescript.Text = description;
 
             // Make sure the scrollbars update correctly
-            txtSideDescript.ScrollBars = RichTextBoxScrollBars.None;
-            txtSideDescript.ScrollBars = RichTextBoxScrollBars.Both;
+            this.txtSideDescript.ScrollBars = RichTextBoxScrollBars.None;
+            this.txtSideDescript.ScrollBars = RichTextBoxScrollBars.Both;
 
             if (picture != null)
             {
-                if (picture.Width > picSidebarImg.MaximumSize.Width | picture.Height > picSidebarImg.MaximumSize.Height)
+                if (picture.Width > this.picSidebarImg.MaximumSize.Width | picture.Height > this.picSidebarImg.MaximumSize.Height)
                 {
                     int newWidth = 0;
                     int newHeight = 0;
 
                     if (picture.Width > picture.Height)
                     {
-                        newWidth = picSidebarImg.MaximumSize.Width;
+                        newWidth = this.picSidebarImg.MaximumSize.Width;
                         newHeight = (int)((newWidth / (float)picture.Width) * picture.Height);
                     }
                     else
                     {
-                        newHeight = picSidebarImg.MaximumSize.Height;
+                        newHeight = this.picSidebarImg.MaximumSize.Height;
                         newWidth = (int)((newHeight / (float)picture.Height) * picture.Width);
                     }
 
@@ -835,30 +834,30 @@ namespace RadioDld
                     origImg.Dispose();
                 }
 
-                picSidebarImg.Image = picture;
-                picSidebarImg.Visible = true;
+                this.picSidebarImg.Image = picture;
+                this.picSidebarImg.Visible = true;
             }
             else
             {
-                picSidebarImg.Visible = false;
+                this.picSidebarImg.Visible = false;
             }
         }
 
         private void SetToolbarButtons(ToolBarButton[] buttons)
         {
-            tbtChooseProgramme.Visible = false;
-            tbtDownload.Visible = false;
-            tbtAddFavourite.Visible = false;
-            tbtRemFavourite.Visible = false;
-            tbtSubscribe.Visible = false;
-            tbtUnsubscribe.Visible = false;
-            tbtCurrentEps.Visible = false;
-            tbtPlay.Visible = false;
-            tbtCancel.Visible = false;
-            tbtDelete.Visible = false;
-            tbtRetry.Visible = false;
-            tbtReportError.Visible = false;
-            tbtCleanUp.Visible = false;
+            this.tbtChooseProgramme.Visible = false;
+            this.tbtDownload.Visible = false;
+            this.tbtAddFavourite.Visible = false;
+            this.tbtRemFavourite.Visible = false;
+            this.tbtSubscribe.Visible = false;
+            this.tbtUnsubscribe.Visible = false;
+            this.tbtCurrentEps.Visible = false;
+            this.tbtPlay.Visible = false;
+            this.tbtCancel.Visible = false;
+            this.tbtDelete.Visible = false;
+            this.tbtRetry.Visible = false;
+            this.tbtReportError.Visible = false;
+            this.tbtCleanUp.Visible = false;
 
             foreach (ToolBarButton button in buttons)
             {
@@ -904,27 +903,27 @@ namespace RadioDld
 
         private void nicTrayIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            mnuTrayShow_Click(sender, e);
+            this.mnuTrayShow_Click(sender, e);
         }
 
         private void tbtFindNew_Click(object sender, System.EventArgs e)
         {
-            view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
+            this.view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
         }
 
         private void tbtFavourites_Click(object sender, System.EventArgs e)
         {
-            view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites);
+            this.view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites);
         }
 
         private void tbtSubscriptions_Click(object sender, System.EventArgs e)
         {
-            view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions);
+            this.view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions);
         }
 
         private void tbtDownloads_Click(object sender, System.EventArgs e)
         {
-            view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
+            this.view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
         }
 
         private void progData_ProviderAdded(System.Guid providerId)
@@ -932,11 +931,11 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_ProviderAdded(providerId); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_ProviderAdded(providerId); });
                 return;
             }
 
-            Data.ProviderData info = progData.FetchProviderData(providerId);
+            Data.ProviderData info = this.progData.FetchProviderData(providerId);
 
             ListViewItem addItem = new ListViewItem();
             addItem.Name = providerId.ToString();
@@ -944,7 +943,7 @@ namespace RadioDld
 
             if (info.icon != null)
             {
-                imlProviders.Images.Add(providerId.ToString(), info.icon);
+                this.imlProviders.Images.Add(providerId.ToString(), info.icon);
                 addItem.ImageKey = providerId.ToString();
             }
             else
@@ -952,12 +951,12 @@ namespace RadioDld
                 addItem.ImageKey = "default";
             }
 
-            lstProviders.Items.Add(addItem);
+            this.lstProviders.Items.Add(addItem);
 
             // Hide the 'No providers' provider options menu item
-            if (mnuOptionsProviderOptsNoProvs.Visible == true)
+            if (this.mnuOptionsProviderOptsNoProvs.Visible == true)
             {
-                mnuOptionsProviderOptsNoProvs.Visible = false;
+                this.mnuOptionsProviderOptsNoProvs.Visible = false;
             }
 
             MenuItem addMenuItem = new MenuItem(info.name + " Provider");
@@ -971,14 +970,14 @@ namespace RadioDld
                 addMenuItem.Enabled = false;
             }
 
-            mnuOptionsProviderOpts.MenuItems.Add(addMenuItem);
+            this.mnuOptionsProviderOpts.MenuItems.Add(addMenuItem);
 
-            if (view.CurrentView == ViewState.View.FindNewChooseProvider)
+            if (this.view.CurrentView == ViewState.View.FindNewChooseProvider)
             {
-                if (lstProviders.SelectedItems.Count == 0)
+                if (this.lstProviders.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -988,24 +987,24 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_ProgrammeUpdated(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_ProgrammeUpdated(progid); });
                 return;
             }
 
-            if (view.CurrentView == ViewState.View.ProgEpisodes)
+            if (this.view.CurrentView == ViewState.View.ProgEpisodes)
             {
-                if ((int)view.CurrentViewData == progid)
+                if ((int)this.view.CurrentViewData == progid)
                 {
-                    if (lstEpisodes.SelectedItems.Count == 0)
+                    if (this.lstEpisodes.SelectedItems.Count == 0)
                     {
                         // Update the displayed programme information
-                        ShowProgrammeInfo(progid);
+                        this.ShowProgrammeInfo(progid);
                     }
                     else
                     {
                         // Update the displayed episode information (in case the subscription status has changed)
-                        int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-                        ShowEpisodeInfo(epid);
+                        int epid = Convert.ToInt32(this.lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                        this.ShowEpisodeInfo(epid);
                     }
                 }
             }
@@ -1013,30 +1012,30 @@ namespace RadioDld
 
         private void ShowProgrammeInfo(int progid)
         {
-            Data.ProgrammeData progInfo = progData.FetchProgrammeData((int)view.CurrentViewData);
+            Data.ProgrammeData progInfo = this.progData.FetchProgrammeData((int)this.view.CurrentViewData);
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
 
             if (progInfo.favourite)
             {
-                buttons.Add(tbtRemFavourite);
+                buttons.Add(this.tbtRemFavourite);
             }
             else
             {
-                buttons.Add(tbtAddFavourite);
+                buttons.Add(this.tbtAddFavourite);
             }
 
             if (progInfo.subscribed)
             {
-                buttons.Add(tbtUnsubscribe);
+                buttons.Add(this.tbtUnsubscribe);
             }
             else if (!progInfo.singleEpisode)
             {
-                buttons.Add(tbtSubscribe);
+                buttons.Add(this.tbtSubscribe);
             }
 
-            SetToolbarButtons(buttons.ToArray());
-            SetSideBar(progInfo.name, progInfo.description, progData.FetchProgrammeImage(progid));
+            this.SetToolbarButtons(buttons.ToArray());
+            this.SetSideBar(progInfo.name, progInfo.description, this.progData.FetchProgrammeImage(progid));
         }
 
         private void EpisodeListItem(int epid, Data.EpisodeData info, ref ListViewItem item)
@@ -1052,20 +1051,20 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_EpisodeAdded(epid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_EpisodeAdded(epid); });
                 return;
             }
 
-            Data.EpisodeData info = progData.FetchEpisodeData(epid);
+            Data.EpisodeData info = this.progData.FetchEpisodeData(epid);
 
             ListViewItem addItem = new ListViewItem();
             addItem.SubItems.Add(string.Empty);
 
-            EpisodeListItem(epid, info, ref addItem);
+            this.EpisodeListItem(epid, info, ref addItem);
 
-            lstEpisodes.ItemCheck -= lstEpisodes_ItemCheck;
-            lstEpisodes.Items.Add(addItem);
-            lstEpisodes.ItemCheck += lstEpisodes_ItemCheck;
+            this.lstEpisodes.ItemCheck -= this.lstEpisodes_ItemCheck;
+            this.lstEpisodes.Items.Add(addItem);
+            this.lstEpisodes.ItemCheck += this.lstEpisodes_ItemCheck;
         }
 
         private void progData_FavouriteAdded(int progid)
@@ -1073,20 +1072,20 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_FavouriteAdded(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_FavouriteAdded(progid); });
                 return;
             }
 
-            Data.FavouriteData info = progData.FetchFavouriteData(progid);
+            Data.FavouriteData info = this.progData.FetchFavouriteData(progid);
 
-            lstFavourites.Items.Add(FavouriteListItem(info, null));
+            this.lstFavourites.Items.Add(this.FavouriteListItem(info, null));
 
-            if (view.CurrentView == ViewState.View.Favourites)
+            if (this.view.CurrentView == ViewState.View.Favourites)
             {
-                if (lstFavourites.SelectedItems.Count == 0)
+                if (this.lstFavourites.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1096,25 +1095,25 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_FavouriteUpdated(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_FavouriteUpdated(progid); });
                 return;
             }
 
-            Data.FavouriteData info = progData.FetchFavouriteData(progid);
-            ListViewItem item = lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)];
+            Data.FavouriteData info = this.progData.FetchFavouriteData(progid);
+            ListViewItem item = this.lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)];
 
-            item = FavouriteListItem(info, item);
+            item = this.FavouriteListItem(info, item);
 
-            if (view.CurrentView == ViewState.View.Favourites)
+            if (this.view.CurrentView == ViewState.View.Favourites)
             {
-                if (lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected)
+                if (this.lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected)
                 {
-                    ShowFavouriteInfo(progid);
+                    this.ShowFavouriteInfo(progid);
                 }
-                else if (lstFavourites.SelectedItems.Count == 0)
+                else if (this.lstFavourites.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1141,18 +1140,18 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_FavouriteRemoved(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_FavouriteRemoved(progid); });
                 return;
             }
 
-            lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)].Remove();
+            this.lstFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)].Remove();
 
-            if (view.CurrentView == ViewState.View.Favourites)
+            if (this.view.CurrentView == ViewState.View.Favourites)
             {
-                if (lstFavourites.SelectedItems.Count == 0)
+                if (this.lstFavourites.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1180,25 +1179,25 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_SubscriptionAdded(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_SubscriptionAdded(progid); });
                 return;
             }
 
-            Data.SubscriptionData info = progData.FetchSubscriptionData(progid);
+            Data.SubscriptionData info = this.progData.FetchSubscriptionData(progid);
 
             ListViewItem addItem = new ListViewItem();
             addItem.SubItems.Add(string.Empty);
             addItem.SubItems.Add(string.Empty);
 
-            SubscriptionListItem(progid, info, ref addItem);
-            lstSubscribed.Items.Add(addItem);
+            this.SubscriptionListItem(progid, info, ref addItem);
+            this.lstSubscribed.Items.Add(addItem);
 
-            if (view.CurrentView == ViewState.View.Subscriptions)
+            if (this.view.CurrentView == ViewState.View.Subscriptions)
             {
-                if (lstSubscribed.SelectedItems.Count == 0)
+                if (this.lstSubscribed.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1208,25 +1207,25 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_SubscriptionUpdated(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_SubscriptionUpdated(progid); });
                 return;
             }
 
-            Data.SubscriptionData info = progData.FetchSubscriptionData(progid);
-            ListViewItem item = lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)];
+            Data.SubscriptionData info = this.progData.FetchSubscriptionData(progid);
+            ListViewItem item = this.lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)];
 
-            SubscriptionListItem(progid, info, ref item);
+            this.SubscriptionListItem(progid, info, ref item);
 
-            if (view.CurrentView == ViewState.View.Subscriptions)
+            if (this.view.CurrentView == ViewState.View.Subscriptions)
             {
-                if (lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected)
+                if (this.lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected)
                 {
-                    ShowSubscriptionInfo(progid);
+                    this.ShowSubscriptionInfo(progid);
                 }
-                else if (lstSubscribed.SelectedItems.Count == 0)
+                else if (this.lstSubscribed.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1236,18 +1235,18 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_SubscriptionRemoved(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_SubscriptionRemoved(progid); });
                 return;
             }
 
-            lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)].Remove();
+            this.lstSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)].Remove();
 
-            if (view.CurrentView == ViewState.View.Subscriptions)
+            if (this.view.CurrentView == ViewState.View.Subscriptions)
             {
-                if (lstSubscribed.SelectedItems.Count == 0)
+                if (this.lstSubscribed.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1261,17 +1260,17 @@ namespace RadioDld
 
             item.Name = info.epid.ToString(CultureInfo.InvariantCulture);
 
-            if (item.SubItems.Count < downloadColOrder.Count)
+            if (item.SubItems.Count < this.downloadColOrder.Count)
             {
-                for (int addCols = item.SubItems.Count; addCols <= downloadColOrder.Count - 1; addCols++)
+                for (int addCols = item.SubItems.Count; addCols <= this.downloadColOrder.Count - 1; addCols++)
                 {
                     item.SubItems.Add(string.Empty);
                 }
             }
 
-            for (int column = 0; column <= downloadColOrder.Count - 1; column++)
+            for (int column = 0; column <= this.downloadColOrder.Count - 1; column++)
             {
-                switch (downloadColOrder[column])
+                switch (this.downloadColOrder[column])
                 {
                     case Data.DownloadCols.EpisodeName:
                         item.SubItems[column].Text = info.name;
@@ -1322,7 +1321,7 @@ namespace RadioDld
                         item.SubItems[column].Text = durationText;
                         break;
                     default:
-                        throw new InvalidDataException("Unknown column type of " + downloadColOrder[column].ToString());
+                        throw new InvalidDataException("Unknown column type of " + this.downloadColOrder[column].ToString());
                 }
             }
 
@@ -1357,19 +1356,19 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_DownloadAdded(epid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_DownloadAdded(epid); });
                 return;
             }
 
-            Data.DownloadData info = progData.FetchDownloadData(epid);
-            lstDownloads.Items.Add(DownloadListItem(info, null));
+            Data.DownloadData info = this.progData.FetchDownloadData(epid);
+            this.lstDownloads.Items.Add(this.DownloadListItem(info, null));
 
-            if (view.CurrentView == ViewState.View.Downloads)
+            if (this.view.CurrentView == ViewState.View.Downloads)
             {
-                if (lstDownloads.SelectedItems.Count == 0)
+                if (this.lstDownloads.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1379,29 +1378,29 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_DownloadProgress(epid, percent, statusText, icon); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_DownloadProgress(epid, percent, statusText, icon); });
                 return;
             }
 
-            ListViewItem item = lstDownloads.Items[Convert.ToString(epid, CultureInfo.InvariantCulture)];
+            ListViewItem item = this.lstDownloads.Items[Convert.ToString(epid, CultureInfo.InvariantCulture)];
 
             if (item == null)
             {
                 return;
             }
 
-            if (downloadColOrder.Contains(Data.DownloadCols.Status))
+            if (this.downloadColOrder.Contains(Data.DownloadCols.Status))
             {
-                item.SubItems[downloadColOrder.IndexOf(Data.DownloadCols.Status)].Text = statusText;
+                item.SubItems[this.downloadColOrder.IndexOf(Data.DownloadCols.Status)].Text = statusText;
             }
 
-            if (downloadColOrder.Contains(Data.DownloadCols.Progress))
+            if (this.downloadColOrder.Contains(Data.DownloadCols.Progress))
             {
-                prgDldProg.Value = percent;
+                this.prgDldProg.Value = percent;
 
-                if (lstDownloads.Controls.Count == 0)
+                if (this.lstDownloads.Controls.Count == 0)
                 {
-                    lstDownloads.AddProgressBar(ref prgDldProg, item, downloadColOrder.IndexOf(Data.DownloadCols.Progress));
+                    this.lstDownloads.AddProgressBar(ref this.prgDldProg, item, this.downloadColOrder.IndexOf(Data.DownloadCols.Progress));
                 }
             }
 
@@ -1421,31 +1420,31 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_DownloadRemoved(epid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_DownloadRemoved(epid); });
                 return;
             }
 
-            ListViewItem item = lstDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
+            ListViewItem item = this.lstDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
 
             if (item != null)
             {
-                if (downloadColOrder.Contains(Data.DownloadCols.Progress))
+                if (this.downloadColOrder.Contains(Data.DownloadCols.Progress))
                 {
-                    if (lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null)
+                    if (this.lstDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null)
                     {
-                        lstDownloads.RemoveProgressBar(ref prgDldProg);
+                        this.lstDownloads.RemoveProgressBar(ref this.prgDldProg);
                     }
                 }
 
                 item.Remove();
             }
 
-            if (view.CurrentView == ViewState.View.Downloads)
+            if (this.view.CurrentView == ViewState.View.Downloads)
             {
-                if (lstDownloads.SelectedItems.Count == 0)
+                if (this.lstDownloads.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1455,36 +1454,36 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_DownloadUpdated(epid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_DownloadUpdated(epid); });
                 return;
             }
 
-            Data.DownloadData info = progData.FetchDownloadData(epid);
+            Data.DownloadData info = this.progData.FetchDownloadData(epid);
 
-            ListViewItem item = lstDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
-            item = DownloadListItem(info, item);
+            ListViewItem item = this.lstDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
+            item = this.DownloadListItem(info, item);
 
-            if (downloadColOrder.Contains(Data.DownloadCols.Progress))
+            if (this.downloadColOrder.Contains(Data.DownloadCols.Progress))
             {
-                if (lstDownloads.GetProgressBar(item, downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null)
+                if (this.lstDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null)
                 {
-                    lstDownloads.RemoveProgressBar(ref prgDldProg);
+                    this.lstDownloads.RemoveProgressBar(ref this.prgDldProg);
                 }
             }
 
             // Update the downloads list sorting, as the order may now have changed
-            lstDownloads.Sort();
+            this.lstDownloads.Sort();
 
-            if (view.CurrentView == ViewState.View.Downloads)
+            if (this.view.CurrentView == ViewState.View.Downloads)
             {
                 if (item.Selected)
                 {
-                    ShowDownloadInfo(epid);
+                    this.ShowDownloadInfo(epid);
                 }
-                else if (lstDownloads.SelectedItems.Count == 0)
+                else if (this.lstDownloads.SelectedItems.Count == 0)
                 {
                     // Update the displayed statistics
-                    SetViewDefaults();
+                    this.SetViewDefaults();
                 }
             }
         }
@@ -1494,23 +1493,23 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { progData_DownloadProgressTotal(downloading, percent); });
+                this.BeginInvoke((MethodInvoker)delegate { this.progData_DownloadProgressTotal(downloading, percent); });
                 return;
             }
 
             if (this.IsDisposed == false)
             {
-                UpdateTrayStatus(downloading);
+                this.UpdateTrayStatus(downloading);
 
                 if (OsUtils.WinSevenOrLater())
                 {
                     if (downloading)
                     {
-                        tbarNotif.SetProgressValue(this, percent, 100);
+                        this.tbarNotif.SetProgressValue(this, percent, 100);
                     }
                     else
                     {
-                        tbarNotif.SetProgressNone(this);
+                        this.tbarNotif.SetProgressNone(this);
                     }
                 }
             }
@@ -1518,15 +1517,15 @@ namespace RadioDld
 
         private void progData_FindNewViewChange(object viewData)
         {
-            FindNewViewData findViewData = (FindNewViewData)view.CurrentViewData;
+            FindNewViewData findViewData = (FindNewViewData)this.view.CurrentViewData;
             findViewData.View = viewData;
 
-            view.StoreView(findViewData);
+            this.view.StoreView(findViewData);
         }
 
         private void progData_FoundNew(int progid)
         {
-            view.SetView(ViewState.View.ProgEpisodes, progid);
+            this.view.SetView(ViewState.View.ProgEpisodes, progid);
         }
 
         private void Main_Shown(object sender, System.EventArgs e)
@@ -1550,7 +1549,7 @@ namespace RadioDld
 
         private void Main_Move_Resize(object sender, System.EventArgs e)
         {
-            if (windowPosLoaded)
+            if (this.windowPosLoaded)
             {
                 if (this.WindowState == FormWindowState.Normal)
                 {
@@ -1566,7 +1565,7 @@ namespace RadioDld
 
         private void tmrCheckForUpdates_Tick(object sender, System.EventArgs e)
         {
-            if (checkUpdate.IsUpdateAvailable())
+            if (this.checkUpdate.IsUpdateAvailable())
             {
                 if (Properties.Settings.Default.LastUpdatePrompt.AddDays(7) < DateAndTime.Now)
                 {
@@ -1593,19 +1592,19 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView)
+            switch (this.view.CurrentView)
             {
                 case ViewState.View.ProgEpisodes:
-                    progid = (int)view.CurrentViewData;
+                    progid = (int)this.view.CurrentViewData;
                     break;
                 case ViewState.View.Subscriptions:
-                    progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    progid = Convert.ToInt32(this.lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
             }
 
-            if (progData.AddFavourite(progid))
+            if (this.progData.AddFavourite(progid))
             {
-                view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites, null);
+                this.view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites, null);
             }
             else
             {
@@ -1617,22 +1616,22 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView)
+            switch (this.view.CurrentView)
             {
                 case ViewState.View.ProgEpisodes:
-                    progid = (int)view.CurrentViewData;
+                    progid = (int)this.view.CurrentViewData;
                     break;
                 case ViewState.View.Favourites:
-                    progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    progid = Convert.ToInt32(this.lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
                 case ViewState.View.Subscriptions:
-                    progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    progid = Convert.ToInt32(this.lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
             }
 
             if (Interaction.MsgBox("Are you sure you would like to remove this programme from your list of favourites?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
             {
-                progData.RemoveFavourite(progid);
+                this.progData.RemoveFavourite(progid);
             }
         }
 
@@ -1640,19 +1639,19 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView)
+            switch (this.view.CurrentView)
             {
                 case ViewState.View.ProgEpisodes:
-                    progid = (int)view.CurrentViewData;
+                    progid = (int)this.view.CurrentViewData;
                     break;
                 case ViewState.View.Favourites:
-                    progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    progid = Convert.ToInt32(this.lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
             }
 
-            if (progData.AddSubscription(progid))
+            if (this.progData.AddSubscription(progid))
             {
-                view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions, null);
+                this.view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions, null);
             }
             else
             {
@@ -1664,39 +1663,39 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView)
+            switch (this.view.CurrentView)
             {
                 case ViewState.View.ProgEpisodes:
-                    progid = (int)view.CurrentViewData;
+                    progid = (int)this.view.CurrentViewData;
                     break;
                 case ViewState.View.Favourites:
-                    progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    progid = Convert.ToInt32(this.lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
                 case ViewState.View.Subscriptions:
-                    progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    progid = Convert.ToInt32(this.lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
             }
 
             if (Interaction.MsgBox("Are you sure you would like to stop having new episodes of this programme downloaded automatically?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
             {
-                progData.RemoveSubscription(progid);
+                this.progData.RemoveSubscription(progid);
             }
         }
 
         private void tbtCancel_Click()
         {
-            int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+            int epid = Convert.ToInt32(this.lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
             if (Interaction.MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
             {
-                progData.DownloadRemove(epid);
+                this.progData.DownloadRemove(epid);
             }
         }
 
         private void tbtPlay_Click()
         {
-            int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-            Data.DownloadData info = progData.FetchDownloadData(epid);
+            int epid = Convert.ToInt32(this.lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+            Data.DownloadData info = this.progData.FetchDownloadData(epid);
 
             if (info.status == Data.DownloadStatus.Downloaded)
             {
@@ -1705,15 +1704,15 @@ namespace RadioDld
                     Process.Start(info.downloadPath);
 
                     // Bump the play count of this item up by one
-                    progData.DownloadBumpPlayCount(epid);
+                    this.progData.DownloadBumpPlayCount(epid);
                 }
             }
         }
 
         private void tbtDelete_Click()
         {
-            int epid = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-            Data.DownloadData info = progData.FetchDownloadData(epid);
+            int epid = Convert.ToInt32(this.lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+            Data.DownloadData info = this.progData.FetchDownloadData(epid);
 
             bool fileExists = File.Exists(info.downloadPath);
             string delQuestion = "Are you sure that you would like to delete this episode";
@@ -1747,22 +1746,22 @@ namespace RadioDld
                     }
                 }
 
-                progData.DownloadRemove(epid);
+                this.progData.DownloadRemove(epid);
             }
         }
 
         private void tbtRetry_Click()
         {
-            progData.ResetDownload(Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
+            this.progData.ResetDownload(Convert.ToInt32(this.lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
         }
 
         private void tbtDownload_Click()
         {
-            int epid = Convert.ToInt32(lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+            int epid = Convert.ToInt32(this.lstEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-            if (progData.AddDownload(epid))
+            if (this.progData.AddDownload(epid))
             {
-                view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
+                this.view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
             }
             else
             {
@@ -1774,32 +1773,32 @@ namespace RadioDld
         {
             int progid = 0;
 
-            switch (view.CurrentView)
+            switch (this.view.CurrentView)
             {
                 case ViewState.View.Favourites:
-                    progid = Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    progid = Convert.ToInt32(this.lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
                 case ViewState.View.Subscriptions:
-                    progid = Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    progid = Convert.ToInt32(this.lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
             }
 
-            view.SetView(ViewState.View.ProgEpisodes, progid);
+            this.view.SetView(ViewState.View.ProgEpisodes, progid);
         }
 
         private void tbtReportError_Click()
         {
-            int episodeID = Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-            progData.DownloadReportError(episodeID);
+            int episodeID = Convert.ToInt32(this.lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+            this.progData.DownloadReportError(episodeID);
         }
 
         private void tbtChooseProgramme_Click()
         {
             FindNewViewData viewData = default(FindNewViewData);
-            viewData.ProviderID = new Guid(lstProviders.SelectedItems[0].Name);
+            viewData.ProviderID = new Guid(this.lstProviders.SelectedItems[0].Name);
             viewData.View = null;
 
-            view.SetView(ViewState.View.FindNewProviderForm, viewData);
+            this.view.SetView(ViewState.View.FindNewProviderForm, viewData);
         }
 
         private void mnuOptionsShowOpts_Click(object sender, System.EventArgs e)
@@ -1812,7 +1811,7 @@ namespace RadioDld
 
         private void mnuOptionsExit_Click(object sender, System.EventArgs e)
         {
-            mnuTrayExit_Click(mnuTrayExit, e);
+            this.mnuTrayExit_Click(sender, e);
         }
 
         private void mnuHelpAbout_Click(object sender, System.EventArgs e)
@@ -1843,118 +1842,118 @@ namespace RadioDld
 
         private void view_UpdateNavBtnState(bool enableBack, bool enableFwd)
         {
-            tbtBack.Enabled = enableBack;
-            tbtForward.Enabled = enableFwd;
+            this.tbtBack.Enabled = enableBack;
+            this.tbtForward.Enabled = enableFwd;
         }
 
         private void view_ViewChanged(ViewState.View view, ViewState.MainTab tab, object data)
         {
-            tbtFindNew.Checked = false;
-            tbtFavourites.Checked = false;
-            tbtSubscriptions.Checked = false;
-            tbtDownloads.Checked = false;
+            this.tbtFindNew.Checked = false;
+            this.tbtFavourites.Checked = false;
+            this.tbtSubscriptions.Checked = false;
+            this.tbtDownloads.Checked = false;
 
             switch (tab)
             {
                 case ViewState.MainTab.FindProgramme:
-                    tbtFindNew.Checked = true;
+                    this.tbtFindNew.Checked = true;
                     break;
                 case ViewState.MainTab.Favourites:
-                    tbtFavourites.Checked = true;
+                    this.tbtFavourites.Checked = true;
                     break;
                 case ViewState.MainTab.Subscriptions:
-                    tbtSubscriptions.Checked = true;
+                    this.tbtSubscriptions.Checked = true;
                     break;
                 case ViewState.MainTab.Downloads:
-                    tbtDownloads.Checked = true;
+                    this.tbtDownloads.Checked = true;
                     break;
             }
 
-            SetViewDefaults();
+            this.SetViewDefaults();
 
             // Set the focus to a control which does not show it, to prevent the toolbar momentarily showing focus
-            lblSideMainTitle.Focus();
+            this.lblSideMainTitle.Focus();
 
-            lstProviders.Visible = false;
-            pnlPluginSpace.Visible = false;
-            lstEpisodes.Visible = false;
-            lstFavourites.Visible = false;
-            lstSubscribed.Visible = false;
-            lstDownloads.Visible = false;
-            ttxSearch.Visible = false;
+            this.lstProviders.Visible = false;
+            this.pnlPluginSpace.Visible = false;
+            this.lstEpisodes.Visible = false;
+            this.lstFavourites.Visible = false;
+            this.lstSubscribed.Visible = false;
+            this.lstDownloads.Visible = false;
+            this.ttxSearch.Visible = false;
 
             switch (view)
             {
                 case ViewState.View.FindNewChooseProvider:
-                    lstProviders.Visible = true;
-                    lstProviders.Focus();
+                    this.lstProviders.Visible = true;
+                    this.lstProviders.Focus();
 
-                    if (lstProviders.SelectedItems.Count > 0)
+                    if (this.lstProviders.SelectedItems.Count > 0)
                     {
-                        ShowProviderInfo(new Guid(lstProviders.SelectedItems[0].Name));
+                        this.ShowProviderInfo(new Guid(this.lstProviders.SelectedItems[0].Name));
                     }
 
                     break;
                 case ViewState.View.FindNewProviderForm:
                     FindNewViewData FindViewData = (FindNewViewData)data;
 
-                    if (pnlPluginSpace.Controls.Count > 0)
+                    if (this.pnlPluginSpace.Controls.Count > 0)
                     {
-                        pnlPluginSpace.Controls[0].Dispose();
-                        pnlPluginSpace.Controls.Clear();
+                        this.pnlPluginSpace.Controls[0].Dispose();
+                        this.pnlPluginSpace.Controls.Clear();
                     }
 
-                    pnlPluginSpace.Visible = true;
-                    pnlPluginSpace.Controls.Add(progData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View));
-                    pnlPluginSpace.Controls[0].Dock = DockStyle.Fill;
-                    pnlPluginSpace.Controls[0].Focus();
+                    this.pnlPluginSpace.Visible = true;
+                    this.pnlPluginSpace.Controls.Add(this.progData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View));
+                    this.pnlPluginSpace.Controls[0].Dock = DockStyle.Fill;
+                    this.pnlPluginSpace.Controls[0].Focus();
                     break;
                 case ViewState.View.ProgEpisodes:
-                    lstEpisodes.Visible = true;
-                    progData.CancelEpisodeListing();
-                    lstEpisodes.Items.Clear(); // Clear before DoEvents so that old items don't flash up on screen
+                    this.lstEpisodes.Visible = true;
+                    this.progData.CancelEpisodeListing();
+                    this.lstEpisodes.Items.Clear(); // Clear before DoEvents so that old items don't flash up on screen
                     Application.DoEvents(); // Give any queued BeginInvoke calls a chance to be processed
-                    lstEpisodes.Items.Clear();
-                    progData.InitEpisodeList((int)data);
+                    this.lstEpisodes.Items.Clear();
+                    this.progData.InitEpisodeList((int)data);
                     break;
                 case ViewState.View.Favourites:
-                    lstFavourites.Visible = true;
-                    lstFavourites.Focus();
+                    this.lstFavourites.Visible = true;
+                    this.lstFavourites.Focus();
 
-                    if (lstFavourites.SelectedItems.Count > 0)
+                    if (this.lstFavourites.SelectedItems.Count > 0)
                     {
-                        ShowFavouriteInfo(Convert.ToInt32(lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture));
+                        this.ShowFavouriteInfo(Convert.ToInt32(this.lstFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture));
                     }
 
                     break;
                 case ViewState.View.Subscriptions:
-                    lstSubscribed.Visible = true;
-                    lstSubscribed.Focus();
+                    this.lstSubscribed.Visible = true;
+                    this.lstSubscribed.Focus();
 
-                    if (lstSubscribed.SelectedItems.Count > 0)
+                    if (this.lstSubscribed.SelectedItems.Count > 0)
                     {
-                        ShowSubscriptionInfo(Convert.ToInt32(lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture));
+                        this.ShowSubscriptionInfo(Convert.ToInt32(this.lstSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture));
                     }
 
                     break;
                 case ViewState.View.Downloads:
                     if (data == null)
                     {
-                        ttxSearch.Text = string.Empty;
+                        this.ttxSearch.Text = string.Empty;
                     }
                     else
                     {
-                        ttxSearch.Text = (string)data;
-                        PerformSearch(view, ttxSearch.Text);
+                        this.ttxSearch.Text = (string)data;
+                        this.PerformSearch(view, this.ttxSearch.Text);
                     }
 
-                    ttxSearch.Visible = true;
-                    lstDownloads.Visible = true;
-                    lstDownloads.Focus();
+                    this.ttxSearch.Visible = true;
+                    this.lstDownloads.Visible = true;
+                    this.lstDownloads.Focus();
 
-                    if (lstDownloads.SelectedItems.Count > 0)
+                    if (this.lstDownloads.SelectedItems.Count > 0)
                     {
-                        ShowDownloadInfo(Convert.ToInt32(lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
+                        this.ShowDownloadInfo(Convert.ToInt32(this.lstDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
                     }
 
                     break;
@@ -1963,40 +1962,40 @@ namespace RadioDld
 
         private void SetViewDefaults()
         {
-            switch (view.CurrentView)
+            switch (this.view.CurrentView)
             {
                 case ViewState.View.FindNewChooseProvider:
-                    SetToolbarButtons(new ToolBarButton[] { });
-                    SetSideBar(Convert.ToString(lstProviders.Items.Count, CultureInfo.CurrentCulture) + " provider" + (lstProviders.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
+                    this.SetToolbarButtons(new ToolBarButton[] { });
+                    this.SetSideBar(Convert.ToString(this.lstProviders.Items.Count, CultureInfo.CurrentCulture) + " provider" + (this.lstProviders.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     break;
                 case ViewState.View.FindNewProviderForm:
-                    FindNewViewData FindViewData = (FindNewViewData)view.CurrentViewData;
-                    SetToolbarButtons(new ToolBarButton[] { });
-                    ShowProviderInfo(FindViewData.ProviderID);
+                    FindNewViewData FindViewData = (FindNewViewData)this.view.CurrentViewData;
+                    this.SetToolbarButtons(new ToolBarButton[] { });
+                    this.ShowProviderInfo(FindViewData.ProviderID);
                     break;
                 case ViewState.View.ProgEpisodes:
-                    ShowProgrammeInfo((int)view.CurrentViewData);
+                    this.ShowProgrammeInfo((int)this.view.CurrentViewData);
                     break;
                 case ViewState.View.Favourites:
-                    SetToolbarButtons(new ToolBarButton[] { });
-                    SetSideBar(Convert.ToString(lstFavourites.Items.Count, CultureInfo.CurrentCulture) + " favourite" + (lstFavourites.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
+                    this.SetToolbarButtons(new ToolBarButton[] { });
+                    this.SetSideBar(Convert.ToString(this.lstFavourites.Items.Count, CultureInfo.CurrentCulture) + " favourite" + (this.lstFavourites.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     break;
                 case ViewState.View.Subscriptions:
-                    SetToolbarButtons(new ToolBarButton[] { });
-                    SetSideBar(Convert.ToString(lstSubscribed.Items.Count, CultureInfo.CurrentCulture) + " subscription" + (lstSubscribed.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
+                    this.SetToolbarButtons(new ToolBarButton[] { });
+                    this.SetSideBar(Convert.ToString(this.lstSubscribed.Items.Count, CultureInfo.CurrentCulture) + " subscription" + (this.lstSubscribed.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     break;
                 case ViewState.View.Downloads:
-                    SetToolbarButtons(new ToolBarButton[] { tbtCleanUp });
+                    this.SetToolbarButtons(new ToolBarButton[] { this.tbtCleanUp });
 
-                    if (!string.IsNullOrEmpty(progData.DownloadQuery))
+                    if (!string.IsNullOrEmpty(this.progData.DownloadQuery))
                     {
-                        SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " result" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
+                        this.SetSideBar(Convert.ToString(this.lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " result" + (this.lstDownloads.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     }
                     else
                     {
                         string description = string.Empty;
-                        int newCount = progData.CountDownloadsNew();
-                        int errorCount = progData.CountDownloadsErrored();
+                        int newCount = this.progData.CountDownloadsNew();
+                        int errorCount = this.progData.CountDownloadsErrored();
 
                         if (newCount > 0)
                         {
@@ -2008,7 +2007,7 @@ namespace RadioDld
                             description += "Errored: " + Convert.ToString(errorCount, CultureInfo.CurrentCulture);
                         }
 
-                        SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " download" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), description, null);
+                        this.SetSideBar(Convert.ToString(lstDownloads.Items.Count, CultureInfo.CurrentCulture) + " download" + (lstDownloads.Items.Count == 1 ? string.Empty : "s"), description, null);
                     }
 
                     break;
@@ -2017,12 +2016,12 @@ namespace RadioDld
 
         private void tbtBack_Click(object sender, System.EventArgs e)
         {
-            view.NavBack();
+            this.view.NavBack();
         }
 
         private void tbtForward_Click(object sender, System.EventArgs e)
         {
-            view.NavFwd();
+            this.view.NavFwd();
         }
 
         private void tbrToolbar_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
@@ -2030,43 +2029,43 @@ namespace RadioDld
             switch (e.Button.Name)
             {
                 case "tbtChooseProgramme":
-                    tbtChooseProgramme_Click();
+                    this.tbtChooseProgramme_Click();
                     break;
                 case "tbtDownload":
-                    tbtDownload_Click();
+                    this.tbtDownload_Click();
                     break;
                 case "tbtAddFavourite":
-                    tbtAddFavourite_Click();
+                    this.tbtAddFavourite_Click();
                     break;
                 case "tbtRemFavourite":
-                    tbtRemFavourite_Click();
+                    this.tbtRemFavourite_Click();
                     break;
                 case "tbtSubscribe":
-                    tbtSubscribe_Click();
+                    this.tbtSubscribe_Click();
                     break;
                 case "tbtUnsubscribe":
-                    tbtUnsubscribe_Click();
+                    this.tbtUnsubscribe_Click();
                     break;
                 case "tbtCurrentEps":
-                    tbtCurrentEps_Click();
+                    this.tbtCurrentEps_Click();
                     break;
                 case "tbtCancel":
-                    tbtCancel_Click();
+                    this.tbtCancel_Click();
                     break;
                 case "tbtPlay":
-                    tbtPlay_Click();
+                    this.tbtPlay_Click();
                     break;
                 case "tbtDelete":
-                    tbtDelete_Click();
+                    this.tbtDelete_Click();
                     break;
                 case "tbtRetry":
-                    tbtRetry_Click();
+                    this.tbtRetry_Click();
                     break;
                 case "tbtReportError":
-                    tbtReportError_Click();
+                    this.tbtReportError_Click();
                     break;
                 case "tbtCleanUp":
-                    tbtCleanUp_Click();
+                    this.tbtCleanUp_Click();
                     break;
             }
         }
@@ -2075,20 +2074,20 @@ namespace RadioDld
         {
             if (this.WindowState != FormWindowState.Minimized)
             {
-                tblToolbars.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, tblToolbars.Width - (tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right));
-                tblToolbars.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, tbtHelpMenu.Rectangle.Width + tbrHelp.Margin.Right);
+                this.tblToolbars.ColumnStyles[0] = new ColumnStyle(SizeType.Absolute, this.tblToolbars.Width - (this.tbtHelpMenu.Rectangle.Width + this.tbrHelp.Margin.Right));
+                this.tblToolbars.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, this.tbtHelpMenu.Rectangle.Width + this.tbrHelp.Margin.Right);
 
                 if (VisualStyleRenderer.IsSupported)
                 {
                     // Visual styles are enabled, so draw the correct background behind the toolbars
-                    Bitmap bmpBackground = new Bitmap(tblToolbars.Width, tblToolbars.Height);
+                    Bitmap bmpBackground = new Bitmap(this.tblToolbars.Width, this.tblToolbars.Height);
                     Graphics graGraphics = Graphics.FromImage(bmpBackground);
 
                     try
                     {
                         VisualStyleRenderer vsrRebar = new VisualStyleRenderer("Rebar", 0, 0);
-                        vsrRebar.DrawBackground(graGraphics, new Rectangle(0, 0, tblToolbars.Width, tblToolbars.Height));
-                        tblToolbars.BackgroundImage = bmpBackground;
+                        vsrRebar.DrawBackground(graGraphics, new Rectangle(0, 0, this.tblToolbars.Width, this.tblToolbars.Height));
+                        this.tblToolbars.BackgroundImage = bmpBackground;
                     }
                     catch (ArgumentException)
                     {
@@ -2100,7 +2099,7 @@ namespace RadioDld
 
         private void txtSideDescript_GotFocus(object sender, System.EventArgs e)
         {
-            lblSideMainTitle.Focus();
+            this.lblSideMainTitle.Focus();
         }
 
         private void txtSideDescript_LinkClicked(object sender, System.Windows.Forms.LinkClickedEventArgs e)
@@ -2110,12 +2109,12 @@ namespace RadioDld
 
         private void txtSideDescript_Resize(object sender, System.EventArgs e)
         {
-            txtSideDescript.Refresh(); // Make sure the scrollbars update correctly
+            this.txtSideDescript.Refresh(); // Make sure the scrollbars update correctly
         }
 
         private void picSideBarBorder_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
         {
-            e.Graphics.DrawLine(new Pen(Color.FromArgb(255, 167, 186, 197)), 0, 0, 0, picSideBarBorder.Height);
+            e.Graphics.DrawLine(new Pen(Color.FromArgb(255, 167, 186, 197)), 0, 0, 0, this.picSideBarBorder.Height);
         }
 
         private void mnuListHdrsColumns_Click(object sender, System.EventArgs e)
@@ -2123,12 +2122,12 @@ namespace RadioDld
             using (ChooseCols chooser = new ChooseCols())
             {
                 chooser.Columns = Properties.Settings.Default.DownloadCols;
-                chooser.StoreNameList(downloadColNames);
+                chooser.StoreNameList(this.downloadColNames);
 
                 if (chooser.ShowDialog(this) == DialogResult.OK)
                 {
                     Properties.Settings.Default.DownloadCols = chooser.Columns;
-                    InitDownloadList();
+                    this.InitDownloadList();
                 }
             }
         }
@@ -2140,40 +2139,40 @@ namespace RadioDld
             Properties.Settings.Default.DownloadColSortBy = Convert.ToInt32(Properties.Settings.Default.Properties["DownloadColSortBy"].DefaultValue, CultureInfo.InvariantCulture);
             Properties.Settings.Default.DownloadColSortAsc = Convert.ToBoolean(Properties.Settings.Default.Properties["DownloadColSortAsc"].DefaultValue, CultureInfo.InvariantCulture);
 
-            InitDownloadList();
+            this.InitDownloadList();
         }
 
         private void InitFavouriteList()
         {
-            if (lstFavourites.SelectedItems.Count > 0)
+            if (this.lstFavourites.SelectedItems.Count > 0)
             {
-                SetViewDefaults(); // Revert back to default sidebar and toolbar
+                this.SetViewDefaults(); // Revert back to default sidebar and toolbar
             }
 
             // Convert the list of FavouriteData items to an array of ListItems
-            List<Data.FavouriteData> initData = progData.FetchFavouriteList();
+            List<Data.FavouriteData> initData = this.progData.FetchFavouriteList();
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
             for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
             {
-                initItems[convItems] = FavouriteListItem(initData[convItems], null);
+                initItems[convItems] = this.FavouriteListItem(initData[convItems], null);
             }
 
             // Add the whole array of ListItems at once
-            lstFavourites.Items.AddRange(initItems);
+            this.lstFavourites.Items.AddRange(initItems);
         }
 
         private void InitDownloadList()
         {
-            if (lstDownloads.SelectedItems.Count > 0)
+            if (this.lstDownloads.SelectedItems.Count > 0)
             {
-                SetViewDefaults(); // Revert back to default sidebar and toolbar
+                this.SetViewDefaults(); // Revert back to default sidebar and toolbar
             }
 
-            downloadColSizes.Clear();
-            downloadColOrder.Clear();
-            lstDownloads.Clear();
-            lstDownloads.RemoveAllControls();
+            this.downloadColSizes.Clear();
+            this.downloadColOrder.Clear();
+            this.lstDownloads.Clear();
+            this.lstDownloads.RemoveAllControls();
 
             string newItems = string.Empty;
 
@@ -2198,7 +2197,7 @@ namespace RadioDld
                 string[] splitPair = Strings.Split(sizePair, ",");
                 int pixelSize = Convert.ToInt32(float.Parse(splitPair[1], CultureInfo.InvariantCulture) * this.CurrentAutoScaleDimensions.Width);
 
-                downloadColSizes.Add(int.Parse(splitPair[0], CultureInfo.InvariantCulture), pixelSize);
+                this.downloadColSizes.Add(int.Parse(splitPair[0], CultureInfo.InvariantCulture), pixelSize);
             }
 
             // Set up the columns specified in the DownloadCols setting
@@ -2209,43 +2208,43 @@ namespace RadioDld
                 foreach (string column in columns)
                 {
                     int colVal = int.Parse(column, CultureInfo.InvariantCulture);
-                    downloadColOrder.Add((Data.DownloadCols)colVal);
-                    lstDownloads.Columns.Add(downloadColNames[colVal], downloadColSizes[colVal]);
+                    this.downloadColOrder.Add((Data.DownloadCols)colVal);
+                    this.lstDownloads.Columns.Add(this.downloadColNames[colVal], this.downloadColSizes[colVal]);
                 }
             }
 
             // Apply the sort from the current settings
-            progData.DownloadSortByCol = (Data.DownloadCols)Properties.Settings.Default.DownloadColSortBy;
-            progData.DownloadSortAscending = Properties.Settings.Default.DownloadColSortAsc;
-            lstDownloads.ShowSortOnHeader(downloadColOrder.IndexOf(progData.DownloadSortByCol), progData.DownloadSortAscending ? SortOrder.Ascending : SortOrder.Descending);
+            this.progData.DownloadSortByCol = (Data.DownloadCols)Properties.Settings.Default.DownloadColSortBy;
+            this.progData.DownloadSortAscending = Properties.Settings.Default.DownloadColSortAsc;
+            this.lstDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(this.progData.DownloadSortByCol), this.progData.DownloadSortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Convert the list of DownloadData items to an array of ListItems
-            List<Data.DownloadData> initData = progData.FetchDownloadList(true);
+            List<Data.DownloadData> initData = this.progData.FetchDownloadList(true);
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
             for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
             {
-                initItems[convItems] = DownloadListItem(initData[convItems], null);
+                initItems[convItems] = this.DownloadListItem(initData[convItems], null);
             }
 
             // Add the whole array of ListItems at once
-            lstDownloads.Items.AddRange(initItems);
+            this.lstDownloads.Items.AddRange(initItems);
         }
 
         private void ttxSearch_TextChanged(object sender, System.EventArgs e)
         {
-            lock (searchThreadLock)
+            lock (this.searchThreadLock)
             {
-                if (string.IsNullOrEmpty(ttxSearch.Text))
+                if (string.IsNullOrEmpty(this.ttxSearch.Text))
                 {
-                    searchThread = null;
-                    PerformSearch(view.CurrentView, ttxSearch.Text);
+                    this.searchThread = null;
+                    this.PerformSearch(this.view.CurrentView, this.ttxSearch.Text);
                 }
                 else
                 {
-                    searchThread = new Thread(() => SearchWait(view.CurrentView, ttxSearch.Text));
-                    searchThread.IsBackground = true;
-                    searchThread.Start();
+                    this.searchThread = new Thread(() => this.SearchWait(this.view.CurrentView, this.ttxSearch.Text));
+                    this.searchThread.IsBackground = true;
+                    this.searchThread.Start();
                 }
             }
         }
@@ -2254,44 +2253,44 @@ namespace RadioDld
         {
             Thread.Sleep(500);
 
-            lock (searchThreadLock)
+            lock (this.searchThreadLock)
             {
-                if (!object.ReferenceEquals(Thread.CurrentThread, searchThread))
+                if (!object.ReferenceEquals(Thread.CurrentThread, this.searchThread))
                 {
                     // A search thread was created more recently, stop this thread
                     return;
                 }
 
-                this.Invoke((MethodInvoker)delegate { PerformSearch(origView, search); });
+                this.Invoke((MethodInvoker)delegate { this.PerformSearch(origView, search); });
             }
         }
 
         private void PerformSearch(ViewState.View origView, string search)
         {
-            if (view.CurrentView == origView)
+            if (this.view.CurrentView == origView)
             {
                 if (string.IsNullOrEmpty(search))
                 {
-                    if (view.CurrentViewData != null)
+                    if (this.view.CurrentViewData != null)
                     {
-                        view.StoreView(null);
+                        this.view.StoreView(null);
                     }
                 }
                 else
                 {
-                    if (view.CurrentViewData == null)
+                    if (this.view.CurrentViewData == null)
                     {
-                        view.StoreView(search);
+                        this.view.StoreView(search);
                     }
                     else
                     {
-                        view.CurrentViewData = search;
+                        this.view.CurrentViewData = search;
                     }
                 }
 
-                progData.DownloadQuery = search;
-                InitDownloadList();
-                SetViewDefaults();
+                this.progData.DownloadQuery = search;
+                this.InitDownloadList();
+                this.SetViewDefaults();
             }
         }
 
@@ -2302,13 +2301,13 @@ namespace RadioDld
                 if (commandLineArg.ToUpperInvariant() == "/EXIT")
                 {
                     // Close the application
-                    mnuTrayExit_Click(sender, e);
+                    this.mnuTrayExit_Click(sender, e);
                     return;
                 }
             }
 
             // Do the same as a double click on the tray icon
-            mnuTrayShow_Click(sender, e);
+            this.mnuTrayShow_Click(sender, e);
         }
     }
 }

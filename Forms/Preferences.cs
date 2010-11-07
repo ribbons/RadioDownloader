@@ -28,39 +28,39 @@ namespace RadioDld
 
         public Preferences()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
 
         private void cmdChangeFolder_Click(object eventSender, System.EventArgs eventArgs)
         {
             FolderBrowserDialog BrowseDialog = new FolderBrowserDialog();
-            BrowseDialog.SelectedPath = txtSaveIn.Text;
+            BrowseDialog.SelectedPath = this.txtSaveIn.Text;
             BrowseDialog.Description = "Choose the folder to save downloaded programmes in:";
 
             if (BrowseDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                txtSaveIn.Text = BrowseDialog.SelectedPath;
+                this.txtSaveIn.Text = BrowseDialog.SelectedPath;
             }
         }
 
         private void cmdOK_Click(object eventSender, System.EventArgs eventArgs)
         {
-            if (string.IsNullOrEmpty(txtFileNameFormat.Text))
+            if (string.IsNullOrEmpty(this.txtFileNameFormat.Text))
             {
                 Interaction.MsgBox("Please enter a value for the downloaded programme file name format.", MsgBoxStyle.Exclamation);
-                txtFileNameFormat.Focus();
-                cancelClose = true;
+                this.txtFileNameFormat.Focus();
+                this.cancelClose = true;
                 return;
             }
 
-            Properties.Settings.Default.RunOnStartup = uxRunOnStartup.Checked;
-            Properties.Settings.Default.SaveFolder = txtSaveIn.Text;
-            Properties.Settings.Default.FileNameFormat = txtFileNameFormat.Text;
-            Properties.Settings.Default.RunAfterCommand = txtRunAfter.Text;
+            Properties.Settings.Default.RunOnStartup = this.uxRunOnStartup.Checked;
+            Properties.Settings.Default.SaveFolder = this.txtSaveIn.Text;
+            Properties.Settings.Default.FileNameFormat = this.txtFileNameFormat.Text;
+            Properties.Settings.Default.RunAfterCommand = this.txtRunAfter.Text;
 
             if (OsUtils.WinSevenOrLater())
             {
-                Properties.Settings.Default.CloseToSystray = uxCloseToSystray.Checked;
+                Properties.Settings.Default.CloseToSystray = this.uxCloseToSystray.Checked;
             }
 
             OsUtils.ApplyRunOnStartup();
@@ -69,11 +69,11 @@ namespace RadioDld
 
         private void Preferences_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
         {
-            if (cancelClose)
+            if (this.cancelClose)
             {
                 // Prevent the form from being automatically closed if it failed validation
                 e.Cancel = true;
-                cancelClose = false;
+                this.cancelClose = false;
             }
         }
 
@@ -81,34 +81,34 @@ namespace RadioDld
         {
             this.Font = SystemFonts.MessageBoxFont;
 
-            uxRunOnStartup.Checked = Properties.Settings.Default.RunOnStartup;
+            this.uxRunOnStartup.Checked = Properties.Settings.Default.RunOnStartup;
 
             if (OsUtils.WinSevenOrLater())
             {
-                uxCloseToSystray.Checked = Properties.Settings.Default.CloseToSystray;
+                this.uxCloseToSystray.Checked = Properties.Settings.Default.CloseToSystray;
             }
             else
             {
-                uxCloseToSystray.Checked = true;
-                uxCloseToSystray.Enabled = false;
+                this.uxCloseToSystray.Checked = true;
+                this.uxCloseToSystray.Enabled = false;
             }
 
             try
             {
-                txtSaveIn.Text = FileUtils.GetSaveFolder();
+                this.txtSaveIn.Text = FileUtils.GetSaveFolder();
             }
             catch (DirectoryNotFoundException)
             {
-                txtSaveIn.Text = Properties.Settings.Default.SaveFolder;
+                this.txtSaveIn.Text = Properties.Settings.Default.SaveFolder;
             }
 
-            txtFileNameFormat.Text = Properties.Settings.Default.FileNameFormat;
-            txtRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
+            this.txtFileNameFormat.Text = Properties.Settings.Default.FileNameFormat;
+            this.txtRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
         }
 
         private void txtFileNameFormat_TextChanged(object sender, System.EventArgs e)
         {
-            lblFilenameFormatResult.Text = "Result: " + FileUtils.CreateSaveFileName(txtFileNameFormat.Text, "Programme Name", "Episode Name", DateAndTime.Now) + ".mp3";
+            this.lblFilenameFormatResult.Text = "Result: " + FileUtils.CreateSaveFileName(this.txtFileNameFormat.Text, "Programme Name", "Episode Name", DateAndTime.Now) + ".mp3";
         }
 
         private void cmdReset_Click(object sender, System.EventArgs e)

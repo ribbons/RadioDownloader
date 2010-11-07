@@ -46,15 +46,15 @@ namespace RadioDld
 
         public void SetGlassMargins(int leftMargin, int rightMargin, int topMargin, int bottomMargin)
         {
-            glassMargins = new MARGINS();
+            this.glassMargins = new MARGINS();
 
-            glassMargins.cxLeftWidth = leftMargin;
-            glassMargins.cxRightWidth = rightMargin;
-            glassMargins.cyTopHeight = topMargin;
-            glassMargins.cyButtomheight = bottomMargin;
+            this.glassMargins.cxLeftWidth = leftMargin;
+            this.glassMargins.cxRightWidth = rightMargin;
+            this.glassMargins.cyTopHeight = topMargin;
+            this.glassMargins.cyButtomheight = bottomMargin;
 
-            glassSet = true;
-            ExtendFrameIntoClientArea();
+            this.glassSet = true;
+            this.ExtendFrameIntoClientArea();
         }
 
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
@@ -63,16 +63,16 @@ namespace RadioDld
             switch (m.Msg)
             {
                 case WM_DWMCOMPOSITIONCHANGED:
-                    if (glassSet)
+                    if (this.glassSet)
                     {
-                        ExtendFrameIntoClientArea();
+                        this.ExtendFrameIntoClientArea();
                     }
 
                     break;
                 case WM_NCHITTEST:
                     DefWndProc(ref m);
 
-                    if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported && glassSet)
+                    if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported && this.glassSet)
                     {
                         if ((int)m.Result == HTCLIENT)
                         {
@@ -95,7 +95,7 @@ namespace RadioDld
                 return;
             }
 
-            if (DwmExtendFrameIntoClientArea(this.Handle, ref glassMargins) != 0)
+            if (DwmExtendFrameIntoClientArea(this.Handle, ref this.glassMargins) != 0)
             {
                 throw new Win32Exception();
             }

@@ -133,8 +133,8 @@ namespace RadioDld
 
             this.rendererFor = toolStrip;
 
-            toolStrip.FindForm().Activated += Form_Activated;
-            toolStrip.FindForm().Deactivate += Form_Deactivated;
+            toolStrip.FindForm().Activated += this.Form_Activated;
+            toolStrip.FindForm().Deactivate += this.Form_Deactivated;
         }
 
         protected override void OnRenderItemImage(System.Windows.Forms.ToolStripItemImageRenderEventArgs e)
@@ -201,7 +201,7 @@ namespace RadioDld
                 if (VisualStyleRenderer.IsSupported && OsUtils.WinVistaOrLater())
                 {
                     // Set the background the same as the title bar to give the illusion of an extended frame
-                    if (isActive)
+                    if (this.isActive)
                     {
                         e.Graphics.Clear(SystemColors.GradientActiveCaption);
                     }
@@ -225,17 +225,17 @@ namespace RadioDld
                 return;
             }
 
-            if (inactiveTabBkg == null)
+            if (this.inactiveTabBkg == null)
             {
-                inactiveTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.Control, SystemColors.ControlDark);
-                hoverTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.ControlLight, SystemColors.Control);
-                pressedTabBkg = new SolidBrush(SystemColors.ControlLight);
+                this.inactiveTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.Control, SystemColors.ControlDark);
+                this.hoverTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.ControlLight, SystemColors.Control);
+                this.pressedTabBkg = new SolidBrush(SystemColors.ControlLight);
             }
 
-            using (LinearGradientBrush activeTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.ControlLight, GetActiveTabBtmCol(e.ToolStrip, e.Item)))
+            using (LinearGradientBrush activeTabBkg = new LinearGradientBrush(new Point(0, 0), new Point(0, e.Item.Height), SystemColors.ControlLight, this.GetActiveTabBtmCol(e.ToolStrip, e.Item)))
             {
                 ToolStripButton button = (ToolStripButton)e.Item;
-                Brush colour = inactiveTabBkg;
+                Brush colour = this.inactiveTabBkg;
 
                 if (button.Checked)
                 {
@@ -248,11 +248,11 @@ namespace RadioDld
                 {
                     if (e.Item.Pressed)
                     {
-                        colour = pressedTabBkg;
+                        colour = this.pressedTabBkg;
                     }
                     else
                     {
-                        colour = hoverTabBkg;
+                        colour = this.hoverTabBkg;
                     }
                 }
 
@@ -272,7 +272,7 @@ namespace RadioDld
                     tab.AddLine(width, curveSize, width, height);
 
                     e.Graphics.FillPath(colour, tab);
-                    e.Graphics.DrawPath(tabBorder, tab);
+                    e.Graphics.DrawPath(this.tabBorder, tab);
                 }
             }
         }
@@ -399,12 +399,12 @@ namespace RadioDld
             {
                 if (OsUtils.CompositionEnabled() == false)
                 {
-                    e.Graphics.DrawLine(nonAeroBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1);
+                    e.Graphics.DrawLine(this.nonAeroBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1);
                 }
             }
             else
             {
-                e.Graphics.DrawLine(tabBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1);
+                e.Graphics.DrawLine(this.tabBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1);
             }
 
             ToolStripButton @checked = null;
@@ -424,13 +424,13 @@ namespace RadioDld
             if (@checked != null)
             {
                 // Extend the bottom of the tab over the client area border, joining the tab onto the main client area
-                using (SolidBrush toolbarBkg = new SolidBrush(GetActiveTabBtmCol(e.ToolStrip, @checked)))
+                using (SolidBrush toolbarBkg = new SolidBrush(this.GetActiveTabBtmCol(e.ToolStrip, @checked)))
                 {
                     e.Graphics.FillRectangle(toolbarBkg, new Rectangle(@checked.Bounds.Left, @checked.Bounds.Bottom, @checked.Bounds.Width - tabSeparation, e.ToolStrip.Bounds.Bottom - @checked.Bounds.Bottom));
                 }
 
-                e.Graphics.DrawLine(tabBorder, @checked.Bounds.Left, @checked.Bounds.Bottom, @checked.Bounds.Left, e.AffectedBounds.Bottom);
-                e.Graphics.DrawLine(tabBorder, @checked.Bounds.Right - tabSeparation, @checked.Bounds.Bottom, @checked.Bounds.Right - tabSeparation, e.AffectedBounds.Bottom);
+                e.Graphics.DrawLine(this.tabBorder, @checked.Bounds.Left, @checked.Bounds.Bottom, @checked.Bounds.Left, e.AffectedBounds.Bottom);
+                e.Graphics.DrawLine(this.tabBorder, @checked.Bounds.Right - tabSeparation, @checked.Bounds.Bottom, @checked.Bounds.Right - tabSeparation, e.AffectedBounds.Bottom);
             }
         }
 
@@ -461,14 +461,14 @@ namespace RadioDld
 
         private void Form_Activated(object sender, System.EventArgs e)
         {
-            isActive = true;
-            rendererFor.Invalidate();
+            this.isActive = true;
+            this.rendererFor.Invalidate();
         }
 
         private void Form_Deactivated(object sender, System.EventArgs e)
         {
-            isActive = false;
-            rendererFor.Invalidate();
+            this.isActive = false;
+            this.rendererFor.Invalidate();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -477,18 +477,18 @@ namespace RadioDld
             {
                 if (disposing)
                 {
-                    if (inactiveTabBkg != null)
+                    if (this.inactiveTabBkg != null)
                     {
-                        inactiveTabBkg.Dispose();
-                        hoverTabBkg.Dispose();
-                        pressedTabBkg.Dispose();
+                        this.inactiveTabBkg.Dispose();
+                        this.hoverTabBkg.Dispose();
+                        this.pressedTabBkg.Dispose();
                     }
 
-                    rendererFor.FindForm().Activated -= Form_Activated;
-                    rendererFor.FindForm().Deactivate -= Form_Deactivated;
+                    this.rendererFor.FindForm().Activated -= this.Form_Activated;
+                    this.rendererFor.FindForm().Deactivate -= this.Form_Deactivated;
 
-                    tabBorder.Dispose();
-                    nonAeroBorder.Dispose();
+                    this.tabBorder.Dispose();
+                    this.nonAeroBorder.Dispose();
                 }
             }
 
@@ -497,13 +497,13 @@ namespace RadioDld
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~TabBarRenderer()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
     }
 }

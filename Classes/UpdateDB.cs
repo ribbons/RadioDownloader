@@ -38,20 +38,20 @@ namespace RadioDld
         public UpdateDB(string specDbPath, string updateDbPath)
             : base()
         {
-            specConn = new SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False");
-            specConn.Open();
+            this.specConn = new SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False");
+            this.specConn.Open();
 
-            updateConn = new SQLiteConnection("Data Source=" + updateDbPath + ";Version=3;New=False");
-            updateConn.Open();
+            this.updateConn = new SQLiteConnection("Data Source=" + updateDbPath + ";Version=3;New=False");
+            this.updateConn.Open();
         }
 
         public bool UpdateStructure()
         {
             UpdateType updateReqd = default(UpdateType);
 
-            using (SQLiteCommand specCommand = new SQLiteCommand("select name, sql from sqlite_master where type='table'", specConn))
+            using (SQLiteCommand specCommand = new SQLiteCommand("select name, sql from sqlite_master where type='table'", this.specConn))
             {
-                using (SQLiteCommand checkUpdateCmd = new SQLiteCommand("select sql from sqlite_master where type='table' and name=@name", updateConn))
+                using (SQLiteCommand checkUpdateCmd = new SQLiteCommand("select sql from sqlite_master where type='table' and name=@name", this.updateConn))
                 {
                     SQLiteParameter nameParam = new SQLiteParameter("@name");
                     checkUpdateCmd.Parameters.Add(nameParam);
@@ -93,7 +93,7 @@ namespace RadioDld
                             if (updateReqd == UpdateType.Create)
                             {
                                 // Create the table
-                                using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, updateConn))
+                                using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, this.updateConn))
                                 {
                                     updateCommand.ExecuteNonQuery();
                                 }
@@ -101,21 +101,21 @@ namespace RadioDld
                             else if (updateReqd == UpdateType.Update)
                             {
                                 // Fetch a list of common column names for transferring the data
-                                string columnNames = ColNames(specName);
+                                string columnNames = this.ColNames(specName);
 
                                 // Start a transaction, so we can roll back if there is an error
-                                using (SQLiteTransaction trans = updateConn.BeginTransaction())
+                                using (SQLiteTransaction trans = this.updateConn.BeginTransaction())
                                 {
                                     try
                                     {
                                         // Rename the existing table to table_name_old
-                                        using (SQLiteCommand updateCommand = new SQLiteCommand("alter table [" + specName + "] rename to [" + specName + "_old]", updateConn, trans))
+                                        using (SQLiteCommand updateCommand = new SQLiteCommand("alter table [" + specName + "] rename to [" + specName + "_old]", this.updateConn, trans))
                                         {
                                             updateCommand.ExecuteNonQuery();
                                         }
 
                                         // Create the new table with the correct structure
-                                        using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, updateConn, trans))
+                                        using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, this.updateConn, trans))
                                         {
                                             updateCommand.ExecuteNonQuery();
                                         }
@@ -123,14 +123,14 @@ namespace RadioDld
                                         // Copy across the data (discarding rows which violate any new constraints)
                                         if (!string.IsNullOrEmpty(columnNames))
                                         {
-                                            using (SQLiteCommand updateCommand = new SQLiteCommand("insert or ignore into [" + specName + "] (" + columnNames + ") select " + columnNames + " from [" + specName + "_old]", updateConn, trans))
+                                            using (SQLiteCommand updateCommand = new SQLiteCommand("insert or ignore into [" + specName + "] (" + columnNames + ") select " + columnNames + " from [" + specName + "_old]", this.updateConn, trans))
                                             {
                                                 updateCommand.ExecuteNonQuery();
                                             }
                                         }
 
                                         // Delete the old table
-                                        using (SQLiteCommand updateCommand = new SQLiteCommand("drop table [" + specName + "_old]", updateConn, trans))
+                                        using (SQLiteCommand updateCommand = new SQLiteCommand("drop table [" + specName + "_old]", this.updateConn, trans))
                                         {
                                             updateCommand.ExecuteNonQuery();
                                         }
@@ -154,8 +154,8 @@ namespace RadioDld
 
         private string ColNames(string tableName)
         {
-            List<string> fromCols = ListTableColumns(updateConn, tableName);
-            List<string> toCols = ListTableColumns(specConn, tableName);
+            List<string> fromCols = this.ListTableColumns(this.updateConn, tableName);
+            List<string> toCols = this.ListTableColumns(this.specConn, tableName);
             List<string> resultCols = new List<string>();
 
             // Store an intersect of the from and to columns in resultCols
@@ -204,8 +204,8 @@ namespace RadioDld
             {
                 if (disposing)
                 {
-                    specConn.Dispose();
-                    updateConn.Dispose();
+                    this.specConn.Dispose();
+                    this.updateConn.Dispose();
                 }
 
                 this.isDisposed = true;
@@ -214,13 +214,13 @@ namespace RadioDld
 
         public void Dispose()
         {
-            Dispose(true);
+            this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         ~UpdateDB()
         {
-            Dispose(false);
+            this.Dispose(false);
         }
     }
 }

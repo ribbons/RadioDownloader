@@ -54,14 +54,14 @@ namespace RadioDld
 
         private DataSearch(Data instance)
         {
-            dataInstance = instance;
+            this.dataInstance = instance;
 
             Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
             tableCols.Add("downloads", new string[] { "name", "description" });
 
             using (Status showStatus = new Status())
             {
-                if (CheckIndex(tableCols) == false)
+                if (this.CheckIndex(tableCols) == false)
                 {
                     // Close & clean up the connection used for testing
                     dbConn.Close();
@@ -69,7 +69,7 @@ namespace RadioDld
                     dbConn = null;
 
                     // Clean up the old index
-                    File.Delete(DatabasePath());
+                    File.Delete(this.DatabasePath());
 
                     showStatus.StatusText = "Building search index...";
                     showStatus.ProgressBarMarquee = false;
@@ -77,14 +77,14 @@ namespace RadioDld
                     showStatus.ProgressBarMax = 100 * tableCols.Count;
                     showStatus.Show();
 
-                    lock (updateIndexLock)
+                    lock (this.updateIndexLock)
                     {
-                        using (SQLiteTransaction trans = FetchDbConn().BeginTransaction())
+                        using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
                         {
                             // Create the index tables
                             foreach (KeyValuePair<string, string[]> table in tableCols)
                             {
-                                using (SQLiteCommand command = new SQLiteCommand(TableSql(table.Key, table.Value), FetchDbConn(), trans))
+                                using (SQLiteCommand command = new SQLiteCommand(this.TableSql(table.Key, table.Value), this.FetchDbConn(), trans))
                                 {
                                     command.ExecuteNonQuery();
                                 }
@@ -93,11 +93,11 @@ namespace RadioDld
                             showStatus.StatusText = "Building search index for downloads...";
 
                             int progress = 1;
-                            List<Data.DownloadData> downloadItems = dataInstance.FetchDownloadList(false);
+                            List<Data.DownloadData> downloadItems = this.dataInstance.FetchDownloadList(false);
 
                             foreach (Data.DownloadData downloadItem in downloadItems)
                             {
-                                AddDownload(downloadItem);
+                                this.AddDownload(downloadItem);
 
                                 showStatus.ProgressBarValue = Convert.ToInt32((progress / downloadItems.Count) * 100);
                                 progress += 1;
@@ -123,7 +123,7 @@ namespace RadioDld
         {
             if (dbConn == null)
             {
-                dbConn = new SQLiteConnection("Data Source=" + DatabasePath() + ";Version=3");
+                dbConn = new SQLiteConnection("Data Source=" + this.DatabasePath() + ";Version=3");
                 dbConn.Open();
             }
 
@@ -132,7 +132,7 @@ namespace RadioDld
 
         private bool CheckIndex(Dictionary<string, string[]> tableCols)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(*) from sqlite_master where type='table' and name=@name and sql=@sql", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from sqlite_master where type='table' and name=@name and sql=@sql", this.FetchDbConn()))
             {
                 SQLiteParameter nameParam = new SQLiteParameter("@name");
                 SQLiteParameter sqlParam = new SQLiteParameter("@sql");
@@ -143,7 +143,7 @@ namespace RadioDld
                 foreach (KeyValuePair<string, string[]> table in tableCols)
                 {
                     nameParam.Value = table.Key;
-                    sqlParam.Value = TableSql(table.Key, table.Value);
+                    sqlParam.Value = this.TableSql(table.Key, table.Value);
 
                     if (Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) != 1)
                     {
@@ -164,17 +164,17 @@ namespace RadioDld
         {
             get
             {
-                return _downloadQuery;
+                return this._downloadQuery;
             }
 
             set
             {
-                if (value != _downloadQuery)
+                if (value != this._downloadQuery)
                 {
                     try
                     {
-                        RunQuery(value);
-                        _downloadQuery = value;
+                        this.RunQuery(value);
+                        this._downloadQuery = value;
                     }
                     catch (SQLiteException)
                     {
@@ -186,9 +186,9 @@ namespace RadioDld
 
         private void RunQuery(string query)
         {
-            lock (downloadVisLock)
+            lock (this.downloadVisLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("select docid from downloads where downloads match @query", FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select docid from downloads where downloads match @query", this.FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@query", query + "*"));
 
@@ -196,11 +196,11 @@ namespace RadioDld
                     {
                         int docidOrdinal = reader.GetOrdinal("docid");
 
-                        downloadsVisible = new List<int>();
+                        this.downloadsVisible = new List<int>();
 
                         while (reader.Read())
                         {
-                            downloadsVisible.Add(reader.GetInt32(docidOrdinal));
+                            this.downloadsVisible.Add(reader.GetInt32(docidOrdinal));
                         }
                     }
                 }
@@ -209,27 +209,27 @@ namespace RadioDld
 
         public bool DownloadIsVisible(int epid)
         {
-            if (string.IsNullOrEmpty(DownloadQuery))
+            if (string.IsNullOrEmpty(this._downloadQuery))
             {
                 return true;
             }
 
-            lock (downloadVisLock)
+            lock (this.downloadVisLock)
             {
-                if (downloadsVisible == null)
+                if (this.downloadsVisible == null)
                 {
-                    RunQuery(_downloadQuery);
+                    this.RunQuery(this._downloadQuery);
                 }
 
-                return downloadsVisible.Contains(epid);
+                return this.downloadsVisible.Contains(epid);
             }
         }
 
         private void AddDownload(Data.DownloadData storeData)
         {
-            lock (updateIndexLock)
+            lock (this.updateIndexLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("insert or replace into downloads (docid, name, description) values (@epid, @name, @description)", FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("insert or replace into downloads (docid, name, description) values (@epid, @name, @description)", this.FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@epid", storeData.epid));
                     command.Parameters.Add(new SQLiteParameter("@name", storeData.name));
@@ -239,35 +239,35 @@ namespace RadioDld
                 }
             }
 
-            lock (downloadVisLock)
+            lock (this.downloadVisLock)
             {
-                downloadsVisible = null;
+                this.downloadsVisible = null;
             }
         }
 
         public void AddDownload(int epid)
         {
-            Data.DownloadData downloadData = dataInstance.FetchDownloadData(epid);
-            AddDownload(downloadData);
+            Data.DownloadData downloadData = this.dataInstance.FetchDownloadData(epid);
+            this.AddDownload(downloadData);
         }
 
         public void UpdateDownload(int epid)
         {
-            lock (updateIndexLock)
+            lock (this.updateIndexLock)
             {
-                using (SQLiteTransaction trans = FetchDbConn().BeginTransaction())
+                using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
                 {
-                    RemoveDownload(epid);
-                    AddDownload(epid);
+                    this.RemoveDownload(epid);
+                    this.AddDownload(epid);
                 }
             }
         }
 
         public void RemoveDownload(int epid)
         {
-            lock (updateIndexLock)
+            lock (this.updateIndexLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", this.FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
                     command.ExecuteNonQuery();

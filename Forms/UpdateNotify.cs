@@ -22,7 +22,7 @@ namespace RadioDld
     {
         public UpdateNotify()
         {
-            InitializeComponent();
+            this.InitializeComponent();
         }
         
         private void Update_Load(object sender, System.EventArgs e)
