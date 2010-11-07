@@ -20,10 +20,10 @@ namespace RadioDld
 
     internal partial class ReportError : Form
     {
-        private ErrorReporting report;
-
         private static object showingLock = new object();
         private static bool showing = false;
+
+        private ErrorReporting report;
 
         public void ShowReport(ErrorReporting report)
         {
