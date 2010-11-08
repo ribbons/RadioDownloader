@@ -81,8 +81,7 @@ namespace PodcastProvider
 
         public Panel GetFindNewPanel(object view)
         {
-            FindNew FindNewInst = new FindNew();
-            FindNewInst.clsPluginInst = this;
+            FindNew FindNewInst = new FindNew(this);
             return FindNewInst.pnlFindNew;
         }
 

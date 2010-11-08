@@ -21,12 +21,15 @@ namespace PodcastProvider
 
     internal partial class FindNew : Form
     {
-        public FindNew()
+        public FindNew(PodcastProvider clsPluginInst)
         {
+            // This call is required by the Windows Form Designer.
             this.InitializeComponent();
+
+            this.clsPluginInst = clsPluginInst;
         }
 
-        internal PodcastProvider clsPluginInst;
+        private PodcastProvider clsPluginInst;
 
         private void cmdViewEps_Click(object sender, System.EventArgs e)
         {

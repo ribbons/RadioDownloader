@@ -300,11 +300,6 @@
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
         </Rule>
-        <Rule Name="FieldsMustBePrivate">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="FileMayOnlyContainASingleClass">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
