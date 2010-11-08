@@ -1,6 +1,6 @@
 namespace RadioDld
 {
-    partial class CleanUp
+    internal partial class CleanUp
     {
         /// <summary>
         /// Required designer variable.

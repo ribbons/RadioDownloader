@@ -1,6 +1,6 @@
 namespace RadioDld
 {
-    partial class UpdateNotify
+    internal partial class UpdateNotify
     {
         /// <summary>
         /// Required designer variable.

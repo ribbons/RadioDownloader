@@ -18,7 +18,7 @@ namespace RadioDld
     using System.Drawing;
     using System.Windows.Forms;
 
-    public partial class UpdateNotify : Form
+    internal partial class UpdateNotify : Form
     {
         public UpdateNotify()
         {

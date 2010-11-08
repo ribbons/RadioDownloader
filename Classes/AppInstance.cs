@@ -19,7 +19,7 @@ namespace RadioDld
     using System.Windows.Forms;
     using Microsoft.VisualBasic.ApplicationServices;
 
-    class AppInstance : WindowsFormsApplicationBase
+    internal class AppInstance : WindowsFormsApplicationBase
     {
         [STAThread]
         public static void Main(string[] args)

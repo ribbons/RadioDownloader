@@ -1,6 +1,6 @@
 namespace PodcastProvider
 {
-    partial class FindNew
+    internal partial class FindNew
     {
         /// <summary>
         /// Required designer variable.

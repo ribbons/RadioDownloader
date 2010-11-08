@@ -29,7 +29,7 @@ namespace RadioDld
 
     internal class ErrorReporting
     {
-        Dictionary<string, string> fields = new Dictionary<string, string>();
+        private Dictionary<string, string> fields = new Dictionary<string, string>();
 
         public ErrorReporting(string errorText, string errorDetails)
         {

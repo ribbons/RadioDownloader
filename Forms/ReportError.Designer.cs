@@ -1,6 +1,6 @@
 namespace RadioDld
 {
-    partial class ReportError
+    internal partial class ReportError
     {
         /// <summary>
         /// Required designer variable.

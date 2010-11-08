@@ -1,6 +1,6 @@
 namespace RadioDld
 {
-    partial class Preferences
+    internal partial class Preferences
     {
         /// <summary>
         /// Required designer variable.

@@ -1,6 +1,6 @@
 namespace RadioDld
 {
-    partial class ChooseCols
+    internal partial class ChooseCols
     {
         /// <summary>
         /// Required designer variable.

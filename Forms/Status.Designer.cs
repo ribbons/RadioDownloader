@@ -1,6 +1,6 @@
 namespace RadioDld
 {
-    partial class Status
+    internal partial class Status
     {
         /// <summary>
         /// Required designer variable.
