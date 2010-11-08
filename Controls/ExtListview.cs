@@ -56,7 +56,7 @@ namespace RadioDld
 
         // Notify messages
         private const int NM_FIRST = 0;
-        private const int NM_RCLICK = (NM_FIRST - 5);
+        private const int NM_RCLICK = NM_FIRST - 5;
 
         // API Structures
         [StructLayout(LayoutKind.Sequential)]

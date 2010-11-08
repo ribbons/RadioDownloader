@@ -210,7 +210,7 @@ namespace RadioDld
         {
             foreach (Screen thisScreen in Screen.AllScreens)
             {
-                if ((thisScreen.WorkingArea.IntersectsWith(location)))
+                if (thisScreen.WorkingArea.IntersectsWith(location))
                 {
                     return true;
                 }

@@ -300,7 +300,7 @@ namespace PodcastProvider
                             }
                             else
                             {
-                                episodeInfoReturn.EpisodeInfo.DurationSecs = ((Convert.ToInt32(strSplitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(strSplitDuration[1], CultureInfo.InvariantCulture)) * 60 + Convert.ToInt32(strSplitDuration[2], CultureInfo.InvariantCulture);
+                                episodeInfoReturn.EpisodeInfo.DurationSecs = (((Convert.ToInt32(strSplitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(strSplitDuration[1], CultureInfo.InvariantCulture)) * 60) + Convert.ToInt32(strSplitDuration[2], CultureInfo.InvariantCulture);
                             }
                         }
                         else
