@@ -25,6 +25,11 @@ namespace RadioDld
 
         private ErrorReporting report;
 
+        public ReportError()
+        {
+            this.InitializeComponent();
+        }
+
         public void ShowReport(ErrorReporting report)
         {
             this.report = report;
@@ -77,11 +82,6 @@ namespace RadioDld
         {
             // As there has been an error, blow away the rest of the app reasonably tidily
             System.Environment.Exit(1);
-        }
-
-        public ReportError()
-        {
-            this.InitializeComponent();
         }
     }
 }

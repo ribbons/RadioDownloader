@@ -22,6 +22,11 @@ namespace RadioDld
 
     internal sealed partial class About : Form
     {
+        public About()
+        {
+            this.InitializeComponent();
+        }
+        
         private void About_Load(object sender, System.EventArgs e)
         {
             // Set the title of the form.
@@ -50,11 +55,6 @@ namespace RadioDld
         private void HomepageLink_Click(object sender, System.EventArgs e)
         {
             Process.Start("http://www.nerdoftheherd.com/tools/radiodld/");
-        }
-
-        public About()
-        {
-            this.InitializeComponent();
         }
     }
 }

@@ -23,12 +23,6 @@ namespace RadioDld
 
     public class SearchBox : Control
     {
-        [DllImport("uxtheme.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, string lParam);
-
         // Window Messages
         private const int EM_SETCUEBANNER = 0x1501;
 
@@ -112,6 +106,26 @@ namespace RadioDld
                 SendMessage(this.textBox.Handle, EM_SETCUEBANNER, IntPtr.Zero, this._cueBanner);
             }
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!this.IsDisposed)
+            {
+                if (disposing)
+                {
+                    this.textBox.Dispose();
+                    this.button.Dispose();
+                }
+            }
+
+            base.Dispose(disposing);
+        }
+
+        [DllImport("uxtheme.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, string lParam);
 
         private void SearchBox_HandleCreated(object sender, System.EventArgs e)
         {
@@ -332,20 +346,6 @@ namespace RadioDld
             {
                 this.textBox.Text = string.Empty;
             }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (!this.IsDisposed)
-            {
-                if (disposing)
-                {
-                    this.textBox.Dispose();
-                    this.button.Dispose();
-                }
-            }
-
-            base.Dispose(disposing);
         }
     }
 }

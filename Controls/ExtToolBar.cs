@@ -35,26 +35,6 @@ namespace RadioDld
         private const int BTNS_AUTOSIZE = 0x10;
         private const int BTNS_WHOLEDROPDOWN = 0x80;
 
-        // API Structs
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct TBBUTTONINFO
-        {
-            public int cbSize;
-            public uint dwMask;
-            public int idCommand;
-            public int iImage;
-            public byte fsState;
-            public byte fsStyle;
-            public short cx;
-            public IntPtr lParam;
-            public IntPtr pszText;
-            public int cchText;
-        }
-
-        // API Declarations
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref TBBUTTONINFO lParam);
-
         // Variables
         private List<ToolBarButton> wholeDropDownButtons = new List<ToolBarButton>();
 
@@ -146,6 +126,26 @@ namespace RadioDld
             }
 
             return false;
+        }
+
+        // API Declarations
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref TBBUTTONINFO lParam);
+
+        // API Structs
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        private struct TBBUTTONINFO
+        {
+            public int cbSize;
+            public uint dwMask;
+            public int idCommand;
+            public int iImage;
+            public byte fsState;
+            public byte fsStyle;
+            public short cx;
+            public IntPtr lParam;
+            public IntPtr pszText;
+            public int cchText;
         }
     }
 }

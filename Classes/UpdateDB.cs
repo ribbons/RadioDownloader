@@ -27,13 +27,6 @@ namespace RadioDld
         private SQLiteConnection specConn;
         private SQLiteConnection updateConn;
 
-        private enum UpdateType
-        {
-            None,
-            Create,
-            Update
-        }
-
         public UpdateDB(string specDbPath, string updateDbPath)
             : base()
         {
@@ -42,6 +35,24 @@ namespace RadioDld
 
             this.updateConn = new SQLiteConnection("Data Source=" + updateDbPath + ";Version=3;New=False");
             this.updateConn.Open();
+        }
+
+        ~UpdateDB()
+        {
+            this.Dispose(false);
+        }
+
+        private enum UpdateType
+        {
+            None,
+            Create,
+            Update
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public bool UpdateStructure()
@@ -209,17 +220,6 @@ namespace RadioDld
 
                 this.isDisposed = true;
             }
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~UpdateDB()
-        {
-            this.Dispose(false);
         }
     }
 }

@@ -21,6 +21,14 @@ namespace RadioDld
 
     internal class TaskbarNotify
     {
+        private ITaskbarList3 taskBarListInst;
+
+        public TaskbarNotify()
+        {
+            this.taskBarListInst = (ITaskbarList3)new TaskbarList();
+            this.taskBarListInst.HrInit();
+        }
+
         [Flags()]
         private enum TBATFLAG
         {
@@ -36,18 +44,6 @@ namespace RadioDld
             TBPF_NORMAL = 0x2,
             TBPF_ERROR = 0x4,
             TBPF_PAUSED = 0x8
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        private struct THUMBBUTTON
-        {
-            public uint dwMask;
-            public uint iId;
-            public uint iBitmap;
-            public IntPtr hIcon;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
-            public ushort[] szTip;
-            public uint dwFlags;
         }
 
         [ComImport(), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF")]
@@ -88,19 +84,6 @@ namespace RadioDld
             void SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
 
             void SetThumbnailClip(IntPtr hwnd, RECT prcClip);
-        }
-
-        [ComImport(), Guid("56FDF344-FD6D-11D0-958A-006097C9A090"), ClassInterface(ClassInterfaceType.None)]
-        private class TaskbarList
-        {
-        }
-
-        private ITaskbarList3 taskBarListInst;
-
-        public TaskbarNotify()
-        {
-            this.taskBarListInst = (ITaskbarList3)new TaskbarList();
-            this.taskBarListInst.HrInit();
         }
 
         public void SetOverlayIcon(Form parentWin, Icon icon, string description)
@@ -144,6 +127,23 @@ namespace RadioDld
         public void SetProgressNone(Form parentWin)
         {
             this.taskBarListInst.SetProgressState(parentWin.Handle, TBPFLAG.TBPF_NOPROGRESS);
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        private struct THUMBBUTTON
+        {
+            public uint dwMask;
+            public uint iId;
+            public uint iBitmap;
+            public IntPtr hIcon;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
+            public ushort[] szTip;
+            public uint dwFlags;
+        }
+
+        [ComImport(), Guid("56FDF344-FD6D-11D0-958A-006097C9A090"), ClassInterface(ClassInterfaceType.None)]
+        private class TaskbarList
+        {
         }
     }
 }

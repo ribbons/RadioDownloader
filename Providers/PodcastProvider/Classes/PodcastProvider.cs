@@ -31,6 +31,9 @@ namespace PodcastProvider
 
     public class PodcastProvider : IRadioProvider
     {
+        internal const int intCacheHTTPHours = 2;
+        private DownloadWrapper doDownload;
+
         public event FindNewViewChangeEventHandler FindNewViewChange
         {
             add { throw new NotSupportedException(); }
@@ -44,9 +47,6 @@ namespace PodcastProvider
         public event ProgressEventHandler Progress;
 
         public event FinishedEventHandler Finished;
-
-        internal const int intCacheHTTPHours = 2;
-        private DownloadWrapper doDownload;
 
         public Guid ProviderId
         {

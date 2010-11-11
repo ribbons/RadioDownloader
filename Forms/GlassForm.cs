@@ -29,18 +29,6 @@ namespace RadioDld
         private const int HTCLIENT = 0x1;
         private const int HTCAPTION = 0x2;
 
-        [StructLayout(LayoutKind.Sequential)]
-        private struct MARGINS
-        {
-            public int cxLeftWidth;
-            public int cxRightWidth;
-            public int cyTopHeight;
-            public int cyButtomheight;
-        }
-
-        [DllImport("dwmapi.dll", SetLastError = true)]
-        private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
-
         private bool glassSet;
         private MARGINS glassMargins;
 
@@ -88,6 +76,9 @@ namespace RadioDld
             base.WndProc(ref m);
         }
 
+        [DllImport("dwmapi.dll", SetLastError = true)]
+        private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
+
         private void ExtendFrameIntoClientArea()
         {
             if (!OsUtils.CompositionEnabled())
@@ -99,6 +90,15 @@ namespace RadioDld
             {
                 throw new Win32Exception();
             }
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct MARGINS
+        {
+            public int cxLeftWidth;
+            public int cxRightWidth;
+            public int cyTopHeight;
+            public int cyButtomheight;
         }
     }
 }

@@ -29,81 +29,6 @@ namespace RadioDld
 
     internal class Data
     {
-        public enum DownloadStatus
-        {
-            Waiting = 0,
-            Downloaded = 1,
-            Errored = 2
-        }
-
-        public enum DownloadCols
-        {
-            EpisodeName = 0,
-            EpisodeDate = 1,
-            Status = 2,
-            Progress = 3,
-            Duration = 4
-        }
-
-        public struct ProviderData
-        {
-            public string name;
-            public string description;
-            public Bitmap icon;
-            public EventHandler showOptionsHandler;
-        }
-
-        public struct EpisodeData
-        {
-            public string name;
-            public string description;
-            public System.DateTime episodeDate;
-            public int duration;
-            public bool autoDownload;
-        }
-
-        public struct ProgrammeData
-        {
-            public string name;
-            public string description;
-            public bool favourite;
-            public bool subscribed;
-            public bool singleEpisode;
-        }
-
-        public struct FavouriteData
-        {
-            public int progid;
-            public string name;
-            public string description;
-            public bool subscribed;
-            public bool singleEpisode;
-            public string providerName;
-        }
-
-        public struct SubscriptionData
-        {
-            public string name;
-            public string description;
-            public bool favourite;
-            public DateTime? latestDownload;
-            public string providerName;
-        }
-
-        public struct DownloadData
-        {
-            public int epid;
-            public string name;
-            public string description;
-            public int duration;
-            public System.DateTime episodeDate;
-            public DownloadStatus status;
-            public ErrorType errorType;
-            public string errorDetails;
-            public string downloadPath;
-            public int playCount;
-        }
-
         [ThreadStatic()]
         private static SQLiteConnection dbConn;
         private static Data dataInstance;
@@ -125,10 +50,10 @@ namespace RadioDld
 
         private Dictionary<int, int> favouriteSortCache;
         private object favouriteSortCacheLock = new object();
-        
+
         private Dictionary<int, int> subscriptionSortCache;
         private object subscriptionSortCacheLock = new object();
-        
+
         private DownloadCols downloadSortBy = DownloadCols.EpisodeDate;
         private bool downloadSortAsc;
 
@@ -137,96 +62,6 @@ namespace RadioDld
 
         private object findDownloadLock = new object();
         private int lastProgressVal = -1;
-
-        public event ProviderAddedEventHandler ProviderAdded;
-
-        public delegate void ProviderAddedEventHandler(Guid providerId);
-
-        public event FindNewViewChangeEventHandler FindNewViewChange;
-
-        public delegate void FindNewViewChangeEventHandler(object viewData);
-
-        public event FoundNewEventHandler FoundNew;
-
-        public delegate void FoundNewEventHandler(int progid);
-
-        public event ProgrammeUpdatedEventHandler ProgrammeUpdated;
-
-        public delegate void ProgrammeUpdatedEventHandler(int progid);
-
-        public event EpisodeAddedEventHandler EpisodeAdded;
-
-        public delegate void EpisodeAddedEventHandler(int epid);
-
-        public event FavouriteAddedEventHandler FavouriteAdded;
-
-        public delegate void FavouriteAddedEventHandler(int progid);
-
-        public event FavouriteUpdatedEventHandler FavouriteUpdated;
-
-        public delegate void FavouriteUpdatedEventHandler(int progid);
-
-        public event FavouriteRemovedEventHandler FavouriteRemoved;
-
-        public delegate void FavouriteRemovedEventHandler(int progid);
-
-        public event SubscriptionAddedEventHandler SubscriptionAdded;
-
-        public delegate void SubscriptionAddedEventHandler(int progid);
-
-        public event SubscriptionUpdatedEventHandler SubscriptionUpdated;
-
-        public delegate void SubscriptionUpdatedEventHandler(int progid);
-
-        public event SubscriptionRemovedEventHandler SubscriptionRemoved;
-
-        public delegate void SubscriptionRemovedEventHandler(int progid);
-
-        public event DownloadAddedEventHandler DownloadAdded;
-
-        public delegate void DownloadAddedEventHandler(int epid);
-
-        public event DownloadUpdatedEventHandler DownloadUpdated;
-
-        public delegate void DownloadUpdatedEventHandler(int epid);
-
-        public event DownloadProgressEventHandler DownloadProgress;
-
-        public delegate void DownloadProgressEventHandler(int epid, int percent, string statusText, ProgressIcon icon);
-
-        public event DownloadRemovedEventHandler DownloadRemoved;
-
-        public delegate void DownloadRemovedEventHandler(int epid);
-
-        public event DownloadProgressTotalEventHandler DownloadProgressTotal;
-
-        public delegate void DownloadProgressTotalEventHandler(bool downloading, int percent);
-
-        public static Data GetInstance()
-        {
-            // Need to use a lock instead of declaring the instance variable as New, as otherwise
-            // on first run the constructor gets called before the template database is in place
-            lock (dataInstanceLock)
-            {
-                if (dataInstance == null)
-                {
-                    dataInstance = new Data();
-                }
-
-                return dataInstance;
-            }
-        }
-
-        private SQLiteConnection FetchDbConn()
-        {
-            if (dbConn == null)
-            {
-                dbConn = new SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False");
-                dbConn.Open();
-            }
-
-            return dbConn;
-        }
 
         private Data()
             : base()
@@ -268,6 +103,825 @@ namespace RadioDld
 
             // Start regularly checking for new subscriptions in the background
             ThreadPool.QueueUserWorkItem(delegate { this.CheckSubscriptions(); });
+        }
+
+        public delegate void ProviderAddedEventHandler(Guid providerId);
+
+        public delegate void FindNewViewChangeEventHandler(object viewData);
+
+        public delegate void FoundNewEventHandler(int progid);
+
+        public delegate void ProgrammeUpdatedEventHandler(int progid);
+
+        public delegate void EpisodeAddedEventHandler(int epid);
+
+        public delegate void FavouriteAddedEventHandler(int progid);
+
+        public delegate void FavouriteUpdatedEventHandler(int progid);
+
+        public delegate void FavouriteRemovedEventHandler(int progid);
+
+        public delegate void SubscriptionAddedEventHandler(int progid);
+
+        public delegate void SubscriptionUpdatedEventHandler(int progid);
+
+        public delegate void SubscriptionRemovedEventHandler(int progid);
+
+        public delegate void DownloadAddedEventHandler(int epid);
+
+        public delegate void DownloadUpdatedEventHandler(int epid);
+
+        public delegate void DownloadProgressEventHandler(int epid, int percent, string statusText, ProgressIcon icon);
+
+        public delegate void DownloadRemovedEventHandler(int epid);
+
+        public delegate void DownloadProgressTotalEventHandler(bool downloading, int percent);
+
+        public event ProviderAddedEventHandler ProviderAdded;
+
+        public event FindNewViewChangeEventHandler FindNewViewChange;
+
+        public event FoundNewEventHandler FoundNew;
+
+        public event ProgrammeUpdatedEventHandler ProgrammeUpdated;
+
+        public event EpisodeAddedEventHandler EpisodeAdded;
+
+        public event FavouriteAddedEventHandler FavouriteAdded;
+
+        public event FavouriteUpdatedEventHandler FavouriteUpdated;
+
+        public event FavouriteRemovedEventHandler FavouriteRemoved;
+
+        public event SubscriptionAddedEventHandler SubscriptionAdded;
+
+        public event SubscriptionUpdatedEventHandler SubscriptionUpdated;
+
+        public event SubscriptionRemovedEventHandler SubscriptionRemoved;
+
+        public event DownloadAddedEventHandler DownloadAdded;
+
+        public event DownloadUpdatedEventHandler DownloadUpdated;
+
+        public event DownloadProgressEventHandler DownloadProgress;
+
+        public event DownloadRemovedEventHandler DownloadRemoved;
+
+        public event DownloadProgressTotalEventHandler DownloadProgressTotal;
+
+        public enum DownloadStatus
+        {
+            Waiting = 0,
+            Downloaded = 1,
+            Errored = 2
+        }
+
+        public enum DownloadCols
+        {
+            EpisodeName = 0,
+            EpisodeDate = 1,
+            Status = 2,
+            Progress = 3,
+            Duration = 4
+        }
+
+        public DownloadCols DownloadSortByCol
+        {
+            get
+            {
+                return this.downloadSortBy;
+            }
+
+            set
+            {
+                lock (this.downloadSortCacheLock)
+                {
+                    if (value != this.downloadSortBy)
+                    {
+                        this.downloadSortCache = null;
+                    }
+
+                    this.downloadSortBy = value;
+                }
+            }
+        }
+
+        public bool DownloadSortAscending
+        {
+            get
+            {
+                return this.downloadSortAsc;
+            }
+
+            set
+            {
+                lock (this.downloadSortCacheLock)
+                {
+                    if (value != this.downloadSortAsc)
+                    {
+                        this.downloadSortCache = null;
+                    }
+
+                    this.downloadSortAsc = value;
+                }
+            }
+        }
+
+        public string DownloadQuery
+        {
+            get { return this.search.DownloadQuery; }
+            set { this.search.DownloadQuery = value; }
+        }
+
+        public static Data GetInstance()
+        {
+            // Need to use a lock instead of declaring the instance variable as New, as otherwise
+            // on first run the constructor gets called before the template database is in place
+            lock (dataInstanceLock)
+            {
+                if (dataInstance == null)
+                {
+                    dataInstance = new Data();
+                }
+
+                return dataInstance;
+            }
+        }
+
+        public void StartDownload()
+        {
+            ThreadPool.QueueUserWorkItem(delegate { this.StartDownloadAsync(); });
+        }
+
+        public void UpdateProgInfoIfRequired(int progid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { this.UpdateProgInfoIfRequiredAsync(progid); });
+        }
+
+        public Bitmap FetchProgrammeImage(int progid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        return this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
+                    }
+                    else
+                    {
+                        // Find the id of the latest episode's image
+                        using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image not null order by date desc limit 1", this.FetchDbConn()))
+                        {
+                            latestCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                            using (SQLiteMonDataReader latestRdr = new SQLiteMonDataReader(latestCmd.ExecuteReader()))
+                            {
+                                if (latestRdr.Read())
+                                {
+                                    return this.RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public Bitmap FetchEpisodeImage(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        int imageOrdinal = reader.GetOrdinal("image");
+
+                        if (!reader.IsDBNull(imageOrdinal))
+                        {
+                            return this.RetrieveImage(reader.GetInt32(imageOrdinal));
+                        }
+
+                        int progidOrdinal = reader.GetOrdinal("progid");
+
+                        if (!reader.IsDBNull(progidOrdinal))
+                        {
+                            using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", this.FetchDbConn()))
+                            {
+                                progCmd.Parameters.Add(new SQLiteParameter("@epid", reader.GetInt32(progidOrdinal)));
+
+                                using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
+                                {
+                                    if (progReader.Read())
+                                    {
+                                        return this.RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public void EpisodeSetAutoDownload(int epid, bool autoDownload)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { this.EpisodeSetAutoDownloadAsync(epid, autoDownload); });
+        }
+
+        public int CountDownloadsNew()
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
+                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+            }
+        }
+
+        public int CountDownloadsErrored()
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
+                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+            }
+        }
+
+        public bool AddDownload(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem(delegate { this.AddDownloadAsync(epid); });
+
+            return true;
+        }
+
+        public bool AddFavourite(int progid)
+        {
+            if (this.IsFavourite(progid))
+            {
+                return false;
+            }
+
+            ThreadPool.QueueUserWorkItem(delegate { this.AddFavouriteAsync(progid); });
+
+            return true;
+        }
+
+        public void RemoveFavourite(int progid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { this.RemoveFavouriteAsync(progid); });
+        }
+
+        public bool AddSubscription(int progid)
+        {
+            if (this.IsSubscribed(progid))
+            {
+                return false;
+            }
+
+            ThreadPool.QueueUserWorkItem(delegate { this.AddSubscriptionAsync(progid); });
+
+            return true;
+        }
+
+        public void RemoveSubscription(int progid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { this.RemoveSubscriptionAsync(progid); });
+        }
+
+        public void ResetDownload(int epid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { this.ResetDownloadAsync(epid, false); });
+        }
+
+        public void DownloadRemove(int epid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { this.DownloadRemoveAsync(epid, false); });
+        }
+
+        public void DownloadBumpPlayCount(int epid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { this.DownloadBumpPlayCountAsync(epid); });
+        }
+
+        public void DownloadReportError(int epid)
+        {
+            ErrorType errorType = default(ErrorType);
+            string errorText = null;
+            string extraDetailsString = null;
+            Dictionary<string, string> errorExtraDetails = new Dictionary<string, string>();
+
+            XmlSerializer detailsSerializer = new XmlSerializer(typeof(List<DldErrorDataItem>));
+
+            using (SQLiteCommand command = new SQLiteCommand("select errortype, errordetails, ep.name as epname, ep.description as epdesc, date, duration, ep.extid as epextid, pr.name as progname, pr.description as progdesc, pr.extid as progextid, pluginid from downloads as dld, episodes as ep, programmes as pr where dld.epid=@epid and ep.epid=@epid and ep.progid=pr.progid", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (!reader.Read())
+                    {
+                        throw new ArgumentException("Episode " + epid.ToString(CultureInfo.InvariantCulture) + " does not exit, or is not in the download list!", "epid");
+                    }
+
+                    errorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
+                    extraDetailsString = reader.GetString(reader.GetOrdinal("errordetails"));
+
+                    errorExtraDetails.Add("episode:name", reader.GetString(reader.GetOrdinal("epname")));
+                    errorExtraDetails.Add("episode:description", reader.GetString(reader.GetOrdinal("epdesc")));
+                    errorExtraDetails.Add("episode:date", reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture));
+                    errorExtraDetails.Add("episode:duration", Convert.ToString(reader.GetInt32(reader.GetOrdinal("duration")), CultureInfo.InvariantCulture));
+                    errorExtraDetails.Add("episode:extid", reader.GetString(reader.GetOrdinal("epextid")));
+
+                    errorExtraDetails.Add("programme:name", reader.GetString(reader.GetOrdinal("progname")));
+                    errorExtraDetails.Add("programme:description", reader.GetString(reader.GetOrdinal("progdesc")));
+                    errorExtraDetails.Add("programme:extid", reader.GetString(reader.GetOrdinal("progextid")));
+
+                    Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
+                    IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
+
+                    errorExtraDetails.Add("provider:id", pluginId.ToString());
+                    errorExtraDetails.Add("provider:name", providerInst.ProviderName);
+                    errorExtraDetails.Add("provider:description", providerInst.ProviderDescription);
+                }
+            }
+
+            if (extraDetailsString != null)
+            {
+                try
+                {
+                    List<DldErrorDataItem> extraDetails = null;
+                    extraDetails = (List<DldErrorDataItem>)detailsSerializer.Deserialize(new StringReader(extraDetailsString));
+
+                    foreach (DldErrorDataItem detailItem in extraDetails)
+                    {
+                        switch (detailItem.Name)
+                        {
+                            case "error":
+                                errorText = detailItem.Data;
+                                break;
+                            case "details":
+                                extraDetailsString = detailItem.Data;
+                                break;
+                            default:
+                                errorExtraDetails.Add(detailItem.Name, detailItem.Data);
+                                break;
+                        }
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    // Do nothing, and fall back to reporting all the details as one string
+                }
+                catch (InvalidCastException)
+                {
+                    // Do nothing, and fall back to reporting all the details as one string
+                }
+            }
+
+            if (string.IsNullOrEmpty(errorText))
+            {
+                errorText = errorType.ToString();
+            }
+
+            ErrorReporting report = new ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails);
+            report.SendReport(Properties.Settings.Default.ErrorReportURL);
+        }
+
+        public void PerformCleanup()
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select epid, filepath from downloads where status=@status", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    int epidOrd = reader.GetOrdinal("epid");
+                    int filepathOrd = reader.GetOrdinal("filepath");
+
+                    while (reader.Read())
+                    {
+                        // Remove programmes for which the associated audio file no longer exists
+                        if (File.Exists(reader.GetString(filepathOrd)) == false)
+                        {
+                            // Take the download out of the list and set the auto download flag to false
+                            this.DownloadRemoveAsync(reader.GetInt32(epidOrd), false);
+                        }
+                    }
+                }
+            }
+        }
+
+        public Panel GetFindNewPanel(Guid pluginID, object view)
+        {
+            if (this.pluginsInst.PluginExists(pluginID))
+            {
+                this.FindNewPluginInst = this.pluginsInst.GetPluginInstance(pluginID);
+                this.FindNewPluginInst.FindNewException += this.FindNewPluginInst_FindNewException;
+                this.FindNewPluginInst.FindNewViewChange += this.FindNewPluginInst_FindNewViewChange;
+                this.FindNewPluginInst.FoundNew += this.FindNewPluginInst_FoundNew;
+                return this.FindNewPluginInst.GetFindNewPanel(view);
+            }
+            else
+            {
+                return new Panel();
+            }
+        }
+
+        public int CompareDownloads(int epid1, int epid2)
+        {
+            lock (this.downloadSortCacheLock)
+            {
+                if (this.downloadSortCache == null || !this.downloadSortCache.ContainsKey(epid1) || !this.downloadSortCache.ContainsKey(epid2))
+                {
+                    // The sort cache is either empty or missing one of the values that are required, so recreate it
+                    this.downloadSortCache = new Dictionary<int, int>();
+
+                    int sort = 0;
+                    string orderBy = null;
+
+                    switch (this.downloadSortBy)
+                    {
+                        case DownloadCols.EpisodeName:
+                            orderBy = "name" + (this.downloadSortAsc ? string.Empty : " desc");
+                            break;
+                        case DownloadCols.EpisodeDate:
+                            orderBy = "date" + (this.downloadSortAsc ? string.Empty : " desc");
+                            break;
+                        case DownloadCols.Status:
+                            orderBy = "status = 0" + (this.downloadSortAsc ? " desc" : string.Empty) + ", status" + (this.downloadSortAsc ? " desc" : string.Empty) + ", playcount > 0" + (this.downloadSortAsc ? string.Empty : " desc") + ", date" + (this.downloadSortAsc ? " desc" : string.Empty);
+                            break;
+                        case DownloadCols.Duration:
+                            orderBy = "duration" + (this.downloadSortAsc ? string.Empty : " desc");
+                            break;
+                        default:
+                            throw new InvalidDataException("Invalid column: " + this.downloadSortBy.ToString());
+                    }
+
+                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, this.FetchDbConn()))
+                    {
+                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                        {
+                            int epidOrdinal = reader.GetOrdinal("epid");
+
+                            while (reader.Read())
+                            {
+                                this.downloadSortCache.Add(reader.GetInt32(epidOrdinal), sort);
+                                sort += 1;
+                            }
+                        }
+                    }
+                }
+
+                try
+                {
+                    return this.downloadSortCache[epid1] - this.downloadSortCache[epid2];
+                }
+                catch (KeyNotFoundException)
+                {
+                    // One of the entries has been removed from the database, but not yet from the list
+                    return 0;
+                }
+            }
+        }
+
+        public int CompareSubscriptions(int progid1, int progid2)
+        {
+            lock (this.subscriptionSortCacheLock)
+            {
+                if (this.subscriptionSortCache == null || !this.subscriptionSortCache.ContainsKey(progid1) || !this.subscriptionSortCache.ContainsKey(progid2))
+                {
+                    // The sort cache is either empty or missing one of the values that are required, so recreate it
+                    this.subscriptionSortCache = new Dictionary<int, int>();
+
+                    int sort = 0;
+
+                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", this.FetchDbConn()))
+                    {
+                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                        {
+                            int progidOrdinal = reader.GetOrdinal("progid");
+
+                            while (reader.Read())
+                            {
+                                this.subscriptionSortCache.Add(reader.GetInt32(progidOrdinal), sort);
+                                sort += 1;
+                            }
+                        }
+                    }
+                }
+
+                return this.subscriptionSortCache[progid1] - this.subscriptionSortCache[progid2];
+            }
+        }
+
+        public int CompareFavourites(int progid1, int progid2)
+        {
+            lock (this.favouriteSortCacheLock)
+            {
+                if (this.favouriteSortCache == null || !this.favouriteSortCache.ContainsKey(progid1) || !this.favouriteSortCache.ContainsKey(progid2))
+                {
+                    // The sort cache is either empty or missing one of the values that are required, so recreate it
+                    this.favouriteSortCache = new Dictionary<int, int>();
+
+                    int sort = 0;
+
+                    using (SQLiteCommand command = new SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by name", this.FetchDbConn()))
+                    {
+                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                        {
+                            int progidOrdinal = reader.GetOrdinal("progid");
+
+                            while (reader.Read())
+                            {
+                                this.favouriteSortCache.Add(reader.GetInt32(progidOrdinal), sort);
+                                sort += 1;
+                            }
+                        }
+                    }
+                }
+
+                return this.favouriteSortCache[progid1] - this.favouriteSortCache[progid2];
+            }
+        }
+
+        public void InitProviderList()
+        {
+            Guid[] pluginIdList = null;
+            pluginIdList = this.pluginsInst.GetPluginIdList();
+
+            foreach (Guid pluginId in pluginIdList)
+            {
+                if (this.ProviderAdded != null)
+                {
+                    this.ProviderAdded(pluginId);
+                }
+            }
+        }
+
+        public void InitEpisodeList(int progid)
+        {
+            lock (this.episodeListThreadLock)
+            {
+                this.episodeListThread = new Thread(() => this.InitEpisodeListThread(progid));
+                this.episodeListThread.IsBackground = true;
+                this.episodeListThread.Start();
+            }
+        }
+
+        public void CancelEpisodeListing()
+        {
+            lock (this.episodeListThreadLock)
+            {
+                this.episodeListThread = null;
+            }
+        }
+
+        public void InitSubscriptionList()
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where subscriptions.progid = programmes.progid", this.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    int progidOrdinal = reader.GetOrdinal("progid");
+
+                    while (reader.Read())
+                    {
+                        if (this.SubscriptionAdded != null)
+                        {
+                            this.SubscriptionAdded(reader.GetInt32(progidOrdinal));
+                        }
+                    }
+                }
+            }
+        }
+
+        public List<DownloadData> FetchDownloadList(bool filtered)
+        {
+            List<DownloadData> downloadList = new List<DownloadData>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", this.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    int epidOrdinal = reader.GetOrdinal("epid");
+
+                    while (reader.Read())
+                    {
+                        int epid = reader.GetInt32(epidOrdinal);
+
+                        if (!filtered || this.search.DownloadIsVisible(epid))
+                        {
+                            downloadList.Add(this.ReadDownloadData(epid, reader));
+                        }
+                    }
+                }
+            }
+
+            return downloadList;
+        }
+
+        public DownloadData FetchDownloadData(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read() == false)
+                    {
+                        throw new DataNotFoundException(epid, "Download does not exist");
+                    }
+
+                    return this.ReadDownloadData(epid, reader);
+                }
+            }
+        }
+
+        public List<FavouriteData> FetchFavouriteList()
+        {
+            List<FavouriteData> favouriteList = new List<FavouriteData>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select favourites.progid, name, description, singleepisode, pluginid from favourites, programmes where favourites.progid = programmes.progid", this.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    int progidOrdinal = reader.GetOrdinal("progid");
+
+                    while (reader.Read())
+                    {
+                        favouriteList.Add(this.ReadFavouriteData(reader.GetInt32(progidOrdinal), reader));
+                    }
+                }
+            }
+
+            return favouriteList;
+        }
+
+        public FavouriteData FetchFavouriteData(int progid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select name, description, singleepisode, pluginid from programmes where progid=@progid", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read() == false)
+                    {
+                        throw new DataNotFoundException(progid, "Programme does not exist");
+                    }
+
+                    return this.ReadFavouriteData(progid, reader);
+                }
+            }
+        }
+
+        public SubscriptionData FetchSubscriptionData(int progid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select name, description, pluginid from programmes where progid=@progid", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read() == false)
+                    {
+                        throw new DataNotFoundException(progid, "Programme does not exist");
+                    }
+
+                    int descriptionOrdinal = reader.GetOrdinal("description");
+
+                    SubscriptionData info = new SubscriptionData();
+                    info.name = reader.GetString(reader.GetOrdinal("name"));
+
+                    if (!reader.IsDBNull(descriptionOrdinal))
+                    {
+                        info.description = reader.GetString(descriptionOrdinal);
+                    }
+
+                    info.latestDownload = this.LatestDownloadDate(progid);
+
+                    Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
+                    IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
+                    info.providerName = providerInst.ProviderName;
+
+                    info.favourite = this.IsFavourite(progid);
+
+                    return info;
+                }
+            }
+        }
+
+        public EpisodeData FetchEpisodeData(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select name, description, date, duration, autodownload from episodes where epid=@epid", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read() == false)
+                    {
+                        throw new DataNotFoundException(epid, "Episode does not exist");
+                    }
+
+                    int descriptionOrdinal = reader.GetOrdinal("description");
+
+                    EpisodeData info = new EpisodeData();
+                    info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
+                    info.name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.episodeDate);
+
+                    if (!reader.IsDBNull(descriptionOrdinal))
+                    {
+                        info.description = reader.GetString(descriptionOrdinal);
+                    }
+
+                    info.duration = reader.GetInt32(reader.GetOrdinal("duration"));
+                    info.autoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
+
+                    return info;
+                }
+            }
+        }
+
+        public ProgrammeData FetchProgrammeData(int progid)
+        {
+            ProgrammeData info = new ProgrammeData();
+
+            using (SQLiteCommand command = new SQLiteCommand("select name, description, singleepisode from programmes where progid=@progid", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read() == false)
+                    {
+                        throw new DataNotFoundException(progid, "Programme does not exist");
+                    }
+
+                    int descriptionOrdinal = reader.GetOrdinal("description");
+
+                    info.name = reader.GetString(reader.GetOrdinal("name"));
+
+                    if (!reader.IsDBNull(descriptionOrdinal))
+                    {
+                        info.description = reader.GetString(descriptionOrdinal);
+                    }
+
+                    info.singleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
+                }
+            }
+
+            info.favourite = this.IsFavourite(progid);
+            info.subscribed = this.IsSubscribed(progid);
+
+            return info;
+        }
+
+        public ProviderData FetchProviderData(Guid providerId)
+        {
+            IRadioProvider providerInstance = this.pluginsInst.GetPluginInstance(providerId);
+
+            ProviderData info = new ProviderData();
+            info.name = providerInstance.ProviderName;
+            info.description = providerInstance.ProviderDescription;
+            info.icon = providerInstance.ProviderIcon;
+            info.showOptionsHandler = providerInstance.GetShowOptionsHandler();
+
+            return info;
+        }
+
+        private SQLiteConnection FetchDbConn()
+        {
+            if (dbConn == null)
+            {
+                dbConn = new SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False");
+                dbConn.Open();
+            }
+
+            return dbConn;
         }
 
         private void UpgradeDBv2to3()
@@ -383,11 +1037,6 @@ namespace RadioDld
                 showStatus.Hide();
                 Application.DoEvents();
             }
-        }
-
-        public void StartDownload()
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.StartDownloadAsync(); });
         }
 
         private void StartDownloadAsync()
@@ -525,7 +1174,7 @@ namespace RadioDld
             }
         }
 
-        public void DownloadProgThread()
+        private void DownloadProgThread()
         {
             this.lastProgressVal = -1;
 
@@ -584,11 +1233,6 @@ namespace RadioDld
             }
         }
 
-        public void UpdateProgInfoIfRequired(int progid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.UpdateProgInfoIfRequiredAsync(progid); });
-        }
-
         private void UpdateProgInfoIfRequiredAsync(int progid)
         {
             Guid providerId = Guid.Empty;
@@ -626,86 +1270,6 @@ namespace RadioDld
             }
         }
 
-        public Bitmap FetchProgrammeImage(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read())
-                    {
-                        return this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
-                    }
-                    else
-                    {
-                        // Find the id of the latest episode's image
-                        using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image not null order by date desc limit 1", this.FetchDbConn()))
-                        {
-                            latestCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                            using (SQLiteMonDataReader latestRdr = new SQLiteMonDataReader(latestCmd.ExecuteReader()))
-                            {
-                                if (latestRdr.Read())
-                                {
-                                    return this.RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public Bitmap FetchEpisodeImage(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read())
-                    {
-                        int imageOrdinal = reader.GetOrdinal("image");
-
-                        if (!reader.IsDBNull(imageOrdinal))
-                        {
-                            return this.RetrieveImage(reader.GetInt32(imageOrdinal));
-                        }
-
-                        int progidOrdinal = reader.GetOrdinal("progid");
-
-                        if (!reader.IsDBNull(progidOrdinal))
-                        {
-                            using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", this.FetchDbConn()))
-                            {
-                                progCmd.Parameters.Add(new SQLiteParameter("@epid", reader.GetInt32(progidOrdinal)));
-
-                                using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
-                                {
-                                    if (progReader.Read())
-                                    {
-                                        return this.RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public void EpisodeSetAutoDownload(int epid, bool autoDownload)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.EpisodeSetAutoDownloadAsync(epid, autoDownload); });
-        }
-
         private void EpisodeSetAutoDownloadAsync(int epid, bool autoDownload)
         {
             lock (this.dbUpdateLock)
@@ -716,24 +1280,6 @@ namespace RadioDld
                     command.Parameters.Add(new SQLiteParameter("@autodownload", autoDownload ? 1 : 0));
                     command.ExecuteNonQuery();
                 }
-            }
-        }
-
-        public int CountDownloadsNew()
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-            }
-        }
-
-        public int CountDownloadsErrored()
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
             }
         }
 
@@ -868,26 +1414,6 @@ namespace RadioDld
             ThreadPool.QueueUserWorkItem(delegate { this.CheckSubscriptions(); });
         }
 
-        public bool AddDownload(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read())
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            ThreadPool.QueueUserWorkItem(delegate { this.AddDownloadAsync(epid); });
-
-            return true;
-        }
-
         private void AddDownloadAsync(int epid)
         {
             lock (this.dbUpdateLock)
@@ -927,18 +1453,6 @@ namespace RadioDld
             this.StartDownload();
         }
 
-        public bool AddFavourite(int progid)
-        {
-            if (this.IsFavourite(progid))
-            {
-                return false;
-            }
-
-            ThreadPool.QueueUserWorkItem(delegate { this.AddFavouriteAsync(progid); });
-
-            return true;
-        }
-
         private void AddFavouriteAsync(int progid)
         {
             lock (this.dbUpdateLock)
@@ -976,11 +1490,6 @@ namespace RadioDld
             }
         }
 
-        public void RemoveFavourite(int progid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.RemoveFavouriteAsync(progid); });
-        }
-
         private void RemoveFavouriteAsync(int progid)
         {
             lock (this.dbUpdateLock)
@@ -1009,18 +1518,6 @@ namespace RadioDld
                     this.SubscriptionUpdated(progid);
                 }
             }
-        }
-
-        public bool AddSubscription(int progid)
-        {
-            if (this.IsSubscribed(progid))
-            {
-                return false;
-            }
-
-            ThreadPool.QueueUserWorkItem(delegate { this.AddSubscriptionAsync(progid); });
-
-            return true;
         }
 
         private void AddSubscriptionAsync(int progid)
@@ -1058,11 +1555,6 @@ namespace RadioDld
                     this.FavouriteUpdated(progid);
                 }
             }
-        }
-
-        public void RemoveSubscription(int progid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.RemoveSubscriptionAsync(progid); });
         }
 
         private void RemoveSubscriptionAsync(int progid)
@@ -1116,11 +1608,6 @@ namespace RadioDld
             }
         }
 
-        public void ResetDownload(int epid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.ResetDownloadAsync(epid, false); });
-        }
-
         private void ResetDownloadAsync(int epid, bool auto)
         {
             lock (this.dbUpdateLock)
@@ -1166,11 +1653,6 @@ namespace RadioDld
             {
                 this.StartDownloadAsync();
             }
-        }
-
-        public void DownloadRemove(int epid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.DownloadRemoveAsync(epid, false); });
         }
 
         private void DownloadRemoveAsync(int epid, bool auto)
@@ -1240,11 +1722,6 @@ namespace RadioDld
             }
         }
 
-        public void DownloadBumpPlayCount(int epid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.DownloadBumpPlayCountAsync(epid); });
-        }
-
         private void DownloadBumpPlayCountAsync(int epid)
         {
             lock (this.dbUpdateLock)
@@ -1270,90 +1747,6 @@ namespace RadioDld
                     this.DownloadUpdated(epid);
                 }
             }
-        }
-
-        public void DownloadReportError(int epid)
-        {
-            ErrorType errorType = default(ErrorType);
-            string errorText = null;
-            string extraDetailsString = null;
-            Dictionary<string, string> errorExtraDetails = new Dictionary<string, string>();
-
-            XmlSerializer detailsSerializer = new XmlSerializer(typeof(List<DldErrorDataItem>));
-
-            using (SQLiteCommand command = new SQLiteCommand("select errortype, errordetails, ep.name as epname, ep.description as epdesc, date, duration, ep.extid as epextid, pr.name as progname, pr.description as progdesc, pr.extid as progextid, pluginid from downloads as dld, episodes as ep, programmes as pr where dld.epid=@epid and ep.epid=@epid and ep.progid=pr.progid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        throw new ArgumentException("Episode " + epid.ToString(CultureInfo.InvariantCulture) + " does not exit, or is not in the download list!", "epid");
-                    }
-
-                    errorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
-                    extraDetailsString = reader.GetString(reader.GetOrdinal("errordetails"));
-
-                    errorExtraDetails.Add("episode:name", reader.GetString(reader.GetOrdinal("epname")));
-                    errorExtraDetails.Add("episode:description", reader.GetString(reader.GetOrdinal("epdesc")));
-                    errorExtraDetails.Add("episode:date", reader.GetDateTime(reader.GetOrdinal("date")).ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture));
-                    errorExtraDetails.Add("episode:duration", Convert.ToString(reader.GetInt32(reader.GetOrdinal("duration")), CultureInfo.InvariantCulture));
-                    errorExtraDetails.Add("episode:extid", reader.GetString(reader.GetOrdinal("epextid")));
-
-                    errorExtraDetails.Add("programme:name", reader.GetString(reader.GetOrdinal("progname")));
-                    errorExtraDetails.Add("programme:description", reader.GetString(reader.GetOrdinal("progdesc")));
-                    errorExtraDetails.Add("programme:extid", reader.GetString(reader.GetOrdinal("progextid")));
-
-                    Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-                    IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
-
-                    errorExtraDetails.Add("provider:id", pluginId.ToString());
-                    errorExtraDetails.Add("provider:name", providerInst.ProviderName);
-                    errorExtraDetails.Add("provider:description", providerInst.ProviderDescription);
-                }
-            }
-
-            if (extraDetailsString != null)
-            {
-                try
-                {
-                    List<DldErrorDataItem> extraDetails = null;
-                    extraDetails = (List<DldErrorDataItem>)detailsSerializer.Deserialize(new StringReader(extraDetailsString));
-
-                    foreach (DldErrorDataItem detailItem in extraDetails)
-                    {
-                        switch (detailItem.Name)
-                        {
-                            case "error":
-                                errorText = detailItem.Data;
-                                break;
-                            case "details":
-                                extraDetailsString = detailItem.Data;
-                                break;
-                            default:
-                                errorExtraDetails.Add(detailItem.Name, detailItem.Data);
-                                break;
-                        }
-                    }
-                }
-                catch (InvalidOperationException)
-                {
-                    // Do nothing, and fall back to reporting all the details as one string
-                }
-                catch (InvalidCastException)
-                {
-                    // Do nothing, and fall back to reporting all the details as one string
-                }
-            }
-
-            if (string.IsNullOrEmpty(errorText))
-            {
-                errorText = errorType.ToString();
-            }
-
-            ErrorReporting report = new ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails);
-            report.SendReport(Properties.Settings.Default.ErrorReportURL);
         }
 
         private void DownloadError(ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
@@ -1519,30 +1912,6 @@ namespace RadioDld
             }
         }
 
-        public void PerformCleanup()
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select epid, filepath from downloads where status=@status", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    int epidOrd = reader.GetOrdinal("epid");
-                    int filepathOrd = reader.GetOrdinal("filepath");
-
-                    while (reader.Read())
-                    {
-                        // Remove programmes for which the associated audio file no longer exists
-                        if (File.Exists(reader.GetString(filepathOrd)) == false)
-                        {
-                            // Take the download out of the list and set the auto download flag to false
-                            this.DownloadRemoveAsync(reader.GetInt32(epidOrd), false);
-                        }
-                    }
-                }
-            }
-        }
-
         private void SetDBSetting(string propertyName, object value)
         {
             lock (this.dbUpdateLock)
@@ -1612,22 +1981,6 @@ namespace RadioDld
                     showStatus.Hide();
                     Application.DoEvents();
                 }
-            }
-        }
-
-        public Panel GetFindNewPanel(Guid pluginID, object view)
-        {
-            if (this.pluginsInst.PluginExists(pluginID))
-            {
-                this.FindNewPluginInst = this.pluginsInst.GetPluginInstance(pluginID);
-                this.FindNewPluginInst.FindNewException += this.FindNewPluginInst_FindNewException;
-                this.FindNewPluginInst.FindNewViewChange += this.FindNewPluginInst_FindNewViewChange;
-                this.FindNewPluginInst.FoundNew += this.FindNewPluginInst_FoundNew;
-                return this.FindNewPluginInst.GetFindNewPanel(view);
-            }
-            else
-            {
-                return new Panel();
             }
         }
 
@@ -1934,155 +2287,6 @@ namespace RadioDld
             }
         }
 
-        public int CompareDownloads(int epid1, int epid2)
-        {
-            lock (this.downloadSortCacheLock)
-            {
-                if (this.downloadSortCache == null || !this.downloadSortCache.ContainsKey(epid1) || !this.downloadSortCache.ContainsKey(epid2))
-                {
-                    // The sort cache is either empty or missing one of the values that are required, so recreate it
-                    this.downloadSortCache = new Dictionary<int, int>();
-
-                    int sort = 0;
-                    string orderBy = null;
-
-                    switch (this.downloadSortBy)
-                    {
-                        case DownloadCols.EpisodeName:
-                            orderBy = "name" + (this.downloadSortAsc ? string.Empty : " desc");
-                            break;
-                        case DownloadCols.EpisodeDate:
-                            orderBy = "date" + (this.downloadSortAsc ? string.Empty : " desc");
-                            break;
-                        case DownloadCols.Status:
-                            orderBy = "status = 0" + (this.downloadSortAsc ? " desc" : string.Empty) + ", status" + (this.downloadSortAsc ? " desc" : string.Empty) + ", playcount > 0" + (this.downloadSortAsc ? string.Empty : " desc") + ", date" + (this.downloadSortAsc ? " desc" : string.Empty);
-                            break;
-                        case DownloadCols.Duration:
-                            orderBy = "duration" + (this.downloadSortAsc ? string.Empty : " desc");
-                            break;
-                        default:
-                            throw new InvalidDataException("Invalid column: " + this.downloadSortBy.ToString());
-                    }
-
-                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, this.FetchDbConn()))
-                    {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int epidOrdinal = reader.GetOrdinal("epid");
-
-                            while (reader.Read())
-                            {
-                                this.downloadSortCache.Add(reader.GetInt32(epidOrdinal), sort);
-                                sort += 1;
-                            }
-                        }
-                    }
-                }
-
-                try
-                {
-                    return this.downloadSortCache[epid1] - this.downloadSortCache[epid2];
-                }
-                catch (KeyNotFoundException)
-                {
-                    // One of the entries has been removed from the database, but not yet from the list
-                    return 0;
-                }
-            }
-        }
-
-        public int CompareSubscriptions(int progid1, int progid2)
-        {
-            lock (this.subscriptionSortCacheLock)
-            {
-                if (this.subscriptionSortCache == null || !this.subscriptionSortCache.ContainsKey(progid1) || !this.subscriptionSortCache.ContainsKey(progid2))
-                {
-                    // The sort cache is either empty or missing one of the values that are required, so recreate it
-                    this.subscriptionSortCache = new Dictionary<int, int>();
-
-                    int sort = 0;
-
-                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", this.FetchDbConn()))
-                    {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int progidOrdinal = reader.GetOrdinal("progid");
-
-                            while (reader.Read())
-                            {
-                                this.subscriptionSortCache.Add(reader.GetInt32(progidOrdinal), sort);
-                                sort += 1;
-                            }
-                        }
-                    }
-                }
-
-                return this.subscriptionSortCache[progid1] - this.subscriptionSortCache[progid2];
-            }
-        }
-
-        public int CompareFavourites(int progid1, int progid2)
-        {
-            lock (this.favouriteSortCacheLock)
-            {
-                if (this.favouriteSortCache == null || !this.favouriteSortCache.ContainsKey(progid1) || !this.favouriteSortCache.ContainsKey(progid2))
-                {
-                    // The sort cache is either empty or missing one of the values that are required, so recreate it
-                    this.favouriteSortCache = new Dictionary<int, int>();
-
-                    int sort = 0;
-
-                    using (SQLiteCommand command = new SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by name", this.FetchDbConn()))
-                    {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int progidOrdinal = reader.GetOrdinal("progid");
-
-                            while (reader.Read())
-                            {
-                                this.favouriteSortCache.Add(reader.GetInt32(progidOrdinal), sort);
-                                sort += 1;
-                            }
-                        }
-                    }
-                }
-
-                return this.favouriteSortCache[progid1] - this.favouriteSortCache[progid2];
-            }
-        }
-
-        public void InitProviderList()
-        {
-            Guid[] pluginIdList = null;
-            pluginIdList = this.pluginsInst.GetPluginIdList();
-
-            foreach (Guid pluginId in pluginIdList)
-            {
-                if (this.ProviderAdded != null)
-                {
-                    this.ProviderAdded(pluginId);
-                }
-            }
-        }
-
-        public void InitEpisodeList(int progid)
-        {
-            lock (this.episodeListThreadLock)
-            {
-                this.episodeListThread = new Thread(() => this.InitEpisodeListThread(progid));
-                this.episodeListThread.IsBackground = true;
-                this.episodeListThread.Start();
-            }
-        }
-
-        public void CancelEpisodeListing()
-        {
-            lock (this.episodeListThreadLock)
-            {
-                this.episodeListThread = null;
-            }
-        }
-
         private void InitEpisodeListThread(int progid)
         {
             Guid providerId = default(Guid);
@@ -2160,68 +2364,6 @@ namespace RadioDld
             }
         }
 
-        public void InitSubscriptionList()
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where subscriptions.progid = programmes.progid", this.FetchDbConn()))
-            {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    int progidOrdinal = reader.GetOrdinal("progid");
-
-                    while (reader.Read())
-                    {
-                        if (this.SubscriptionAdded != null)
-                        {
-                            this.SubscriptionAdded(reader.GetInt32(progidOrdinal));
-                        }
-                    }
-                }
-            }
-        }
-
-        public List<DownloadData> FetchDownloadList(bool filtered)
-        {
-            List<DownloadData> downloadList = new List<DownloadData>();
-
-            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", this.FetchDbConn()))
-            {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    int epidOrdinal = reader.GetOrdinal("epid");
-
-                    while (reader.Read())
-                    {
-                        int epid = reader.GetInt32(epidOrdinal);
-
-                        if (!filtered || this.search.DownloadIsVisible(epid))
-                        {
-                            downloadList.Add(this.ReadDownloadData(epid, reader));
-                        }
-                    }
-                }
-            }
-
-            return downloadList;
-        }
-
-        public DownloadData FetchDownloadData(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read() == false)
-                    {
-                        throw new DataNotFoundException(epid, "Download does not exist");
-                    }
-
-                    return this.ReadDownloadData(epid, reader);
-                }
-            }
-        }
-
         private DownloadData ReadDownloadData(int epid, SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2260,44 +2402,6 @@ namespace RadioDld
             return info;
         }
 
-        public List<FavouriteData> FetchFavouriteList()
-        {
-            List<FavouriteData> favouriteList = new List<FavouriteData>();
-
-            using (SQLiteCommand command = new SQLiteCommand("select favourites.progid, name, description, singleepisode, pluginid from favourites, programmes where favourites.progid = programmes.progid", this.FetchDbConn()))
-            {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    int progidOrdinal = reader.GetOrdinal("progid");
-
-                    while (reader.Read())
-                    {
-                        favouriteList.Add(this.ReadFavouriteData(reader.GetInt32(progidOrdinal), reader));
-                    }
-                }
-            }
-
-            return favouriteList;
-        }
-
-        public FavouriteData FetchFavouriteData(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, singleepisode, pluginid from programmes where progid=@progid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read() == false)
-                    {
-                        throw new DataNotFoundException(progid, "Programme does not exist");
-                    }
-
-                    return this.ReadFavouriteData(progid, reader);
-                }
-            }
-        }
-
         private FavouriteData ReadFavouriteData(int progid, SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
@@ -2322,169 +2426,6 @@ namespace RadioDld
             return info;
         }
 
-        public SubscriptionData FetchSubscriptionData(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, pluginid from programmes where progid=@progid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read() == false)
-                    {
-                        throw new DataNotFoundException(progid, "Programme does not exist");
-                    }
-
-                    int descriptionOrdinal = reader.GetOrdinal("description");
-
-                    SubscriptionData info = new SubscriptionData();
-                    info.name = reader.GetString(reader.GetOrdinal("name"));
-
-                    if (!reader.IsDBNull(descriptionOrdinal))
-                    {
-                        info.description = reader.GetString(descriptionOrdinal);
-                    }
-
-                    info.latestDownload = this.LatestDownloadDate(progid);
-
-                    Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-                    IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
-                    info.providerName = providerInst.ProviderName;
-
-                    info.favourite = this.IsFavourite(progid);
-
-                    return info;
-                }
-            }
-        }
-
-        public EpisodeData FetchEpisodeData(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, date, duration, autodownload from episodes where epid=@epid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read() == false)
-                    {
-                        throw new DataNotFoundException(epid, "Episode does not exist");
-                    }
-
-                    int descriptionOrdinal = reader.GetOrdinal("description");
-
-                    EpisodeData info = new EpisodeData();
-                    info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
-                    info.name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.episodeDate);
-
-                    if (!reader.IsDBNull(descriptionOrdinal))
-                    {
-                        info.description = reader.GetString(descriptionOrdinal);
-                    }
-
-                    info.duration = reader.GetInt32(reader.GetOrdinal("duration"));
-                    info.autoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
-
-                    return info;
-                }
-            }
-        }
-
-        public ProgrammeData FetchProgrammeData(int progid)
-        {
-            ProgrammeData info = new ProgrammeData();
-
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, singleepisode from programmes where progid=@progid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read() == false)
-                    {
-                        throw new DataNotFoundException(progid, "Programme does not exist");
-                    }
-
-                    int descriptionOrdinal = reader.GetOrdinal("description");
-
-                    info.name = reader.GetString(reader.GetOrdinal("name"));
-
-                    if (!reader.IsDBNull(descriptionOrdinal))
-                    {
-                        info.description = reader.GetString(descriptionOrdinal);
-                    }
-
-                    info.singleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
-                }
-            }
-
-            info.favourite = this.IsFavourite(progid);
-            info.subscribed = this.IsSubscribed(progid);
-
-            return info;
-        }
-
-        public ProviderData FetchProviderData(Guid providerId)
-        {
-            IRadioProvider providerInstance = this.pluginsInst.GetPluginInstance(providerId);
-
-            ProviderData info = new ProviderData();
-            info.name = providerInstance.ProviderName;
-            info.description = providerInstance.ProviderDescription;
-            info.icon = providerInstance.ProviderIcon;
-            info.showOptionsHandler = providerInstance.GetShowOptionsHandler();
-
-            return info;
-        }
-
-        public DownloadCols DownloadSortByCol
-        {
-            get
-            {
-                return this.downloadSortBy;
-            }
-
-            set
-            {
-                lock (this.downloadSortCacheLock)
-                {
-                    if (value != this.downloadSortBy)
-                    {
-                        this.downloadSortCache = null;
-                    }
-
-                    this.downloadSortBy = value;
-                }
-            }
-        }
-
-        public bool DownloadSortAscending
-        {
-            get
-            {
-                return this.downloadSortAsc;
-            }
-
-            set
-            {
-                lock (this.downloadSortCacheLock)
-                {
-                    if (value != this.downloadSortAsc)
-                    {
-                        this.downloadSortCache = null;
-                    }
-
-                    this.downloadSortAsc = value;
-                }
-            }
-        }
-
-        public string DownloadQuery
-        {
-            get { return this.search.DownloadQuery; }
-            set { this.search.DownloadQuery = value; }
-        }
-
         private bool IsFavourite(int progid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(*) from favourites where progid=@progid", this.FetchDbConn()))
@@ -2501,6 +2442,65 @@ namespace RadioDld
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
             }
+        }
+
+        public struct ProviderData
+        {
+            public string name;
+            public string description;
+            public Bitmap icon;
+            public EventHandler showOptionsHandler;
+        }
+
+        public struct EpisodeData
+        {
+            public string name;
+            public string description;
+            public System.DateTime episodeDate;
+            public int duration;
+            public bool autoDownload;
+        }
+
+        public struct ProgrammeData
+        {
+            public string name;
+            public string description;
+            public bool favourite;
+            public bool subscribed;
+            public bool singleEpisode;
+        }
+
+        public struct FavouriteData
+        {
+            public int progid;
+            public string name;
+            public string description;
+            public bool subscribed;
+            public bool singleEpisode;
+            public string providerName;
+        }
+
+        public struct SubscriptionData
+        {
+            public string name;
+            public string description;
+            public bool favourite;
+            public DateTime? latestDownload;
+            public string providerName;
+        }
+
+        public struct DownloadData
+        {
+            public int epid;
+            public string name;
+            public string description;
+            public int duration;
+            public System.DateTime episodeDate;
+            public DownloadStatus status;
+            public ErrorType errorType;
+            public string errorDetails;
+            public string downloadPath;
+            public int playCount;
         }
     }
 }

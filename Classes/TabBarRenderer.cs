@@ -24,80 +24,6 @@ namespace RadioDld
 
     internal class TabBarRenderer : ToolStripSystemRenderer, IDisposable
     {
-        [DllImport("gdi32.dll", SetLastError = true)]
-        public static extern IntPtr CreateCompatibleDC(IntPtr hdc);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        private static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        private static extern IntPtr CreateDIBSection(IntPtr hdc, [In()] ref BITMAPINFO lpbmi, uint usage, ref IntPtr ppvBits, IntPtr hSection, uint offset);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DeleteObject(IntPtr ho);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DeleteDC(IntPtr hdc);
-
-        [DllImport("UxTheme.dll", SetLastError = true)]
-        private static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount, uint dwFlags, ref RECT pRect, [In()] ref DTTOPTS pOptions);
-
-        [DllImport("msimg32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION ftn);
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct BLENDFUNCTION
-        {
-            public byte BlendOp;
-            public byte BlendFlags;
-            public byte SourceConstantAlpha;
-            public byte AlphaFormat;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct BITMAPINFO
-        {
-            public uint biSize;
-            public int biWidth;
-            public int biHeight;
-            public ushort biPlanes;
-            public ushort biBitCount;
-            public uint biCompression;
-            public uint biSizeImage;
-            public int biXPelsPerMeter;
-            public int biYPelsPerMeter;
-            public uint biClrUsed;
-            public uint biClrImportant;
-            public byte rgbBlue;
-            public byte rgbGreen;
-            public byte rgbRed;
-            public byte rgbReserved;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct DTTOPTS
-        {
-            public uint dwSize;
-            public uint dwFlags;
-            public uint crText;
-            public uint crBorder;
-            public uint crShadow;
-            public int iTextShadowType;
-            public Point ptShadowOffset;
-            public int iBorderSize;
-            public int iFontPropId;
-            public int iColorPropId;
-            public int iStateId;
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool fApplyOverlay;
-            public int iGlowSize;
-            public int pfnDrawTextCallback;
-            public int lParam;
-        }
-
         private const int BI_RGB = 0;
 
         private const int DTT_COMPOSITED = 8192;
@@ -126,6 +52,17 @@ namespace RadioDld
 
         private Pen tabBorder = new Pen(SystemColors.ControlDark);
         private Pen nonAeroBorder = new Pen(Color.FromArgb(255, 182, 193, 204));
+
+        ~TabBarRenderer()
+        {
+            this.Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         protected override void Initialize(System.Windows.Forms.ToolStrip toolStrip)
         {
@@ -434,6 +371,54 @@ namespace RadioDld
             }
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this.isDisposed)
+            {
+                if (disposing)
+                {
+                    if (this.inactiveTabBkg != null)
+                    {
+                        this.inactiveTabBkg.Dispose();
+                        this.hoverTabBkg.Dispose();
+                        this.pressedTabBkg.Dispose();
+                    }
+
+                    this.rendererFor.FindForm().Activated -= this.Form_Activated;
+                    this.rendererFor.FindForm().Deactivate -= this.Form_Deactivated;
+
+                    this.tabBorder.Dispose();
+                    this.nonAeroBorder.Dispose();
+                }
+            }
+
+            this.isDisposed = true;
+        }
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        private static extern IntPtr CreateCompatibleDC(IntPtr hdc);
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        private static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        private static extern IntPtr CreateDIBSection(IntPtr hdc, [In()] ref BITMAPINFO lpbmi, uint usage, ref IntPtr ppvBits, IntPtr hSection, uint offset);
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DeleteObject(IntPtr ho);
+
+        [DllImport("gdi32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DeleteDC(IntPtr hdc);
+
+        [DllImport("UxTheme.dll", SetLastError = true)]
+        private static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount, uint dwFlags, ref RECT pRect, [In()] ref DTTOPTS pOptions);
+
+        [DllImport("msimg32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION ftn);
+
         private Color GetActiveTabBtmCol(ToolStrip strip, ToolStripItem active)
         {
             Color toolbarColour = SystemColors.Control;
@@ -471,39 +456,54 @@ namespace RadioDld
             this.rendererFor.Invalidate();
         }
 
-        protected virtual void Dispose(bool disposing)
+        [StructLayout(LayoutKind.Sequential)]
+        private struct BLENDFUNCTION
         {
-            if (!this.isDisposed)
-            {
-                if (disposing)
-                {
-                    if (this.inactiveTabBkg != null)
-                    {
-                        this.inactiveTabBkg.Dispose();
-                        this.hoverTabBkg.Dispose();
-                        this.pressedTabBkg.Dispose();
-                    }
-
-                    this.rendererFor.FindForm().Activated -= this.Form_Activated;
-                    this.rendererFor.FindForm().Deactivate -= this.Form_Deactivated;
-
-                    this.tabBorder.Dispose();
-                    this.nonAeroBorder.Dispose();
-                }
-            }
-
-            this.isDisposed = true;
+            public byte BlendOp;
+            public byte BlendFlags;
+            public byte SourceConstantAlpha;
+            public byte AlphaFormat;
         }
 
-        public void Dispose()
+        [StructLayout(LayoutKind.Sequential)]
+        private struct BITMAPINFO
         {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            public uint biSize;
+            public int biWidth;
+            public int biHeight;
+            public ushort biPlanes;
+            public ushort biBitCount;
+            public uint biCompression;
+            public uint biSizeImage;
+            public int biXPelsPerMeter;
+            public int biYPelsPerMeter;
+            public uint biClrUsed;
+            public uint biClrImportant;
+            public byte rgbBlue;
+            public byte rgbGreen;
+            public byte rgbRed;
+            public byte rgbReserved;
         }
 
-        ~TabBarRenderer()
+        [StructLayout(LayoutKind.Sequential)]
+        private struct DTTOPTS
         {
-            this.Dispose(false);
+            public uint dwSize;
+            public uint dwFlags;
+            public uint crText;
+            public uint crBorder;
+            public uint crShadow;
+            public int iTextShadowType;
+            public Point ptShadowOffset;
+            public int iBorderSize;
+            public int iFontPropId;
+            public int iColorPropId;
+            public int iStateId;
+            [MarshalAs(UnmanagedType.Bool)]
+            public bool fApplyOverlay;
+            public int iGlowSize;
+            public int pfnDrawTextCallback;
+            public int lParam;
         }
     }
 }

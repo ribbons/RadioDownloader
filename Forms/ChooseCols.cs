@@ -26,6 +26,11 @@ namespace RadioDld
         private List<int> columnOrder;
         private Dictionary<int, string> columnNames;
 
+        public ChooseCols()
+        {
+            this.InitializeComponent();
+        }
+
         public string Columns
         {
             get
@@ -189,11 +194,6 @@ namespace RadioDld
 
             this.ColumnsList.Items.Remove(moveItem);
             this.ColumnsList.Items.Insert(origIndex + 1, moveItem);
-        }
-
-        public ChooseCols()
-        {
-            this.InitializeComponent();
         }
     }
 }

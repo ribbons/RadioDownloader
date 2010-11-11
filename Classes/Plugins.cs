@@ -21,6 +21,57 @@ namespace RadioDld
     using System.Reflection;
     using System.Windows.Forms;
 
+    public delegate void FindNewViewChangeEventHandler(object view);
+
+    public delegate void FindNewExceptionEventHandler(Exception findExp, bool unhandled);
+
+    public delegate void FoundNewEventHandler(string progExtId);
+
+    public delegate void ProgressEventHandler(int percent, string statusText, ProgressIcon icon);
+
+    public delegate void FinishedEventHandler(string fileExtension);
+
+    public enum ProgressIcon
+    {
+        Downloading,
+        Converting
+    }
+
+    public interface IRadioProvider
+    {
+        event FindNewViewChangeEventHandler FindNewViewChange;
+
+        event FindNewExceptionEventHandler FindNewException;
+
+        event FoundNewEventHandler FoundNew;
+
+        event ProgressEventHandler Progress;
+
+        event FinishedEventHandler Finished;
+
+        Guid ProviderId { get; }
+
+        string ProviderName { get; }
+
+        Bitmap ProviderIcon { get; }
+
+        string ProviderDescription { get; }
+
+        int ProgInfoUpdateFreqDays { get; }
+
+        EventHandler GetShowOptionsHandler();
+
+        Panel GetFindNewPanel(object view);
+
+        GetProgrammeInfoReturn GetProgrammeInfo(string progExtId);
+
+        string[] GetAvailableEpisodeIds(string progExtId);
+
+        GetEpisodeInfoReturn GetEpisodeInfo(string progExtId, string episodeExtId);
+
+        void DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
+    }
+
     public struct ProgrammeInfo
     {
         public string Name;
@@ -52,67 +103,33 @@ namespace RadioDld
         public bool Success;
     }
 
-    public enum ProgressIcon
-    {
-        Downloading,
-        Converting
-    }
-
-    public delegate void FindNewViewChangeEventHandler(object view);
-
-    public delegate void FindNewExceptionEventHandler(Exception findExp, bool unhandled);
-
-    public delegate void FoundNewEventHandler(string progExtId);
-
-    public delegate void ProgressEventHandler(int percent, string statusText, ProgressIcon icon);
-
-    public delegate void FinishedEventHandler(string fileExtension);
-
-    public interface IRadioProvider
-    {
-        Guid ProviderId { get; }
-
-        string ProviderName { get; }
-
-        Bitmap ProviderIcon { get; }
-
-        string ProviderDescription { get; }
-
-        int ProgInfoUpdateFreqDays { get; }
-
-        EventHandler GetShowOptionsHandler();
-
-        Panel GetFindNewPanel(object view);
-
-        GetProgrammeInfoReturn GetProgrammeInfo(string progExtId);
-
-        string[] GetAvailableEpisodeIds(string progExtId);
-
-        GetEpisodeInfoReturn GetEpisodeInfo(string progExtId, string episodeExtId);
-
-        event FindNewViewChangeEventHandler FindNewViewChange;
-
-        event FindNewExceptionEventHandler FindNewException;
-
-        event FoundNewEventHandler FoundNew;
-
-        event ProgressEventHandler Progress;
-
-        event FinishedEventHandler Finished;
-
-        void DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
-    }
-
+    // Parts of this class are based on VB.net code from http://www.developerfusion.co.uk/show/4371/3/
     internal class Plugins
     {
         private const string interfaceName = "IRadioProvider";
 
         private Dictionary<Guid, AvailablePlugin> availablePlugins = new Dictionary<Guid, AvailablePlugin>();
 
-        private struct AvailablePlugin
+        public Plugins(string path)
         {
-            public string AssemblyPath;
-            public string ClassName;
+            string[] dlls = null;
+            Assembly thisDll = null;
+
+            // Go through the DLLs in the specified path and try to load them
+            dlls = Directory.GetFileSystemEntries(path, "*.dll");
+
+            foreach (string dll in dlls)
+            {
+                try
+                {
+                    thisDll = Assembly.LoadFrom(dll);
+                    this.ExamineAssembly(thisDll);
+                }
+                catch
+                {
+                    // Error loading DLL, we don't need to do anything special
+                }
+            }
         }
 
         public bool PluginExists(Guid pluginID)
@@ -138,29 +155,6 @@ namespace RadioDld
             this.availablePlugins.Keys.CopyTo(pluginIDs, 0);
 
             return pluginIDs;
-        }
-
-        // Next three functions are based on code from http://www.developerfusion.co.uk/show/4371/3/
-        public Plugins(string path)
-        {
-            string[] dlls = null;
-            Assembly thisDll = null;
-
-            // Go through the DLLs in the specified path and try to load them
-            dlls = Directory.GetFileSystemEntries(path, "*.dll");
-
-            foreach (string dll in dlls)
-            {
-                try
-                {
-                    thisDll = Assembly.LoadFrom(dll);
-                    this.ExamineAssembly(thisDll);
-                }
-                catch
-                {
-                    // Error loading DLL, we don't need to do anything special
-                }
-            }
         }
 
         private void ExamineAssembly(Assembly dll)
@@ -225,6 +219,12 @@ namespace RadioDld
             {
                 return null;
             }
+        }
+
+        private struct AvailablePlugin
+        {
+            public string AssemblyPath;
+            public string ClassName;
         }
     }
 }

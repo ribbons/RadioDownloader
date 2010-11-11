@@ -36,21 +36,6 @@ namespace RadioDld
         private object updateIndexLock = new object();
         private object downloadVisLock = new object();
 
-        public static DataSearch GetInstance(Data instance)
-        {
-            // Need to use a lock instead of declaring the instance variable as New,
-            // as otherwise New gets called before the Data class is ready
-            lock (searchInstanceLock)
-            {
-                if (searchInstance == null)
-                {
-                    searchInstance = new DataSearch(instance);
-                }
-
-                return searchInstance;
-            }
-        }
-
         private DataSearch(Data instance)
         {
             this.dataInstance = instance;
@@ -113,6 +98,95 @@ namespace RadioDld
             }
         }
 
+        public string DownloadQuery
+        {
+            get
+            {
+                return this._downloadQuery;
+            }
+
+            set
+            {
+                if (value != this._downloadQuery)
+                {
+                    try
+                    {
+                        this.RunQuery(value);
+                        this._downloadQuery = value;
+                    }
+                    catch (SQLiteException)
+                    {
+                        // The search query is badly formed, so keep the old query
+                    }
+                }
+            }
+        }
+
+        public static DataSearch GetInstance(Data instance)
+        {
+            // Need to use a lock instead of declaring the instance variable as New,
+            // as otherwise New gets called before the Data class is ready
+            lock (searchInstanceLock)
+            {
+                if (searchInstance == null)
+                {
+                    searchInstance = new DataSearch(instance);
+                }
+
+                return searchInstance;
+            }
+        }
+
+        public bool DownloadIsVisible(int epid)
+        {
+            if (string.IsNullOrEmpty(this._downloadQuery))
+            {
+                return true;
+            }
+
+            lock (this.downloadVisLock)
+            {
+                if (this.downloadsVisible == null)
+                {
+                    this.RunQuery(this._downloadQuery);
+                }
+
+                return this.downloadsVisible.Contains(epid);
+            }
+        }
+
+        public void AddDownload(int epid)
+        {
+            Data.DownloadData downloadData = this.dataInstance.FetchDownloadData(epid);
+            this.AddDownload(downloadData);
+        }
+
+        public void UpdateDownload(int epid)
+        {
+            lock (this.updateIndexLock)
+            {
+                using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
+                {
+                    this.RemoveDownload(epid);
+                    this.AddDownload(epid);
+                }
+            }
+        }
+
+        public void RemoveDownload(int epid)
+        {
+            lock (this.updateIndexLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", this.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            // No need to clear the visibility cache, as having an extra entry won't cause an issue
+        }
+
         private string DatabasePath()
         {
             return Path.Combine(FileUtils.GetAppDataFolder(), "searchindex.db");
@@ -159,30 +233,6 @@ namespace RadioDld
             return "CREATE VIRTUAL TABLE " + tableName + " USING fts3(" + Strings.Join(columns, ", ") + ")";
         }
 
-        public string DownloadQuery
-        {
-            get
-            {
-                return this._downloadQuery;
-            }
-
-            set
-            {
-                if (value != this._downloadQuery)
-                {
-                    try
-                    {
-                        this.RunQuery(value);
-                        this._downloadQuery = value;
-                    }
-                    catch (SQLiteException)
-                    {
-                        // The search query is badly formed, so keep the old query
-                    }
-                }
-            }
-        }
-
         private void RunQuery(string query)
         {
             lock (this.downloadVisLock)
@@ -206,24 +256,6 @@ namespace RadioDld
             }
         }
 
-        public bool DownloadIsVisible(int epid)
-        {
-            if (string.IsNullOrEmpty(this._downloadQuery))
-            {
-                return true;
-            }
-
-            lock (this.downloadVisLock)
-            {
-                if (this.downloadsVisible == null)
-                {
-                    this.RunQuery(this._downloadQuery);
-                }
-
-                return this.downloadsVisible.Contains(epid);
-            }
-        }
-
         private void AddDownload(Data.DownloadData storeData)
         {
             lock (this.updateIndexLock)
@@ -242,38 +274,6 @@ namespace RadioDld
             {
                 this.downloadsVisible = null;
             }
-        }
-
-        public void AddDownload(int epid)
-        {
-            Data.DownloadData downloadData = this.dataInstance.FetchDownloadData(epid);
-            this.AddDownload(downloadData);
-        }
-
-        public void UpdateDownload(int epid)
-        {
-            lock (this.updateIndexLock)
-            {
-                using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
-                {
-                    this.RemoveDownload(epid);
-                    this.AddDownload(epid);
-                }
-            }
-        }
-
-        public void RemoveDownload(int epid)
-        {
-            lock (this.updateIndexLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", this.FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            // No need to clear the visibility cache, as having an extra entry won't cause an issue
         }
     }
 }

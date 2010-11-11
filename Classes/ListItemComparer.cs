@@ -21,13 +21,6 @@ namespace RadioDld
 
     internal class ListItemComparer : IComparer
     {
-        public enum ListType
-        {
-            Favourite,
-            Subscription,
-            Download
-        }
-
         private Data dataInstance;
         private ListType compareType;
 
@@ -35,6 +28,13 @@ namespace RadioDld
         {
             this.dataInstance = Data.GetInstance();
             this.compareType = compareType;
+        }
+
+        public enum ListType
+        {
+            Favourite,
+            Subscription,
+            Download
         }
 
         public int Compare(object x, object y)

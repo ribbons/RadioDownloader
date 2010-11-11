@@ -21,10 +21,6 @@ namespace PodcastProvider
 
     internal class DownloadWrapper
     {
-        public event DownloadProgressEventHandler DownloadProgress;
-
-        public delegate void DownloadProgressEventHandler(object sender, System.Net.DownloadProgressChangedEventArgs e);
-
         private WebClient downloadClient;
 
         private Uri downloadUrl;
@@ -39,6 +35,20 @@ namespace PodcastProvider
             this.destPath = destPath;
         }
 
+        public delegate void DownloadProgressEventHandler(object sender, System.Net.DownloadProgressChangedEventArgs e);
+
+        public event DownloadProgressEventHandler DownloadProgress;
+
+        public bool Complete
+        {
+            get { return this.downloadComplete; }
+        }
+
+        public Exception Error
+        {
+            get { return this.downloadError; }
+        }
+
         public void Download()
         {
             SystemEvents.PowerModeChanged += this.PowerModeChange;
@@ -49,16 +59,6 @@ namespace PodcastProvider
 
             this.downloadClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
             this.downloadClient.DownloadFileAsync(this.downloadUrl, this.destPath);
-        }
-
-        public bool Complete
-        {
-            get { return this.downloadComplete; }
-        }
-
-        public Exception Error
-        {
-            get { return this.downloadError; }
         }
 
         private void downloadClient_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)

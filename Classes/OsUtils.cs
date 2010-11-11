@@ -36,29 +36,10 @@ namespace RadioDld
     {
         private const short GW_CHILD = 5;
         private const short GW_HWNDNEXT = 2;
+
         private const short IDANI_OPEN = 0x1;
         private const short IDANI_CLOSE = 0x2;
-
         private const short IDANI_CAPTION = 0x3;
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DrawAnimatedRects(IntPtr hWnd, int idAni, ref RECT lprcFrom, ref RECT lprcTo);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr GetWindow(IntPtr hWnd, int wCmd);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        private static extern int GetClassName(System.IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
-
-        [DllImport("dwmapi.dll", SetLastError = true)]
-        private static extern int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] ref bool pfEnabled);
 
         public static bool WinSevenOrLater()
         {
@@ -218,5 +199,25 @@ namespace RadioDld
 
             return false;
         }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool DrawAnimatedRects(IntPtr hWnd, int idAni, ref RECT lprcFrom, ref RECT lprcTo);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr GetWindow(IntPtr hWnd, int wCmd);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false, ThrowOnUnmappableChar = true)]
+        private static extern int GetClassName(System.IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
+
+        [DllImport("dwmapi.dll", SetLastError = true)]
+        private static extern int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] ref bool pfEnabled);
     }
 }

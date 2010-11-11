@@ -21,13 +21,6 @@ namespace RadioDld
 
     internal class AppInstance : WindowsFormsApplicationBase
     {
-        [STAThread]
-        public static void Main(string[] args)
-        {
-            Application.SetCompatibleTextRenderingDefault(false);
-            new AppInstance().Run(args);
-        }
-
         private AppInstance()
         {
             this.IsSingleInstance = true;
@@ -42,6 +35,13 @@ namespace RadioDld
                 UnhandledException += this.App_UnhandledException;
                 AppDomain.CurrentDomain.UnhandledException += this.AppDomainExceptionHandler;
             }
+        }
+
+        [STAThread]
+        public static void Main(string[] args)
+        {
+            Application.SetCompatibleTextRenderingDefault(false);
+            new AppInstance().Run(args);
         }
 
         protected override void OnCreateMainForm()

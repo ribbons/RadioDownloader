@@ -23,8 +23,6 @@ namespace RadioDld
     [Serializable()]
     public class DataNotFoundException : Exception
     {
-        public int? NotFoundId { get; private set; }
-
         public DataNotFoundException()
             : base()
         {
@@ -66,6 +64,8 @@ namespace RadioDld
         {
             this.NotFoundId = (int?)info.GetValue("NotFoundId", typeof(int?));
         }
+
+        public int? NotFoundId { get; private set; }
 
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)

@@ -39,6 +39,16 @@ namespace RadioDld
             }
         }
 
+        ~SQLiteMonTransaction()
+        {
+            this.Dispose(false);
+        }
+
+        public SQLiteTransaction Trans
+        {
+            get { return this.wrappedTrans; }
+        }
+
         public static Exception AddTransactionsInfo(Exception exp)
         {
             string info = string.Empty;
@@ -59,9 +69,10 @@ namespace RadioDld
             return exp;
         }
 
-        public SQLiteTransaction Trans
+        public void Dispose()
         {
-            get { return this.wrappedTrans; }
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -80,17 +91,6 @@ namespace RadioDld
             }
 
             this.isDisposed = true;
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~SQLiteMonTransaction()
-        {
-            this.Dispose(false);
         }
     }
 }

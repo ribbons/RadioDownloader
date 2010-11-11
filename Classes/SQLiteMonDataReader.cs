@@ -39,6 +39,11 @@ namespace RadioDld
             }
         }
 
+        ~SQLiteMonDataReader()
+        {
+            this.Dispose(false);
+        }
+
         public static Exception AddReadersInfo(Exception exp)
         {
             string info = string.Empty;
@@ -104,6 +109,12 @@ namespace RadioDld
             return this.wrappedReader.Read();
         }
 
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (!this.isDisposed)
@@ -120,17 +131,6 @@ namespace RadioDld
             }
 
             this.isDisposed = true;
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~SQLiteMonDataReader()
-        {
-            this.Dispose(false);
         }
     }
 }

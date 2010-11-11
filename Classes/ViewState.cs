@@ -19,6 +19,17 @@ namespace RadioDld
 
     internal class ViewState
     {
+        private Stack<ViewData> backData = new Stack<ViewData>();
+        private Stack<ViewData> fwdData = new Stack<ViewData>();
+
+        public delegate void UpdateNavBtnStateEventHandler(bool enableBack, bool enableFwd);
+
+        public delegate void ViewChangedEventHandler(View view, MainTab tab, object data);
+
+        public event UpdateNavBtnStateEventHandler UpdateNavBtnState;
+
+        public event ViewChangedEventHandler ViewChanged;
+
         public enum MainTab
         {
             FindProgramme,
@@ -36,24 +47,6 @@ namespace RadioDld
             Subscriptions,
             Downloads
         }
-
-        private struct ViewData
-        {
-            public MainTab Tab;
-            public View View;
-            public object Data;
-        }
-
-        private Stack<ViewData> backData = new Stack<ViewData>();
-        private Stack<ViewData> fwdData = new Stack<ViewData>();
-
-        public event UpdateNavBtnStateEventHandler UpdateNavBtnState;
-
-        public delegate void UpdateNavBtnStateEventHandler(bool enableBack, bool enableFwd);
-
-        public event ViewChangedEventHandler ViewChanged;
-
-        public delegate void ViewChangedEventHandler(View view, MainTab tab, object data);
 
         public View CurrentView
         {
@@ -160,6 +153,13 @@ namespace RadioDld
             {
                 this.ViewChanged(curView.View, curView.Tab, curView.Data);
             }
+        }
+
+        private struct ViewData
+        {
+            public MainTab Tab;
+            public View View;
+            public object Data;
         }
     }
 }

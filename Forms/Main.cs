@@ -29,12 +29,6 @@ namespace RadioDld
 
     internal partial class Main : GlassForm
     {
-        private struct FindNewViewData
-        {
-            public Guid ProviderID;
-            public object View;
-        }
-
         private Data progData;
         private ViewState view;
         private UpdateCheck checkUpdate;
@@ -54,7 +48,23 @@ namespace RadioDld
             this.InitializeComponent();
         }
 
-        public void UpdateTrayStatus(bool active)
+        public void App_StartupNextInstance(object sender, Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs e)
+        {
+            foreach (string commandLineArg in e.CommandLine)
+            {
+                if (commandLineArg.ToUpperInvariant() == "/EXIT")
+                {
+                    // Close the application
+                    this.mnuTrayExit_Click(sender, e);
+                    return;
+                }
+            }
+
+            // Do the same as a double click on the tray icon
+            this.mnuTrayShow_Click(sender, e);
+        }
+
+        private void UpdateTrayStatus(bool active)
         {
             if (OsUtils.WinSevenOrLater())
             {
@@ -864,7 +874,7 @@ namespace RadioDld
             }
         }
 
-        public void mnuTrayShow_Click(object sender, System.EventArgs e)
+        private void mnuTrayShow_Click(object sender, System.EventArgs e)
         {
             if (this.Visible == false)
             {
@@ -880,7 +890,7 @@ namespace RadioDld
             this.Activate();
         }
 
-        public void mnuTrayExit_Click(object eventSender, System.EventArgs eventArgs)
+        private void mnuTrayExit_Click(object eventSender, System.EventArgs eventArgs)
         {
             this.Close();
             this.Dispose();
@@ -2293,20 +2303,10 @@ namespace RadioDld
             }
         }
 
-        public void App_StartupNextInstance(object sender, Microsoft.VisualBasic.ApplicationServices.StartupNextInstanceEventArgs e)
+        private struct FindNewViewData
         {
-            foreach (string commandLineArg in e.CommandLine)
-            {
-                if (commandLineArg.ToUpperInvariant() == "/EXIT")
-                {
-                    // Close the application
-                    this.mnuTrayExit_Click(sender, e);
-                    return;
-                }
-            }
-
-            // Do the same as a double click on the tray icon
-            this.mnuTrayShow_Click(sender, e);
+            public Guid ProviderID;
+            public object View;
         }
     }
 }

@@ -33,8 +33,8 @@ namespace RadioDld
         private const int WM_CHANGEUISTATE = 0x127;
 
         // WM_CHANGEUISTATE Parameters
-        protected const int UIS_INITIALIZE = 0x3;
-        protected const int UISF_HIDEFOCUS = 0x1;
+        private const int UIS_INITIALIZE = 0x3;
+        private const int UISF_HIDEFOCUS = 0x1;
 
         // ListView messages
         private const int LVM_FIRST = 0x1000;
@@ -58,113 +58,11 @@ namespace RadioDld
         private const int NM_FIRST = 0;
         private const int NM_RCLICK = NM_FIRST - 5;
 
-        // API Structures
-        [StructLayout(LayoutKind.Sequential)]
-        private struct NMHDR
-        {
-            public IntPtr hwndFrom;
-            public UIntPtr idFrom;
-            public int code;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct HDITEM
-        {
-            public int mask;
-            public int cxy;
-            [MarshalAs(UnmanagedType.LPTStr)]
-            public string pszText;
-            public IntPtr hbm;
-            public int cchTextMax;
-            public int fmt;
-            public int lParam;
-            public int iImage;
-            public int iOrder;
-        }
-
-        // API Declarations
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref HDITEM lParam);
-
-        [DllImport("uxtheme.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
-
-        // Data structure to store information about the controls
-        private struct EmbeddedProgress
-        {
-            public ProgressBar progress;
-            public int column;
-            public DockStyle dock;
-            public ListViewItem item;
-        }
-
         // List to store the EmbeddedProgress structures
         private List<EmbeddedProgress> embeddedControls = new List<EmbeddedProgress>();
 
         // Extra events
         public event ColumnClickEventHandler ColumnRightClick;
-
-        private int[] GetColumnOrder()
-        {
-            int[] order = new int[this.Columns.Count + 1];
-
-            for (int process = 0; process <= this.Columns.Count - 1; process++)
-            {
-                order[process] = this.Columns[process].DisplayIndex;
-            }
-
-            return order;
-        }
-
-        private Rectangle GetSubItemBounds(ListViewItem listItem, int subItem)
-        {
-            Rectangle subItemRect = Rectangle.Empty;
-
-            if (listItem == null)
-            {
-                throw new ArgumentNullException("listItem");
-            }
-
-            int[] order = this.GetColumnOrder();
-
-            if (order == null)
-            {
-                // No Columns
-                return subItemRect;
-            }
-
-            if (subItem >= order.Length)
-            {
-                throw new ArgumentOutOfRangeException("SubItem " + subItem.ToString(CultureInfo.InvariantCulture) + " out of range");
-            }
-
-            // Retrieve the bounds of the entire ListViewItem (all subitems)
-            Rectangle bounds = listItem.GetBounds(ItemBoundsPortion.Entire);
-
-            int subItemX = bounds.Left;
-            ColumnHeader header = null;
-            int process = 0;
-
-            // Calculate the X position of the SubItem.
-            for (process = 0; process <= order.Length - 1; process++)
-            {
-                header = this.Columns[order[process]];
-
-                if (header.Index == subItem)
-                {
-                    break;
-                }
-
-                subItemX += header.Width;
-            }
-
-            subItemRect = new Rectangle(subItemX, bounds.Top, this.Columns[order[process]].Width, bounds.Height);
-
-            return subItemRect;
-        }
 
         public void AddProgressBar(ref ProgressBar progress, ListViewItem parentItem, int column)
         {
@@ -385,6 +283,75 @@ namespace RadioDld
             base.WndProc(ref m);
         }
 
+        // API Declarations
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+
+        [DllImport("user32.dll", SetLastError = true)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref HDITEM lParam);
+
+        [DllImport("uxtheme.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        private static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
+
+        private int[] GetColumnOrder()
+        {
+            int[] order = new int[this.Columns.Count + 1];
+
+            for (int process = 0; process <= this.Columns.Count - 1; process++)
+            {
+                order[process] = this.Columns[process].DisplayIndex;
+            }
+
+            return order;
+        }
+
+        private Rectangle GetSubItemBounds(ListViewItem listItem, int subItem)
+        {
+            Rectangle subItemRect = Rectangle.Empty;
+
+            if (listItem == null)
+            {
+                throw new ArgumentNullException("listItem");
+            }
+
+            int[] order = this.GetColumnOrder();
+
+            if (order == null)
+            {
+                // No Columns
+                return subItemRect;
+            }
+
+            if (subItem >= order.Length)
+            {
+                throw new ArgumentOutOfRangeException("SubItem " + subItem.ToString(CultureInfo.InvariantCulture) + " out of range");
+            }
+
+            // Retrieve the bounds of the entire ListViewItem (all subitems)
+            Rectangle bounds = listItem.GetBounds(ItemBoundsPortion.Entire);
+
+            int subItemX = bounds.Left;
+            ColumnHeader header = null;
+            int process = 0;
+
+            // Calculate the X position of the SubItem.
+            for (process = 0; process <= order.Length - 1; process++)
+            {
+                header = this.Columns[order[process]];
+
+                if (header.Index == subItem)
+                {
+                    break;
+                }
+
+                subItemX += header.Width;
+            }
+
+            subItemRect = new Rectangle(subItemX, bounds.Top, this.Columns[order[process]].Width, bounds.Height);
+
+            return subItemRect;
+        }
+
         private void embeddedControl_Click(object sender, EventArgs e)
         {
             // When a progress bar is clicked the ListViewItem holding it is selected
@@ -404,6 +371,39 @@ namespace RadioDld
             IntPtr IntPtrLoWord = new IntPtr(LoWord & 0xffff);
 
             return new IntPtr(IntPtrHiWord.ToInt32() | IntPtrLoWord.ToInt32());
+        }
+
+        // API Structures
+        [StructLayout(LayoutKind.Sequential)]
+        private struct NMHDR
+        {
+            public IntPtr hwndFrom;
+            public UIntPtr idFrom;
+            public int code;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct HDITEM
+        {
+            public int mask;
+            public int cxy;
+            [MarshalAs(UnmanagedType.LPTStr)]
+            public string pszText;
+            public IntPtr hbm;
+            public int cchTextMax;
+            public int fmt;
+            public int lParam;
+            public int iImage;
+            public int iOrder;
+        }
+
+        // Data structure to store information about the controls
+        private struct EmbeddedProgress
+        {
+            public ProgressBar progress;
+            public int column;
+            public DockStyle dock;
+            public ListViewItem item;
         }
     }
 }

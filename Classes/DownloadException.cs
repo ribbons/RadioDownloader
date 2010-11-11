@@ -19,25 +19,6 @@ namespace RadioDld
     using System.Runtime.Serialization;
     using System.Security.Permissions;
 
-    [Serializable()]
-    public class DldErrorDataItem
-    {
-        public string Name { get; set; }
-
-        public string Data { get; set; }
-
-        protected DldErrorDataItem()
-        {
-            // Do nothing, just needed for deserialisation
-        }
-
-        public DldErrorDataItem(string name, string data)
-        {
-            this.Name = name;
-            this.Data = data;
-        }
-    }
-
     public enum ErrorType
     {
         UnknownError = 0,
@@ -48,6 +29,25 @@ namespace RadioDld
         NotAvailableInLocation = 5,
         NetworkProblem = 6,
         RemoteProblem = 7
+    }
+
+    [Serializable()]
+    public class DldErrorDataItem
+    {
+        public DldErrorDataItem(string name, string data)
+        {
+            this.Name = name;
+            this.Data = data;
+        }
+
+        protected DldErrorDataItem()
+        {
+            // Do nothing, just needed for deserialisation
+        }
+
+        public string Name { get; set; }
+
+        public string Data { get; set; }
     }
 
     [Serializable()]
@@ -99,15 +99,6 @@ namespace RadioDld
             this.extraDetails = (List<DldErrorDataItem>)info.GetValue("extraDetails", typeof(List<DldErrorDataItem>));
         }
 
-        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-
-            info.AddValue("type", this.type);
-            info.AddValue("extraDetails", this.extraDetails);
-        }
-
         public ErrorType TypeOfError
         {
             get { return this.type; }
@@ -116,6 +107,15 @@ namespace RadioDld
         public List<DldErrorDataItem> ErrorExtraDetails
         {
             get { return this.extraDetails; }
+        }
+
+        [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            base.GetObjectData(info, context);
+
+            info.AddValue("type", this.type);
+            info.AddValue("extraDetails", this.extraDetails);
         }
     }
 }

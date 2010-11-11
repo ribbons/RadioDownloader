@@ -26,40 +26,10 @@ namespace RadioDld
 
     public class CachedWebClient
     {
-        [Serializable()]
-        public struct CacheWebExpInfo
-        {
-            public string Message;
-            public Exception InnerException;
-            public WebExceptionStatus Status;
-            public WebResponse Response;
-        }
-
         private static CachedWebClient instance = new CachedWebClient();
 
         [ThreadStatic()]
         private static SQLiteConnection dbConn;
-
-        public static CachedWebClient GetInstance()
-        {
-            return instance;
-        }
-
-        private string DatabasePath()
-        {
-            return Path.Combine(Path.GetTempPath(), "radiodld-httpcache.db");
-        }
-
-        private SQLiteConnection FetchDbConn()
-        {
-            if (dbConn == null)
-            {
-                dbConn = new SQLiteConnection("Data Source=" + this.DatabasePath() + ";Version=3");
-                dbConn.Open();
-            }
-
-            return dbConn;
-        }
 
         private CachedWebClient()
         {
@@ -72,64 +42,9 @@ namespace RadioDld
             }
         }
 
-        private void AddToHTTPCache(Uri uri, bool requestSuccess, byte[] data)
+        public static CachedWebClient GetInstance()
         {
-            using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
-                command.Parameters.Add(new SQLiteParameter("@lastfetch", DateAndTime.Now));
-                command.Parameters.Add(new SQLiteParameter("@success", requestSuccess));
-                command.Parameters.Add(new SQLiteParameter("@data", data));
-                command.ExecuteNonQuery();
-            }
-        }
-
-        private System.DateTime? GetHTTPCacheLastUpdate(Uri uri)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
-
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        return reader.GetDateTime(reader.GetOrdinal("lastfetch"));
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
-        }
-
-        private byte[] GetHTTPCacheContent(Uri uri, ref bool requestSuccess)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select success, data from httpcache where uri=@uri", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
-
-                using (SQLiteDataReader reader = command.ExecuteReader())
-                {
-                    if (reader.Read())
-                    {
-                        requestSuccess = reader.GetBoolean(reader.GetOrdinal("success"));
-
-                        // Get the length of the content by passing nothing to getbytes
-                        int contentLength = Convert.ToInt32(reader.GetBytes(reader.GetOrdinal("data"), 0, null, 0, 0));
-
-                        byte[] content = new byte[contentLength];
-                        reader.GetBytes(reader.GetOrdinal("data"), 0, content, 0, contentLength);
-
-                        return content;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-            }
+            return instance;
         }
 
         public byte[] DownloadData(Uri uri, int fetchIntervalHrs)
@@ -212,6 +127,91 @@ namespace RadioDld
         public string DownloadString(Uri uri, int fetchIntervalHrs)
         {
             return Encoding.UTF8.GetString(this.DownloadData(uri, fetchIntervalHrs));
+        }
+
+        private string DatabasePath()
+        {
+            return Path.Combine(Path.GetTempPath(), "radiodld-httpcache.db");
+        }
+
+        private SQLiteConnection FetchDbConn()
+        {
+            if (dbConn == null)
+            {
+                dbConn = new SQLiteConnection("Data Source=" + this.DatabasePath() + ";Version=3");
+                dbConn.Open();
+            }
+
+            return dbConn;
+        }
+
+        private void AddToHTTPCache(Uri uri, bool requestSuccess, byte[] data)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
+                command.Parameters.Add(new SQLiteParameter("@lastfetch", DateAndTime.Now));
+                command.Parameters.Add(new SQLiteParameter("@success", requestSuccess));
+                command.Parameters.Add(new SQLiteParameter("@data", data));
+                command.ExecuteNonQuery();
+            }
+        }
+
+        private System.DateTime? GetHTTPCacheLastUpdate(Uri uri)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
+
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return reader.GetDateTime(reader.GetOrdinal("lastfetch"));
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        private byte[] GetHTTPCacheContent(Uri uri, ref bool requestSuccess)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select success, data from httpcache where uri=@uri", this.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
+
+                using (SQLiteDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        requestSuccess = reader.GetBoolean(reader.GetOrdinal("success"));
+
+                        // Get the length of the content by passing nothing to getbytes
+                        int contentLength = Convert.ToInt32(reader.GetBytes(reader.GetOrdinal("data"), 0, null, 0, 0));
+
+                        byte[] content = new byte[contentLength];
+                        reader.GetBytes(reader.GetOrdinal("data"), 0, content, 0, contentLength);
+
+                        return content;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        [Serializable()]
+        public struct CacheWebExpInfo
+        {
+            public string Message;
+            public Exception InnerException;
+            public WebExceptionStatus Status;
+            public WebResponse Response;
         }
     }
 }
