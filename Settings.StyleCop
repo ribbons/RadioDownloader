@@ -21,22 +21,7 @@
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
         </Rule>
-        <Rule Name="ElementMustBeginWithLowerCaseLetter">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="InterfaceNamesMustBeginWithI">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="ConstFieldNamesMustBeginWithUpperCaseLetter">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="NonPrivateReadonlyFieldsMustBeginWithUpperCaseLetter">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
@@ -52,11 +37,6 @@
           </RuleSettings>
         </Rule>
         <Rule Name="AccessibleFieldsMustBeginWithUpperCaseLetter">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="VariableNamesMustNotBePrefixed">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
