@@ -24,21 +24,6 @@ namespace RadioDld
 
     internal class TabBarRenderer : ToolStripSystemRenderer, IDisposable
     {
-        private const int BI_RGB = 0;
-
-        private const int DTT_COMPOSITED = 8192;
-        private const int DTT_GLOWSIZE = 2048;
-        private const int DTT_TEXTCOLOR = 1;
-
-        private const int AC_SRC_OVER = 0;
-        private const int AC_SRC_ALPHA = 1;
-
-        // NAV_BACKBUTTONSTATES / NAV_FORWARDBUTTONSTATES
-        private const int NAV_BF_NORMAL = 1;
-        private const int NAV_BF_HOT = 2;
-        private const int NAV_BF_PRESSED = 3;
-        private const int NAV_BF_DISABLED = 4;
-
         private const int tabSeparation = 3;
 
         private ToolStrip rendererFor;
@@ -96,19 +81,19 @@ namespace RadioDld
                 {
                     if (e.Item.Enabled == false)
                     {
-                        navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_DISABLED);
+                        navigation = new VisualStyleRenderer("Navigation", stylePart, NativeMethods.NAV_BF_DISABLED);
                     }
                     else if (e.Item.Pressed)
                     {
-                        navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_PRESSED);
+                        navigation = new VisualStyleRenderer("Navigation", stylePart, NativeMethods.NAV_BF_PRESSED);
                     }
                     else if (e.Item.Selected)
                     {
-                        navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_HOT);
+                        navigation = new VisualStyleRenderer("Navigation", stylePart, NativeMethods.NAV_BF_HOT);
                     }
                     else
                     {
-                        navigation = new VisualStyleRenderer("Navigation", stylePart, NAV_BF_NORMAL);
+                        navigation = new VisualStyleRenderer("Navigation", stylePart, NativeMethods.NAV_BF_NORMAL);
                     }
                 }
                 catch (ArgumentException)
@@ -233,7 +218,7 @@ namespace RadioDld
 
             // Get the rendering HDC, and create a compatible one for drawing the text to
             IntPtr renderHdc = e.Graphics.GetHdc();
-            IntPtr memoryHdc = CreateCompatibleDC(renderHdc);
+            IntPtr memoryHdc = NativeMethods.CreateCompatibleDC(renderHdc);
 
             // NULL Pointer
             if (memoryHdc == IntPtr.Zero)
@@ -241,18 +226,18 @@ namespace RadioDld
                 throw new Win32Exception();
             }
 
-            BITMAPINFO info = default(BITMAPINFO);
-            info.biSize = Convert.ToUInt32(Marshal.SizeOf(typeof(BITMAPINFO)));
+            NativeMethods.BITMAPINFO info = default(NativeMethods.BITMAPINFO);
+            info.biSize = Convert.ToUInt32(Marshal.SizeOf(typeof(NativeMethods.BITMAPINFO)));
             info.biWidth = e.TextRectangle.Width;
             info.biHeight = -e.TextRectangle.Height; // Negative = top-down
             info.biPlanes = 1;
             info.biBitCount = 32;
-            info.biCompression = BI_RGB;
+            info.biCompression = NativeMethods.BI_RGB;
 
             IntPtr bits = IntPtr.Zero;
 
             // Create the top-down DIB
-            IntPtr dib = CreateDIBSection(renderHdc, ref info, 0, ref bits, IntPtr.Zero, 0);
+            IntPtr dib = NativeMethods.CreateDIBSection(renderHdc, ref info, 0, ref bits, IntPtr.Zero, 0);
 
             // NULL Pointer
             if (dib == IntPtr.Zero)
@@ -262,7 +247,7 @@ namespace RadioDld
 
             // Select the created DIB into our memory DC for use
             // NULL Pointer
-            if (SelectObject(memoryHdc, dib) == IntPtr.Zero)
+            if (NativeMethods.SelectObject(memoryHdc, dib) == IntPtr.Zero)
             {
                 throw new Win32Exception();
             }
@@ -272,7 +257,7 @@ namespace RadioDld
 
             // And select it into the DC as well
             // NULL Pointer
-            if (SelectObject(memoryHdc, hFont) == IntPtr.Zero)
+            if (NativeMethods.SelectObject(memoryHdc, hFont) == IntPtr.Zero)
             {
                 throw new Win32Exception();
             }
@@ -281,48 +266,48 @@ namespace RadioDld
             VisualStyleRenderer renderer = new VisualStyleRenderer(VisualStyleElement.ToolBar.Button.Normal);
 
             // Set up a RECT for the area to draw the text in
-            RECT textRect = default(RECT);
+            NativeMethods.RECT textRect = default(NativeMethods.RECT);
             textRect.left = 0;
             textRect.top = 0;
             textRect.right = e.TextRectangle.Width;
             textRect.bottom = e.TextRectangle.Height;
 
             // Options for GetThemeTextEx
-            DTTOPTS opts = default(DTTOPTS);
+            NativeMethods.DTTOPTS opts = default(NativeMethods.DTTOPTS);
             opts.dwSize = Convert.ToUInt32(Marshal.SizeOf(opts));
-            opts.dwFlags = DTT_COMPOSITED | DTT_TEXTCOLOR;
+            opts.dwFlags = NativeMethods.DTT_COMPOSITED | NativeMethods.DTT_TEXTCOLOR;
             opts.crText = Convert.ToUInt32(ColorTranslator.ToWin32(e.TextColor)); // Alpha blended text of the colour specified
 
             // Paint the text
-            if (DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, (uint)e.TextFormat, ref textRect, ref opts) != 0)
+            if (NativeMethods.DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, (uint)e.TextFormat, ref textRect, ref opts) != 0)
             {
                 throw new Win32Exception();
             }
 
             // Set up the AlphaBlend copy
-            BLENDFUNCTION blendFunc = default(BLENDFUNCTION);
-            blendFunc.BlendOp = AC_SRC_OVER;
+            NativeMethods.BLENDFUNCTION blendFunc = default(NativeMethods.BLENDFUNCTION);
+            blendFunc.BlendOp = NativeMethods.AC_SRC_OVER;
             blendFunc.SourceConstantAlpha = 255;
-            blendFunc.AlphaFormat = AC_SRC_ALPHA; // Per-pixel alpha only
+            blendFunc.AlphaFormat = NativeMethods.AC_SRC_ALPHA; // Per-pixel alpha only
 
             // Blend the painted text into the render DC
-            if (!AlphaBlend(renderHdc, e.TextRectangle.Left, e.TextRectangle.Top, e.TextRectangle.Width, e.TextRectangle.Height, memoryHdc, 0, 0, e.TextRectangle.Width, e.TextRectangle.Height, blendFunc))
+            if (!NativeMethods.AlphaBlend(renderHdc, e.TextRectangle.Left, e.TextRectangle.Top, e.TextRectangle.Width, e.TextRectangle.Height, memoryHdc, 0, 0, e.TextRectangle.Width, e.TextRectangle.Height, blendFunc))
             {
                 throw new Win32Exception();
             }
 
             // Clean up the GDI objects
-            if (DeleteObject(hFont) == false)
+            if (NativeMethods.DeleteObject(hFont) == false)
             {
                 throw new Win32Exception();
             }
 
-            if (DeleteObject(dib) == false)
+            if (NativeMethods.DeleteObject(dib) == false)
             {
                 throw new Win32Exception();
             }
 
-            if (DeleteDC(memoryHdc) == false)
+            if (NativeMethods.DeleteDC(memoryHdc) == false)
             {
                 throw new Win32Exception();
             }
@@ -395,30 +380,6 @@ namespace RadioDld
             this.isDisposed = true;
         }
 
-        [DllImport("gdi32.dll", SetLastError = true)]
-        private static extern IntPtr CreateCompatibleDC(IntPtr hdc);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        private static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        private static extern IntPtr CreateDIBSection(IntPtr hdc, [In()] ref BITMAPINFO lpbmi, uint usage, ref IntPtr ppvBits, IntPtr hSection, uint offset);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DeleteObject(IntPtr ho);
-
-        [DllImport("gdi32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DeleteDC(IntPtr hdc);
-
-        [DllImport("UxTheme.dll", SetLastError = true)]
-        private static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount, uint dwFlags, ref RECT pRect, [In()] ref DTTOPTS pOptions);
-
-        [DllImport("msimg32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION ftn);
-
         private Color GetActiveTabBtmCol(ToolStrip strip, ToolStripItem active)
         {
             Color toolbarColour = SystemColors.Control;
@@ -454,56 +415,6 @@ namespace RadioDld
         {
             this.isActive = false;
             this.rendererFor.Invalidate();
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct BLENDFUNCTION
-        {
-            public byte BlendOp;
-            public byte BlendFlags;
-            public byte SourceConstantAlpha;
-            public byte AlphaFormat;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct BITMAPINFO
-        {
-            public uint biSize;
-            public int biWidth;
-            public int biHeight;
-            public ushort biPlanes;
-            public ushort biBitCount;
-            public uint biCompression;
-            public uint biSizeImage;
-            public int biXPelsPerMeter;
-            public int biYPelsPerMeter;
-            public uint biClrUsed;
-            public uint biClrImportant;
-            public byte rgbBlue;
-            public byte rgbGreen;
-            public byte rgbRed;
-            public byte rgbReserved;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct DTTOPTS
-        {
-            public uint dwSize;
-            public uint dwFlags;
-            public uint crText;
-            public uint crBorder;
-            public uint crShadow;
-            public int iTextShadowType;
-            public Point ptShadowOffset;
-            public int iBorderSize;
-            public int iFontPropId;
-            public int iColorPropId;
-            public int iStateId;
-            [MarshalAs(UnmanagedType.Bool)]
-            public bool fApplyOverlay;
-            public int iGlowSize;
-            public int pfnDrawTextCallback;
-            public int lParam;
         }
     }
 }

@@ -83,7 +83,7 @@ namespace RadioDld
 
             void SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
 
-            void SetThumbnailClip(IntPtr hwnd, RECT prcClip);
+            void SetThumbnailClip(IntPtr hwnd, NativeMethods.RECT prcClip);
         }
 
         public void SetOverlayIcon(Form parentWin, Icon icon, string description)

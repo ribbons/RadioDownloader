@@ -17,30 +17,13 @@ namespace RadioDld
     using System;
     using System.ComponentModel;
     using System.Drawing;
-    using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
     using Microsoft.VisualBasic.ApplicationServices;
     using Microsoft.Win32;
 
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    internal struct RECT
-    {
-        public int left;
-        public int top;
-        public int right;
-        public int bottom;
-    }
-
     internal class OsUtils
     {
-        private const short GW_CHILD = 5;
-        private const short GW_HWNDNEXT = 2;
-
-        private const short IDANI_OPEN = 0x1;
-        private const short IDANI_CLOSE = 0x2;
-        private const short IDANI_CAPTION = 0x3;
-
         public static bool WinSevenOrLater()
         {
             OperatingSystem curOs = System.Environment.OSVersion;
@@ -90,7 +73,7 @@ namespace RadioDld
             IntPtr trayHwnd = default(IntPtr);
 
             // Get taskbar handle
-            taskbarHwnd = FindWindow("Shell_traywnd", null);
+            taskbarHwnd = NativeMethods.FindWindow("Shell_traywnd", null);
 
             if (taskbarHwnd == IntPtr.Zero)
             {
@@ -98,7 +81,7 @@ namespace RadioDld
             }
 
             // Get system tray handle
-            trayHwnd = GetWindow(taskbarHwnd, GW_CHILD);
+            trayHwnd = NativeMethods.GetWindow(taskbarHwnd, NativeMethods.GW_CHILD);
 
             do
             {
@@ -107,7 +90,7 @@ namespace RadioDld
                     throw new Win32Exception();
                 }
 
-                if (GetClassName(trayHwnd, className, className.Capacity) == 0)
+                if (NativeMethods.GetClassName(trayHwnd, className, className.Capacity) == 0)
                 {
                     throw new Win32Exception();
                 }
@@ -117,21 +100,21 @@ namespace RadioDld
                     break;
                 }
 
-                trayHwnd = GetWindow(trayHwnd, GW_HWNDNEXT);
+                trayHwnd = NativeMethods.GetWindow(trayHwnd, NativeMethods.GW_HWNDNEXT);
             }
             while (true);
 
-            RECT systray = default(RECT);
-            RECT window = default(RECT);
+            NativeMethods.RECT systray = default(NativeMethods.RECT);
+            NativeMethods.RECT window = default(NativeMethods.RECT);
 
             // Fetch the location of the systray from its window handle
-            if (GetWindowRect(trayHwnd, ref systray) == false)
+            if (NativeMethods.GetWindowRect(trayHwnd, ref systray) == false)
             {
                 throw new Win32Exception();
             }
 
             // Fetch the location of the window from its window handle
-            if (GetWindowRect(form.Handle, ref window) == false)
+            if (NativeMethods.GetWindowRect(form.Handle, ref window) == false)
             {
                 throw new Win32Exception();
             }
@@ -139,14 +122,14 @@ namespace RadioDld
             // Perform the animation
             if (down == true)
             {
-                if (DrawAnimatedRects(form.Handle, IDANI_CLOSE | IDANI_CAPTION, ref window, ref systray) == false)
+                if (NativeMethods.DrawAnimatedRects(form.Handle, NativeMethods.IDANI_CAPTION, ref window, ref systray) == false)
                 {
                     throw new Win32Exception();
                 }
             }
             else
             {
-                if (DrawAnimatedRects(form.Handle, IDANI_OPEN | IDANI_CAPTION, ref systray, ref window) == false)
+                if (NativeMethods.DrawAnimatedRects(form.Handle, NativeMethods.IDANI_CAPTION, ref systray, ref window) == false)
                 {
                     throw new Win32Exception();
                 }
@@ -162,7 +145,7 @@ namespace RadioDld
 
             bool enabled = false;
 
-            if (DwmIsCompositionEnabled(ref enabled) != 0)
+            if (NativeMethods.DwmIsCompositionEnabled(ref enabled) != 0)
             {
                 throw new Win32Exception();
             }
@@ -199,25 +182,5 @@ namespace RadioDld
 
             return false;
         }
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool DrawAnimatedRects(IntPtr hWnd, int idAni, ref RECT lprcFrom, ref RECT lprcTo);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr GetWindow(IntPtr hWnd, int wCmd);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        private static extern int GetClassName(System.IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
-
-        [DllImport("dwmapi.dll", SetLastError = true)]
-        private static extern int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] ref bool pfEnabled);
     }
 }

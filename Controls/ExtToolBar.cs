@@ -22,20 +22,6 @@ namespace RadioDld
 
     internal class ExtToolBar : ToolBar
     {
-        // Window Messages
-        private const int WM_USER = 0x400;
-        private const int TB_SETBUTTONINFO = WM_USER + 64;
-
-        // TBBUTTONINFO Mask Flags
-        private const uint TBIF_STYLE = 0x8;
-        private const int TBIF_SIZE = 0x40;
-        private const uint TBIF_BYINDEX = 0x80000000;
-
-        // TBBUTTONINFO Style Flags
-        private const int BTNS_AUTOSIZE = 0x10;
-        private const int BTNS_WHOLEDROPDOWN = 0x80;
-
-        // Variables
         private List<ToolBarButton> wholeDropDownButtons = new List<ToolBarButton>();
 
         public void SetWholeDropDown(ToolBarButton button)
@@ -50,36 +36,36 @@ namespace RadioDld
                 this.wholeDropDownButtons.Add(button);
             }
 
-            TBBUTTONINFO buttonInfo = default(TBBUTTONINFO);
+            NativeMethods.TBBUTTONINFO buttonInfo = default(NativeMethods.TBBUTTONINFO);
 
             buttonInfo.cbSize = Marshal.SizeOf(buttonInfo);
-            buttonInfo.dwMask = TBIF_STYLE | TBIF_BYINDEX;
-            buttonInfo.fsStyle = BTNS_WHOLEDROPDOWN | BTNS_AUTOSIZE;
+            buttonInfo.dwMask = NativeMethods.TBIF_STYLE | NativeMethods.TBIF_BYINDEX;
+            buttonInfo.fsStyle = NativeMethods.BTNS_WHOLEDROPDOWN | NativeMethods.BTNS_AUTOSIZE;
 
-            SendMessage(this.Handle, TB_SETBUTTONINFO, (IntPtr)this.Buttons.IndexOf(button), ref buttonInfo);
+            NativeMethods.SendMessage(this.Handle, NativeMethods.TB_SETBUTTONINFO, (IntPtr)this.Buttons.IndexOf(button), ref buttonInfo);
         }
 
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)
             {
-                case TB_SETBUTTONINFO:
-                    TBBUTTONINFO tbrInfo = default(TBBUTTONINFO);
-                    tbrInfo = (TBBUTTONINFO)Marshal.PtrToStructure(m.LParam, typeof(TBBUTTONINFO));
+                case NativeMethods.TB_SETBUTTONINFO:
+                    NativeMethods.TBBUTTONINFO tbrInfo = default(NativeMethods.TBBUTTONINFO);
+                    tbrInfo = (NativeMethods.TBBUTTONINFO)Marshal.PtrToStructure(m.LParam, typeof(NativeMethods.TBBUTTONINFO));
 
-                    if ((tbrInfo.dwMask & TBIF_SIZE) == TBIF_SIZE)
+                    if ((tbrInfo.dwMask & NativeMethods.TBIF_SIZE) == NativeMethods.TBIF_SIZE)
                     {
                         // If the .net wrapper is trying to set the size, then prevent this
-                        tbrInfo.dwMask = tbrInfo.dwMask ^ TBIF_SIZE;
+                        tbrInfo.dwMask = tbrInfo.dwMask ^ NativeMethods.TBIF_SIZE;
                     }
 
-                    if ((tbrInfo.dwMask & TBIF_STYLE) == TBIF_STYLE)
+                    if ((tbrInfo.dwMask & NativeMethods.TBIF_STYLE) == NativeMethods.TBIF_STYLE)
                     {
-                        if ((tbrInfo.fsStyle & BTNS_AUTOSIZE) != BTNS_AUTOSIZE)
+                        if ((tbrInfo.fsStyle & NativeMethods.BTNS_AUTOSIZE) != NativeMethods.BTNS_AUTOSIZE)
                         {
                             // Make sure that the autosize style is set for all buttons, and doesn't
                             // get inadvertantly unset at any point by the .net wrapper
-                            tbrInfo.fsStyle = (byte)(tbrInfo.fsStyle | BTNS_AUTOSIZE);
+                            tbrInfo.fsStyle = (byte)(tbrInfo.fsStyle | NativeMethods.BTNS_AUTOSIZE);
                         }
                     }
 
@@ -126,26 +112,6 @@ namespace RadioDld
             }
 
             return false;
-        }
-
-        // API Declarations
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref TBBUTTONINFO lParam);
-
-        // API Structs
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-        private struct TBBUTTONINFO
-        {
-            public int cbSize;
-            public uint dwMask;
-            public int idCommand;
-            public int iImage;
-            public byte fsState;
-            public byte fsStyle;
-            public short cx;
-            public IntPtr lParam;
-            public IntPtr pszText;
-            public int cchText;
         }
     }
 }

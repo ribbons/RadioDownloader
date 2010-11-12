@@ -17,25 +17,12 @@ namespace RadioDld
     using System;
     using System.ComponentModel;
     using System.Drawing;
-    using System.Runtime.InteropServices;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
 
     public class SearchBox : Control
     {
-        // Window Messages
-        private const int EM_SETCUEBANNER = 0x1501;
-
-        // Search box theme class, part and states
-        private const string SEARCHBOX = "SearchBox";
-
-        private const int SBBACKGROUND = 0x1;
-        private const int SBB_NORMAL = 0x1;
-        private const int SBB_HOT = 0x2;
-        private const int SBB_DISABLED = 0x3;
-        private const int SBB_FOCUSED = 0x4;
-
-        private int boxState = SBB_NORMAL;
+        private int boxState = NativeMethods.SBB_NORMAL;
         private int themeHeight;
 
         private bool buttonHover;
@@ -84,7 +71,7 @@ namespace RadioDld
             // Work out the height that the search box should be displayed
             if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
             {
-                VisualStyleRenderer sizeStyle = new VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, SBB_NORMAL);
+                VisualStyleRenderer sizeStyle = new VisualStyleRenderer(NativeMethods.SEARCHBOX, NativeMethods.SBBACKGROUND, NativeMethods.SBB_NORMAL);
 
                 using (Graphics sizeGraphics = this.CreateGraphics())
                 {
@@ -103,7 +90,7 @@ namespace RadioDld
             set
             {
                 this._cueBanner = value;
-                SendMessage(this.textBox.Handle, EM_SETCUEBANNER, IntPtr.Zero, this._cueBanner);
+                NativeMethods.SendMessage(this.textBox.Handle, NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, this._cueBanner);
             }
         }
 
@@ -121,23 +108,17 @@ namespace RadioDld
             base.Dispose(disposing);
         }
 
-        [DllImport("uxtheme.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, string lParam);
-
         private void SearchBox_HandleCreated(object sender, System.EventArgs e)
         {
             if (OsUtils.WinXpOrLater())
             {
                 // Set the theme of this parent control and the edit control, so they are rendered correctly
-                if (SetWindowTheme(this.Handle, "SearchBoxComposited", null) != 0)
+                if (NativeMethods.SetWindowTheme(this.Handle, "SearchBoxComposited", null) != 0)
                 {
                     throw new Win32Exception();
                 }
 
-                if (SetWindowTheme(this.textBox.Handle, "SearchBoxEditComposited", null) != 0)
+                if (NativeMethods.SetWindowTheme(this.textBox.Handle, "SearchBoxEditComposited", null) != 0)
                 {
                     throw new Win32Exception();
                 }
@@ -153,7 +134,7 @@ namespace RadioDld
                 if (OsUtils.WinVistaOrLater())
                 {
                     // Fetch the correct style based on the current state
-                    searchBoxStyle = new VisualStyleRenderer(SEARCHBOX, SBBACKGROUND, this.boxState);
+                    searchBoxStyle = new VisualStyleRenderer(NativeMethods.SEARCHBOX, NativeMethods.SBBACKGROUND, this.boxState);
                 }
                 else
                 {
@@ -194,9 +175,9 @@ namespace RadioDld
 
         private void textBox_MouseEnter(object sender, System.EventArgs e)
         {
-            if (this.boxState == SBB_NORMAL)
+            if (this.boxState == NativeMethods.SBB_NORMAL)
             {
-                this.boxState = SBB_HOT;
+                this.boxState = NativeMethods.SBB_HOT;
             }
 
             if (VisualStyleRenderer.IsSupported)
@@ -209,9 +190,9 @@ namespace RadioDld
 
         private void textBox_MouseLeave(object sender, System.EventArgs e)
         {
-            if (this.boxState == SBB_HOT)
+            if (this.boxState == NativeMethods.SBB_HOT)
             {
-                this.boxState = SBB_NORMAL;
+                this.boxState = NativeMethods.SBB_NORMAL;
             }
 
             if (VisualStyleRenderer.IsSupported)
@@ -224,13 +205,13 @@ namespace RadioDld
 
         private void textBox_GotFocus(object sender, System.EventArgs e)
         {
-            this.boxState = SBB_FOCUSED;
+            this.boxState = NativeMethods.SBB_FOCUSED;
             this.Invalidate(); // Repaint the control
         }
 
         private void textBox_LostFocus(object sender, System.EventArgs e)
         {
-            this.boxState = SBB_NORMAL;
+            this.boxState = NativeMethods.SBB_NORMAL;
             this.Invalidate(); // Repaint the control
         }
 

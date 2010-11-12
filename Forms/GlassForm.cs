@@ -16,25 +16,18 @@ namespace RadioDld
 {
     using System;
     using System.ComponentModel;
-    using System.Runtime.InteropServices;
     using System.Security.Permissions;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
 
     public class GlassForm : Form
     {
-        private const int WM_NCHITTEST = 0x84;
-        private const int WM_DWMCOMPOSITIONCHANGED = 0x31e;
-
-        private const int HTCLIENT = 0x1;
-        private const int HTCAPTION = 0x2;
-
         private bool glassSet;
-        private MARGINS glassMargins;
+        private NativeMethods.MARGINS glassMargins;
 
         public void SetGlassMargins(int leftMargin, int rightMargin, int topMargin, int bottomMargin)
         {
-            this.glassMargins = new MARGINS();
+            this.glassMargins = new NativeMethods.MARGINS();
 
             this.glassMargins.cxLeftWidth = leftMargin;
             this.glassMargins.cxRightWidth = rightMargin;
@@ -50,22 +43,22 @@ namespace RadioDld
         {
             switch (m.Msg)
             {
-                case WM_DWMCOMPOSITIONCHANGED:
+                case NativeMethods.WM_DWMCOMPOSITIONCHANGED:
                     if (this.glassSet)
                     {
                         this.ExtendFrameIntoClientArea();
                     }
 
                     break;
-                case WM_NCHITTEST:
+                case NativeMethods.WM_NCHITTEST:
                     DefWndProc(ref m);
 
                     if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported && this.glassSet)
                     {
-                        if ((int)m.Result == HTCLIENT)
+                        if ((int)m.Result == NativeMethods.HTCLIENT)
                         {
                             // Pretend that the mouse was over the title bar, making the form draggable
-                            m.Result = new IntPtr(HTCAPTION);
+                            m.Result = new IntPtr(NativeMethods.HTCAPTION);
                             return;
                         }
                     }
@@ -76,9 +69,6 @@ namespace RadioDld
             base.WndProc(ref m);
         }
 
-        [DllImport("dwmapi.dll", SetLastError = true)]
-        private static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
-
         private void ExtendFrameIntoClientArea()
         {
             if (!OsUtils.CompositionEnabled())
@@ -86,19 +76,10 @@ namespace RadioDld
                 return;
             }
 
-            if (DwmExtendFrameIntoClientArea(this.Handle, ref this.glassMargins) != 0)
+            if (NativeMethods.DwmExtendFrameIntoClientArea(this.Handle, ref this.glassMargins) != 0)
             {
                 throw new Win32Exception();
             }
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct MARGINS
-        {
-            public int cxLeftWidth;
-            public int cxRightWidth;
-            public int cyTopHeight;
-            public int cyButtomheight;
         }
     }
 }

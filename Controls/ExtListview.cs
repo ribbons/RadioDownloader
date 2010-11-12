@@ -19,45 +19,11 @@ namespace RadioDld
     using System.ComponentModel;
     using System.Drawing;
     using System.Globalization;
-    using System.Runtime.InteropServices;
     using System.Windows.Forms;
 
     // Parts of the code in this class are based on code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
     internal class ExtListView : ListView
     {
-        // Window Messages
-        private const int WM_CREATE = 0x1;
-        private const int WM_SETFOCUS = 0x7;
-        private const int WM_PAINT = 0xf;
-        private const int WM_NOTIFY = 0x4e;
-        private const int WM_CHANGEUISTATE = 0x127;
-
-        // WM_CHANGEUISTATE Parameters
-        private const int UIS_INITIALIZE = 0x3;
-        private const int UISF_HIDEFOCUS = 0x1;
-
-        // ListView messages
-        private const int LVM_FIRST = 0x1000;
-        private const int LVM_GETHEADER = LVM_FIRST + 31;
-        private const int LVM_SETEXTENDEDLISTVIEWSTYLE = LVM_FIRST + 54;
-
-        // ListView header messages
-        private const int HDM_FIRST = 0x1200;
-        private const int HDM_GETITEM = HDM_FIRST + 11;
-        private const int HDM_SETITEM = HDM_FIRST + 12;
-
-        // ListView header info flags
-        private const int HDI_FORMAT = 0x4;
-        private const int HDF_SORTUP = 0x400;
-        private const int HDF_SORTDOWN = 0x200;
-
-        // Extended ListView Styles
-        private const int LVS_EX_DOUBLEBUFFER = 0x10000;
-
-        // Notify messages
-        private const int NM_FIRST = 0;
-        private const int NM_RCLICK = NM_FIRST - 5;
-
         // List to store the EmbeddedProgress structures
         private List<EmbeddedProgress> embeddedControls = new List<EmbeddedProgress>();
 
@@ -146,35 +112,35 @@ namespace RadioDld
 
         public void ShowSortOnHeader(int column, SortOrder order)
         {
-            IntPtr headersHwnd = SendMessage(this.Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
+            IntPtr headersHwnd = NativeMethods.SendMessage(this.Handle, NativeMethods.LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
 
             for (int processCols = 0; processCols <= this.Columns.Count; processCols++)
             {
-                HDITEM headerInfo = new HDITEM();
-                headerInfo.mask = HDI_FORMAT;
+                NativeMethods.HDITEM headerInfo = new NativeMethods.HDITEM();
+                headerInfo.mask = NativeMethods.HDI_FORMAT;
 
-                SendMessage(headersHwnd, HDM_GETITEM, (IntPtr)processCols, ref headerInfo);
+                NativeMethods.SendMessage(headersHwnd, NativeMethods.HDM_GETITEM, (IntPtr)processCols, ref headerInfo);
 
                 if (order != SortOrder.None && processCols == column)
                 {
                     switch (order)
                     {
                         case SortOrder.Ascending:
-                            headerInfo.fmt = headerInfo.fmt & ~HDF_SORTDOWN;
-                            headerInfo.fmt = headerInfo.fmt | HDF_SORTUP;
+                            headerInfo.fmt = headerInfo.fmt & ~NativeMethods.HDF_SORTDOWN;
+                            headerInfo.fmt = headerInfo.fmt | NativeMethods.HDF_SORTUP;
                             break;
                         case SortOrder.Descending:
-                            headerInfo.fmt = headerInfo.fmt & ~HDF_SORTUP;
-                            headerInfo.fmt = headerInfo.fmt | HDF_SORTDOWN;
+                            headerInfo.fmt = headerInfo.fmt & ~NativeMethods.HDF_SORTUP;
+                            headerInfo.fmt = headerInfo.fmt | NativeMethods.HDF_SORTDOWN;
                             break;
                     }
                 }
                 else
                 {
-                    headerInfo.fmt = headerInfo.fmt & ~HDF_SORTDOWN & ~HDF_SORTUP;
+                    headerInfo.fmt = headerInfo.fmt & ~NativeMethods.HDF_SORTDOWN & ~NativeMethods.HDF_SORTUP;
                 }
 
-                SendMessage(headersHwnd, HDM_SETITEM, (IntPtr)processCols, ref headerInfo);
+                NativeMethods.SendMessage(headersHwnd, NativeMethods.HDM_SETITEM, (IntPtr)processCols, ref headerInfo);
             }
         }
 
@@ -182,12 +148,12 @@ namespace RadioDld
         {
             switch (m.Msg)
             {
-                case WM_CREATE:
+                case NativeMethods.WM_CREATE:
                     if (OsUtils.WinXpOrLater())
                     {
                         // Set the theme of the control to "explorer", to give the 
                         // correct styling under Vista.  This has no effect under XP.
-                        if (SetWindowTheme(this.Handle, "explorer", null) != 0)
+                        if (NativeMethods.SetWindowTheme(this.Handle, "explorer", null) != 0)
                         {
                             throw new Win32Exception();
                         }
@@ -195,29 +161,29 @@ namespace RadioDld
 
                     // Remove the focus rectangle from the control (and as a side effect, all other controls on the
                     // form) if the last input event came from the mouse, or add them if it came from the keyboard.
-                    SendMessage(this.Handle, WM_CHANGEUISTATE, this.MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), new IntPtr(0));
+                    NativeMethods.SendMessage(this.Handle, NativeMethods.WM_CHANGEUISTATE, this.MakeLParam(NativeMethods.UIS_INITIALIZE, NativeMethods.UISF_HIDEFOCUS), new IntPtr(0));
                     break;
-                case LVM_SETEXTENDEDLISTVIEWSTYLE:
+                case NativeMethods.LVM_SETEXTENDEDLISTVIEWSTYLE:
                     if (OsUtils.WinXpOrLater())
                     {
                         int styles = (int)m.LParam;
 
-                        if ((styles & LVS_EX_DOUBLEBUFFER) != LVS_EX_DOUBLEBUFFER)
+                        if ((styles & NativeMethods.LVS_EX_DOUBLEBUFFER) != NativeMethods.LVS_EX_DOUBLEBUFFER)
                         {
-                            styles = styles | LVS_EX_DOUBLEBUFFER;
+                            styles = styles | NativeMethods.LVS_EX_DOUBLEBUFFER;
                             m.LParam = (IntPtr)styles;
                         }
                     }
 
                     break;
-                case WM_SETFOCUS:
+                case NativeMethods.WM_SETFOCUS:
                     // Remove the focus rectangle from the control (and as a side effect, all other controls on the
                     // form) if the last input event came from the mouse, or add them if it came from the keyboard.
-                    SendMessage(this.Handle, WM_CHANGEUISTATE, this.MakeLParam(UIS_INITIALIZE, UISF_HIDEFOCUS), IntPtr.Zero);
+                    NativeMethods.SendMessage(this.Handle, NativeMethods.WM_CHANGEUISTATE, this.MakeLParam(NativeMethods.UIS_INITIALIZE, NativeMethods.UISF_HIDEFOCUS), IntPtr.Zero);
                     break;
-                case WM_NOTIFY:
+                case NativeMethods.WM_NOTIFY:
                     // Test to see if the notification was for a right-click in the header
-                    if (((NMHDR)m.GetLParam(typeof(NMHDR))).code == NM_RCLICK)
+                    if (((NativeMethods.NMHDR)m.GetLParam(typeof(NativeMethods.NMHDR))).code == NativeMethods.NM_RCLICK)
                     {
                         // Fire an event to indicate the click has occurred.  Set the column number
                         // to -1 for all clicks, as this information isn't currently required.
@@ -228,7 +194,7 @@ namespace RadioDld
                     }
 
                     break;
-                case WM_PAINT:
+                case NativeMethods.WM_PAINT:
                     if (View != View.Details)
                     {
                         break;
@@ -282,16 +248,6 @@ namespace RadioDld
 
             base.WndProc(ref m);
         }
-
-        // API Declarations
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        private static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, ref HDITEM lParam);
-
-        [DllImport("uxtheme.dll", SetLastError = true, CharSet = CharSet.Unicode)]
-        private static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
 
         private int[] GetColumnOrder()
         {
@@ -371,30 +327,6 @@ namespace RadioDld
             IntPtr IntPtrLoWord = new IntPtr(LoWord & 0xffff);
 
             return new IntPtr(IntPtrHiWord.ToInt32() | IntPtrLoWord.ToInt32());
-        }
-
-        // API Structures
-        [StructLayout(LayoutKind.Sequential)]
-        private struct NMHDR
-        {
-            public IntPtr hwndFrom;
-            public UIntPtr idFrom;
-            public int code;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct HDITEM
-        {
-            public int mask;
-            public int cxy;
-            [MarshalAs(UnmanagedType.LPTStr)]
-            public string pszText;
-            public IntPtr hbm;
-            public int cchTextMax;
-            public int fmt;
-            public int lParam;
-            public int iImage;
-            public int iOrder;
         }
 
         // Data structure to store information about the controls

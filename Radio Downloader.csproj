@@ -181,6 +181,7 @@
     <Compile Include="Classes\FileUtils.cs" />
     <Compile Include="Classes\DataSearch.cs" />
     <Compile Include="Classes\ListItemComparer.cs" />
+    <Compile Include="Classes\NativeMethods.cs" />
     <Compile Include="Classes\TabBarRenderer.cs" />
     <Compile Include="Classes\OsUtils.cs" />
     <Compile Include="Classes\SQLiteMonDataReader.cs" />

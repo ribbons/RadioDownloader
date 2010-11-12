@@ -62,6 +62,7 @@
     <Rule Name="MarkAttributesWithAttributeUsage" Enabled="True" />
     <Rule Name="MarkEnumsWithFlags" Enabled="True" />
     <Rule Name="MembersShouldNotExposeCertainConcreteTypes" Enabled="True" />
+    <Rule Name="MovePInvokesToNativeMethodsClass" Enabled="True" />
     <Rule Name="OverloadOperatorEqualsOnOverloadingAddAndSubtract" Enabled="True" />
     <Rule Name="OverrideMethodsOnComparableTypes" Enabled="True" />
     <Rule Name="PropertiesShouldNotBeWriteOnly" Enabled="True" />
