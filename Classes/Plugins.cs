@@ -22,6 +22,7 @@ namespace RadioDld
     using System.IO;
     using System.Reflection;
     using System.Windows.Forms;
+    using Microsoft.VisualBasic.ApplicationServices;
 
     public delegate void FindNewViewChangeEventHandler(object view);
 
@@ -108,23 +109,23 @@ namespace RadioDld
     // Parts of this class are based on VB.net code from http://www.developerfusion.co.uk/show/4371/3/
     internal class Plugins
     {
-        private const string interfaceName = "IRadioProvider";
-
+        private string interfaceName;
         private Dictionary<Guid, AvailablePlugin> availablePlugins = new Dictionary<Guid, AvailablePlugin>();
 
-        public Plugins(string path)
+        public Plugins()
         {
-            string[] dlls = null;
-            Assembly thisDll = null;
+            // Fetch the name of the interface as a string
+            this.interfaceName = typeof(IRadioProvider).Name;
 
-            // Go through the DLLs in the specified path and try to load them
-            dlls = Directory.GetFileSystemEntries(path, "*.dll");
-
+            // Get an array of all of the dlls ending with the text Provider in the application folder
+            string pluginPath = new ApplicationBase().Info.DirectoryPath;
+            string[] dlls = Directory.GetFileSystemEntries(pluginPath, "*Provider.dll");
+            
             foreach (string dll in dlls)
             {
                 try
                 {
-                    thisDll = Assembly.LoadFrom(dll);
+                    Assembly thisDll = Assembly.LoadFrom(dll);
                     this.ExamineAssembly(thisDll);
                 }
                 catch
@@ -134,16 +135,16 @@ namespace RadioDld
             }
         }
 
-        public bool PluginExists(Guid pluginID)
+        public bool PluginExists(Guid pluginId)
         {
-            return this.availablePlugins.ContainsKey(pluginID);
+            return this.availablePlugins.ContainsKey(pluginId);
         }
 
-        public IRadioProvider GetPluginInstance(Guid pluginID)
+        public IRadioProvider GetPluginInstance(Guid pluginId)
         {
-            if (this.PluginExists(pluginID))
+            if (this.PluginExists(pluginId))
             {
-                return this.CreateInstance(this.availablePlugins[pluginID]);
+                return this.CreateInstance(this.availablePlugins[pluginId]);
             }
             else
             {
@@ -161,23 +162,20 @@ namespace RadioDld
 
         private void ExamineAssembly(Assembly dll)
         {
-            Type thisType = null;
             Type implInterface = null;
             AvailablePlugin pluginInfo = default(AvailablePlugin);
 
             // Loop through each type in the assembly
-            foreach (Type thisType_loopVariable in dll.GetTypes())
+            foreach (Type thisType in dll.GetTypes())
             {
-                thisType = thisType_loopVariable;
-
                 // Only look at public types
-                if (thisType.IsPublic == true)
+                if (thisType.IsPublic)
                 {
                     // Ignore abstract classes
                     if (!((thisType.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract))
                     {
                         // See if this type implements our interface
-                        implInterface = thisType.GetInterface(interfaceName, true);
+                        implInterface = thisType.GetInterface(this.interfaceName, true);
 
                         if (implInterface != null)
                         {
@@ -203,16 +201,13 @@ namespace RadioDld
 
         private IRadioProvider CreateInstance(AvailablePlugin plugin)
         {
-            Assembly dll = null;
-            object pluginInst = null;
-
             try
             {
                 // Load the assembly
-                dll = Assembly.LoadFrom(plugin.AssemblyPath);
+                Assembly dll = Assembly.LoadFrom(plugin.AssemblyPath);
 
                 // Create and return class instance
-                pluginInst = dll.CreateInstance(plugin.ClassName);
+                object pluginInst = dll.CreateInstance(plugin.ClassName);
 
                 // Cast to an IRadioProvider and return
                 return (IRadioProvider)pluginInst;

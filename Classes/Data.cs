@@ -72,7 +72,7 @@ namespace RadioDld
             this.VacuumDatabase();
 
             // Setup an instance of the plugins class
-            this.pluginsInst = new Plugins(new ApplicationBase().Info.DirectoryPath);
+            this.pluginsInst = new Plugins();
 
             // Fetch the version of the database
             int currentVer = 0;
