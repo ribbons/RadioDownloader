@@ -163,7 +163,7 @@ namespace RadioDld
 
                     // Remove the focus rectangle from the control (and as a side effect, all other controls on the
                     // form) if the last input event came from the mouse, or add them if it came from the keyboard.
-                    NativeMethods.SendMessage(this.Handle, NativeMethods.WM_CHANGEUISTATE, this.MakeLParam(NativeMethods.UIS_INITIALIZE, NativeMethods.UISF_HIDEFOCUS), new IntPtr(0));
+                    NativeMethods.SendMessage(this.Handle, NativeMethods.WM_CHANGEUISTATE, this.MakeLParam(NativeMethods.UIS_INITIALIZE, NativeMethods.UISF_HIDEFOCUS), IntPtr.Zero);
                     break;
                 case NativeMethods.LVM_SETEXTENDEDLISTVIEWSTYLE:
                     if (OsUtils.WinXpOrLater())
@@ -325,10 +325,10 @@ namespace RadioDld
 
         private IntPtr MakeLParam(int loWord, int hiWord)
         {
-            IntPtr hiWordPart = new IntPtr(hiWord << 16);
-            IntPtr loWordPart = new IntPtr(loWord & 0xffff);
+            IntPtr hiWordPart = (IntPtr)(hiWord << 16);
+            IntPtr loWordPart = (IntPtr)(loWord & 0xffff);
 
-            return new IntPtr(hiWordPart.ToInt32() | loWordPart.ToInt32());
+            return (IntPtr)(hiWordPart.ToInt32() | loWordPart.ToInt32());
         }
 
         // Data structure to store information about the controls

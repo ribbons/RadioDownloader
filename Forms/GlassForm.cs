@@ -60,7 +60,7 @@ namespace RadioDld
                         if ((int)m.Result == NativeMethods.HTCLIENT)
                         {
                             // Pretend that the mouse was over the title bar, making the form draggable
-                            m.Result = new IntPtr(NativeMethods.HTCAPTION);
+                            m.Result = (IntPtr)NativeMethods.HTCAPTION;
                             return;
                         }
                     }
