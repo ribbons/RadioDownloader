@@ -26,7 +26,8 @@ namespace RadioDld
 
     internal class TabBarRenderer : ToolStripSystemRenderer, IDisposable
     {
-        private const int tabSeparation = 3;
+        private const int TabSeparation = 3;
+        private const int CurveSize = 10;
 
         private ToolStrip rendererFor;
 
@@ -182,18 +183,16 @@ namespace RadioDld
 
                 e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
 
-                int width = e.Item.Width - tabSeparation;
+                int width = e.Item.Width - TabSeparation;
                 int height = e.Item.Height;
-
-                const int curveSize = 10;
 
                 using (GraphicsPath tab = new GraphicsPath())
                 {
-                    tab.AddLine(0, height, 0, curveSize);
-                    tab.AddArc(0, 0, curveSize, curveSize, 180, 90);
-                    tab.AddLine(curveSize, 0, width - curveSize, 0);
-                    tab.AddArc(width - curveSize, 0, curveSize, curveSize, 270, 90);
-                    tab.AddLine(width, curveSize, width, height);
+                    tab.AddLine(0, height, 0, CurveSize);
+                    tab.AddArc(0, 0, CurveSize, CurveSize, 180, 90);
+                    tab.AddLine(CurveSize, 0, width - CurveSize, 0);
+                    tab.AddArc(width - CurveSize, 0, CurveSize, CurveSize, 270, 90);
+                    tab.AddLine(width, CurveSize, width, height);
 
                     e.Graphics.FillPath(colour, tab);
                     e.Graphics.DrawPath(this.tabBorder, tab);
@@ -350,11 +349,11 @@ namespace RadioDld
                 // Extend the bottom of the tab over the client area border, joining the tab onto the main client area
                 using (SolidBrush toolbarBkg = new SolidBrush(this.GetActiveTabBtmCol(e.ToolStrip, @checked)))
                 {
-                    e.Graphics.FillRectangle(toolbarBkg, new Rectangle(@checked.Bounds.Left, @checked.Bounds.Bottom, @checked.Bounds.Width - tabSeparation, e.ToolStrip.Bounds.Bottom - @checked.Bounds.Bottom));
+                    e.Graphics.FillRectangle(toolbarBkg, new Rectangle(@checked.Bounds.Left, @checked.Bounds.Bottom, @checked.Bounds.Width - TabSeparation, e.ToolStrip.Bounds.Bottom - @checked.Bounds.Bottom));
                 }
 
                 e.Graphics.DrawLine(this.tabBorder, @checked.Bounds.Left, @checked.Bounds.Bottom, @checked.Bounds.Left, e.AffectedBounds.Bottom);
-                e.Graphics.DrawLine(this.tabBorder, @checked.Bounds.Right - tabSeparation, @checked.Bounds.Bottom, @checked.Bounds.Right - tabSeparation, e.AffectedBounds.Bottom);
+                e.Graphics.DrawLine(this.tabBorder, @checked.Bounds.Right - TabSeparation, @checked.Bounds.Bottom, @checked.Bounds.Right - TabSeparation, e.AffectedBounds.Bottom);
             }
         }
 

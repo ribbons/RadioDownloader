@@ -26,7 +26,8 @@ namespace RadioDld
     {
         public static string GetSaveFolder()
         {
-            const string defaultFolder = "Downloaded Radio";
+            const string DefaultFolder = "Downloaded Radio";
+
             string saveFolder;
 
             if (!string.IsNullOrEmpty(Properties.Settings.Default.SaveFolder))
@@ -41,12 +42,12 @@ namespace RadioDld
 
             try
             {
-                saveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), defaultFolder);
+                saveFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), DefaultFolder);
             }
             catch (DirectoryNotFoundException)
             {
                 // The user's Documents folder could not be found, so fall back to a folder under the system drive
-                saveFolder = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), defaultFolder);
+                saveFolder = Path.Combine(Path.GetPathRoot(Environment.SystemDirectory), DefaultFolder);
             }
 
             Directory.CreateDirectory(saveFolder);
