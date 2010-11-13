@@ -51,6 +51,7 @@ namespace RadioDld
         public const int BTNS_WHOLEDROPDOWN = 0x80;
 
         // WM_NCHITTEST return values
+        public const int HTTRANSPARENT = -0x1;
         public const int HTCLIENT = 0x1;
         public const int HTCAPTION = 0x2;
 

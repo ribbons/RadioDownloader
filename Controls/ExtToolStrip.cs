@@ -23,9 +23,6 @@ namespace RadioDld
 
     public class ExtToolStrip : ToolStrip
     {
-        private const int WM_NCHITTEST = 0x84;
-        private const int HTTRANSPARENT = -0x1;
-
         public ExtToolStrip()
             : base()
         {
@@ -36,7 +33,7 @@ namespace RadioDld
         {
             switch (m.Msg)
             {
-                case WM_NCHITTEST:
+                case NativeMethods.WM_NCHITTEST:
                     int xPos = ((int)m.LParam << 16) >> 16;
                     int yPos = (int)m.LParam >> 16;
 
@@ -68,7 +65,7 @@ namespace RadioDld
                     if (onBackground)
                     {
                         // Make the strip transparent to mouse actions in this area
-                        m.Result = new IntPtr(HTTRANSPARENT);
+                        m.Result = (IntPtr)NativeMethods.HTTRANSPARENT;
                         return;
                     }
 
