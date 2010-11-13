@@ -104,6 +104,64 @@ namespace RadioDld
         public const int NM_FIRST = 0;
         public const int NM_RCLICK = NM_FIRST - 5;
 
+        // ITaskbarList3 Flags
+        [Flags()]
+        public enum TBATFLAG
+        {
+            TBATF_USEMDITHUMBNAIL = 0x1,
+            TBATF_USEMDILIVEPREVIEW = 0x2
+        }
+
+        [Flags()]
+        public enum TBPFLAG
+        {
+            TBPF_NOPROGRESS = 0,
+            TBPF_INDETERMINATE = 0x1,
+            TBPF_NORMAL = 0x2,
+            TBPF_ERROR = 0x4,
+            TBPF_PAUSED = 0x8
+        }
+
+        [ComImport(), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF")]
+        public interface ITaskbarList3
+        {
+            void HrInit();
+
+            void AddTab(IntPtr hwnd);
+
+            void DeleteTab(IntPtr hwnd);
+
+            void ActivateTab(IntPtr hwnd);
+
+            void SetActivateAlt(IntPtr hwnd);
+
+            void MarkFullscreenWindow(IntPtr hwnd, bool fFullscreen);
+
+            void SetProgressValue(IntPtr hwnd, ulong ullCompleted, ulong ullTotal);
+
+            void SetProgressState(IntPtr hwnd, TBPFLAG tbpFlags);
+
+            void RegisterTab(IntPtr hwndTab, IntPtr hwndMDI);
+
+            void UnregisterTab(IntPtr hwndTab);
+
+            void SetTabOrder(IntPtr hwndTab, int hwndInsertBefore);
+
+            void SetTabActive(IntPtr hwndTab, int hwndMDI, TBATFLAG tbatFlags);
+
+            void ThumbBarAddButtons(IntPtr hwnd, uint cButtons, THUMBBUTTON[] pButton);
+
+            void ThumbBarUpdateButtons(IntPtr hwnd, uint cButtons, THUMBBUTTON[] pButton);
+
+            void ThumbBarSetImageList(IntPtr hwnd, IntPtr himl);
+
+            void SetOverlayIcon(IntPtr hwnd, IntPtr hIcon, [MarshalAs(UnmanagedType.LPWStr)] string pszDescription);
+
+            void SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
+
+            void SetThumbnailClip(IntPtr hwnd, NativeMethods.RECT prcClip);
+        }
+
         // API Declarations
         [DllImport("dwmapi.dll", SetLastError = true)]
         public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
@@ -272,6 +330,18 @@ namespace RadioDld
             public int lParam;
             public int iImage;
             public int iOrder;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct THUMBBUTTON
+        {
+            public uint dwMask;
+            public uint iId;
+            public uint iBitmap;
+            public IntPtr hIcon;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 260)]
+            public ushort[] szTip;
+            public uint dwFlags;
         }
     }
 }

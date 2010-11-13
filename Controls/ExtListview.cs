@@ -51,10 +51,10 @@ namespace RadioDld
 
             EmbeddedProgress control = default(EmbeddedProgress);
 
-            control.progress = progress;
-            control.column = column;
-            control.dock = dstDock;
-            control.item = parentItem;
+            control.Progress = progress;
+            control.Column = column;
+            control.Dock = dstDock;
+            control.Item = parentItem;
 
             this.embeddedControls.Add(control);
 
@@ -73,7 +73,7 @@ namespace RadioDld
 
             for (int process = 0; process <= this.embeddedControls.Count - 1; process++)
             {
-                if (this.embeddedControls[process].progress.Equals(progressBar))
+                if (this.embeddedControls[process].Progress.Equals(progressBar))
                 {
                     progressBar.Click -= this.embeddedControl_Click;
                     this.Controls.Remove(progressBar);
@@ -89,9 +89,9 @@ namespace RadioDld
         {
             foreach (EmbeddedProgress control in this.embeddedControls)
             {
-                if (control.item.Equals(parentItem) & control.column == column)
+                if (control.Item.Equals(parentItem) & control.Column == column)
                 {
-                    return control.progress;
+                    return control.Progress;
                 }
             }
 
@@ -104,9 +104,9 @@ namespace RadioDld
             {
                 EmbeddedProgress control = this.embeddedControls[process];
 
-                control.progress.Visible = false;
-                control.progress.Click -= this.embeddedControl_Click;
-                this.Controls.Remove(control.progress);
+                control.Progress.Visible = false;
+                control.Progress.Click -= this.embeddedControl_Click;
+                this.Controls.Remove(control.Progress);
             }
 
             this.embeddedControls.Clear();
@@ -205,44 +205,44 @@ namespace RadioDld
                     // Calculate the position of all embedded controls
                     foreach (EmbeddedProgress emcControl in this.embeddedControls)
                     {
-                        Rectangle rect = this.GetSubItemBounds(emcControl.item, emcControl.column);
+                        Rectangle rect = this.GetSubItemBounds(emcControl.Item, emcControl.Column);
 
                         if (((this.HeaderStyle != ColumnHeaderStyle.None) & (rect.Top < this.Font.Height)) | (rect.Top + rect.Height) <= 0 | (rect.Top > this.ClientRectangle.Height))
                         {
                             // Control overlaps ColumnHeader, is off the top, or is off the bottom of the listview
-                            emcControl.progress.Visible = false;
+                            emcControl.Progress.Visible = false;
                             continue;
                         }
                         else
                         {
-                            emcControl.progress.Visible = true;
+                            emcControl.Progress.Visible = true;
                         }
 
-                        switch (emcControl.dock)
+                        switch (emcControl.Dock)
                         {
                             case DockStyle.Fill:
                                 break;
                             case DockStyle.Top:
-                                rect.Height = emcControl.progress.Height;
+                                rect.Height = emcControl.Progress.Height;
                                 break;
                             case DockStyle.Left:
-                                rect.Width = emcControl.progress.Width;
+                                rect.Width = emcControl.Progress.Width;
                                 break;
                             case DockStyle.Bottom:
-                                rect.Offset(0, rect.Height - emcControl.progress.Height);
-                                rect.Height = emcControl.progress.Height;
+                                rect.Offset(0, rect.Height - emcControl.Progress.Height);
+                                rect.Height = emcControl.Progress.Height;
                                 break;
                             case DockStyle.Right:
-                                rect.Offset(rect.Width - emcControl.progress.Width, 0);
-                                rect.Width = emcControl.progress.Width;
+                                rect.Offset(rect.Width - emcControl.Progress.Width, 0);
+                                rect.Width = emcControl.Progress.Width;
                                 break;
                             case DockStyle.None:
-                                rect.Size = emcControl.progress.Size;
+                                rect.Size = emcControl.Progress.Size;
                                 break;
                         }
 
                         // Set embedded control's bounds
-                        emcControl.progress.Bounds = rect;
+                        emcControl.Progress.Bounds = rect;
                     }
 
                     break;
@@ -315,10 +315,10 @@ namespace RadioDld
             // When a progress bar is clicked the ListViewItem holding it is selected
             foreach (EmbeddedProgress control in this.embeddedControls)
             {
-                if (control.progress.Equals((ProgressBar)sender))
+                if (control.Progress.Equals((ProgressBar)sender))
                 {
                     this.SelectedItems.Clear();
-                    control.item.Selected = true;
+                    control.Item.Selected = true;
                 }
             }
         }
@@ -334,10 +334,10 @@ namespace RadioDld
         // Data structure to store information about the controls
         private struct EmbeddedProgress
         {
-            public ProgressBar progress;
-            public int column;
-            public DockStyle dock;
-            public ListViewItem item;
+            public ProgressBar Progress;
+            public int Column;
+            public DockStyle Dock;
+            public ListViewItem Item;
         }
     }
 }

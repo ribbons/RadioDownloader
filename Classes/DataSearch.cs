@@ -264,9 +264,9 @@ namespace RadioDld
             {
                 using (SQLiteCommand command = new SQLiteCommand("insert or replace into downloads (docid, name, description) values (@epid, @name, @description)", this.FetchDbConn()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@epid", storeData.epid));
-                    command.Parameters.Add(new SQLiteParameter("@name", storeData.name));
-                    command.Parameters.Add(new SQLiteParameter("@description", storeData.description));
+                    command.Parameters.Add(new SQLiteParameter("@epid", storeData.Epid));
+                    command.Parameters.Add(new SQLiteParameter("@name", storeData.Name));
+                    command.Parameters.Add(new SQLiteParameter("@description", storeData.Description));
 
                     command.ExecuteNonQuery();
                 }

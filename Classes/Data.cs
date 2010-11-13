@@ -816,20 +816,20 @@ namespace RadioDld
                     int descriptionOrdinal = reader.GetOrdinal("description");
 
                     SubscriptionData info = new SubscriptionData();
-                    info.name = reader.GetString(reader.GetOrdinal("name"));
+                    info.Name = reader.GetString(reader.GetOrdinal("name"));
 
                     if (!reader.IsDBNull(descriptionOrdinal))
                     {
-                        info.description = reader.GetString(descriptionOrdinal);
+                        info.Description = reader.GetString(descriptionOrdinal);
                     }
 
-                    info.latestDownload = this.LatestDownloadDate(progid);
+                    info.LatestDownload = this.LatestDownloadDate(progid);
 
                     Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
                     IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
-                    info.providerName = providerInst.ProviderName;
+                    info.ProviderName = providerInst.ProviderName;
 
-                    info.favourite = this.IsFavourite(progid);
+                    info.Favourite = this.IsFavourite(progid);
 
                     return info;
                 }
@@ -852,16 +852,16 @@ namespace RadioDld
                     int descriptionOrdinal = reader.GetOrdinal("description");
 
                     EpisodeData info = new EpisodeData();
-                    info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
-                    info.name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.episodeDate);
+                    info.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
+                    info.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.EpisodeDate);
 
                     if (!reader.IsDBNull(descriptionOrdinal))
                     {
-                        info.description = reader.GetString(descriptionOrdinal);
+                        info.Description = reader.GetString(descriptionOrdinal);
                     }
 
-                    info.duration = reader.GetInt32(reader.GetOrdinal("duration"));
-                    info.autoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
+                    info.Duration = reader.GetInt32(reader.GetOrdinal("duration"));
+                    info.AutoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
 
                     return info;
                 }
@@ -885,19 +885,19 @@ namespace RadioDld
 
                     int descriptionOrdinal = reader.GetOrdinal("description");
 
-                    info.name = reader.GetString(reader.GetOrdinal("name"));
+                    info.Name = reader.GetString(reader.GetOrdinal("name"));
 
                     if (!reader.IsDBNull(descriptionOrdinal))
                     {
-                        info.description = reader.GetString(descriptionOrdinal);
+                        info.Description = reader.GetString(descriptionOrdinal);
                     }
 
-                    info.singleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
+                    info.SingleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
                 }
             }
 
-            info.favourite = this.IsFavourite(progid);
-            info.subscribed = this.IsSubscribed(progid);
+            info.Favourite = this.IsFavourite(progid);
+            info.Subscribed = this.IsSubscribed(progid);
 
             return info;
         }
@@ -907,10 +907,10 @@ namespace RadioDld
             IRadioProvider providerInstance = this.pluginsInst.GetPluginInstance(providerId);
 
             ProviderData info = new ProviderData();
-            info.name = providerInstance.ProviderName;
-            info.description = providerInstance.ProviderDescription;
-            info.icon = providerInstance.ProviderIcon;
-            info.showOptionsHandler = providerInstance.GetShowOptionsHandler();
+            info.Name = providerInstance.ProviderName;
+            info.Description = providerInstance.ProviderDescription;
+            info.Icon = providerInstance.ProviderIcon;
+            info.ShowOptionsHandler = providerInstance.GetShowOptionsHandler();
 
             return info;
         }
@@ -2372,34 +2372,34 @@ namespace RadioDld
             int filepathOrdinal = reader.GetOrdinal("filepath");
 
             DownloadData info = new DownloadData();
-            info.epid = epid;
-            info.episodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
-            info.name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.episodeDate);
+            info.Epid = epid;
+            info.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
+            info.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.EpisodeDate);
 
             if (!reader.IsDBNull(descriptionOrdinal))
             {
-                info.description = reader.GetString(descriptionOrdinal);
+                info.Description = reader.GetString(descriptionOrdinal);
             }
 
-            info.duration = reader.GetInt32(reader.GetOrdinal("duration"));
-            info.status = (DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
+            info.Duration = reader.GetInt32(reader.GetOrdinal("duration"));
+            info.Status = (DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
 
-            if (info.status == DownloadStatus.Errored)
+            if (info.Status == DownloadStatus.Errored)
             {
-                info.errorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
+                info.ErrorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
 
-                if (info.errorType != ErrorType.UnknownError)
+                if (info.ErrorType != ErrorType.UnknownError)
                 {
-                    info.errorDetails = reader.GetString(reader.GetOrdinal("errordetails"));
+                    info.ErrorDetails = reader.GetString(reader.GetOrdinal("errordetails"));
                 }
             }
 
             if (!reader.IsDBNull(filepathOrdinal))
             {
-                info.downloadPath = reader.GetString(filepathOrdinal);
+                info.DownloadPath = reader.GetString(filepathOrdinal);
             }
 
-            info.playCount = reader.GetInt32(reader.GetOrdinal("playcount"));
+            info.PlayCount = reader.GetInt32(reader.GetOrdinal("playcount"));
 
             return info;
         }
@@ -2409,21 +2409,21 @@ namespace RadioDld
             int descriptionOrdinal = reader.GetOrdinal("description");
 
             FavouriteData info = new FavouriteData();
-            info.progid = progid;
-            info.name = reader.GetString(reader.GetOrdinal("name"));
+            info.Progid = progid;
+            info.Name = reader.GetString(reader.GetOrdinal("name"));
 
             if (!reader.IsDBNull(descriptionOrdinal))
             {
-                info.description = reader.GetString(descriptionOrdinal);
+                info.Description = reader.GetString(descriptionOrdinal);
             }
 
-            info.singleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
+            info.SingleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
 
             Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
             IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
-            info.providerName = providerInst.ProviderName;
+            info.ProviderName = providerInst.ProviderName;
 
-            info.subscribed = this.IsSubscribed(progid);
+            info.Subscribed = this.IsSubscribed(progid);
 
             return info;
         }
@@ -2448,61 +2448,61 @@ namespace RadioDld
 
         public struct ProviderData
         {
-            public string name;
-            public string description;
-            public Bitmap icon;
-            public EventHandler showOptionsHandler;
+            public string Name;
+            public string Description;
+            public Bitmap Icon;
+            public EventHandler ShowOptionsHandler;
         }
 
         public struct EpisodeData
         {
-            public string name;
-            public string description;
-            public System.DateTime episodeDate;
-            public int duration;
-            public bool autoDownload;
+            public string Name;
+            public string Description;
+            public System.DateTime EpisodeDate;
+            public int Duration;
+            public bool AutoDownload;
         }
 
         public struct ProgrammeData
         {
-            public string name;
-            public string description;
-            public bool favourite;
-            public bool subscribed;
-            public bool singleEpisode;
+            public string Name;
+            public string Description;
+            public bool Favourite;
+            public bool Subscribed;
+            public bool SingleEpisode;
         }
 
         public struct FavouriteData
         {
-            public int progid;
-            public string name;
-            public string description;
-            public bool subscribed;
-            public bool singleEpisode;
-            public string providerName;
+            public int Progid;
+            public string Name;
+            public string Description;
+            public bool Subscribed;
+            public bool SingleEpisode;
+            public string ProviderName;
         }
 
         public struct SubscriptionData
         {
-            public string name;
-            public string description;
-            public bool favourite;
-            public DateTime? latestDownload;
-            public string providerName;
+            public string Name;
+            public string Description;
+            public bool Favourite;
+            public DateTime? LatestDownload;
+            public string ProviderName;
         }
 
         public struct DownloadData
         {
-            public int epid;
-            public string name;
-            public string description;
-            public int duration;
-            public System.DateTime episodeDate;
-            public DownloadStatus status;
-            public ErrorType errorType;
-            public string errorDetails;
-            public string downloadPath;
-            public int playCount;
+            public int Epid;
+            public string Name;
+            public string Description;
+            public int Duration;
+            public System.DateTime EpisodeDate;
+            public DownloadStatus Status;
+            public ErrorType ErrorType;
+            public string ErrorDetails;
+            public string DownloadPath;
+            public int PlayCount;
         }
     }
 }
