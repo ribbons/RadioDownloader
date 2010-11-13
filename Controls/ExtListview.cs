@@ -323,12 +323,12 @@ namespace RadioDld
             }
         }
 
-        private IntPtr MakeLParam(int LoWord, int HiWord)
+        private IntPtr MakeLParam(int loWord, int hiWord)
         {
-            IntPtr IntPtrHiWord = new IntPtr(HiWord << 16);
-            IntPtr IntPtrLoWord = new IntPtr(LoWord & 0xffff);
+            IntPtr hiWordPart = new IntPtr(hiWord << 16);
+            IntPtr loWordPart = new IntPtr(loWord & 0xffff);
 
-            return new IntPtr(IntPtrHiWord.ToInt32() | IntPtrLoWord.ToInt32());
+            return new IntPtr(hiWordPart.ToInt32() | loWordPart.ToInt32());
         }
 
         // Data structure to store information about the controls

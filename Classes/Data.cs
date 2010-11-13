@@ -47,8 +47,8 @@ namespace RadioDld
         private DldProgData curDldProgData;
         private Thread downloadThread;
 
-        private IRadioProvider DownloadPluginInst;
-        private IRadioProvider FindNewPluginInst;
+        private IRadioProvider downloadPluginInst;
+        private IRadioProvider findNewPluginInst;
 
         private Dictionary<int, int> favouriteSortCache;
         private object favouriteSortCacheLock = new object();
@@ -539,11 +539,11 @@ namespace RadioDld
         {
             if (this.pluginsInst.PluginExists(pluginID))
             {
-                this.FindNewPluginInst = this.pluginsInst.GetPluginInstance(pluginID);
-                this.FindNewPluginInst.FindNewException += this.FindNewPluginInst_FindNewException;
-                this.FindNewPluginInst.FindNewViewChange += this.FindNewPluginInst_FindNewViewChange;
-                this.FindNewPluginInst.FoundNew += this.FindNewPluginInst_FoundNew;
-                return this.FindNewPluginInst.GetFindNewPanel(view);
+                this.findNewPluginInst = this.pluginsInst.GetPluginInstance(pluginID);
+                this.findNewPluginInst.FindNewException += this.FindNewPluginInst_FindNewException;
+                this.findNewPluginInst.FindNewViewChange += this.FindNewPluginInst_FindNewViewChange;
+                this.findNewPluginInst.FoundNew += this.FindNewPluginInst_FoundNew;
+                return this.findNewPluginInst.GetFindNewPanel(view);
             }
             else
             {
@@ -1180,9 +1180,9 @@ namespace RadioDld
         {
             this.lastProgressVal = -1;
 
-            this.DownloadPluginInst = this.pluginsInst.GetPluginInstance(this.curDldProgData.PluginId);
-            this.DownloadPluginInst.Finished += this.DownloadPluginInst_Finished;
-            this.DownloadPluginInst.Progress += this.DownloadPluginInst_Progress;
+            this.downloadPluginInst = this.pluginsInst.GetPluginInstance(this.curDldProgData.PluginId);
+            this.downloadPluginInst.Finished += this.DownloadPluginInst_Finished;
+            this.downloadPluginInst.Progress += this.DownloadPluginInst_Progress;
 
             try
             {
@@ -1204,7 +1204,7 @@ namespace RadioDld
                     return;
                 }
 
-                this.DownloadPluginInst.DownloadProgramme(this.curDldProgData.ProgExtId, this.curDldProgData.EpisodeExtId, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, this.curDldProgData.FinalName);
+                this.downloadPluginInst.DownloadProgramme(this.curDldProgData.ProgExtId, this.curDldProgData.EpisodeExtId, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, this.curDldProgData.FinalName);
             }
             catch (ThreadAbortException)
             {
@@ -2015,7 +2015,7 @@ namespace RadioDld
 
         private void FindNewPluginInst_FoundNew(string progExtId)
         {
-            Guid pluginId = this.FindNewPluginInst.ProviderId;
+            Guid pluginId = this.findNewPluginInst.ProviderId;
             int? progid = this.StoreProgrammeInfo(pluginId, progExtId);
 
             if (progid == null)

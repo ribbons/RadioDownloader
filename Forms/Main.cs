@@ -1906,7 +1906,7 @@ namespace RadioDld
 
                     break;
                 case ViewState.View.FindNewProviderForm:
-                    FindNewViewData FindViewData = (FindNewViewData)data;
+                    FindNewViewData findViewData = (FindNewViewData)data;
 
                     if (this.pnlPluginSpace.Controls.Count > 0)
                     {
@@ -1915,7 +1915,7 @@ namespace RadioDld
                     }
 
                     this.pnlPluginSpace.Visible = true;
-                    this.pnlPluginSpace.Controls.Add(this.progData.GetFindNewPanel(FindViewData.ProviderID, FindViewData.View));
+                    this.pnlPluginSpace.Controls.Add(this.progData.GetFindNewPanel(findViewData.ProviderID, findViewData.View));
                     this.pnlPluginSpace.Controls[0].Dock = DockStyle.Fill;
                     this.pnlPluginSpace.Controls[0].Focus();
                     break;
@@ -1980,9 +1980,9 @@ namespace RadioDld
                     this.SetSideBar(Convert.ToString(this.lstProviders.Items.Count, CultureInfo.CurrentCulture) + " provider" + (this.lstProviders.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     break;
                 case ViewState.View.FindNewProviderForm:
-                    FindNewViewData FindViewData = (FindNewViewData)this.view.CurrentViewData;
+                    FindNewViewData findViewData = (FindNewViewData)this.view.CurrentViewData;
                     this.SetToolbarButtons(new ToolBarButton[] { });
-                    this.ShowProviderInfo(FindViewData.ProviderID);
+                    this.ShowProviderInfo(findViewData.ProviderID);
                     break;
                 case ViewState.View.ProgEpisodes:
                     this.ShowProgrammeInfo((int)this.view.CurrentViewData);

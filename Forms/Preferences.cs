@@ -34,13 +34,13 @@ namespace RadioDld
 
         private void cmdChangeFolder_Click(object eventSender, System.EventArgs eventArgs)
         {
-            FolderBrowserDialog BrowseDialog = new FolderBrowserDialog();
-            BrowseDialog.SelectedPath = this.txtSaveIn.Text;
-            BrowseDialog.Description = "Choose the folder to save downloaded programmes in:";
+            FolderBrowserDialog browse = new FolderBrowserDialog();
+            browse.SelectedPath = this.txtSaveIn.Text;
+            browse.Description = "Choose the folder to save downloaded programmes in:";
 
-            if (BrowseDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                this.txtSaveIn.Text = BrowseDialog.SelectedPath;
+                this.txtSaveIn.Text = browse.SelectedPath;
             }
         }
 

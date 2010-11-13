@@ -84,8 +84,8 @@ namespace PodcastProvider
 
         public Panel GetFindNewPanel(object view)
         {
-            FindNew FindNewInst = new FindNew(this);
-            return FindNewInst.pnlFindNew;
+            FindNew findNewInst = new FindNew(this);
+            return findNewInst.pnlFindNew;
         }
 
         public GetProgrammeInfoReturn GetProgrammeInfo(string progExtId)
@@ -280,8 +280,8 @@ namespace PodcastProvider
                         description = HttpUtility.HtmlDecode(description);
 
                         // Strip out any HTML tags
-                        Regex RegExpression = new Regex("<(.|\\n)+?>");
-                        episodeInfoReturn.EpisodeInfo.Description = RegExpression.Replace(description, string.Empty);
+                        Regex stripTags = new Regex("<(.|\\n)+?>");
+                        episodeInfoReturn.EpisodeInfo.Description = stripTags.Replace(description, string.Empty);
                     }
 
                     try
