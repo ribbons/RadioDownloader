@@ -22,21 +22,6 @@
           </RuleSettings>
         </Rule>
       </Rules>
-      <AnalyzerSettings>
-        <CollectionProperty Name="Hungarian">
-          <Value>as</Value>
-          <Value>do</Value>
-          <Value>id</Value>
-          <Value>if</Value>
-          <Value>in</Value>
-          <Value>is</Value>
-          <Value>my</Value>
-          <Value>no</Value>
-          <Value>on</Value>
-          <Value>to</Value>
-          <Value>ui</Value>
-        </CollectionProperty>
-      </AnalyzerSettings>
     </Analyzer>
     <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.DocumentationRules">
       <Rules>
