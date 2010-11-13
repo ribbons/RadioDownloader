@@ -23,14 +23,14 @@ namespace PodcastProvider
 
     internal partial class FindNew : Form
     {
-        private PodcastProvider clsPluginInst;
+        private PodcastProvider pluginInst;
 
-        public FindNew(PodcastProvider clsPluginInst)
+        public FindNew(PodcastProvider pluginInst)
         {
             // This call is required by the Windows Form Designer.
             this.InitializeComponent();
 
-            this.clsPluginInst = clsPluginInst;
+            this.pluginInst = pluginInst;
         }
 
         private void cmdViewEps_Click(object sender, System.EventArgs e)
@@ -44,7 +44,7 @@ namespace PodcastProvider
                 Application.DoEvents();
 
                 Uri feedUrl = null;
-                XmlDocument xmlRSS = null;
+                XmlDocument rss = null;
 
                 try
                 {
@@ -61,7 +61,7 @@ namespace PodcastProvider
                 // Test that we can load something from the URL, and it is valid XML
                 try
                 {
-                    xmlRSS = this.clsPluginInst.LoadFeedXml(feedUrl);
+                    rss = this.pluginInst.LoadFeedXml(feedUrl);
                 }
                 catch (WebException)
                 {
@@ -79,10 +79,10 @@ namespace PodcastProvider
                 }
 
                 // Finally, make sure that the required elements that we need (title and description) exist
-                XmlNode xmlCheckTitle = xmlRSS.SelectSingleNode("./rss/channel/title");
-                XmlNode xmlCheckDescription = xmlRSS.SelectSingleNode("./rss/channel/description");
+                XmlNode checkTitle = rss.SelectSingleNode("./rss/channel/title");
+                XmlNode checkDescription = rss.SelectSingleNode("./rss/channel/description");
 
-                if (xmlCheckTitle == null | xmlCheckDescription == null)
+                if (checkTitle == null | checkDescription == null)
                 {
                     this.lblResult.Text = "The RSS feed returned from the specified URL was not valid.";
                     this.lblResult.ForeColor = System.Drawing.Color.Red;
@@ -93,14 +93,14 @@ namespace PodcastProvider
                 this.lblResult.Text = "Loading information...";
                 Application.DoEvents();
 
-                this.clsPluginInst.RaiseFoundNew(feedUrl.ToString());
+                this.pluginInst.RaiseFoundNew(feedUrl.ToString());
 
                 this.lblResult.Text = string.Empty;
                 this.cmdViewEps.Enabled = true;
             }
-            catch (Exception expException)
+            catch (Exception unandled)
             {
-                this.clsPluginInst.RaiseFindNewException(expException);
+                this.pluginInst.RaiseFindNewException(unandled);
             }
         }
 
@@ -116,9 +116,9 @@ namespace PodcastProvider
                     }
                 }
             }
-            catch (Exception expException)
+            catch (Exception unhandled)
             {
-                this.clsPluginInst.RaiseFindNewException(expException);
+                this.pluginInst.RaiseFindNewException(unhandled);
             }
         }
     }

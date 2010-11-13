@@ -33,7 +33,8 @@ namespace PodcastProvider
 
     public class PodcastProvider : IRadioProvider
     {
-        internal const int intCacheHTTPHours = 2;
+        internal const int CacheHTTPHours = 2;
+
         private DownloadWrapper doDownload;
 
         public event FindNewViewChangeEventHandler FindNewViewChange
@@ -92,12 +93,12 @@ namespace PodcastProvider
             GetProgrammeInfoReturn getProgInfo = new GetProgrammeInfoReturn();
             getProgInfo.Success = false;
 
-            XmlDocument xmlRSS = null;
-            XmlNamespaceManager xmlNamespaceMgr = null;
+            XmlDocument rss = null;
+            XmlNamespaceManager namespaceMgr = null;
 
             try
             {
-                xmlRSS = this.LoadFeedXml(new Uri(progExtId));
+                rss = this.LoadFeedXml(new Uri(progExtId));
             }
             catch (WebException)
             {
@@ -110,30 +111,30 @@ namespace PodcastProvider
 
             try
             {
-                xmlNamespaceMgr = this.CreateNamespaceMgr(xmlRSS);
+                namespaceMgr = this.CreateNamespaceMgr(rss);
             }
             catch
             {
-                xmlNamespaceMgr = null;
+                namespaceMgr = null;
             }
 
-            XmlNode xmlTitle = xmlRSS.SelectSingleNode("./rss/channel/title");
-            XmlNode xmlDescription = xmlRSS.SelectSingleNode("./rss/channel/description");
+            XmlNode titleNode = rss.SelectSingleNode("./rss/channel/title");
+            XmlNode descriptionNode = rss.SelectSingleNode("./rss/channel/description");
 
-            if (xmlTitle == null | xmlDescription == null)
+            if (titleNode == null | descriptionNode == null)
             {
                 return getProgInfo;
             }
 
-            getProgInfo.ProgrammeInfo.Name = xmlTitle.InnerText;
+            getProgInfo.ProgrammeInfo.Name = titleNode.InnerText;
 
             if (string.IsNullOrEmpty(getProgInfo.ProgrammeInfo.Name))
             {
                 return getProgInfo;
             }
 
-            getProgInfo.ProgrammeInfo.Description = xmlDescription.InnerText;
-            getProgInfo.ProgrammeInfo.Image = this.RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr);
+            getProgInfo.ProgrammeInfo.Description = descriptionNode.InnerText;
+            getProgInfo.ProgrammeInfo.Image = this.RSSNodeImage(rss.SelectSingleNode("./rss/channel"), namespaceMgr);
 
             getProgInfo.Success = true;
             return getProgInfo;
@@ -142,11 +143,11 @@ namespace PodcastProvider
         public string[] GetAvailableEpisodeIds(string progExtId)
         {
             List<string> episodeIDs = new List<string>();
-            XmlDocument xmlRSS = null;
+            XmlDocument rss = null;
 
             try
             {
-                xmlRSS = this.LoadFeedXml(new Uri(progExtId));
+                rss = this.LoadFeedXml(new Uri(progExtId));
             }
             catch (WebException)
             {
@@ -157,23 +158,23 @@ namespace PodcastProvider
                 return episodeIDs.ToArray();
             }
 
-            XmlNodeList xmlItems = null;
-            xmlItems = xmlRSS.SelectNodes("./rss/channel/item");
+            XmlNodeList itemNodes = null;
+            itemNodes = rss.SelectNodes("./rss/channel/item");
 
-            if (xmlItems == null)
+            if (itemNodes == null)
             {
                 return episodeIDs.ToArray();
             }
 
-            string strItemID = null;
+            string itemId = null;
 
-            foreach (XmlNode xmlItem in xmlItems)
+            foreach (XmlNode itemNode in itemNodes)
             {
-                strItemID = this.ItemNodeToEpisodeID(xmlItem);
+                itemId = this.ItemNodeToEpisodeID(itemNode);
 
-                if (!string.IsNullOrEmpty(strItemID))
+                if (!string.IsNullOrEmpty(itemId))
                 {
-                    episodeIDs.Add(strItemID);
+                    episodeIDs.Add(itemId);
                 }
             }
 
@@ -185,12 +186,12 @@ namespace PodcastProvider
             GetEpisodeInfoReturn episodeInfoReturn = new GetEpisodeInfoReturn();
             episodeInfoReturn.Success = false;
 
-            XmlDocument xmlRSS = null;
-            XmlNamespaceManager xmlNamespaceMgr = null;
+            XmlDocument rss = null;
+            XmlNamespaceManager namespaceMgr = null;
 
             try
             {
-                xmlRSS = this.LoadFeedXml(new Uri(progExtId));
+                rss = this.LoadFeedXml(new Uri(progExtId));
             }
             catch (WebException)
             {
@@ -203,49 +204,49 @@ namespace PodcastProvider
 
             try
             {
-                xmlNamespaceMgr = this.CreateNamespaceMgr(xmlRSS);
+                namespaceMgr = this.CreateNamespaceMgr(rss);
             }
             catch
             {
-                xmlNamespaceMgr = null;
+                namespaceMgr = null;
             }
 
-            XmlNodeList xmlItems = null;
-            xmlItems = xmlRSS.SelectNodes("./rss/channel/item");
+            XmlNodeList itemNodes = null;
+            itemNodes = rss.SelectNodes("./rss/channel/item");
 
-            if (xmlItems == null)
+            if (itemNodes == null)
             {
                 return episodeInfoReturn;
             }
 
-            string strItemID = null;
+            string itemId = null;
 
-            foreach (XmlNode xmlItem in xmlItems)
+            foreach (XmlNode itemNode in itemNodes)
             {
-                strItemID = this.ItemNodeToEpisodeID(xmlItem);
+                itemId = this.ItemNodeToEpisodeID(itemNode);
 
-                if (strItemID == episodeExtId)
+                if (itemId == episodeExtId)
                 {
-                    XmlNode xmlTitle = xmlItem.SelectSingleNode("./title");
-                    XmlNode xmlDescription = xmlItem.SelectSingleNode("./description");
-                    XmlNode xmlPubDate = xmlItem.SelectSingleNode("./pubDate");
-                    XmlNode xmlEnclosure = xmlItem.SelectSingleNode("./enclosure");
+                    XmlNode titleNode = itemNode.SelectSingleNode("./title");
+                    XmlNode descriptionNode = itemNode.SelectSingleNode("./description");
+                    XmlNode pubDateNode = itemNode.SelectSingleNode("./pubDate");
+                    XmlNode enclosureNode = itemNode.SelectSingleNode("./enclosure");
 
-                    if (xmlEnclosure == null)
+                    if (enclosureNode == null)
                     {
                         return episodeInfoReturn;
                     }
 
-                    XmlAttribute xmlUrl = xmlEnclosure.Attributes["url"];
+                    XmlAttribute urlAttrib = enclosureNode.Attributes["url"];
 
-                    if (xmlUrl == null)
+                    if (urlAttrib == null)
                     {
                         return episodeInfoReturn;
                     }
 
                     try
                     {
-                        Uri uriTestValid = new Uri(xmlUrl.Value);
+                        new Uri(urlAttrib.Value);
                     }
                     catch (UriFormatException)
                     {
@@ -253,12 +254,12 @@ namespace PodcastProvider
                         return episodeInfoReturn;
                     }
 
-                    Dictionary<string, string> dicExtInfo = new Dictionary<string, string>();
-                    dicExtInfo.Add("EnclosureURL", xmlUrl.Value);
+                    Dictionary<string, string> extInfo = new Dictionary<string, string>();
+                    extInfo.Add("EnclosureURL", urlAttrib.Value);
 
-                    if (xmlTitle != null)
+                    if (titleNode != null)
                     {
-                        episodeInfoReturn.EpisodeInfo.Name = xmlTitle.InnerText;
+                        episodeInfoReturn.EpisodeInfo.Name = titleNode.InnerText;
                     }
 
                     if (string.IsNullOrEmpty(episodeInfoReturn.EpisodeInfo.Name))
@@ -266,9 +267,9 @@ namespace PodcastProvider
                         return episodeInfoReturn;
                     }
 
-                    if (xmlDescription != null)
+                    if (descriptionNode != null)
                     {
-                        string description = xmlDescription.InnerText;
+                        string description = descriptionNode.InnerText;
 
                         // Replace common block level tags with newlines
                         description = description.Replace("<br", Constants.vbCrLf + "<br");
@@ -285,23 +286,23 @@ namespace PodcastProvider
 
                     try
                     {
-                        XmlNode xmlDuration = xmlItem.SelectSingleNode("./itunes:duration", xmlNamespaceMgr);
+                        XmlNode durationNode = itemNode.SelectSingleNode("./itunes:duration", namespaceMgr);
 
-                        if (xmlDuration != null)
+                        if (durationNode != null)
                         {
-                            string[] strSplitDuration = Strings.Split(xmlDuration.InnerText.Replace(".", ":"), ":");
+                            string[] splitDuration = Strings.Split(durationNode.InnerText.Replace(".", ":"), ":");
 
-                            if (strSplitDuration.GetUpperBound(0) == 0)
+                            if (splitDuration.GetUpperBound(0) == 0)
                             {
-                                episodeInfoReturn.EpisodeInfo.DurationSecs = Convert.ToInt32(strSplitDuration[0], CultureInfo.InvariantCulture);
+                                episodeInfoReturn.EpisodeInfo.DurationSecs = Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture);
                             }
-                            else if (strSplitDuration.GetUpperBound(0) == 1)
+                            else if (splitDuration.GetUpperBound(0) == 1)
                             {
-                                episodeInfoReturn.EpisodeInfo.DurationSecs = (Convert.ToInt32(strSplitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(strSplitDuration[1], CultureInfo.InvariantCulture);
+                                episodeInfoReturn.EpisodeInfo.DurationSecs = (Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture);
                             }
                             else
                             {
-                                episodeInfoReturn.EpisodeInfo.DurationSecs = (((Convert.ToInt32(strSplitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(strSplitDuration[1], CultureInfo.InvariantCulture)) * 60) + Convert.ToInt32(strSplitDuration[2], CultureInfo.InvariantCulture);
+                                episodeInfoReturn.EpisodeInfo.DurationSecs = (((Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture)) * 60) + Convert.ToInt32(splitDuration[2], CultureInfo.InvariantCulture);
                             }
                         }
                         else
@@ -314,57 +315,57 @@ namespace PodcastProvider
                         episodeInfoReturn.EpisodeInfo.DurationSecs = null;
                     }
 
-                    if (xmlPubDate != null)
+                    if (pubDateNode != null)
                     {
-                        string strPubDate = xmlPubDate.InnerText.Trim();
-                        int intZonePos = strPubDate.LastIndexOf(" ", StringComparison.Ordinal);
-                        TimeSpan tspOffset = new TimeSpan(0);
+                        string pubDate = pubDateNode.InnerText.Trim();
+                        int zonePos = pubDate.LastIndexOf(" ", StringComparison.Ordinal);
+                        TimeSpan offset = new TimeSpan(0);
 
-                        if (intZonePos > 0)
+                        if (zonePos > 0)
                         {
-                            string strZone = strPubDate.Substring(intZonePos + 1);
-                            string strZoneFree = strPubDate.Substring(0, intZonePos);
+                            string zone = pubDate.Substring(zonePos + 1);
+                            string zoneFree = pubDate.Substring(0, zonePos);
 
-                            switch (strZone)
+                            switch (zone)
                             {
                                 case "GMT":
                                     // No need to do anything
                                     break;
                                 case "UT":
-                                    tspOffset = new TimeSpan(0);
-                                    strPubDate = strZoneFree;
+                                    offset = new TimeSpan(0);
+                                    pubDate = zoneFree;
                                     break;
                                 case "EDT":
-                                    tspOffset = new TimeSpan(-4, 0, 0);
-                                    strPubDate = strZoneFree;
+                                    offset = new TimeSpan(-4, 0, 0);
+                                    pubDate = zoneFree;
                                     break;
                                 case "EST":
                                 case "CDT":
-                                    tspOffset = new TimeSpan(-5, 0, 0);
-                                    strPubDate = strZoneFree;
+                                    offset = new TimeSpan(-5, 0, 0);
+                                    pubDate = zoneFree;
                                     break;
                                 case "CST":
                                 case "MDT":
-                                    tspOffset = new TimeSpan(-6, 0, 0);
-                                    strPubDate = strZoneFree;
+                                    offset = new TimeSpan(-6, 0, 0);
+                                    pubDate = zoneFree;
                                     break;
                                 case "MST":
                                 case "PDT":
-                                    tspOffset = new TimeSpan(-7, 0, 0);
-                                    strPubDate = strZoneFree;
+                                    offset = new TimeSpan(-7, 0, 0);
+                                    pubDate = zoneFree;
                                     break;
                                 case "PST":
-                                    tspOffset = new TimeSpan(-8, 0, 0);
-                                    strPubDate = strZoneFree;
+                                    offset = new TimeSpan(-8, 0, 0);
+                                    pubDate = zoneFree;
                                     break;
                                 default:
-                                    if (strZone.Length >= 4 & Information.IsNumeric(strZone) | Information.IsNumeric(strZone.Substring(1)))
+                                    if (zone.Length >= 4 & Information.IsNumeric(zone) | Information.IsNumeric(zone.Substring(1)))
                                     {
                                         try
                                         {
-                                            int intValue = int.Parse(strZone, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-                                            tspOffset = new TimeSpan(intValue / 100, intValue % 100, 0);
-                                            strPubDate = strZoneFree;
+                                            int value = int.Parse(zone, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+                                            offset = new TimeSpan(value / 100, value % 100, 0);
+                                            pubDate = zoneFree;
                                         }
                                         catch (FormatException)
                                         {
@@ -378,7 +379,7 @@ namespace PodcastProvider
 
                         // Strip the day of the week from the beginning of the date string if it is there,
                         // as it can contradict the date itself.
-                        string[] strDays =
+                        string[] days =
                         {
                             "mon,",
                             "tue,",
@@ -389,40 +390,40 @@ namespace PodcastProvider
                             "sun,"
                         };
 
-                        foreach (string strDay in strDays)
+                        foreach (string day in days)
                         {
-                            if (strPubDate.StartsWith(strDay, StringComparison.OrdinalIgnoreCase))
+                            if (pubDate.StartsWith(day, StringComparison.OrdinalIgnoreCase))
                             {
-                                strPubDate = strPubDate.Substring(strDay.Length).Trim();
+                                pubDate = pubDate.Substring(day.Length).Trim();
                                 break;
                             }
                         }
 
                         try
                         {
-                            episodeInfoReturn.EpisodeInfo.Date = System.DateTime.Parse(strPubDate, null, DateTimeStyles.AssumeUniversal);
+                            episodeInfoReturn.EpisodeInfo.Date = System.DateTime.Parse(pubDate, null, DateTimeStyles.AssumeUniversal);
                         }
                         catch (FormatException)
                         {
                             episodeInfoReturn.EpisodeInfo.Date = DateAndTime.Now;
-                            tspOffset = new TimeSpan(0);
+                            offset = new TimeSpan(0);
                         }
 
-                        episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Subtract(tspOffset);
+                        episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Subtract(offset);
                     }
                     else
                     {
                         episodeInfoReturn.EpisodeInfo.Date = DateAndTime.Now;
                     }
 
-                    episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(xmlItem, xmlNamespaceMgr);
+                    episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);
 
                     if (episodeInfoReturn.EpisodeInfo.Image == null)
                     {
-                        episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(xmlRSS.SelectSingleNode("./rss/channel"), xmlNamespaceMgr);
+                        episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(rss.SelectSingleNode("./rss/channel"), namespaceMgr);
                     }
 
-                    episodeInfoReturn.EpisodeInfo.ExtInfo = dicExtInfo;
+                    episodeInfoReturn.EpisodeInfo.ExtInfo = extInfo;
                     episodeInfoReturn.Success = true;
 
                     return episodeInfoReturn;
@@ -494,19 +495,19 @@ namespace PodcastProvider
             }
         }
 
-        internal void RaiseFindNewException(Exception expException)
+        internal void RaiseFindNewException(Exception exception)
         {
             if (this.FindNewException != null)
             {
-                this.FindNewException(expException, true);
+                this.FindNewException(exception, true);
             }
         }
 
-        internal void RaiseFoundNew(string strExtID)
+        internal void RaiseFoundNew(string extId)
         {
             if (this.FoundNew != null)
             {
-                this.FoundNew(strExtID);
+                this.FoundNew(extId);
             }
         }
 
@@ -515,7 +516,7 @@ namespace PodcastProvider
             XmlDocument feedXml = new XmlDocument();
             CachedWebClient cachedWeb = CachedWebClient.GetInstance();
 
-            string feedString = cachedWeb.DownloadString(url, PodcastProvider.intCacheHTTPHours);
+            string feedString = cachedWeb.DownloadString(url, PodcastProvider.CacheHTTPHours);
 
             // The LoadXml method of XmlDocument doesn't work correctly all of the time,
             // so convert the string to a UTF-8 byte array
@@ -530,47 +531,47 @@ namespace PodcastProvider
             return feedXml;
         }
 
-        private string ItemNodeToEpisodeID(XmlNode xmlItem)
+        private string ItemNodeToEpisodeID(XmlNode itemNode)
         {
-            string strItemID = string.Empty;
-            XmlNode xmlItemID = xmlItem.SelectSingleNode("./guid");
+            string itemId = string.Empty;
+            XmlNode itemIdNode = itemNode.SelectSingleNode("./guid");
 
-            if (xmlItemID != null)
+            if (itemIdNode != null)
             {
-                strItemID = xmlItemID.InnerText;
+                itemId = itemIdNode.InnerText;
             }
 
-            if (string.IsNullOrEmpty(strItemID))
+            if (string.IsNullOrEmpty(itemId))
             {
-                xmlItemID = xmlItem.SelectSingleNode("./enclosure");
+                itemIdNode = itemNode.SelectSingleNode("./enclosure");
 
-                if (xmlItemID != null)
+                if (itemIdNode != null)
                 {
-                    XmlAttribute xmlUrl = xmlItemID.Attributes["url"];
+                    XmlAttribute urlAttrib = itemIdNode.Attributes["url"];
 
-                    if (xmlUrl != null)
+                    if (urlAttrib != null)
                     {
-                        strItemID = xmlUrl.Value;
+                        itemId = urlAttrib.Value;
                     }
                 }
             }
 
-            return strItemID;
+            return itemId;
         }
 
-        private Bitmap RSSNodeImage(XmlNode xmlNode, XmlNamespaceManager xmlNamespaceMgr)
+        private Bitmap RSSNodeImage(XmlNode node, XmlNamespaceManager namespaceMgr)
         {
             CachedWebClient cachedWeb = CachedWebClient.GetInstance();
 
             try
             {
-                XmlNode xmlImageNode = xmlNode.SelectSingleNode("itunes:image", xmlNamespaceMgr);
+                XmlNode imageNode = node.SelectSingleNode("itunes:image", namespaceMgr);
 
-                if (xmlImageNode != null)
+                if (imageNode != null)
                 {
-                    Uri imageUrl = new Uri(xmlImageNode.Attributes["href"].Value);
-                    byte[] bteImageData = cachedWeb.DownloadData(imageUrl, intCacheHTTPHours);
-                    return new Bitmap(new System.IO.MemoryStream(bteImageData));
+                    Uri imageUrl = new Uri(imageNode.Attributes["href"].Value);
+                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
+                    return new Bitmap(new System.IO.MemoryStream(imageData));
                 }
             }
             catch
@@ -580,13 +581,13 @@ namespace PodcastProvider
 
             try
             {
-                XmlNode xmlImageUrlNode = xmlNode.SelectSingleNode("image/url");
+                XmlNode imageUrlNode = node.SelectSingleNode("image/url");
 
-                if (xmlImageUrlNode != null)
+                if (imageUrlNode != null)
                 {
-                    Uri imageUrl = new Uri(xmlImageUrlNode.InnerText);
-                    byte[] bteImageData = cachedWeb.DownloadData(imageUrl, intCacheHTTPHours);
-                    return new Bitmap(new System.IO.MemoryStream(bteImageData));
+                    Uri imageUrl = new Uri(imageUrlNode.InnerText);
+                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
+                    return new Bitmap(new System.IO.MemoryStream(imageData));
                 }
             }
             catch
@@ -596,13 +597,13 @@ namespace PodcastProvider
 
             try
             {
-                XmlNode xmlImageNode = xmlNode.SelectSingleNode("media:thumbnail", xmlNamespaceMgr);
+                XmlNode imageNode = node.SelectSingleNode("media:thumbnail", namespaceMgr);
 
-                if (xmlImageNode != null)
+                if (imageNode != null)
                 {
-                    Uri imageUrl = new Uri(xmlImageNode.Attributes["url"].Value);
-                    byte[] bteImageData = cachedWeb.DownloadData(imageUrl, intCacheHTTPHours);
-                    return new Bitmap(new System.IO.MemoryStream(bteImageData));
+                    Uri imageUrl = new Uri(imageNode.Attributes["url"].Value);
+                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
+                    return new Bitmap(new System.IO.MemoryStream(imageData));
                 }
             }
             catch
@@ -613,33 +614,33 @@ namespace PodcastProvider
             return null;
         }
 
-        private XmlNamespaceManager CreateNamespaceMgr(XmlDocument xmlDocument)
+        private XmlNamespaceManager CreateNamespaceMgr(XmlDocument document)
         {
-            XmlNamespaceManager nsManager = new XmlNamespaceManager(xmlDocument.NameTable);
+            XmlNamespaceManager manager = new XmlNamespaceManager(document.NameTable);
 
-            foreach (XmlAttribute xmlAttrib in xmlDocument.SelectSingleNode("/*").Attributes)
+            foreach (XmlAttribute attrib in document.SelectSingleNode("/*").Attributes)
             {
-                if (xmlAttrib.Prefix == "xmlns")
+                if (attrib.Prefix == "xmlns")
                 {
-                    nsManager.AddNamespace(xmlAttrib.LocalName, xmlAttrib.Value);
+                    manager.AddNamespace(attrib.LocalName, attrib.Value);
                 }
             }
 
-            return nsManager;
+            return manager;
         }
 
         private void doDownload_DownloadProgress(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
-            int intPercent = e.ProgressPercentage;
+            int percent = e.ProgressPercentage;
 
-            if (intPercent > 99)
+            if (percent > 99)
             {
-                intPercent = 99;
+                percent = 99;
             }
 
             if (this.Progress != null)
             {
-                this.Progress(intPercent, "Downloading...", ProgressIcon.Downloading);
+                this.Progress(percent, "Downloading...", ProgressIcon.Downloading);
             }
         }
     }
