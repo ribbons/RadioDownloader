@@ -29,7 +29,7 @@ namespace RadioDld
 
         private bool buttonHover;
 
-        private string _cueBanner;
+        private string cueBanner;
 
         private TextBox textBox;
         private PictureBox button;
@@ -86,13 +86,13 @@ namespace RadioDld
         {
             get
             {
-                return this._cueBanner;
+                return this.cueBanner;
             }
 
             set
             {
-                this._cueBanner = value;
-                NativeMethods.SendMessage(this.textBox.Handle, NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, this._cueBanner);
+                this.cueBanner = value;
+                NativeMethods.SendMessage(this.textBox.Handle, NativeMethods.EM_SETCUEBANNER, IntPtr.Zero, this.cueBanner);
             }
         }
 

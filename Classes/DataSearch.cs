@@ -32,7 +32,7 @@ namespace RadioDld
         private static object searchInstanceLock = new object();
 
         private Data dataInstance;
-        private string _downloadQuery = string.Empty;
+        private string downloadQuery = string.Empty;
 
         private List<int> downloadsVisible;
         private object updateIndexLock = new object();
@@ -104,17 +104,17 @@ namespace RadioDld
         {
             get
             {
-                return this._downloadQuery;
+                return this.downloadQuery;
             }
 
             set
             {
-                if (value != this._downloadQuery)
+                if (value != this.downloadQuery)
                 {
                     try
                     {
                         this.RunQuery(value);
-                        this._downloadQuery = value;
+                        this.downloadQuery = value;
                     }
                     catch (SQLiteException)
                     {
@@ -141,7 +141,7 @@ namespace RadioDld
 
         public bool DownloadIsVisible(int epid)
         {
-            if (string.IsNullOrEmpty(this._downloadQuery))
+            if (string.IsNullOrEmpty(this.downloadQuery))
             {
                 return true;
             }
@@ -150,7 +150,7 @@ namespace RadioDld
             {
                 if (this.downloadsVisible == null)
                 {
-                    this.RunQuery(this._downloadQuery);
+                    this.RunQuery(this.downloadQuery);
                 }
 
                 return this.downloadsVisible.Contains(epid);
