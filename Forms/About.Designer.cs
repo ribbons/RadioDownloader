@@ -29,26 +29,29 @@ namespace RadioDld
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.PictureBox ImageLogo;
+            System.Windows.Forms.TextBox TextLicense;
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(About));
-            this.LogoPictureBox = new System.Windows.Forms.PictureBox();
+            System.Windows.Forms.Label LabelLicense;
             this.LabelNameAndVer = new System.Windows.Forms.Label();
-            this.TextboxLicense = new System.Windows.Forms.TextBox();
             this.LabelCopyright = new System.Windows.Forms.Label();
-            this.HomepageLink = new System.Windows.Forms.LinkLabel();
-            this.LabelLicense = new System.Windows.Forms.Label();
-            this.ButtonOK = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).BeginInit();
+            this.LinkHomepage = new System.Windows.Forms.LinkLabel();
+            this.ButtonOk = new System.Windows.Forms.Button();
+            ImageLogo = new System.Windows.Forms.PictureBox();
+            TextLicense = new System.Windows.Forms.TextBox();
+            LabelLicense = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(ImageLogo)).BeginInit();
             this.SuspendLayout();
             // 
-            // LogoPictureBox
+            // ImageLogo
             // 
-            this.LogoPictureBox.Image = global::RadioDld.Properties.Resources.icon_main_img64;
-            this.LogoPictureBox.Location = new System.Drawing.Point(12, 12);
-            this.LogoPictureBox.Name = "LogoPictureBox";
-            this.LogoPictureBox.Size = new System.Drawing.Size(64, 64);
-            this.LogoPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.LogoPictureBox.TabIndex = 1;
-            this.LogoPictureBox.TabStop = false;
+            ImageLogo.Image = global::RadioDld.Properties.Resources.icon_main_img64;
+            ImageLogo.Location = new System.Drawing.Point(12, 12);
+            ImageLogo.Name = "ImageLogo";
+            ImageLogo.Size = new System.Drawing.Size(64, 64);
+            ImageLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            ImageLogo.TabIndex = 1;
+            ImageLogo.TabStop = false;
             // 
             // LabelNameAndVer
             // 
@@ -59,18 +62,18 @@ namespace RadioDld
             this.LabelNameAndVer.TabIndex = 1;
             this.LabelNameAndVer.Text = "Radio Downloader ?.?.?.?";
             // 
-            // TextboxLicense
+            // TextLicense
             // 
-            this.TextboxLicense.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
+            TextLicense.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextboxLicense.Location = new System.Drawing.Point(12, 108);
-            this.TextboxLicense.Multiline = true;
-            this.TextboxLicense.Name = "TextboxLicense";
-            this.TextboxLicense.ReadOnly = true;
-            this.TextboxLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.TextboxLicense.Size = new System.Drawing.Size(489, 140);
-            this.TextboxLicense.TabIndex = 5;
-            this.TextboxLicense.Text = resources.GetString("TextboxLicense.Text");
+            TextLicense.Location = new System.Drawing.Point(12, 108);
+            TextLicense.Multiline = true;
+            TextLicense.Name = "TextLicense";
+            TextLicense.ReadOnly = true;
+            TextLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            TextLicense.Size = new System.Drawing.Size(489, 140);
+            TextLicense.TabIndex = 5;
+            TextLicense.Text = resources.GetString("TextLicense.Text");
             // 
             // LabelCopyright
             // 
@@ -81,53 +84,53 @@ namespace RadioDld
             this.LabelCopyright.TabIndex = 2;
             this.LabelCopyright.Text = "Copyright © 20??";
             // 
-            // HomepageLink
+            // LinkHomepage
             // 
-            this.HomepageLink.AutoSize = true;
-            this.HomepageLink.Location = new System.Drawing.Point(82, 56);
-            this.HomepageLink.Name = "HomepageLink";
-            this.HomepageLink.Size = new System.Drawing.Size(228, 13);
-            this.HomepageLink.TabIndex = 3;
-            this.HomepageLink.TabStop = true;
-            this.HomepageLink.Text = "http://www.nerdoftheherd.com/tools/radiodld/";
-            this.HomepageLink.Click += new System.EventHandler(this.HomepageLink_Click);
+            this.LinkHomepage.AutoSize = true;
+            this.LinkHomepage.Location = new System.Drawing.Point(82, 56);
+            this.LinkHomepage.Name = "LinkHomepage";
+            this.LinkHomepage.Size = new System.Drawing.Size(228, 13);
+            this.LinkHomepage.TabIndex = 3;
+            this.LinkHomepage.TabStop = true;
+            this.LinkHomepage.Text = "http://www.nerdoftheherd.com/tools/radiodld/";
+            this.LinkHomepage.Click += new System.EventHandler(this.LinkHomepage_Click);
             // 
             // LabelLicense
             // 
-            this.LabelLicense.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.LabelLicense.AutoSize = true;
-            this.LabelLicense.Location = new System.Drawing.Point(12, 92);
-            this.LabelLicense.Name = "LabelLicense";
-            this.LabelLicense.Size = new System.Drawing.Size(47, 13);
-            this.LabelLicense.TabIndex = 4;
-            this.LabelLicense.Text = "&License:";
+            LabelLicense.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            LabelLicense.AutoSize = true;
+            LabelLicense.Location = new System.Drawing.Point(12, 92);
+            LabelLicense.Name = "LabelLicense";
+            LabelLicense.Size = new System.Drawing.Size(47, 13);
+            LabelLicense.TabIndex = 4;
+            LabelLicense.Text = "&License:";
             // 
-            // ButtonOK
+            // ButtonOk
             // 
-            this.ButtonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.ButtonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.ButtonOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonOK.Location = new System.Drawing.Point(419, 254);
-            this.ButtonOK.Name = "ButtonOK";
-            this.ButtonOK.Size = new System.Drawing.Size(82, 26);
-            this.ButtonOK.TabIndex = 0;
-            this.ButtonOK.Text = "OK";
-            this.ButtonOK.UseVisualStyleBackColor = true;
-            this.ButtonOK.Click += new System.EventHandler(this.OKButton_Click);
+            this.ButtonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.ButtonOk.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.ButtonOk.Location = new System.Drawing.Point(419, 254);
+            this.ButtonOk.Name = "ButtonOk";
+            this.ButtonOk.Size = new System.Drawing.Size(82, 26);
+            this.ButtonOk.TabIndex = 0;
+            this.ButtonOk.Text = "OK";
+            this.ButtonOk.UseVisualStyleBackColor = true;
+            this.ButtonOk.Click += new System.EventHandler(this.ButtonOk_Click);
             // 
             // About
             // 
-            this.AcceptButton = this.ButtonOK;
+            this.AcceptButton = this.ButtonOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(513, 292);
-            this.Controls.Add(this.ButtonOK);
-            this.Controls.Add(this.LabelLicense);
-            this.Controls.Add(this.HomepageLink);
+            this.Controls.Add(this.ButtonOk);
+            this.Controls.Add(LabelLicense);
+            this.Controls.Add(this.LinkHomepage);
             this.Controls.Add(this.LabelCopyright);
-            this.Controls.Add(this.TextboxLicense);
+            this.Controls.Add(TextLicense);
             this.Controls.Add(this.LabelNameAndVer);
-            this.Controls.Add(this.LogoPictureBox);
+            this.Controls.Add(ImageLogo);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = global::RadioDld.Properties.Resources.icon_main;
             this.MaximizeBox = false;
@@ -138,18 +141,15 @@ namespace RadioDld
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "About";
             this.Load += new System.EventHandler(this.About_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.LogoPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(ImageLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
-        internal System.Windows.Forms.PictureBox LogoPictureBox;
-        internal System.Windows.Forms.Label LabelNameAndVer;
-        internal System.Windows.Forms.TextBox TextboxLicense;
-        internal System.Windows.Forms.Label LabelCopyright;
-        internal System.Windows.Forms.LinkLabel HomepageLink;
-        internal System.Windows.Forms.Label LabelLicense;
-        internal System.Windows.Forms.Button ButtonOK;
+        private System.Windows.Forms.Label LabelNameAndVer;
+        private System.Windows.Forms.Label LabelCopyright;
+        private System.Windows.Forms.LinkLabel LinkHomepage;
+        private System.Windows.Forms.Button ButtonOk;
 
         #endregion
     }

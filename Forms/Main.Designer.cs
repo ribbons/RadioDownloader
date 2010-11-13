@@ -30,674 +30,679 @@ namespace RadioDld
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.tbrView = new RadioDld.ExtToolStrip();
-            this.tbtBack = new System.Windows.Forms.ToolStripButton();
-            this.tbtForward = new System.Windows.Forms.ToolStripButton();
-            this.tbtFindNew = new System.Windows.Forms.ToolStripButton();
-            this.tbtFavourites = new System.Windows.Forms.ToolStripButton();
-            this.tbtSubscriptions = new System.Windows.Forms.ToolStripButton();
-            this.tbtDownloads = new System.Windows.Forms.ToolStripButton();
-            this.ttxSearch = new RadioDld.ToolStripSearchBox();
-            this.nicTrayIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.mnuTray = new System.Windows.Forms.ContextMenu();
-            this.mnuTrayShow = new System.Windows.Forms.MenuItem();
-            this.mnuTraySep = new System.Windows.Forms.MenuItem();
-            this.mnuTrayExit = new System.Windows.Forms.MenuItem();
-            this.imlListIcons = new System.Windows.Forms.ImageList(this.components);
-            this.imlProviders = new System.Windows.Forms.ImageList(this.components);
-            this.prgDldProg = new System.Windows.Forms.ProgressBar();
-            this.tmrCheckForUpdates = new System.Windows.Forms.Timer(this.components);
-            this.mnuOptions = new System.Windows.Forms.ContextMenu();
-            this.mnuOptionsShowOpts = new System.Windows.Forms.MenuItem();
-            this.mnuOptionsProviderOpts = new System.Windows.Forms.MenuItem();
-            this.mnuOptionsProviderOptsNoProvs = new System.Windows.Forms.MenuItem();
-            this.mnuOptionsSep = new System.Windows.Forms.MenuItem();
-            this.mnuOptionsExit = new System.Windows.Forms.MenuItem();
-            this.mnuHelp = new System.Windows.Forms.ContextMenu();
-            this.mnuHelpShowHelp = new System.Windows.Forms.MenuItem();
-            this.mnuHelpReportBug = new System.Windows.Forms.MenuItem();
-            this.mnuHelpSep = new System.Windows.Forms.MenuItem();
-            this.mnuHelpAbout = new System.Windows.Forms.MenuItem();
-            this.imlToolbar = new System.Windows.Forms.ImageList(this.components);
-            this.tblInfo = new System.Windows.Forms.TableLayoutPanel();
-            this.txtSideDescript = new System.Windows.Forms.RichTextBox();
-            this.lblSideMainTitle = new System.Windows.Forms.Label();
-            this.picSidebarImg = new System.Windows.Forms.PictureBox();
-            this.pnlPluginSpace = new System.Windows.Forms.Panel();
-            this.tblToolbars = new System.Windows.Forms.TableLayoutPanel();
-            this.tbrToolbar = new RadioDld.ExtToolBar();
-            this.tbtOptionsMenu = new System.Windows.Forms.ToolBarButton();
-            this.tbtChooseProgramme = new System.Windows.Forms.ToolBarButton();
-            this.tbtDownload = new System.Windows.Forms.ToolBarButton();
-            this.tbtAddFavourite = new System.Windows.Forms.ToolBarButton();
-            this.tbtRemFavourite = new System.Windows.Forms.ToolBarButton();
-            this.tbtSubscribe = new System.Windows.Forms.ToolBarButton();
-            this.tbtUnsubscribe = new System.Windows.Forms.ToolBarButton();
-            this.tbtCurrentEps = new System.Windows.Forms.ToolBarButton();
-            this.tbtCancel = new System.Windows.Forms.ToolBarButton();
-            this.tbtPlay = new System.Windows.Forms.ToolBarButton();
-            this.tbtDelete = new System.Windows.Forms.ToolBarButton();
-            this.tbtRetry = new System.Windows.Forms.ToolBarButton();
-            this.tbtReportError = new System.Windows.Forms.ToolBarButton();
-            this.tbtCleanUp = new System.Windows.Forms.ToolBarButton();
-            this.tbrHelp = new RadioDld.ExtToolBar();
-            this.tbtHelpMenu = new System.Windows.Forms.ToolBarButton();
-            this.picSideBarBorder = new System.Windows.Forms.PictureBox();
-            this.mnuListHdrs = new System.Windows.Forms.ContextMenu();
-            this.mnuListHdrsColumns = new System.Windows.Forms.MenuItem();
-            this.mnuListHdrsSep = new System.Windows.Forms.MenuItem();
-            this.mnuListHdrsReset = new System.Windows.Forms.MenuItem();
-            this.lstDownloads = new RadioDld.ExtListView();
-            this.lstSubscribed = new RadioDld.ExtListView();
-            this.lstEpisodes = new RadioDld.ExtListView();
-            this.lstProviders = new RadioDld.ExtListView();
-            this.lstFavourites = new RadioDld.ExtListView();
-            this.tbrView.SuspendLayout();
-            this.tblInfo.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picSidebarImg)).BeginInit();
-            this.tblToolbars.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picSideBarBorder)).BeginInit();
+            System.Windows.Forms.TableLayoutPanel TableSidebar;
+            System.Windows.Forms.MenuItem MenuTraySep;
+            System.Windows.Forms.MenuItem MenuOptionsSep;
+            System.Windows.Forms.MenuItem MenuHelpSep;
+            System.Windows.Forms.MenuItem MenuListHdrsSep;
+            this.TextSidebarDescript = new System.Windows.Forms.RichTextBox();
+            this.LabelSidebarTitle = new System.Windows.Forms.Label();
+            this.ImageSidebar = new System.Windows.Forms.PictureBox();
+            this.ToolbarView = new RadioDld.ExtToolStrip();
+            this.ButtonBack = new System.Windows.Forms.ToolStripButton();
+            this.ButtonForward = new System.Windows.Forms.ToolStripButton();
+            this.ButtonFindNew = new System.Windows.Forms.ToolStripButton();
+            this.ButtonFavourites = new System.Windows.Forms.ToolStripButton();
+            this.ButtonSubscriptions = new System.Windows.Forms.ToolStripButton();
+            this.ButtonDownloads = new System.Windows.Forms.ToolStripButton();
+            this.TextSearch = new RadioDld.ToolStripSearchBox();
+            this.NotifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.MenuTray = new System.Windows.Forms.ContextMenu();
+            this.MenuTrayShow = new System.Windows.Forms.MenuItem();
+            this.MenuTrayExit = new System.Windows.Forms.MenuItem();
+            this.ImagesListIcons = new System.Windows.Forms.ImageList(this.components);
+            this.ImagesProviders = new System.Windows.Forms.ImageList(this.components);
+            this.ProgressDownload = new System.Windows.Forms.ProgressBar();
+            this.TimerCheckForUpdates = new System.Windows.Forms.Timer(this.components);
+            this.MenuOptions = new System.Windows.Forms.ContextMenu();
+            this.MenuOptionsShowOpts = new System.Windows.Forms.MenuItem();
+            this.MenuOptionsProviderOpts = new System.Windows.Forms.MenuItem();
+            this.MenuOptionsProviderOptsNoProvs = new System.Windows.Forms.MenuItem();
+            this.MenuOptionsExit = new System.Windows.Forms.MenuItem();
+            this.MenuHelp = new System.Windows.Forms.ContextMenu();
+            this.MenuHelpShowHelp = new System.Windows.Forms.MenuItem();
+            this.MenuHelpReportBug = new System.Windows.Forms.MenuItem();
+            this.MenuHelpAbout = new System.Windows.Forms.MenuItem();
+            this.ImagesToolbar = new System.Windows.Forms.ImageList(this.components);
+            this.PanelPluginSpace = new System.Windows.Forms.Panel();
+            this.TableToolbars = new System.Windows.Forms.TableLayoutPanel();
+            this.ToolbarMain = new RadioDld.ExtToolBar();
+            this.ButtonOptionsMenu = new System.Windows.Forms.ToolBarButton();
+            this.ButtonChooseProgramme = new System.Windows.Forms.ToolBarButton();
+            this.ButtonDownload = new System.Windows.Forms.ToolBarButton();
+            this.ButtonAddFavourite = new System.Windows.Forms.ToolBarButton();
+            this.ButtonRemFavourite = new System.Windows.Forms.ToolBarButton();
+            this.ButtonSubscribe = new System.Windows.Forms.ToolBarButton();
+            this.ButtonUnsubscribe = new System.Windows.Forms.ToolBarButton();
+            this.ButtonCurrentEps = new System.Windows.Forms.ToolBarButton();
+            this.ButtonCleanUp = new System.Windows.Forms.ToolBarButton();
+            this.ButtonCancel = new System.Windows.Forms.ToolBarButton();
+            this.ButtonPlay = new System.Windows.Forms.ToolBarButton();
+            this.ButtonDelete = new System.Windows.Forms.ToolBarButton();
+            this.ButtonRetry = new System.Windows.Forms.ToolBarButton();
+            this.ButtonReportError = new System.Windows.Forms.ToolBarButton();
+            this.ToolbarHelp = new RadioDld.ExtToolBar();
+            this.ButtonHelpMenu = new System.Windows.Forms.ToolBarButton();
+            this.ImageSidebarBorder = new System.Windows.Forms.PictureBox();
+            this.MenuListHdrs = new System.Windows.Forms.ContextMenu();
+            this.MenuListHdrsColumns = new System.Windows.Forms.MenuItem();
+            this.MenuListHdrsReset = new System.Windows.Forms.MenuItem();
+            this.ListDownloads = new RadioDld.ExtListView();
+            this.ListSubscribed = new RadioDld.ExtListView();
+            this.ListEpisodes = new RadioDld.ExtListView();
+            this.ListProviders = new RadioDld.ExtListView();
+            this.ListFavourites = new RadioDld.ExtListView();
+            TableSidebar = new System.Windows.Forms.TableLayoutPanel();
+            MenuTraySep = new System.Windows.Forms.MenuItem();
+            MenuOptionsSep = new System.Windows.Forms.MenuItem();
+            MenuHelpSep = new System.Windows.Forms.MenuItem();
+            MenuListHdrsSep = new System.Windows.Forms.MenuItem();
+            TableSidebar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ImageSidebar)).BeginInit();
+            this.ToolbarView.SuspendLayout();
+            this.TableToolbars.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ImageSidebarBorder)).BeginInit();
             this.SuspendLayout();
             // 
-            // tbrView
-            // 
-            this.tbrView.CanOverflow = false;
-            this.tbrView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-            this.tbrView.ImageScalingSize = new System.Drawing.Size(24, 24);
-            this.tbrView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.tbtBack,
-            this.tbtForward,
-            this.tbtFindNew,
-            this.tbtFavourites,
-            this.tbtSubscriptions,
-            this.tbtDownloads,
-            this.ttxSearch});
-            this.tbrView.Location = new System.Drawing.Point(0, 0);
-            this.tbrView.Name = "tbrView";
-            this.tbrView.Padding = new System.Windows.Forms.Padding(3, 0, 1, 0);
-            this.tbrView.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
-            this.tbrView.Size = new System.Drawing.Size(757, 31);
-            this.tbrView.TabIndex = 7;
-            this.tbrView.TabStop = true;
-            // 
-            // tbtBack
-            // 
-            this.tbtBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtBack.Image = global::RadioDld.Properties.Resources.views_back;
-            this.tbtBack.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtBack.Name = "tbtBack";
-            this.tbtBack.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
-            this.tbtBack.Size = new System.Drawing.Size(30, 28);
-            this.tbtBack.Text = "Back";
-            this.tbtBack.Click += new System.EventHandler(this.tbtBack_Click);
-            // 
-            // tbtForward
-            // 
-            this.tbtForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.tbtForward.Image = global::RadioDld.Properties.Resources.views_forward;
-            this.tbtForward.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtForward.Margin = new System.Windows.Forms.Padding(0, 1, 8, 2);
-            this.tbtForward.Name = "tbtForward";
-            this.tbtForward.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
-            this.tbtForward.Size = new System.Drawing.Size(30, 28);
-            this.tbtForward.Text = "Forward";
-            this.tbtForward.Click += new System.EventHandler(this.tbtForward_Click);
-            // 
-            // tbtFindNew
-            // 
-            this.tbtFindNew.AutoToolTip = false;
-            this.tbtFindNew.Checked = true;
-            this.tbtFindNew.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.tbtFindNew.Image = global::RadioDld.Properties.Resources.views_find_new;
-            this.tbtFindNew.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtFindNew.Name = "tbtFindNew";
-            this.tbtFindNew.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.tbtFindNew.Size = new System.Drawing.Size(128, 28);
-            this.tbtFindNew.Text = "&Find Programme";
-            this.tbtFindNew.Click += new System.EventHandler(this.tbtFindNew_Click);
-            // 
-            // tbtFavourites
-            // 
-            this.tbtFavourites.AutoToolTip = false;
-            this.tbtFavourites.Image = global::RadioDld.Properties.Resources.views_favourites;
-            this.tbtFavourites.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtFavourites.Name = "tbtFavourites";
-            this.tbtFavourites.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.tbtFavourites.Size = new System.Drawing.Size(93, 28);
-            this.tbtFavourites.Text = "F&avourites";
-            this.tbtFavourites.Click += new System.EventHandler(this.tbtFavourites_Click);
-            // 
-            // tbtSubscriptions
-            // 
-            this.tbtSubscriptions.AutoToolTip = false;
-            this.tbtSubscriptions.Image = global::RadioDld.Properties.Resources.views_subscriptions;
-            this.tbtSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtSubscriptions.Name = "tbtSubscriptions";
-            this.tbtSubscriptions.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.tbtSubscriptions.Size = new System.Drawing.Size(110, 28);
-            this.tbtSubscriptions.Text = "&Subscriptions";
-            this.tbtSubscriptions.Click += new System.EventHandler(this.tbtSubscriptions_Click);
-            // 
-            // tbtDownloads
-            // 
-            this.tbtDownloads.AutoToolTip = false;
-            this.tbtDownloads.Image = global::RadioDld.Properties.Resources.views_downloads;
-            this.tbtDownloads.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.tbtDownloads.Name = "tbtDownloads";
-            this.tbtDownloads.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.tbtDownloads.Size = new System.Drawing.Size(98, 28);
-            this.tbtDownloads.Text = "&Downloads";
-            this.tbtDownloads.Click += new System.EventHandler(this.tbtDownloads_Click);
-            // 
-            // ttxSearch
-            // 
-            this.ttxSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.ttxSearch.BackColor = System.Drawing.Color.Transparent;
-            this.ttxSearch.ControlAlign = System.Drawing.ContentAlignment.TopRight;
-            this.ttxSearch.CueBanner = "Search downloads";
-            this.ttxSearch.Margin = new System.Windows.Forms.Padding(1, 1, 0, 0);
-            this.ttxSearch.Name = "ttxSearch";
-            this.ttxSearch.Size = new System.Drawing.Size(160, 30);
-            this.ttxSearch.TextChanged += new System.EventHandler(this.ttxSearch_TextChanged);
-            // 
-            // nicTrayIcon
+            // TableSidebar
+            // 
+            TableSidebar.BackColor = System.Drawing.SystemColors.Window;
+            TableSidebar.ColumnCount = 1;
+            TableSidebar.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            TableSidebar.Controls.Add(this.TextSidebarDescript, 0, 2);
+            TableSidebar.Controls.Add(this.LabelSidebarTitle, 0, 0);
+            TableSidebar.Controls.Add(this.ImageSidebar, 0, 1);
+            TableSidebar.Dock = System.Windows.Forms.DockStyle.Left;
+            TableSidebar.Location = new System.Drawing.Point(0, 65);
+            TableSidebar.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
+            TableSidebar.Name = "TableSidebar";
+            TableSidebar.RowCount = 4;
+            TableSidebar.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            TableSidebar.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            TableSidebar.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            TableSidebar.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            TableSidebar.Size = new System.Drawing.Size(187, 385);
+            TableSidebar.TabIndex = 9;
+            // 
+            // TextSidebarDescript
+            // 
+            this.TextSidebarDescript.BackColor = System.Drawing.SystemColors.Window;
+            this.TextSidebarDescript.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TextSidebarDescript.Cursor = System.Windows.Forms.Cursors.Default;
+            this.TextSidebarDescript.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.TextSidebarDescript.Location = new System.Drawing.Point(8, 120);
+            this.TextSidebarDescript.Margin = new System.Windows.Forms.Padding(8, 5, 8, 6);
+            this.TextSidebarDescript.Name = "TextSidebarDescript";
+            this.TextSidebarDescript.ReadOnly = true;
+            this.TextSidebarDescript.ShortcutsEnabled = false;
+            this.TextSidebarDescript.Size = new System.Drawing.Size(171, 259);
+            this.TextSidebarDescript.TabIndex = 1;
+            this.TextSidebarDescript.TabStop = false;
+            this.TextSidebarDescript.Text = "Description";
+            // 
+            // LabelSidebarTitle
+            // 
+            this.LabelSidebarTitle.AutoSize = true;
+            this.LabelSidebarTitle.BackColor = System.Drawing.Color.Transparent;
+            this.LabelSidebarTitle.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.LabelSidebarTitle.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LabelSidebarTitle.ForeColor = System.Drawing.SystemColors.WindowText;
+            this.LabelSidebarTitle.Location = new System.Drawing.Point(8, 10);
+            this.LabelSidebarTitle.Margin = new System.Windows.Forms.Padding(8, 10, 8, 8);
+            this.LabelSidebarTitle.Name = "LabelSidebarTitle";
+            this.LabelSidebarTitle.Size = new System.Drawing.Size(171, 19);
+            this.LabelSidebarTitle.TabIndex = 0;
+            this.LabelSidebarTitle.Text = "Title";
+            this.LabelSidebarTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.LabelSidebarTitle.UseMnemonic = false;
+            // 
+            // ImageSidebar
+            // 
+            this.ImageSidebar.ErrorImage = null;
+            this.ImageSidebar.InitialImage = null;
+            this.ImageSidebar.Location = new System.Drawing.Point(12, 40);
+            this.ImageSidebar.Margin = new System.Windows.Forms.Padding(12, 3, 12, 5);
+            this.ImageSidebar.MaximumSize = new System.Drawing.Size(160, 100);
+            this.ImageSidebar.Name = "ImageSidebar";
+            this.ImageSidebar.Size = new System.Drawing.Size(70, 70);
+            this.ImageSidebar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.ImageSidebar.TabIndex = 1;
+            this.ImageSidebar.TabStop = false;
+            // 
+            // ToolbarView
+            // 
+            this.ToolbarView.CanOverflow = false;
+            this.ToolbarView.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+            this.ToolbarView.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.ToolbarView.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.ButtonBack,
+            this.ButtonForward,
+            this.ButtonFindNew,
+            this.ButtonFavourites,
+            this.ButtonSubscriptions,
+            this.ButtonDownloads,
+            this.TextSearch});
+            this.ToolbarView.Location = new System.Drawing.Point(0, 0);
+            this.ToolbarView.Name = "ToolbarView";
+            this.ToolbarView.Padding = new System.Windows.Forms.Padding(3, 0, 1, 0);
+            this.ToolbarView.RenderMode = System.Windows.Forms.ToolStripRenderMode.System;
+            this.ToolbarView.Size = new System.Drawing.Size(757, 31);
+            this.ToolbarView.TabIndex = 7;
+            this.ToolbarView.TabStop = true;
+            // 
+            // ButtonBack
+            // 
+            this.ButtonBack.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ButtonBack.Image = global::RadioDld.Properties.Resources.views_back;
+            this.ButtonBack.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ButtonBack.Name = "ButtonBack";
+            this.ButtonBack.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
+            this.ButtonBack.Size = new System.Drawing.Size(30, 28);
+            this.ButtonBack.Text = "Back";
+            this.ButtonBack.Click += new System.EventHandler(this.ButtonBack_Click);
+            // 
+            // ButtonForward
+            // 
+            this.ButtonForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.ButtonForward.Image = global::RadioDld.Properties.Resources.views_forward;
+            this.ButtonForward.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ButtonForward.Margin = new System.Windows.Forms.Padding(0, 1, 8, 2);
+            this.ButtonForward.Name = "ButtonForward";
+            this.ButtonForward.Padding = new System.Windows.Forms.Padding(1, 0, 1, 0);
+            this.ButtonForward.Size = new System.Drawing.Size(30, 28);
+            this.ButtonForward.Text = "Forward";
+            this.ButtonForward.Click += new System.EventHandler(this.ButtonForward_Click);
+            // 
+            // ButtonFindNew
+            // 
+            this.ButtonFindNew.AutoToolTip = false;
+            this.ButtonFindNew.Checked = true;
+            this.ButtonFindNew.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.ButtonFindNew.Image = global::RadioDld.Properties.Resources.views_find_new;
+            this.ButtonFindNew.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ButtonFindNew.Name = "ButtonFindNew";
+            this.ButtonFindNew.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.ButtonFindNew.Size = new System.Drawing.Size(128, 28);
+            this.ButtonFindNew.Text = "&Find Programme";
+            this.ButtonFindNew.Click += new System.EventHandler(this.ButtonFindNew_Click);
+            // 
+            // ButtonFavourites
+            // 
+            this.ButtonFavourites.AutoToolTip = false;
+            this.ButtonFavourites.Image = global::RadioDld.Properties.Resources.views_favourites;
+            this.ButtonFavourites.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ButtonFavourites.Name = "ButtonFavourites";
+            this.ButtonFavourites.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.ButtonFavourites.Size = new System.Drawing.Size(93, 28);
+            this.ButtonFavourites.Text = "F&avourites";
+            this.ButtonFavourites.Click += new System.EventHandler(this.ButtonFavourites_Click);
+            // 
+            // ButtonSubscriptions
+            // 
+            this.ButtonSubscriptions.AutoToolTip = false;
+            this.ButtonSubscriptions.Image = global::RadioDld.Properties.Resources.views_subscriptions;
+            this.ButtonSubscriptions.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ButtonSubscriptions.Name = "ButtonSubscriptions";
+            this.ButtonSubscriptions.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.ButtonSubscriptions.Size = new System.Drawing.Size(110, 28);
+            this.ButtonSubscriptions.Text = "&Subscriptions";
+            this.ButtonSubscriptions.Click += new System.EventHandler(this.ButtonSubscriptions_Click);
+            // 
+            // ButtonDownloads
+            // 
+            this.ButtonDownloads.AutoToolTip = false;
+            this.ButtonDownloads.Image = global::RadioDld.Properties.Resources.views_downloads;
+            this.ButtonDownloads.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.ButtonDownloads.Name = "ButtonDownloads";
+            this.ButtonDownloads.Padding = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.ButtonDownloads.Size = new System.Drawing.Size(98, 28);
+            this.ButtonDownloads.Text = "&Downloads";
+            this.ButtonDownloads.Click += new System.EventHandler(this.ButtonDownloads_Click);
             // 
-            this.nicTrayIcon.ContextMenu = this.mnuTray;
-            this.nicTrayIcon.BalloonTipClicked += new System.EventHandler(this.nicTrayIcon_BalloonTipClicked);
-            this.nicTrayIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.nicTrayIcon_MouseDoubleClick);
+            // TextSearch
             // 
-            // mnuTray
+            this.TextSearch.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.TextSearch.BackColor = System.Drawing.Color.Transparent;
+            this.TextSearch.ControlAlign = System.Drawing.ContentAlignment.TopRight;
+            this.TextSearch.CueBanner = "Search downloads";
+            this.TextSearch.Margin = new System.Windows.Forms.Padding(1, 1, 0, 0);
+            this.TextSearch.Name = "TextSearch";
+            this.TextSearch.Size = new System.Drawing.Size(160, 30);
+            this.TextSearch.TextChanged += new System.EventHandler(this.TextSearch_TextChanged);
             // 
-            this.mnuTray.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.mnuTrayShow,
-            this.mnuTraySep,
-            this.mnuTrayExit});
+            // NotifyIcon
             // 
-            // mnuTrayShow
+            this.NotifyIcon.ContextMenu = this.MenuTray;
+            this.NotifyIcon.BalloonTipClicked += new System.EventHandler(this.NotifyIcon_BalloonTipClicked);
+            this.NotifyIcon.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.NotifyIcon_MouseDoubleClick);
             // 
-            this.mnuTrayShow.Index = 0;
-            this.mnuTrayShow.Text = "&Show Radio Downloader";
-            this.mnuTrayShow.Click += new System.EventHandler(this.mnuTrayShow_Click);
+            // MenuTray
             // 
-            // mnuTraySep
+            this.MenuTray.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuTrayShow,
+            MenuTraySep,
+            this.MenuTrayExit});
             // 
-            this.mnuTraySep.Index = 1;
-            this.mnuTraySep.Text = "-";
+            // MenuTrayShow
             // 
-            // mnuTrayExit
+            this.MenuTrayShow.Index = 0;
+            this.MenuTrayShow.Text = "&Show Radio Downloader";
+            this.MenuTrayShow.Click += new System.EventHandler(this.MenuTrayShow_Click);
             // 
-            this.mnuTrayExit.Index = 2;
-            this.mnuTrayExit.Text = "E&xit";
-            this.mnuTrayExit.Click += new System.EventHandler(this.mnuTrayExit_Click);
+            // MenuTraySep
             // 
-            // imlListIcons
+            MenuTraySep.Index = 1;
+            MenuTraySep.Text = "-";
             // 
-            this.imlListIcons.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imlListIcons.ImageSize = new System.Drawing.Size(16, 16);
-            this.imlListIcons.TransparentColor = System.Drawing.Color.Transparent;
+            // MenuTrayExit
             // 
-            // imlProviders
+            this.MenuTrayExit.Index = 2;
+            this.MenuTrayExit.Text = "E&xit";
+            this.MenuTrayExit.Click += new System.EventHandler(this.MenuTrayExit_Click);
             // 
-            this.imlProviders.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imlProviders.ImageSize = new System.Drawing.Size(64, 64);
-            this.imlProviders.TransparentColor = System.Drawing.Color.Transparent;
+            // ImagesListIcons
             // 
-            // prgDldProg
+            this.ImagesListIcons.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.ImagesListIcons.ImageSize = new System.Drawing.Size(16, 16);
+            this.ImagesListIcons.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            this.prgDldProg.Location = new System.Drawing.Point(438, 356);
-            this.prgDldProg.Name = "prgDldProg";
-            this.prgDldProg.Size = new System.Drawing.Size(100, 23);
-            this.prgDldProg.TabIndex = 6;
-            this.prgDldProg.Visible = false;
+            // ImagesProviders
             // 
-            // tmrCheckForUpdates
+            this.ImagesProviders.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.ImagesProviders.ImageSize = new System.Drawing.Size(64, 64);
+            this.ImagesProviders.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            this.tmrCheckForUpdates.Interval = 3600000;
-            this.tmrCheckForUpdates.Tick += new System.EventHandler(this.tmrCheckForUpdates_Tick);
+            // ProgressDownload
             // 
-            // mnuOptions
+            this.ProgressDownload.Location = new System.Drawing.Point(438, 356);
+            this.ProgressDownload.Name = "ProgressDownload";
+            this.ProgressDownload.Size = new System.Drawing.Size(100, 23);
+            this.ProgressDownload.TabIndex = 6;
+            this.ProgressDownload.Visible = false;
             // 
-            this.mnuOptions.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.mnuOptionsShowOpts,
-            this.mnuOptionsProviderOpts,
-            this.mnuOptionsSep,
-            this.mnuOptionsExit});
+            // TimerCheckForUpdates
             // 
-            // mnuOptionsShowOpts
+            this.TimerCheckForUpdates.Interval = 3600000;
+            this.TimerCheckForUpdates.Tick += new System.EventHandler(this.TimerCheckForUpdates_Tick);
             // 
-            this.mnuOptionsShowOpts.Index = 0;
-            this.mnuOptionsShowOpts.Text = "Main &Options";
-            this.mnuOptionsShowOpts.Click += new System.EventHandler(this.mnuOptionsShowOpts_Click);
+            // MenuOptions
             // 
-            // mnuOptionsProviderOpts
+            this.MenuOptions.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuOptionsShowOpts,
+            this.MenuOptionsProviderOpts,
+            MenuOptionsSep,
+            this.MenuOptionsExit});
             // 
-            this.mnuOptionsProviderOpts.Index = 1;
-            this.mnuOptionsProviderOpts.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.mnuOptionsProviderOptsNoProvs});
-            this.mnuOptionsProviderOpts.Text = "&Provider Options";
+            // MenuOptionsShowOpts
             // 
-            // mnuOptionsProviderOptsNoProvs
+            this.MenuOptionsShowOpts.Index = 0;
+            this.MenuOptionsShowOpts.Text = "Main &Options";
+            this.MenuOptionsShowOpts.Click += new System.EventHandler(this.MenuOptionsShowOpts_Click);
             // 
-            this.mnuOptionsProviderOptsNoProvs.Enabled = false;
-            this.mnuOptionsProviderOptsNoProvs.Index = 0;
-            this.mnuOptionsProviderOptsNoProvs.Text = "No providers";
+            // MenuOptionsProviderOpts
             // 
-            // mnuOptionsSep
+            this.MenuOptionsProviderOpts.Index = 1;
+            this.MenuOptionsProviderOpts.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuOptionsProviderOptsNoProvs});
+            this.MenuOptionsProviderOpts.Text = "&Provider Options";
             // 
-            this.mnuOptionsSep.Index = 2;
-            this.mnuOptionsSep.Text = "-";
+            // MenuOptionsProviderOptsNoProvs
             // 
-            // mnuOptionsExit
+            this.MenuOptionsProviderOptsNoProvs.Enabled = false;
+            this.MenuOptionsProviderOptsNoProvs.Index = 0;
+            this.MenuOptionsProviderOptsNoProvs.Text = "No providers";
             // 
-            this.mnuOptionsExit.Index = 3;
-            this.mnuOptionsExit.Text = "E&xit";
-            this.mnuOptionsExit.Click += new System.EventHandler(this.mnuOptionsExit_Click);
+            // MenuOptionsSep
             // 
-            // mnuHelp
+            MenuOptionsSep.Index = 2;
+            MenuOptionsSep.Text = "-";
             // 
-            this.mnuHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.mnuHelpShowHelp,
-            this.mnuHelpReportBug,
-            this.mnuHelpSep,
-            this.mnuHelpAbout});
+            // MenuOptionsExit
             // 
-            // mnuHelpShowHelp
+            this.MenuOptionsExit.Index = 3;
+            this.MenuOptionsExit.Text = "E&xit";
+            this.MenuOptionsExit.Click += new System.EventHandler(this.MenuOptionsExit_Click);
             // 
-            this.mnuHelpShowHelp.Index = 0;
-            this.mnuHelpShowHelp.Shortcut = System.Windows.Forms.Shortcut.F1;
-            this.mnuHelpShowHelp.Text = "&Help Contents";
-            this.mnuHelpShowHelp.Click += new System.EventHandler(this.mnuHelpShowHelp_Click);
+            // MenuHelp
             // 
-            // mnuHelpReportBug
+            this.MenuHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuHelpShowHelp,
+            this.MenuHelpReportBug,
+            MenuHelpSep,
+            this.MenuHelpAbout});
             // 
-            this.mnuHelpReportBug.Index = 1;
-            this.mnuHelpReportBug.Text = "Report a &Bug";
-            this.mnuHelpReportBug.Click += new System.EventHandler(this.mnuHelpReportBug_Click);
+            // MenuHelpShowHelp
             // 
-            // mnuHelpSep
+            this.MenuHelpShowHelp.Index = 0;
+            this.MenuHelpShowHelp.Shortcut = System.Windows.Forms.Shortcut.F1;
+            this.MenuHelpShowHelp.Text = "&Help Contents";
+            this.MenuHelpShowHelp.Click += new System.EventHandler(this.MenuHelpShowHelp_Click);
             // 
-            this.mnuHelpSep.Index = 2;
-            this.mnuHelpSep.Text = "-";
+            // MenuHelpReportBug
             // 
-            // mnuHelpAbout
+            this.MenuHelpReportBug.Index = 1;
+            this.MenuHelpReportBug.Text = "Report a &Bug";
+            this.MenuHelpReportBug.Click += new System.EventHandler(this.MenuHelpReportBug_Click);
             // 
-            this.mnuHelpAbout.Index = 3;
-            this.mnuHelpAbout.Text = "&About";
-            this.mnuHelpAbout.Click += new System.EventHandler(this.mnuHelpAbout_Click);
+            // MenuHelpSep
             // 
-            // imlToolbar
+            MenuHelpSep.Index = 2;
+            MenuHelpSep.Text = "-";
             // 
-            this.imlToolbar.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
-            this.imlToolbar.ImageSize = new System.Drawing.Size(16, 16);
-            this.imlToolbar.TransparentColor = System.Drawing.Color.Transparent;
+            // MenuHelpAbout
             // 
-            // tblInfo
+            this.MenuHelpAbout.Index = 3;
+            this.MenuHelpAbout.Text = "&About";
+            this.MenuHelpAbout.Click += new System.EventHandler(this.MenuHelpAbout_Click);
             // 
-            this.tblInfo.BackColor = System.Drawing.SystemColors.Window;
-            this.tblInfo.ColumnCount = 1;
-            this.tblInfo.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tblInfo.Controls.Add(this.txtSideDescript, 0, 2);
-            this.tblInfo.Controls.Add(this.lblSideMainTitle, 0, 0);
-            this.tblInfo.Controls.Add(this.picSidebarImg, 0, 1);
-            this.tblInfo.Dock = System.Windows.Forms.DockStyle.Left;
-            this.tblInfo.Location = new System.Drawing.Point(0, 65);
-            this.tblInfo.Margin = new System.Windows.Forms.Padding(3, 0, 0, 0);
-            this.tblInfo.Name = "tblInfo";
-            this.tblInfo.RowCount = 4;
-            this.tblInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tblInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tblInfo.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tblInfo.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tblInfo.Size = new System.Drawing.Size(187, 385);
-            this.tblInfo.TabIndex = 9;
+            // ImagesToolbar
             // 
-            // txtSideDescript
+            this.ImagesToolbar.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
+            this.ImagesToolbar.ImageSize = new System.Drawing.Size(16, 16);
+            this.ImagesToolbar.TransparentColor = System.Drawing.Color.Transparent;
             // 
-            this.txtSideDescript.BackColor = System.Drawing.SystemColors.Window;
-            this.txtSideDescript.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.txtSideDescript.Cursor = System.Windows.Forms.Cursors.Default;
-            this.txtSideDescript.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtSideDescript.Location = new System.Drawing.Point(8, 120);
-            this.txtSideDescript.Margin = new System.Windows.Forms.Padding(8, 5, 8, 6);
-            this.txtSideDescript.Name = "txtSideDescript";
-            this.txtSideDescript.ReadOnly = true;
-            this.txtSideDescript.ShortcutsEnabled = false;
-            this.txtSideDescript.Size = new System.Drawing.Size(171, 259);
-            this.txtSideDescript.TabIndex = 1;
-            this.txtSideDescript.TabStop = false;
-            this.txtSideDescript.Text = "Description";
+            // PanelPluginSpace
             // 
-            // lblSideMainTitle
-            // 
-            this.lblSideMainTitle.AutoSize = true;
-            this.lblSideMainTitle.BackColor = System.Drawing.Color.Transparent;
-            this.lblSideMainTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblSideMainTitle.Font = new System.Drawing.Font("Tahoma", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblSideMainTitle.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.lblSideMainTitle.Location = new System.Drawing.Point(8, 10);
-            this.lblSideMainTitle.Margin = new System.Windows.Forms.Padding(8, 10, 8, 8);
-            this.lblSideMainTitle.Name = "lblSideMainTitle";
-            this.lblSideMainTitle.Size = new System.Drawing.Size(171, 19);
-            this.lblSideMainTitle.TabIndex = 0;
-            this.lblSideMainTitle.Text = "Title";
-            this.lblSideMainTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.lblSideMainTitle.UseMnemonic = false;
-            // 
-            // picSidebarImg
-            // 
-            this.picSidebarImg.ErrorImage = null;
-            this.picSidebarImg.InitialImage = null;
-            this.picSidebarImg.Location = new System.Drawing.Point(12, 40);
-            this.picSidebarImg.Margin = new System.Windows.Forms.Padding(12, 3, 12, 5);
-            this.picSidebarImg.MaximumSize = new System.Drawing.Size(160, 100);
-            this.picSidebarImg.Name = "picSidebarImg";
-            this.picSidebarImg.Size = new System.Drawing.Size(70, 70);
-            this.picSidebarImg.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
-            this.picSidebarImg.TabIndex = 1;
-            this.picSidebarImg.TabStop = false;
-            // 
-            // pnlPluginSpace
-            // 
-            this.pnlPluginSpace.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.PanelPluginSpace.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.pnlPluginSpace.Location = new System.Drawing.Point(197, 118);
-            this.pnlPluginSpace.Name = "pnlPluginSpace";
-            this.pnlPluginSpace.Size = new System.Drawing.Size(560, 41);
-            this.pnlPluginSpace.TabIndex = 1;
+            this.PanelPluginSpace.Location = new System.Drawing.Point(197, 118);
+            this.PanelPluginSpace.Name = "PanelPluginSpace";
+            this.PanelPluginSpace.Size = new System.Drawing.Size(560, 41);
+            this.PanelPluginSpace.TabIndex = 1;
             // 
-            // tblToolbars
+            // TableToolbars
             // 
-            this.tblToolbars.ColumnCount = 2;
-            this.tblToolbars.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 90F));
-            this.tblToolbars.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            this.tblToolbars.Controls.Add(this.tbrToolbar, 0, 0);
-            this.tblToolbars.Controls.Add(this.tbrHelp, 1, 0);
-            this.tblToolbars.Dock = System.Windows.Forms.DockStyle.Top;
-            this.tblToolbars.Location = new System.Drawing.Point(0, 31);
-            this.tblToolbars.Name = "tblToolbars";
-            this.tblToolbars.RowCount = 1;
-            this.tblToolbars.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tblToolbars.Size = new System.Drawing.Size(757, 34);
-            this.tblToolbars.TabIndex = 8;
-            this.tblToolbars.Resize += new System.EventHandler(this.tblToolbars_Resize);
+            this.TableToolbars.ColumnCount = 2;
+            this.TableToolbars.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 90F));
+            this.TableToolbars.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
+            this.TableToolbars.Controls.Add(this.ToolbarMain, 0, 0);
+            this.TableToolbars.Controls.Add(this.ToolbarHelp, 1, 0);
+            this.TableToolbars.Dock = System.Windows.Forms.DockStyle.Top;
+            this.TableToolbars.Location = new System.Drawing.Point(0, 31);
+            this.TableToolbars.Name = "TableToolbars";
+            this.TableToolbars.RowCount = 1;
+            this.TableToolbars.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.TableToolbars.Size = new System.Drawing.Size(757, 34);
+            this.TableToolbars.TabIndex = 8;
+            this.TableToolbars.Resize += new System.EventHandler(this.TableToolbars_Resize);
             // 
-            // tbrToolbar
+            // ToolbarMain
             // 
-            this.tbrToolbar.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
-            this.tbrToolbar.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
-            this.tbtOptionsMenu,
-            this.tbtChooseProgramme,
-            this.tbtDownload,
-            this.tbtAddFavourite,
-            this.tbtRemFavourite,
-            this.tbtSubscribe,
-            this.tbtUnsubscribe,
-            this.tbtCurrentEps,
-            this.tbtCleanUp,
-            this.tbtCancel,
-            this.tbtPlay,
-            this.tbtDelete,
-            this.tbtRetry,
-            this.tbtReportError});
-            this.tbrToolbar.ButtonSize = new System.Drawing.Size(135, 22);
-            this.tbrToolbar.Divider = false;
-            this.tbrToolbar.DropDownArrows = true;
-            this.tbrToolbar.Location = new System.Drawing.Point(3, 2);
-            this.tbrToolbar.Margin = new System.Windows.Forms.Padding(3, 2, 0, 0);
-            this.tbrToolbar.Name = "tbrToolbar";
-            this.tbrToolbar.ShowToolTips = true;
-            this.tbrToolbar.Size = new System.Drawing.Size(678, 26);
-            this.tbrToolbar.TabIndex = 0;
-            this.tbrToolbar.TabStop = true;
-            this.tbrToolbar.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
-            this.tbrToolbar.Wrappable = false;
-            this.tbrToolbar.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.tbrToolbar_ButtonClick);
+            this.ToolbarMain.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
+            this.ToolbarMain.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
+            this.ButtonOptionsMenu,
+            this.ButtonChooseProgramme,
+            this.ButtonDownload,
+            this.ButtonAddFavourite,
+            this.ButtonRemFavourite,
+            this.ButtonSubscribe,
+            this.ButtonUnsubscribe,
+            this.ButtonCurrentEps,
+            this.ButtonCleanUp,
+            this.ButtonCancel,
+            this.ButtonPlay,
+            this.ButtonDelete,
+            this.ButtonRetry,
+            this.ButtonReportError});
+            this.ToolbarMain.ButtonSize = new System.Drawing.Size(135, 22);
+            this.ToolbarMain.Divider = false;
+            this.ToolbarMain.DropDownArrows = true;
+            this.ToolbarMain.Location = new System.Drawing.Point(3, 2);
+            this.ToolbarMain.Margin = new System.Windows.Forms.Padding(3, 2, 0, 0);
+            this.ToolbarMain.Name = "ToolbarMain";
+            this.ToolbarMain.ShowToolTips = true;
+            this.ToolbarMain.Size = new System.Drawing.Size(678, 26);
+            this.ToolbarMain.TabIndex = 0;
+            this.ToolbarMain.TabStop = true;
+            this.ToolbarMain.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
+            this.ToolbarMain.Wrappable = false;
+            this.ToolbarMain.ButtonClick += new System.Windows.Forms.ToolBarButtonClickEventHandler(this.ToolbarMain_ButtonClick);
             // 
-            // tbtOptionsMenu
+            // ButtonOptionsMenu
             // 
-            this.tbtOptionsMenu.DropDownMenu = this.mnuOptions;
-            this.tbtOptionsMenu.ImageKey = "options";
-            this.tbtOptionsMenu.Name = "tbtOptionsMenu";
-            this.tbtOptionsMenu.Text = "&Options";
+            this.ButtonOptionsMenu.DropDownMenu = this.MenuOptions;
+            this.ButtonOptionsMenu.ImageKey = "options";
+            this.ButtonOptionsMenu.Name = "ButtonOptionsMenu";
+            this.ButtonOptionsMenu.Text = "&Options";
             // 
-            // tbtChooseProgramme
+            // ButtonChooseProgramme
             // 
-            this.tbtChooseProgramme.ImageKey = "choose_programme";
-            this.tbtChooseProgramme.Name = "tbtChooseProgramme";
-            this.tbtChooseProgramme.Text = "&Choose Programme";
+            this.ButtonChooseProgramme.ImageKey = "choose_programme";
+            this.ButtonChooseProgramme.Name = "ButtonChooseProgramme";
+            this.ButtonChooseProgramme.Text = "&Choose Programme";
             // 
-            // tbtDownload
+            // ButtonDownload
             // 
-            this.tbtDownload.ImageKey = "download";
-            this.tbtDownload.Name = "tbtDownload";
-            this.tbtDownload.Text = "Do&wnload";
+            this.ButtonDownload.ImageKey = "download";
+            this.ButtonDownload.Name = "ButtonDownload";
+            this.ButtonDownload.Text = "Do&wnload";
             // 
-            // tbtAddFavourite
+            // ButtonAddFavourite
             // 
-            this.tbtAddFavourite.ImageKey = "add_favourite";
-            this.tbtAddFavourite.Name = "tbtAddFavourite";
-            this.tbtAddFavourite.Text = "Add &Favourite";
+            this.ButtonAddFavourite.ImageKey = "add_favourite";
+            this.ButtonAddFavourite.Name = "ButtonAddFavourite";
+            this.ButtonAddFavourite.Text = "Add &Favourite";
             // 
-            // tbtRemFavourite
+            // ButtonRemFavourite
             // 
-            this.tbtRemFavourite.ImageKey = "remove_favourite";
-            this.tbtRemFavourite.Name = "tbtRemFavourite";
-            this.tbtRemFavourite.Text = "Remove &Favourite";
+            this.ButtonRemFavourite.ImageKey = "remove_favourite";
+            this.ButtonRemFavourite.Name = "ButtonRemFavourite";
+            this.ButtonRemFavourite.Text = "Remove &Favourite";
             // 
-            // tbtSubscribe
+            // ButtonSubscribe
             // 
-            this.tbtSubscribe.ImageKey = "subscribe";
-            this.tbtSubscribe.Name = "tbtSubscribe";
-            this.tbtSubscribe.Text = "S&ubscribe";
+            this.ButtonSubscribe.ImageKey = "subscribe";
+            this.ButtonSubscribe.Name = "ButtonSubscribe";
+            this.ButtonSubscribe.Text = "S&ubscribe";
             // 
-            // tbtUnsubscribe
+            // ButtonUnsubscribe
             // 
-            this.tbtUnsubscribe.ImageKey = "unsubscribe";
-            this.tbtUnsubscribe.Name = "tbtUnsubscribe";
-            this.tbtUnsubscribe.Text = "&Unsubscribe";
+            this.ButtonUnsubscribe.ImageKey = "unsubscribe";
+            this.ButtonUnsubscribe.Name = "ButtonUnsubscribe";
+            this.ButtonUnsubscribe.Text = "&Unsubscribe";
             // 
-            // tbtCurrentEps
+            // ButtonCurrentEps
             // 
-            this.tbtCurrentEps.ImageKey = "current_episodes";
-            this.tbtCurrentEps.Name = "tbtCurrentEps";
-            this.tbtCurrentEps.Text = "&Current Episodes";
+            this.ButtonCurrentEps.ImageKey = "current_episodes";
+            this.ButtonCurrentEps.Name = "ButtonCurrentEps";
+            this.ButtonCurrentEps.Text = "&Current Episodes";
             // 
-            // tbtCancel
+            // ButtonCleanUp
             // 
-            this.tbtCancel.ImageKey = "delete";
-            this.tbtCancel.Name = "tbtCancel";
-            this.tbtCancel.Text = "&Cancel";
+            this.ButtonCleanUp.ImageKey = "clean_up";
+            this.ButtonCleanUp.Name = "ButtonCleanUp";
+            this.ButtonCleanUp.Text = "Clean &Up";
             // 
-            // tbtPlay
+            // ButtonCancel
             // 
-            this.tbtPlay.ImageKey = "play";
-            this.tbtPlay.Name = "tbtPlay";
-            this.tbtPlay.Text = "&Play";
+            this.ButtonCancel.ImageKey = "delete";
+            this.ButtonCancel.Name = "ButtonCancel";
+            this.ButtonCancel.Text = "&Cancel";
             // 
-            // tbtDelete
+            // ButtonPlay
             // 
-            this.tbtDelete.ImageKey = "delete";
-            this.tbtDelete.Name = "tbtDelete";
-            this.tbtDelete.Text = "D&elete";
+            this.ButtonPlay.ImageKey = "play";
+            this.ButtonPlay.Name = "ButtonPlay";
+            this.ButtonPlay.Text = "&Play";
             // 
-            // tbtRetry
+            // ButtonDelete
             // 
-            this.tbtRetry.ImageKey = "retry";
-            this.tbtRetry.Name = "tbtRetry";
-            this.tbtRetry.Text = "&Retry";
+            this.ButtonDelete.ImageKey = "delete";
+            this.ButtonDelete.Name = "ButtonDelete";
+            this.ButtonDelete.Text = "D&elete";
             // 
-            // tbtReportError
+            // ButtonRetry
             // 
-            this.tbtReportError.ImageKey = "report_error";
-            this.tbtReportError.Name = "tbtReportError";
-            this.tbtReportError.Text = "Report &Error";
+            this.ButtonRetry.ImageKey = "retry";
+            this.ButtonRetry.Name = "ButtonRetry";
+            this.ButtonRetry.Text = "&Retry";
             // 
-            // tbtCleanUp
+            // ButtonReportError
             // 
-            this.tbtCleanUp.ImageKey = "clean_up";
-            this.tbtCleanUp.Name = "tbtCleanUp";
-            this.tbtCleanUp.Text = "Clean &Up";
+            this.ButtonReportError.ImageKey = "report_error";
+            this.ButtonReportError.Name = "ButtonReportError";
+            this.ButtonReportError.Text = "Report &Error";
             // 
-            // tbrHelp
+            // ToolbarHelp
             // 
-            this.tbrHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbrHelp.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
-            this.tbrHelp.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
-            this.tbtHelpMenu});
-            this.tbrHelp.Divider = false;
-            this.tbrHelp.Dock = System.Windows.Forms.DockStyle.None;
-            this.tbrHelp.DropDownArrows = true;
-            this.tbrHelp.Location = new System.Drawing.Point(681, 2);
-            this.tbrHelp.Margin = new System.Windows.Forms.Padding(0, 2, 3, 0);
-            this.tbrHelp.Name = "tbrHelp";
-            this.tbrHelp.ShowToolTips = true;
-            this.tbrHelp.Size = new System.Drawing.Size(73, 26);
-            this.tbrHelp.TabIndex = 1;
-            this.tbrHelp.TabStop = true;
-            this.tbrHelp.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
-            this.tbrHelp.Wrappable = false;
+            this.ToolbarHelp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ToolbarHelp.Appearance = System.Windows.Forms.ToolBarAppearance.Flat;
+            this.ToolbarHelp.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
+            this.ButtonHelpMenu});
+            this.ToolbarHelp.Divider = false;
+            this.ToolbarHelp.Dock = System.Windows.Forms.DockStyle.None;
+            this.ToolbarHelp.DropDownArrows = true;
+            this.ToolbarHelp.Location = new System.Drawing.Point(681, 2);
+            this.ToolbarHelp.Margin = new System.Windows.Forms.Padding(0, 2, 3, 0);
+            this.ToolbarHelp.Name = "ToolbarHelp";
+            this.ToolbarHelp.ShowToolTips = true;
+            this.ToolbarHelp.Size = new System.Drawing.Size(73, 26);
+            this.ToolbarHelp.TabIndex = 1;
+            this.ToolbarHelp.TabStop = true;
+            this.ToolbarHelp.TextAlign = System.Windows.Forms.ToolBarTextAlign.Right;
+            this.ToolbarHelp.Wrappable = false;
             // 
-            // tbtHelpMenu
+            // ButtonHelpMenu
             // 
-            this.tbtHelpMenu.DropDownMenu = this.mnuHelp;
-            this.tbtHelpMenu.ImageKey = "help";
-            this.tbtHelpMenu.Name = "tbtHelpMenu";
-            this.tbtHelpMenu.Text = "&Help";
+            this.ButtonHelpMenu.DropDownMenu = this.MenuHelp;
+            this.ButtonHelpMenu.ImageKey = "help";
+            this.ButtonHelpMenu.Name = "ButtonHelpMenu";
+            this.ButtonHelpMenu.Text = "&Help";
             // 
-            // picSideBarBorder
+            // ImageSidebarBorder
             // 
-            this.picSideBarBorder.BackColor = System.Drawing.SystemColors.Window;
-            this.picSideBarBorder.Dock = System.Windows.Forms.DockStyle.Left;
-            this.picSideBarBorder.Location = new System.Drawing.Point(187, 65);
-            this.picSideBarBorder.Margin = new System.Windows.Forms.Padding(0);
-            this.picSideBarBorder.Name = "picSideBarBorder";
-            this.picSideBarBorder.Size = new System.Drawing.Size(10, 385);
-            this.picSideBarBorder.TabIndex = 22;
-            this.picSideBarBorder.TabStop = false;
-            this.picSideBarBorder.Paint += new System.Windows.Forms.PaintEventHandler(this.picSideBarBorder_Paint);
+            this.ImageSidebarBorder.BackColor = System.Drawing.SystemColors.Window;
+            this.ImageSidebarBorder.Dock = System.Windows.Forms.DockStyle.Left;
+            this.ImageSidebarBorder.Location = new System.Drawing.Point(187, 65);
+            this.ImageSidebarBorder.Margin = new System.Windows.Forms.Padding(0);
+            this.ImageSidebarBorder.Name = "ImageSidebarBorder";
+            this.ImageSidebarBorder.Size = new System.Drawing.Size(10, 385);
+            this.ImageSidebarBorder.TabIndex = 22;
+            this.ImageSidebarBorder.TabStop = false;
+            this.ImageSidebarBorder.Paint += new System.Windows.Forms.PaintEventHandler(this.ImageSidebarBorder_Paint);
             // 
-            // mnuListHdrs
+            // MenuListHdrs
             // 
-            this.mnuListHdrs.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.mnuListHdrsColumns,
-            this.mnuListHdrsSep,
-            this.mnuListHdrsReset});
+            this.MenuListHdrs.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
+            this.MenuListHdrsColumns,
+            MenuListHdrsSep,
+            this.MenuListHdrsReset});
             // 
-            // mnuListHdrsColumns
+            // MenuListHdrsColumns
             // 
-            this.mnuListHdrsColumns.Index = 0;
-            this.mnuListHdrsColumns.Text = "Choose Columns...";
-            this.mnuListHdrsColumns.Click += new System.EventHandler(this.mnuListHdrsColumns_Click);
+            this.MenuListHdrsColumns.Index = 0;
+            this.MenuListHdrsColumns.Text = "Choose Columns...";
+            this.MenuListHdrsColumns.Click += new System.EventHandler(this.MenuListHdrsColumns_Click);
             // 
-            // mnuListHdrsSep
+            // MenuListHdrsSep
             // 
-            this.mnuListHdrsSep.Index = 1;
-            this.mnuListHdrsSep.Text = "-";
+            MenuListHdrsSep.Index = 1;
+            MenuListHdrsSep.Text = "-";
             // 
-            // mnuListHdrsReset
+            // MenuListHdrsReset
             // 
-            this.mnuListHdrsReset.Index = 2;
-            this.mnuListHdrsReset.Text = "Reset";
-            this.mnuListHdrsReset.Click += new System.EventHandler(this.mnuListHdrsReset_Click);
+            this.MenuListHdrsReset.Index = 2;
+            this.MenuListHdrsReset.Text = "Reset";
+            this.MenuListHdrsReset.Click += new System.EventHandler(this.MenuListHdrsReset_Click);
             // 
-            // lstDownloads
+            // ListDownloads
             // 
-            this.lstDownloads.AllowColumnReorder = true;
-            this.lstDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstDownloads.FullRowSelect = true;
-            this.lstDownloads.HideSelection = false;
-            this.lstDownloads.Location = new System.Drawing.Point(197, 396);
-            this.lstDownloads.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
-            this.lstDownloads.MultiSelect = false;
-            this.lstDownloads.Name = "lstDownloads";
-            this.lstDownloads.Size = new System.Drawing.Size(560, 54);
-            this.lstDownloads.TabIndex = 5;
-            this.lstDownloads.UseCompatibleStateImageBehavior = false;
-            this.lstDownloads.View = System.Windows.Forms.View.Details;
-            this.lstDownloads.ColumnRightClick += new System.Windows.Forms.ColumnClickEventHandler(this.lstDownloads_ColumnRightClick);
-            this.lstDownloads.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.lstDownloads_ColumnClick);
-            this.lstDownloads.ColumnReordered += new System.Windows.Forms.ColumnReorderedEventHandler(this.lstDownloads_ColumnReordered);
-            this.lstDownloads.ColumnWidthChanged += new System.Windows.Forms.ColumnWidthChangedEventHandler(this.lstDownloads_ColumnWidthChanged);
-            this.lstDownloads.ItemActivate += new System.EventHandler(this.lstDownloads_ItemActivate);
-            this.lstDownloads.SelectedIndexChanged += new System.EventHandler(this.lstDownloads_SelectedIndexChanged);
+            this.ListDownloads.AllowColumnReorder = true;
+            this.ListDownloads.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ListDownloads.FullRowSelect = true;
+            this.ListDownloads.HideSelection = false;
+            this.ListDownloads.Location = new System.Drawing.Point(197, 396);
+            this.ListDownloads.Margin = new System.Windows.Forms.Padding(0, 3, 3, 0);
+            this.ListDownloads.MultiSelect = false;
+            this.ListDownloads.Name = "ListDownloads";
+            this.ListDownloads.Size = new System.Drawing.Size(560, 54);
+            this.ListDownloads.TabIndex = 5;
+            this.ListDownloads.UseCompatibleStateImageBehavior = false;
+            this.ListDownloads.View = System.Windows.Forms.View.Details;
+            this.ListDownloads.ColumnRightClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListDownloads_ColumnRightClick);
+            this.ListDownloads.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListDownloads_ColumnClick);
+            this.ListDownloads.ColumnReordered += new System.Windows.Forms.ColumnReorderedEventHandler(this.ListDownloads_ColumnReordered);
+            this.ListDownloads.ColumnWidthChanged += new System.Windows.Forms.ColumnWidthChangedEventHandler(this.ListDownloads_ColumnWidthChanged);
+            this.ListDownloads.ItemActivate += new System.EventHandler(this.ListDownloads_ItemActivate);
+            this.ListDownloads.SelectedIndexChanged += new System.EventHandler(this.ListDownloads_SelectedIndexChanged);
             // 
-            // lstSubscribed
+            // ListSubscribed
             // 
-            this.lstSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstSubscribed.FullRowSelect = true;
-            this.lstSubscribed.HideSelection = false;
-            this.lstSubscribed.Location = new System.Drawing.Point(197, 301);
-            this.lstSubscribed.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
-            this.lstSubscribed.MultiSelect = false;
-            this.lstSubscribed.Name = "lstSubscribed";
-            this.lstSubscribed.Size = new System.Drawing.Size(560, 49);
-            this.lstSubscribed.TabIndex = 4;
-            this.lstSubscribed.UseCompatibleStateImageBehavior = false;
-            this.lstSubscribed.View = System.Windows.Forms.View.Details;
-            this.lstSubscribed.SelectedIndexChanged += new System.EventHandler(this.lstSubscribed_SelectedIndexChanged);
+            this.ListSubscribed.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ListSubscribed.FullRowSelect = true;
+            this.ListSubscribed.HideSelection = false;
+            this.ListSubscribed.Location = new System.Drawing.Point(197, 301);
+            this.ListSubscribed.Margin = new System.Windows.Forms.Padding(0, 3, 3, 3);
+            this.ListSubscribed.MultiSelect = false;
+            this.ListSubscribed.Name = "ListSubscribed";
+            this.ListSubscribed.Size = new System.Drawing.Size(560, 49);
+            this.ListSubscribed.TabIndex = 4;
+            this.ListSubscribed.UseCompatibleStateImageBehavior = false;
+            this.ListSubscribed.View = System.Windows.Forms.View.Details;
+            this.ListSubscribed.SelectedIndexChanged += new System.EventHandler(this.ListSubscribed_SelectedIndexChanged);
             // 
-            // lstEpisodes
+            // ListEpisodes
             // 
-            this.lstEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstEpisodes.CheckBoxes = true;
-            this.lstEpisodes.FullRowSelect = true;
-            this.lstEpisodes.HideSelection = false;
-            this.lstEpisodes.Location = new System.Drawing.Point(197, 171);
-            this.lstEpisodes.Margin = new System.Windows.Forms.Padding(0, 0, 3, 3);
-            this.lstEpisodes.MultiSelect = false;
-            this.lstEpisodes.Name = "lstEpisodes";
-            this.lstEpisodes.Size = new System.Drawing.Size(560, 50);
-            this.lstEpisodes.TabIndex = 2;
-            this.lstEpisodes.UseCompatibleStateImageBehavior = false;
-            this.lstEpisodes.View = System.Windows.Forms.View.Details;
-            this.lstEpisodes.SelectedIndexChanged += new System.EventHandler(this.lstEpisodes_SelectedIndexChanged);
+            this.ListEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ListEpisodes.CheckBoxes = true;
+            this.ListEpisodes.FullRowSelect = true;
+            this.ListEpisodes.HideSelection = false;
+            this.ListEpisodes.Location = new System.Drawing.Point(197, 171);
+            this.ListEpisodes.Margin = new System.Windows.Forms.Padding(0, 0, 3, 3);
+            this.ListEpisodes.MultiSelect = false;
+            this.ListEpisodes.Name = "ListEpisodes";
+            this.ListEpisodes.Size = new System.Drawing.Size(560, 50);
+            this.ListEpisodes.TabIndex = 2;
+            this.ListEpisodes.UseCompatibleStateImageBehavior = false;
+            this.ListEpisodes.View = System.Windows.Forms.View.Details;
+            this.ListEpisodes.SelectedIndexChanged += new System.EventHandler(this.ListEpisodes_SelectedIndexChanged);
             // 
-            // lstProviders
+            // ListProviders
             // 
-            this.lstProviders.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstProviders.HideSelection = false;
-            this.lstProviders.Location = new System.Drawing.Point(197, 63);
-            this.lstProviders.Margin = new System.Windows.Forms.Padding(0, 0, 3, 3);
-            this.lstProviders.MultiSelect = false;
-            this.lstProviders.Name = "lstProviders";
-            this.lstProviders.Size = new System.Drawing.Size(560, 49);
-            this.lstProviders.TabIndex = 0;
-            this.lstProviders.UseCompatibleStateImageBehavior = false;
-            this.lstProviders.ItemActivate += new System.EventHandler(this.lstProviders_ItemActivate);
-            this.lstProviders.SelectedIndexChanged += new System.EventHandler(this.lstProviders_SelectedIndexChanged);
+            this.ListProviders.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ListProviders.HideSelection = false;
+            this.ListProviders.Location = new System.Drawing.Point(197, 63);
+            this.ListProviders.Margin = new System.Windows.Forms.Padding(0, 0, 3, 3);
+            this.ListProviders.MultiSelect = false;
+            this.ListProviders.Name = "ListProviders";
+            this.ListProviders.Size = new System.Drawing.Size(560, 49);
+            this.ListProviders.TabIndex = 0;
+            this.ListProviders.UseCompatibleStateImageBehavior = false;
+            this.ListProviders.ItemActivate += new System.EventHandler(this.ListProviders_ItemActivate);
+            this.ListProviders.SelectedIndexChanged += new System.EventHandler(this.ListProviders_SelectedIndexChanged);
             // 
-            // lstFavourites
+            // ListFavourites
             // 
-            this.lstFavourites.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstFavourites.FullRowSelect = true;
-            this.lstFavourites.HideSelection = false;
-            this.lstFavourites.Location = new System.Drawing.Point(197, 236);
-            this.lstFavourites.Margin = new System.Windows.Forms.Padding(0, 0, 3, 3);
-            this.lstFavourites.MultiSelect = false;
-            this.lstFavourites.Name = "lstFavourites";
-            this.lstFavourites.Size = new System.Drawing.Size(560, 50);
-            this.lstFavourites.TabIndex = 3;
-            this.lstFavourites.UseCompatibleStateImageBehavior = false;
-            this.lstFavourites.View = System.Windows.Forms.View.Details;
-            this.lstFavourites.SelectedIndexChanged += new System.EventHandler(this.lstFavourites_SelectedIndexChanged);
+            this.ListFavourites.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ListFavourites.FullRowSelect = true;
+            this.ListFavourites.HideSelection = false;
+            this.ListFavourites.Location = new System.Drawing.Point(197, 236);
+            this.ListFavourites.Margin = new System.Windows.Forms.Padding(0, 0, 3, 3);
+            this.ListFavourites.MultiSelect = false;
+            this.ListFavourites.Name = "ListFavourites";
+            this.ListFavourites.Size = new System.Drawing.Size(560, 50);
+            this.ListFavourites.TabIndex = 3;
+            this.ListFavourites.UseCompatibleStateImageBehavior = false;
+            this.ListFavourites.View = System.Windows.Forms.View.Details;
+            this.ListFavourites.SelectedIndexChanged += new System.EventHandler(this.ListFavourites_SelectedIndexChanged);
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(757, 450);
-            this.Controls.Add(this.lstFavourites);
-            this.Controls.Add(this.lstDownloads);
-            this.Controls.Add(this.lstSubscribed);
-            this.Controls.Add(this.lstEpisodes);
-            this.Controls.Add(this.pnlPluginSpace);
-            this.Controls.Add(this.lstProviders);
-            this.Controls.Add(this.picSideBarBorder);
-            this.Controls.Add(this.prgDldProg);
-            this.Controls.Add(this.tblInfo);
-            this.Controls.Add(this.tblToolbars);
-            this.Controls.Add(this.tbrView);
+            this.Controls.Add(this.ListFavourites);
+            this.Controls.Add(this.ListDownloads);
+            this.Controls.Add(this.ListSubscribed);
+            this.Controls.Add(this.ListEpisodes);
+            this.Controls.Add(this.PanelPluginSpace);
+            this.Controls.Add(this.ListProviders);
+            this.Controls.Add(this.ImageSidebarBorder);
+            this.Controls.Add(this.ProgressDownload);
+            this.Controls.Add(TableSidebar);
+            this.Controls.Add(this.TableToolbars);
+            this.Controls.Add(this.ToolbarView);
             this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = global::RadioDld.Properties.Resources.icon_main;
             this.KeyPreview = true;
@@ -712,80 +717,75 @@ namespace RadioDld
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_KeyDown);
             this.Move += new System.EventHandler(this.Main_Move_Resize);
             this.Resize += new System.EventHandler(this.Main_Move_Resize);
-            this.tbrView.ResumeLayout(false);
-            this.tbrView.PerformLayout();
-            this.tblInfo.ResumeLayout(false);
-            this.tblInfo.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picSidebarImg)).EndInit();
-            this.tblToolbars.ResumeLayout(false);
-            this.tblToolbars.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.picSideBarBorder)).EndInit();
+            TableSidebar.ResumeLayout(false);
+            TableSidebar.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ImageSidebar)).EndInit();
+            this.ToolbarView.ResumeLayout(false);
+            this.ToolbarView.PerformLayout();
+            this.TableToolbars.ResumeLayout(false);
+            this.TableToolbars.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ImageSidebarBorder)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
-        internal ExtToolStrip tbrView;
-        internal System.Windows.Forms.ToolStripButton tbtFindNew;
-        internal System.Windows.Forms.ToolStripButton tbtSubscriptions;
-        internal System.Windows.Forms.ToolStripButton tbtDownloads;
-        internal System.Windows.Forms.ToolBarButton tbtCleanUp;
-        internal System.Windows.Forms.NotifyIcon nicTrayIcon;
-        internal System.Windows.Forms.ContextMenu mnuTray;
-        internal System.Windows.Forms.MenuItem mnuTrayShow;
-        internal System.Windows.Forms.MenuItem mnuTraySep;
-        internal System.Windows.Forms.MenuItem mnuTrayExit;
-        internal ToolStripSearchBox ttxSearch;
-        internal RadioDld.ExtListView lstProviders;
-        internal System.Windows.Forms.ImageList imlListIcons;
-        internal System.Windows.Forms.ImageList imlProviders;
-        internal RadioDld.ExtListView lstSubscribed;
-        internal System.Windows.Forms.ProgressBar prgDldProg;
-        internal RadioDld.ExtListView lstDownloads;
-        internal System.Windows.Forms.Timer tmrCheckForUpdates;
-        internal ExtToolBar tbrToolbar;
-        internal System.Windows.Forms.TableLayoutPanel tblInfo;
-        internal System.Windows.Forms.PictureBox picSidebarImg;
-        internal System.Windows.Forms.ToolBarButton tbtPlay;
-        internal System.Windows.Forms.ToolBarButton tbtCancel;
-        internal System.Windows.Forms.ToolBarButton tbtSubscribe;
-        internal System.Windows.Forms.ToolBarButton tbtUnsubscribe;
-        internal System.Windows.Forms.ToolBarButton tbtDownload;
-        internal System.Windows.Forms.ToolBarButton tbtDelete;
-        internal System.Windows.Forms.ToolBarButton tbtRetry;
-        internal RadioDld.ExtListView lstEpisodes;
-        internal System.Windows.Forms.MenuItem mnuOptionsShowOpts;
-        internal System.Windows.Forms.MenuItem mnuOptionsSep;
-        internal System.Windows.Forms.MenuItem mnuOptionsExit;
-        internal System.Windows.Forms.MenuItem mnuHelpShowHelp;
-        internal System.Windows.Forms.MenuItem mnuHelpAbout;
-        internal System.Windows.Forms.MenuItem mnuHelpReportBug;
-        internal System.Windows.Forms.MenuItem mnuHelpSep;
-        internal System.Windows.Forms.ToolBarButton tbtReportError;
-        internal System.Windows.Forms.Panel pnlPluginSpace;
-        internal System.Windows.Forms.ToolStripButton tbtFavourites;
-        internal System.Windows.Forms.ToolStripButton tbtBack;
-        internal System.Windows.Forms.ToolStripButton tbtForward;
-        internal System.Windows.Forms.ToolBarButton tbtCurrentEps;
-        internal System.Windows.Forms.ImageList imlToolbar;
-        internal System.Windows.Forms.ContextMenu mnuOptions;
-        internal System.Windows.Forms.ContextMenu mnuHelp;
-        internal System.Windows.Forms.ToolBarButton tbtOptionsMenu;
-        internal System.Windows.Forms.ToolBarButton tbtHelpMenu;
-        internal System.Windows.Forms.TableLayoutPanel tblToolbars;
-        internal ExtToolBar tbrHelp;
-        internal System.Windows.Forms.Label lblSideMainTitle;
-        internal System.Windows.Forms.RichTextBox txtSideDescript;
-        internal System.Windows.Forms.PictureBox picSideBarBorder;
-        internal System.Windows.Forms.MenuItem mnuOptionsProviderOpts;
-        internal System.Windows.Forms.ToolBarButton tbtChooseProgramme;
-        internal System.Windows.Forms.MenuItem mnuOptionsProviderOptsNoProvs;
-        internal System.Windows.Forms.ContextMenu mnuListHdrs;
-        internal System.Windows.Forms.MenuItem mnuListHdrsColumns;
-        internal System.Windows.Forms.MenuItem mnuListHdrsReset;
-        internal System.Windows.Forms.MenuItem mnuListHdrsSep;
-        internal RadioDld.ExtListView lstFavourites;
-        internal System.Windows.Forms.ToolBarButton tbtAddFavourite;
-        internal System.Windows.Forms.ToolBarButton tbtRemFavourite;
+        private System.Windows.Forms.ContextMenu MenuHelp;
+        private System.Windows.Forms.ToolStripButton ButtonFindNew;
+        private System.Windows.Forms.ToolStripButton ButtonSubscriptions;
+        private System.Windows.Forms.ToolStripButton ButtonDownloads;
+        private ToolStripSearchBox TextSearch;
+        private ExtListView ListProviders;
+        private ExtListView ListSubscribed;
+        private System.Windows.Forms.ProgressBar ProgressDownload;
+        private ExtListView ListDownloads;
+        private ExtToolBar ToolbarMain;
+        private System.Windows.Forms.PictureBox ImageSidebar;
+        private ExtListView ListEpisodes;
+        private System.Windows.Forms.Panel PanelPluginSpace;
+        private System.Windows.Forms.ToolStripButton ButtonFavourites;
+        private System.Windows.Forms.ToolStripButton ButtonBack;
+        private System.Windows.Forms.ToolStripButton ButtonForward;
+        private ExtToolBar ToolbarHelp;
+        private System.Windows.Forms.Label LabelSidebarTitle;
+        private System.Windows.Forms.RichTextBox TextSidebarDescript;
+        private ExtListView ListFavourites;
+        private System.Windows.Forms.PictureBox ImageSidebarBorder;
+        private System.Windows.Forms.ToolBarButton ButtonAddFavourite;
+        private System.Windows.Forms.ToolBarButton ButtonRemFavourite;
+        private System.Windows.Forms.ToolBarButton ButtonSubscribe;
+        private System.Windows.Forms.ToolBarButton ButtonUnsubscribe;
+        private System.Windows.Forms.ToolBarButton ButtonCurrentEps;
+        private System.Windows.Forms.ToolBarButton ButtonCleanUp;
+        private System.Windows.Forms.ToolBarButton ButtonCancel;
+        private System.Windows.Forms.ToolBarButton ButtonPlay;
+        private System.Windows.Forms.ToolBarButton ButtonDelete;
+        private System.Windows.Forms.ToolBarButton ButtonRetry;
+        private System.Windows.Forms.ToolBarButton ButtonReportError;
+        private System.Windows.Forms.ToolBarButton ButtonHelpMenu;
+        private ExtToolStrip ToolbarView;
+        private System.Windows.Forms.NotifyIcon NotifyIcon;
+        private System.Windows.Forms.ContextMenu MenuTray;
+        private System.Windows.Forms.MenuItem MenuTrayShow;
+        private System.Windows.Forms.MenuItem MenuTrayExit;
+        private System.Windows.Forms.ImageList ImagesListIcons;
+        private System.Windows.Forms.ImageList ImagesProviders;
+        private System.Windows.Forms.Timer TimerCheckForUpdates;
+        private System.Windows.Forms.MenuItem MenuOptionsShowOpts;
+        private System.Windows.Forms.MenuItem MenuOptionsExit;
+        private System.Windows.Forms.MenuItem MenuHelpShowHelp;
+        private System.Windows.Forms.MenuItem MenuHelpAbout;
+        private System.Windows.Forms.MenuItem MenuHelpReportBug;
+        private System.Windows.Forms.ImageList ImagesToolbar;
+        private System.Windows.Forms.ContextMenu MenuOptions;
+        private System.Windows.Forms.MenuItem MenuOptionsProviderOpts;
+        private System.Windows.Forms.MenuItem MenuOptionsProviderOptsNoProvs;
+        private System.Windows.Forms.ContextMenu MenuListHdrs;
+        private System.Windows.Forms.MenuItem MenuListHdrsColumns;
+        private System.Windows.Forms.MenuItem MenuListHdrsReset;
+        private System.Windows.Forms.TableLayoutPanel TableToolbars;
+        private System.Windows.Forms.ToolBarButton ButtonOptionsMenu;
+        private System.Windows.Forms.ToolBarButton ButtonChooseProgramme;
+        private System.Windows.Forms.ToolBarButton ButtonDownload;
 
         #endregion
     }

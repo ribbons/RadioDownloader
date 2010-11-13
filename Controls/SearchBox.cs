@@ -50,12 +50,12 @@ namespace RadioDld
             this.textBox.BorderStyle = BorderStyle.None;
             this.Controls.Add(this.textBox);
 
-            this.textBox.MouseEnter += this.textBox_MouseEnter;
-            this.textBox.MouseLeave += this.textBox_MouseLeave;
-            this.textBox.GotFocus += this.textBox_GotFocus;
-            this.textBox.LostFocus += this.textBox_LostFocus;
-            this.textBox.TextChanged += this.textBox_TextChanged;
-            this.textBox.KeyDown += this.textBox_KeyDown;
+            this.textBox.MouseEnter += this.TextBox_MouseEnter;
+            this.textBox.MouseLeave += this.TextBox_MouseLeave;
+            this.textBox.GotFocus += this.TextBox_GotFocus;
+            this.textBox.LostFocus += this.TextBox_LostFocus;
+            this.textBox.TextChanged += this.TextBox_TextChanged;
+            this.textBox.KeyDown += this.TextBox_KeyDown;
 
             // Create a picturebox to display the search icon and cancel 'button'
             this.button = new PictureBox();
@@ -64,11 +64,11 @@ namespace RadioDld
             this.button.SizeMode = PictureBoxSizeMode.AutoSize;
             this.Controls.Add(this.button);
 
-            this.button.MouseEnter += this.button_MouseEnter;
-            this.button.MouseLeave += this.button_MouseLeave;
-            this.button.MouseDown += this.button_MouseDown;
-            this.button.MouseUp += this.button_MouseUp;
-            this.button.MouseClick += this.button_MouseClick;
+            this.button.MouseEnter += this.Button_MouseEnter;
+            this.button.MouseLeave += this.Button_MouseLeave;
+            this.button.MouseDown += this.Button_MouseDown;
+            this.button.MouseUp += this.Button_MouseUp;
+            this.button.MouseClick += this.Button_MouseClick;
 
             // Work out the height that the search box should be displayed
             if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
@@ -175,7 +175,7 @@ namespace RadioDld
             }
         }
 
-        private void textBox_MouseEnter(object sender, System.EventArgs e)
+        private void TextBox_MouseEnter(object sender, System.EventArgs e)
         {
             if (this.boxState == NativeMethods.SBB_NORMAL)
             {
@@ -190,7 +190,7 @@ namespace RadioDld
             }
         }
 
-        private void textBox_MouseLeave(object sender, System.EventArgs e)
+        private void TextBox_MouseLeave(object sender, System.EventArgs e)
         {
             if (this.boxState == NativeMethods.SBB_HOT)
             {
@@ -205,19 +205,19 @@ namespace RadioDld
             }
         }
 
-        private void textBox_GotFocus(object sender, System.EventArgs e)
+        private void TextBox_GotFocus(object sender, System.EventArgs e)
         {
             this.boxState = NativeMethods.SBB_FOCUSED;
             this.Invalidate(); // Repaint the control
         }
 
-        private void textBox_LostFocus(object sender, System.EventArgs e)
+        private void TextBox_LostFocus(object sender, System.EventArgs e)
         {
             this.boxState = NativeMethods.SBB_NORMAL;
             this.Invalidate(); // Repaint the control
         }
 
-        private void button_MouseEnter(object sender, System.EventArgs e)
+        private void Button_MouseEnter(object sender, System.EventArgs e)
         {
             this.buttonHover = true;
 
@@ -226,10 +226,10 @@ namespace RadioDld
                 this.button.Image = Properties.Resources.search_close_hover;
             }
 
-            this.textBox_MouseEnter(sender, e);
+            this.TextBox_MouseEnter(sender, e);
         }
 
-        private void button_MouseLeave(object sender, System.EventArgs e)
+        private void Button_MouseLeave(object sender, System.EventArgs e)
         {
             this.buttonHover = false;
 
@@ -238,10 +238,10 @@ namespace RadioDld
                 this.button.Image = Properties.Resources.search_close;
             }
 
-            this.textBox_MouseLeave(sender, e);
+            this.TextBox_MouseLeave(sender, e);
         }
 
-        private void button_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void Button_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.Text))
             {
@@ -249,7 +249,7 @@ namespace RadioDld
             }
         }
 
-        private void button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.Text))
             {
@@ -257,7 +257,7 @@ namespace RadioDld
             }
         }
 
-        private void button_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void Button_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.textBox.Text))
             {
@@ -300,7 +300,7 @@ namespace RadioDld
             }
         }
 
-        private void textBox_TextChanged(object sender, System.EventArgs e)
+        private void TextBox_TextChanged(object sender, System.EventArgs e)
         {
             // Hook up changes to the child textbox through this control
             this.Text = this.textBox.Text;
@@ -323,7 +323,7 @@ namespace RadioDld
             }
         }
 
-        private void textBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void TextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
             {

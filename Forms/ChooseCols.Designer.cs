@@ -29,144 +29,147 @@ namespace RadioDld
         /// </summary>
         private void InitializeComponent()
         {
-            this.HideButton = new System.Windows.Forms.Button();
-            this.ShowButton = new System.Windows.Forms.Button();
-            this.MoveDown = new System.Windows.Forms.Button();
-            this.MoveUp = new System.Windows.Forms.Button();
-            this.Okay = new System.Windows.Forms.Button();
-            this.Cancel = new System.Windows.Forms.Button();
-            this.ColumnsList = new System.Windows.Forms.ListView();
-            this.InfoLabel = new System.Windows.Forms.Label();
-            this.ColumnsLabel = new System.Windows.Forms.Label();
+            System.Windows.Forms.Button ButtonCancel;
+            System.Windows.Forms.Label LabelInfo;
+            System.Windows.Forms.Label LabelColumns;
+            this.ButtonHide = new System.Windows.Forms.Button();
+            this.ButtonShow = new System.Windows.Forms.Button();
+            this.ButtonMoveDown = new System.Windows.Forms.Button();
+            this.ButtonMoveUp = new System.Windows.Forms.Button();
+            this.ButtonOk = new System.Windows.Forms.Button();
+            this.ListColumns = new System.Windows.Forms.ListView();
+            ButtonCancel = new System.Windows.Forms.Button();
+            LabelInfo = new System.Windows.Forms.Label();
+            LabelColumns = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // HideButton
+            // ButtonHide
             // 
-            this.HideButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.HideButton.Enabled = false;
-            this.HideButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.HideButton.Location = new System.Drawing.Point(251, 157);
-            this.HideButton.Name = "HideButton";
-            this.HideButton.Size = new System.Drawing.Size(77, 25);
-            this.HideButton.TabIndex = 8;
-            this.HideButton.Text = "&Hide";
-            this.HideButton.UseVisualStyleBackColor = true;
-            this.HideButton.Click += new System.EventHandler(this.HideButton_Click);
+            this.ButtonHide.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonHide.Enabled = false;
+            this.ButtonHide.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.ButtonHide.Location = new System.Drawing.Point(251, 157);
+            this.ButtonHide.Name = "ButtonHide";
+            this.ButtonHide.Size = new System.Drawing.Size(77, 25);
+            this.ButtonHide.TabIndex = 8;
+            this.ButtonHide.Text = "&Hide";
+            this.ButtonHide.UseVisualStyleBackColor = true;
+            this.ButtonHide.Click += new System.EventHandler(this.ButtonHide_Click);
             // 
-            // ShowButton
+            // ButtonShow
             // 
-            this.ShowButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ShowButton.Enabled = false;
-            this.ShowButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ShowButton.Location = new System.Drawing.Point(251, 126);
-            this.ShowButton.Name = "ShowButton";
-            this.ShowButton.Size = new System.Drawing.Size(77, 25);
-            this.ShowButton.TabIndex = 7;
-            this.ShowButton.Text = "&Show";
-            this.ShowButton.UseVisualStyleBackColor = true;
-            this.ShowButton.Click += new System.EventHandler(this.ShowButton_Click);
+            this.ButtonShow.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonShow.Enabled = false;
+            this.ButtonShow.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.ButtonShow.Location = new System.Drawing.Point(251, 126);
+            this.ButtonShow.Name = "ButtonShow";
+            this.ButtonShow.Size = new System.Drawing.Size(77, 25);
+            this.ButtonShow.TabIndex = 7;
+            this.ButtonShow.Text = "&Show";
+            this.ButtonShow.UseVisualStyleBackColor = true;
+            this.ButtonShow.Click += new System.EventHandler(this.ButtonShow_Click);
             // 
-            // MoveDown
+            // ButtonMoveDown
             // 
-            this.MoveDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.MoveDown.Enabled = false;
-            this.MoveDown.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.MoveDown.Location = new System.Drawing.Point(251, 95);
-            this.MoveDown.Name = "MoveDown";
-            this.MoveDown.Size = new System.Drawing.Size(77, 25);
-            this.MoveDown.TabIndex = 6;
-            this.MoveDown.Text = "Move &Down";
-            this.MoveDown.UseVisualStyleBackColor = true;
-            this.MoveDown.Click += new System.EventHandler(this.MoveDown_Click);
+            this.ButtonMoveDown.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonMoveDown.Enabled = false;
+            this.ButtonMoveDown.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.ButtonMoveDown.Location = new System.Drawing.Point(251, 95);
+            this.ButtonMoveDown.Name = "ButtonMoveDown";
+            this.ButtonMoveDown.Size = new System.Drawing.Size(77, 25);
+            this.ButtonMoveDown.TabIndex = 6;
+            this.ButtonMoveDown.Text = "Move &Down";
+            this.ButtonMoveDown.UseVisualStyleBackColor = true;
+            this.ButtonMoveDown.Click += new System.EventHandler(this.ButtonMoveDown_Click);
             // 
-            // MoveUp
+            // ButtonMoveUp
             // 
-            this.MoveUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.MoveUp.Enabled = false;
-            this.MoveUp.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.MoveUp.Location = new System.Drawing.Point(251, 64);
-            this.MoveUp.Name = "MoveUp";
-            this.MoveUp.Size = new System.Drawing.Size(77, 25);
-            this.MoveUp.TabIndex = 5;
-            this.MoveUp.Text = "Move &Up";
-            this.MoveUp.UseVisualStyleBackColor = true;
-            this.MoveUp.Click += new System.EventHandler(this.MoveUp_Click);
+            this.ButtonMoveUp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonMoveUp.Enabled = false;
+            this.ButtonMoveUp.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.ButtonMoveUp.Location = new System.Drawing.Point(251, 64);
+            this.ButtonMoveUp.Name = "ButtonMoveUp";
+            this.ButtonMoveUp.Size = new System.Drawing.Size(77, 25);
+            this.ButtonMoveUp.TabIndex = 5;
+            this.ButtonMoveUp.Text = "Move &Up";
+            this.ButtonMoveUp.UseVisualStyleBackColor = true;
+            this.ButtonMoveUp.Click += new System.EventHandler(this.ButtonMoveUp_Click);
             // 
-            // Okay
+            // ButtonOk
             // 
-            this.Okay.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Okay.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.Okay.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.Okay.Location = new System.Drawing.Point(168, 286);
-            this.Okay.Name = "Okay";
-            this.Okay.Size = new System.Drawing.Size(77, 25);
-            this.Okay.TabIndex = 0;
-            this.Okay.Text = "OK";
-            this.Okay.UseVisualStyleBackColor = true;
-            this.Okay.Click += new System.EventHandler(this.Okay_Click);
+            this.ButtonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.ButtonOk.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.ButtonOk.Location = new System.Drawing.Point(168, 286);
+            this.ButtonOk.Name = "ButtonOk";
+            this.ButtonOk.Size = new System.Drawing.Size(77, 25);
+            this.ButtonOk.TabIndex = 0;
+            this.ButtonOk.Text = "OK";
+            this.ButtonOk.UseVisualStyleBackColor = true;
+            this.ButtonOk.Click += new System.EventHandler(this.ButtonOk_Click);
             // 
-            // Cancel
+            // ButtonCancel
             // 
-            this.Cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.Cancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.Cancel.Location = new System.Drawing.Point(251, 286);
-            this.Cancel.Name = "Cancel";
-            this.Cancel.Size = new System.Drawing.Size(77, 25);
-            this.Cancel.TabIndex = 1;
-            this.Cancel.Text = "Cancel";
-            this.Cancel.UseVisualStyleBackColor = true;
+            ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            ButtonCancel.Location = new System.Drawing.Point(251, 286);
+            ButtonCancel.Name = "ButtonCancel";
+            ButtonCancel.Size = new System.Drawing.Size(77, 25);
+            ButtonCancel.TabIndex = 1;
+            ButtonCancel.Text = "Cancel";
+            ButtonCancel.UseVisualStyleBackColor = true;
             // 
-            // ColumnsList
+            // ListColumns
             // 
-            this.ColumnsList.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.ListColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.ColumnsList.CheckBoxes = true;
-            this.ColumnsList.HideSelection = false;
-            this.ColumnsList.Location = new System.Drawing.Point(12, 64);
-            this.ColumnsList.Margin = new System.Windows.Forms.Padding(3, 3, 6, 3);
-            this.ColumnsList.Name = "ColumnsList";
-            this.ColumnsList.Size = new System.Drawing.Size(230, 199);
-            this.ColumnsList.TabIndex = 4;
-            this.ColumnsList.UseCompatibleStateImageBehavior = false;
-            this.ColumnsList.View = System.Windows.Forms.View.List;
-            this.ColumnsList.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.ColumnsList_ItemChecked);
-            this.ColumnsList.Click += new System.EventHandler(this.ColumnsList_SelectedIndexChanged);
+            this.ListColumns.CheckBoxes = true;
+            this.ListColumns.HideSelection = false;
+            this.ListColumns.Location = new System.Drawing.Point(12, 64);
+            this.ListColumns.Margin = new System.Windows.Forms.Padding(3, 3, 6, 3);
+            this.ListColumns.Name = "ListColumns";
+            this.ListColumns.Size = new System.Drawing.Size(230, 199);
+            this.ListColumns.TabIndex = 4;
+            this.ListColumns.UseCompatibleStateImageBehavior = false;
+            this.ListColumns.View = System.Windows.Forms.View.List;
+            this.ListColumns.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.ListColumns_ItemChecked);
+            this.ListColumns.Click += new System.EventHandler(this.ListColumns_SelectedIndexChanged);
             // 
-            // InfoLabel
+            // LabelInfo
             // 
-            this.InfoLabel.Location = new System.Drawing.Point(9, 11);
-            this.InfoLabel.Margin = new System.Windows.Forms.Padding(3, 2, 3, 0);
-            this.InfoLabel.Name = "InfoLabel";
-            this.InfoLabel.Size = new System.Drawing.Size(315, 35);
-            this.InfoLabel.TabIndex = 2;
-            this.InfoLabel.Text = "Select the columns you want to display for this list.";
+            LabelInfo.Location = new System.Drawing.Point(9, 11);
+            LabelInfo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 0);
+            LabelInfo.Name = "LabelInfo";
+            LabelInfo.Size = new System.Drawing.Size(315, 35);
+            LabelInfo.TabIndex = 2;
+            LabelInfo.Text = "Select the columns you want to display for this list.";
             // 
-            // ColumnsLabel
+            // LabelColumns
             // 
-            this.ColumnsLabel.AutoSize = true;
-            this.ColumnsLabel.Location = new System.Drawing.Point(9, 46);
-            this.ColumnsLabel.Margin = new System.Windows.Forms.Padding(3, 0, 3, 2);
-            this.ColumnsLabel.Name = "ColumnsLabel";
-            this.ColumnsLabel.Size = new System.Drawing.Size(50, 13);
-            this.ColumnsLabel.TabIndex = 3;
-            this.ColumnsLabel.Text = "&Columns:";
+            LabelColumns.AutoSize = true;
+            LabelColumns.Location = new System.Drawing.Point(9, 46);
+            LabelColumns.Margin = new System.Windows.Forms.Padding(3, 0, 3, 2);
+            LabelColumns.Name = "LabelColumns";
+            LabelColumns.Size = new System.Drawing.Size(50, 13);
+            LabelColumns.TabIndex = 3;
+            LabelColumns.Text = "&Columns:";
             // 
             // ChooseCols
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.CancelButton = this.Cancel;
+            this.CancelButton = ButtonCancel;
             this.ClientSize = new System.Drawing.Size(340, 321);
-            this.Controls.Add(this.ColumnsLabel);
-            this.Controls.Add(this.InfoLabel);
-            this.Controls.Add(this.ColumnsList);
-            this.Controls.Add(this.Cancel);
-            this.Controls.Add(this.Okay);
-            this.Controls.Add(this.MoveUp);
-            this.Controls.Add(this.MoveDown);
-            this.Controls.Add(this.ShowButton);
-            this.Controls.Add(this.HideButton);
+            this.Controls.Add(LabelColumns);
+            this.Controls.Add(LabelInfo);
+            this.Controls.Add(this.ListColumns);
+            this.Controls.Add(ButtonCancel);
+            this.Controls.Add(this.ButtonOk);
+            this.Controls.Add(this.ButtonMoveUp);
+            this.Controls.Add(this.ButtonMoveDown);
+            this.Controls.Add(this.ButtonShow);
+            this.Controls.Add(this.ButtonHide);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -179,15 +182,12 @@ namespace RadioDld
             this.PerformLayout();
 
         }
-        internal System.Windows.Forms.Button HideButton;
-        internal System.Windows.Forms.Button ShowButton;
-        internal System.Windows.Forms.Button MoveDown;
-        internal System.Windows.Forms.Button MoveUp;
-        internal System.Windows.Forms.Button Okay;
-        internal System.Windows.Forms.Button Cancel;
-        internal System.Windows.Forms.ListView ColumnsList;
-        internal System.Windows.Forms.Label InfoLabel;
-        internal System.Windows.Forms.Label ColumnsLabel;
+        private System.Windows.Forms.Button ButtonHide;
+        private System.Windows.Forms.Button ButtonShow;
+        private System.Windows.Forms.Button ButtonMoveDown;
+        private System.Windows.Forms.Button ButtonMoveUp;
+        private System.Windows.Forms.Button ButtonOk;
+        private System.Windows.Forms.ListView ListColumns;
 
         #endregion
     }

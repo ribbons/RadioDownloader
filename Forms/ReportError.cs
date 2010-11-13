@@ -55,7 +55,7 @@ namespace RadioDld
             }
         }
 
-        private void cmdSend_Click(object sender, System.EventArgs e)
+        private void ButtonSend_Click(object sender, System.EventArgs e)
         {
             try
             {
@@ -70,12 +70,12 @@ namespace RadioDld
             this.Close();
         }
 
-        private void lnkWhatData_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+        private void LinkWhatData_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
             Interaction.MsgBox(this.report.ToString());
         }
 
-        private void cmdDontSend_Click(object sender, System.EventArgs e)
+        private void ButtonDontSend_Click(object sender, System.EventArgs e)
         {
             this.Close();
         }

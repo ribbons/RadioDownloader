@@ -32,36 +32,36 @@ namespace RadioDld
             this.InitializeComponent();
         }
 
-        private void cmdChangeFolder_Click(object eventSender, System.EventArgs eventArgs)
+        private void ButtonChangeFolder_Click(object eventSender, System.EventArgs eventArgs)
         {
             FolderBrowserDialog browse = new FolderBrowserDialog();
-            browse.SelectedPath = this.txtSaveIn.Text;
+            browse.SelectedPath = this.TextSaveIn.Text;
             browse.Description = "Choose the folder to save downloaded programmes in:";
 
             if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                this.txtSaveIn.Text = browse.SelectedPath;
+                this.TextSaveIn.Text = browse.SelectedPath;
             }
         }
 
-        private void cmdOK_Click(object eventSender, System.EventArgs eventArgs)
+        private void ButtonOk_Click(object eventSender, System.EventArgs eventArgs)
         {
-            if (string.IsNullOrEmpty(this.txtFileNameFormat.Text))
+            if (string.IsNullOrEmpty(this.TextFileNameFormat.Text))
             {
                 Interaction.MsgBox("Please enter a value for the downloaded programme file name format.", MsgBoxStyle.Exclamation);
-                this.txtFileNameFormat.Focus();
+                this.TextFileNameFormat.Focus();
                 this.cancelClose = true;
                 return;
             }
 
-            Properties.Settings.Default.RunOnStartup = this.uxRunOnStartup.Checked;
-            Properties.Settings.Default.SaveFolder = this.txtSaveIn.Text;
-            Properties.Settings.Default.FileNameFormat = this.txtFileNameFormat.Text;
-            Properties.Settings.Default.RunAfterCommand = this.txtRunAfter.Text;
+            Properties.Settings.Default.RunOnStartup = this.CheckRunOnStartup.Checked;
+            Properties.Settings.Default.SaveFolder = this.TextSaveIn.Text;
+            Properties.Settings.Default.FileNameFormat = this.TextFileNameFormat.Text;
+            Properties.Settings.Default.RunAfterCommand = this.TextRunAfter.Text;
 
             if (OsUtils.WinSevenOrLater())
             {
-                Properties.Settings.Default.CloseToSystray = this.uxCloseToSystray.Checked;
+                Properties.Settings.Default.CloseToSystray = this.CheckCloseToSystray.Checked;
             }
 
             OsUtils.ApplyRunOnStartup();
@@ -82,37 +82,37 @@ namespace RadioDld
         {
             this.Font = SystemFonts.MessageBoxFont;
 
-            this.uxRunOnStartup.Checked = Properties.Settings.Default.RunOnStartup;
+            this.CheckRunOnStartup.Checked = Properties.Settings.Default.RunOnStartup;
 
             if (OsUtils.WinSevenOrLater())
             {
-                this.uxCloseToSystray.Checked = Properties.Settings.Default.CloseToSystray;
+                this.CheckCloseToSystray.Checked = Properties.Settings.Default.CloseToSystray;
             }
             else
             {
-                this.uxCloseToSystray.Checked = true;
-                this.uxCloseToSystray.Enabled = false;
+                this.CheckCloseToSystray.Checked = true;
+                this.CheckCloseToSystray.Enabled = false;
             }
 
             try
             {
-                this.txtSaveIn.Text = FileUtils.GetSaveFolder();
+                this.TextSaveIn.Text = FileUtils.GetSaveFolder();
             }
             catch (DirectoryNotFoundException)
             {
-                this.txtSaveIn.Text = Properties.Settings.Default.SaveFolder;
+                this.TextSaveIn.Text = Properties.Settings.Default.SaveFolder;
             }
 
-            this.txtFileNameFormat.Text = Properties.Settings.Default.FileNameFormat;
-            this.txtRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
+            this.TextFileNameFormat.Text = Properties.Settings.Default.FileNameFormat;
+            this.TextRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
         }
 
-        private void txtFileNameFormat_TextChanged(object sender, System.EventArgs e)
+        private void TextFileNameFormat_TextChanged(object sender, System.EventArgs e)
         {
-            this.lblFilenameFormatResult.Text = "Result: " + FileUtils.CreateSaveFileName(this.txtFileNameFormat.Text, "Programme Name", "Episode Name", DateAndTime.Now) + ".mp3";
+            this.LabelFilenameFormatResult.Text = "Result: " + FileUtils.CreateSaveFileName(this.TextFileNameFormat.Text, "Programme Name", "Episode Name", DateAndTime.Now) + ".mp3";
         }
 
-        private void cmdReset_Click(object sender, System.EventArgs e)
+        private void ButtonReset_Click(object sender, System.EventArgs e)
         {
             if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes)
             {

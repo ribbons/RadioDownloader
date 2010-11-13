@@ -85,7 +85,7 @@ namespace PodcastProvider
         public Panel GetFindNewPanel(object view)
         {
             FindNew findNewInst = new FindNew(this);
-            return findNewInst.pnlFindNew;
+            return findNewInst.PanelFindNew;
         }
 
         public GetProgrammeInfoReturn GetProgrammeInfo(string progExtId)
@@ -450,7 +450,7 @@ namespace PodcastProvider
             finalName += "." + extension;
 
             this.doDownload = new DownloadWrapper(downloadUrl, downloadFileName);
-            this.doDownload.DownloadProgress += this.doDownload_DownloadProgress;
+            this.doDownload.DownloadProgress += this.DoDownload_DownloadProgress;
             this.doDownload.Download();
 
             while ((!this.doDownload.Complete) & this.doDownload.Error == null)
@@ -629,7 +629,7 @@ namespace PodcastProvider
             return manager;
         }
 
-        private void doDownload_DownloadProgress(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        private void DoDownload_DownloadProgress(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
             int percent = e.ProgressPercentage;
 

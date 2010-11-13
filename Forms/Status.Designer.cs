@@ -29,27 +29,27 @@ namespace RadioDld
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.prgProgress = new System.Windows.Forms.ProgressBar();
+            this.LabelStatus = new System.Windows.Forms.Label();
+            this.Progress = new System.Windows.Forms.ProgressBar();
             this.SuspendLayout();
             // 
-            // lblStatus
+            // LabelStatus
             // 
-            this.lblStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.LabelStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblStatus.Location = new System.Drawing.Point(12, 9);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(414, 86);
-            this.lblStatus.TabIndex = 0;
-            this.lblStatus.Text = "Please wait";
-            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.LabelStatus.Location = new System.Drawing.Point(12, 9);
+            this.LabelStatus.Name = "LabelStatus";
+            this.LabelStatus.Size = new System.Drawing.Size(414, 86);
+            this.LabelStatus.TabIndex = 0;
+            this.LabelStatus.Text = "Please wait";
+            this.LabelStatus.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             // 
-            // prgProgress
+            // Progress
             // 
-            this.prgProgress.Location = new System.Drawing.Point(15, 110);
-            this.prgProgress.Name = "prgProgress";
-            this.prgProgress.Size = new System.Drawing.Size(411, 23);
-            this.prgProgress.TabIndex = 1;
+            this.Progress.Location = new System.Drawing.Point(15, 110);
+            this.Progress.Name = "Progress";
+            this.Progress.Size = new System.Drawing.Size(411, 23);
+            this.Progress.TabIndex = 1;
             // 
             // Status
             // 
@@ -57,8 +57,8 @@ namespace RadioDld
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.ClientSize = new System.Drawing.Size(438, 250);
             this.ControlBox = false;
-            this.Controls.Add(this.prgProgress);
-            this.Controls.Add(this.lblStatus);
+            this.Controls.Add(this.Progress);
+            this.Controls.Add(this.LabelStatus);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::RadioDld.Properties.Resources.icon_main;
             this.MaximizeBox = false;
@@ -72,8 +72,8 @@ namespace RadioDld
             this.ResumeLayout(false);
 
         }
-        private System.Windows.Forms.Label lblStatus;
-        private System.Windows.Forms.ProgressBar prgProgress;
+        private System.Windows.Forms.Label LabelStatus;
+        private System.Windows.Forms.ProgressBar Progress;
 
         #endregion
     }

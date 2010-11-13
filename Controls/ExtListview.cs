@@ -59,7 +59,7 @@ namespace RadioDld
             this.embeddedControls.Add(control);
 
             // Add a Click event handler to select the ListView row when an embedded control is clicked
-            progress.Click += this.embeddedControl_Click;
+            progress.Click += this.EmbeddedControl_Click;
 
             this.Controls.Add(progress);
         }
@@ -75,7 +75,7 @@ namespace RadioDld
             {
                 if (this.embeddedControls[process].Progress.Equals(progressBar))
                 {
-                    progressBar.Click -= this.embeddedControl_Click;
+                    progressBar.Click -= this.EmbeddedControl_Click;
                     this.Controls.Remove(progressBar);
                     this.embeddedControls.RemoveAt(process);
                     return;
@@ -105,7 +105,7 @@ namespace RadioDld
                 EmbeddedProgress control = this.embeddedControls[process];
 
                 control.Progress.Visible = false;
-                control.Progress.Click -= this.embeddedControl_Click;
+                control.Progress.Click -= this.EmbeddedControl_Click;
                 this.Controls.Remove(control.Progress);
             }
 
@@ -310,7 +310,7 @@ namespace RadioDld
             return subItemRect;
         }
 
-        private void embeddedControl_Click(object sender, EventArgs e)
+        private void EmbeddedControl_Click(object sender, EventArgs e)
         {
             // When a progress bar is clicked the ListViewItem holding it is selected
             foreach (EmbeddedProgress control in this.embeddedControls)

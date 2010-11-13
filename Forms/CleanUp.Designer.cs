@@ -29,86 +29,86 @@ namespace RadioDld
         /// </summary>
         private void InitializeComponent()
         {
-            this.cmdOK = new System.Windows.Forms.Button();
-            this.cmdCancel = new System.Windows.Forms.Button();
-            this.lblExplainOrphan = new System.Windows.Forms.Label();
-            this.radType = new System.Windows.Forms.RadioButton();
+            this.ButtonOk = new System.Windows.Forms.Button();
+            this.ButtonCancel = new System.Windows.Forms.Button();
+            this.LabelOrphan = new System.Windows.Forms.Label();
+            this.RadioOrphan = new System.Windows.Forms.RadioButton();
             this.SuspendLayout();
             // 
-            // cmdOK
+            // ButtonOk
             // 
-            this.cmdOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdOK.BackColor = System.Drawing.SystemColors.Control;
-            this.cmdOK.Cursor = System.Windows.Forms.Cursors.Default;
-            this.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.cmdOK.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cmdOK.Location = new System.Drawing.Point(187, 109);
-            this.cmdOK.Name = "cmdOK";
-            this.cmdOK.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.cmdOK.Size = new System.Drawing.Size(77, 25);
-            this.cmdOK.TabIndex = 0;
-            this.cmdOK.Text = "OK";
-            this.cmdOK.UseVisualStyleBackColor = false;
-            this.cmdOK.Click += new System.EventHandler(this.cmdOK_Click);
+            this.ButtonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonOk.BackColor = System.Drawing.SystemColors.Control;
+            this.ButtonOk.Cursor = System.Windows.Forms.Cursors.Default;
+            this.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
+            this.ButtonOk.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.ButtonOk.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.ButtonOk.Location = new System.Drawing.Point(187, 109);
+            this.ButtonOk.Name = "ButtonOk";
+            this.ButtonOk.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.ButtonOk.Size = new System.Drawing.Size(77, 25);
+            this.ButtonOk.TabIndex = 0;
+            this.ButtonOk.Text = "OK";
+            this.ButtonOk.UseVisualStyleBackColor = false;
+            this.ButtonOk.Click += new System.EventHandler(this.ButtonOk_Click);
             // 
-            // cmdCancel
+            // ButtonCancel
             // 
-            this.cmdCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdCancel.BackColor = System.Drawing.SystemColors.Control;
-            this.cmdCancel.Cursor = System.Windows.Forms.Cursors.Default;
-            this.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.cmdCancel.Location = new System.Drawing.Point(270, 109);
-            this.cmdCancel.Name = "cmdCancel";
-            this.cmdCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.cmdCancel.Size = new System.Drawing.Size(77, 25);
-            this.cmdCancel.TabIndex = 1;
-            this.cmdCancel.Text = "Cancel";
-            this.cmdCancel.UseVisualStyleBackColor = false;
-            this.cmdCancel.Click += new System.EventHandler(this.cmdCancel_Click);
+            this.ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonCancel.BackColor = System.Drawing.SystemColors.Control;
+            this.ButtonCancel.Cursor = System.Windows.Forms.Cursors.Default;
+            this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.ButtonCancel.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.ButtonCancel.Location = new System.Drawing.Point(270, 109);
+            this.ButtonCancel.Name = "ButtonCancel";
+            this.ButtonCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.ButtonCancel.Size = new System.Drawing.Size(77, 25);
+            this.ButtonCancel.TabIndex = 1;
+            this.ButtonCancel.Text = "Cancel";
+            this.ButtonCancel.UseVisualStyleBackColor = false;
+            this.ButtonCancel.Click += new System.EventHandler(this.ButtonCancel_Click);
             // 
-            // lblExplainOrphan
+            // LabelOrphan
             // 
-            this.lblExplainOrphan.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.LabelOrphan.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.lblExplainOrphan.BackColor = System.Drawing.SystemColors.Control;
-            this.lblExplainOrphan.Cursor = System.Windows.Forms.Cursors.Default;
-            this.lblExplainOrphan.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.lblExplainOrphan.Location = new System.Drawing.Point(36, 36);
-            this.lblExplainOrphan.Name = "lblExplainOrphan";
-            this.lblExplainOrphan.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.lblExplainOrphan.Size = new System.Drawing.Size(311, 44);
-            this.lblExplainOrphan.TabIndex = 3;
-            this.lblExplainOrphan.Text = "This will remove the programmes in your download list for which the audio file ha" +
+            this.LabelOrphan.BackColor = System.Drawing.SystemColors.Control;
+            this.LabelOrphan.Cursor = System.Windows.Forms.Cursors.Default;
+            this.LabelOrphan.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.LabelOrphan.Location = new System.Drawing.Point(36, 36);
+            this.LabelOrphan.Name = "LabelOrphan";
+            this.LabelOrphan.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.LabelOrphan.Size = new System.Drawing.Size(311, 44);
+            this.LabelOrphan.TabIndex = 3;
+            this.LabelOrphan.Text = "This will remove the programmes in your download list for which the audio file ha" +
                 "s been moved or deleted.";
             // 
-            // radType
+            // RadioOrphan
             // 
-            this.radType.AutoSize = true;
-            this.radType.Checked = true;
-            this.radType.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.radType.Location = new System.Drawing.Point(12, 15);
-            this.radType.Name = "radType";
-            this.radType.Size = new System.Drawing.Size(141, 18);
-            this.radType.TabIndex = 2;
-            this.radType.TabStop = true;
-            this.radType.Text = "&Remove orphan entries";
-            this.radType.UseVisualStyleBackColor = true;
+            this.RadioOrphan.AutoSize = true;
+            this.RadioOrphan.Checked = true;
+            this.RadioOrphan.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            this.RadioOrphan.Location = new System.Drawing.Point(12, 15);
+            this.RadioOrphan.Name = "RadioOrphan";
+            this.RadioOrphan.Size = new System.Drawing.Size(141, 18);
+            this.RadioOrphan.TabIndex = 2;
+            this.RadioOrphan.TabStop = true;
+            this.RadioOrphan.Text = "&Remove orphan entries";
+            this.RadioOrphan.UseVisualStyleBackColor = true;
             // 
             // CleanUp
             // 
-            this.AcceptButton = this.cmdOK;
+            this.AcceptButton = this.ButtonOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.CancelButton = this.cmdCancel;
+            this.CancelButton = this.ButtonCancel;
             this.ClientSize = new System.Drawing.Size(359, 146);
-            this.Controls.Add(this.radType);
-            this.Controls.Add(this.cmdCancel);
-            this.Controls.Add(this.cmdOK);
-            this.Controls.Add(this.lblExplainOrphan);
+            this.Controls.Add(this.RadioOrphan);
+            this.Controls.Add(this.ButtonCancel);
+            this.Controls.Add(this.ButtonOk);
+            this.Controls.Add(this.LabelOrphan);
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = global::RadioDld.Properties.Resources.icon_main;
@@ -125,10 +125,10 @@ namespace RadioDld
             this.PerformLayout();
 
         }
-        internal System.Windows.Forms.Button cmdOK;
-        internal System.Windows.Forms.Button cmdCancel;
-        internal System.Windows.Forms.Label lblExplainOrphan;
-        internal System.Windows.Forms.RadioButton radType;
+        private System.Windows.Forms.Button ButtonOk;
+        private System.Windows.Forms.Button ButtonCancel;
+        private System.Windows.Forms.Label LabelOrphan;
+        private System.Windows.Forms.RadioButton RadioOrphan;
 
         #endregion
     }

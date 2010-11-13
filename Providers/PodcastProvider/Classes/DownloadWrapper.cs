@@ -56,14 +56,14 @@ namespace PodcastProvider
             SystemEvents.PowerModeChanged += this.PowerModeChange;
 
             this.downloadClient = new WebClient();
-            this.downloadClient.DownloadProgressChanged += this.downloadClient_DownloadProgressChanged;
-            this.downloadClient.DownloadFileCompleted += this.downloadClient_DownloadFileCompleted;
+            this.downloadClient.DownloadProgressChanged += this.DownloadClient_DownloadProgressChanged;
+            this.downloadClient.DownloadFileCompleted += this.DownloadClient_DownloadFileCompleted;
 
             this.downloadClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
             this.downloadClient.DownloadFileAsync(this.downloadUrl, this.destPath);
         }
 
-        private void downloadClient_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        private void DownloadClient_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
             if (this.DownloadProgress != null)
             {
@@ -71,7 +71,7 @@ namespace PodcastProvider
             }
         }
 
-        private void downloadClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        private void DownloadClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             if (e.Cancelled == false)
             {

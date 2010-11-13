@@ -29,83 +29,83 @@ namespace PodcastProvider
         /// </summary>
         private void InitializeComponent()
         {
-            this.pnlFindNew = new System.Windows.Forms.Panel();
-            this.lblResult = new System.Windows.Forms.Label();
-            this.lblInstructions = new System.Windows.Forms.Label();
-            this.cmdViewEps = new System.Windows.Forms.Button();
-            this.txtFeedURL = new System.Windows.Forms.TextBox();
-            this.pnlFindNew.SuspendLayout();
+            this.PanelFindNew = new System.Windows.Forms.Panel();
+            this.LabelResult = new System.Windows.Forms.Label();
+            this.LabelFeedUrl = new System.Windows.Forms.Label();
+            this.ButtonView = new System.Windows.Forms.Button();
+            this.TextFeedUrl = new System.Windows.Forms.TextBox();
+            this.PanelFindNew.SuspendLayout();
             this.SuspendLayout();
             // 
-            // pnlFindNew
+            // PanelFindNew
             // 
-            this.pnlFindNew.Controls.Add(this.lblResult);
-            this.pnlFindNew.Controls.Add(this.lblInstructions);
-            this.pnlFindNew.Controls.Add(this.cmdViewEps);
-            this.pnlFindNew.Controls.Add(this.txtFeedURL);
-            this.pnlFindNew.Location = new System.Drawing.Point(0, 0);
-            this.pnlFindNew.Name = "pnlFindNew";
-            this.pnlFindNew.Size = new System.Drawing.Size(570, 416);
-            this.pnlFindNew.TabIndex = 0;
+            this.PanelFindNew.Controls.Add(this.LabelResult);
+            this.PanelFindNew.Controls.Add(this.LabelFeedUrl);
+            this.PanelFindNew.Controls.Add(this.ButtonView);
+            this.PanelFindNew.Controls.Add(this.TextFeedUrl);
+            this.PanelFindNew.Location = new System.Drawing.Point(0, 0);
+            this.PanelFindNew.Name = "PanelFindNew";
+            this.PanelFindNew.Size = new System.Drawing.Size(570, 416);
+            this.PanelFindNew.TabIndex = 0;
             // 
-            // lblResult
+            // LabelResult
             // 
-            this.lblResult.AutoSize = true;
-            this.lblResult.Location = new System.Drawing.Point(36, 108);
-            this.lblResult.Margin = new System.Windows.Forms.Padding(4, 20, 3, 0);
-            this.lblResult.Name = "lblResult";
-            this.lblResult.Size = new System.Drawing.Size(0, 13);
-            this.lblResult.TabIndex = 3;
+            this.LabelResult.AutoSize = true;
+            this.LabelResult.Location = new System.Drawing.Point(36, 108);
+            this.LabelResult.Margin = new System.Windows.Forms.Padding(4, 20, 3, 0);
+            this.LabelResult.Name = "LabelResult";
+            this.LabelResult.Size = new System.Drawing.Size(0, 13);
+            this.LabelResult.TabIndex = 3;
             // 
-            // lblInstructions
+            // LabelFeedUrl
             // 
-            this.lblInstructions.AutoSize = true;
-            this.lblInstructions.Location = new System.Drawing.Point(36, 39);
-            this.lblInstructions.Margin = new System.Windows.Forms.Padding(4, 0, 3, 10);
-            this.lblInstructions.Name = "lblInstructions";
-            this.lblInstructions.Size = new System.Drawing.Size(189, 13);
-            this.lblInstructions.TabIndex = 0;
-            this.lblInstructions.Text = "&Enter the URL of a podcast RSS feed:";
+            this.LabelFeedUrl.AutoSize = true;
+            this.LabelFeedUrl.Location = new System.Drawing.Point(36, 39);
+            this.LabelFeedUrl.Margin = new System.Windows.Forms.Padding(4, 0, 3, 10);
+            this.LabelFeedUrl.Name = "LabelFeedUrl";
+            this.LabelFeedUrl.Size = new System.Drawing.Size(189, 13);
+            this.LabelFeedUrl.TabIndex = 0;
+            this.LabelFeedUrl.Text = "&Enter the URL of a podcast RSS feed:";
             // 
-            // cmdViewEps
+            // ButtonView
             // 
-            this.cmdViewEps.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdViewEps.Location = new System.Drawing.Point(461, 63);
-            this.cmdViewEps.Name = "cmdViewEps";
-            this.cmdViewEps.Size = new System.Drawing.Size(73, 23);
-            this.cmdViewEps.TabIndex = 2;
-            this.cmdViewEps.Text = "&View";
-            this.cmdViewEps.UseVisualStyleBackColor = true;
-            this.cmdViewEps.Click += new System.EventHandler(this.cmdViewEps_Click);
+            this.ButtonView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.ButtonView.Location = new System.Drawing.Point(461, 63);
+            this.ButtonView.Name = "ButtonView";
+            this.ButtonView.Size = new System.Drawing.Size(73, 23);
+            this.ButtonView.TabIndex = 2;
+            this.ButtonView.Text = "&View";
+            this.ButtonView.UseVisualStyleBackColor = true;
+            this.ButtonView.Click += new System.EventHandler(this.ButtonView_Click);
             // 
-            // txtFeedURL
+            // TextFeedUrl
             // 
-            this.txtFeedURL.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.TextFeedUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtFeedURL.Location = new System.Drawing.Point(39, 65);
-            this.txtFeedURL.Name = "txtFeedURL";
-            this.txtFeedURL.Size = new System.Drawing.Size(416, 20);
-            this.txtFeedURL.TabIndex = 1;
-            this.txtFeedURL.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtFeedURL_KeyPress);
+            this.TextFeedUrl.Location = new System.Drawing.Point(39, 65);
+            this.TextFeedUrl.Name = "TextFeedUrl";
+            this.TextFeedUrl.Size = new System.Drawing.Size(416, 20);
+            this.TextFeedUrl.TabIndex = 1;
+            this.TextFeedUrl.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TextFeedUrl_KeyPress);
             // 
             // FindNew
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(570, 416);
-            this.Controls.Add(this.pnlFindNew);
+            this.Controls.Add(this.PanelFindNew);
             this.Name = "FindNew";
             this.Text = "Find New";
-            this.pnlFindNew.ResumeLayout(false);
-            this.pnlFindNew.PerformLayout();
+            this.PanelFindNew.ResumeLayout(false);
+            this.PanelFindNew.PerformLayout();
             this.ResumeLayout(false);
 
         }
-        internal System.Windows.Forms.Panel pnlFindNew;
-        internal System.Windows.Forms.TextBox txtFeedURL;
-        internal System.Windows.Forms.Button cmdViewEps;
-        internal System.Windows.Forms.Label lblInstructions;
-        internal System.Windows.Forms.Label lblResult;
+        internal System.Windows.Forms.Panel PanelFindNew;
+        private System.Windows.Forms.TextBox TextFeedUrl;
+        private System.Windows.Forms.Button ButtonView;
+        private System.Windows.Forms.Label LabelFeedUrl;
+        private System.Windows.Forms.Label LabelResult;
 
         #endregion
     }

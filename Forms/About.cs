@@ -49,12 +49,12 @@ namespace RadioDld
             this.LabelCopyright.Text = new ApplicationBase().Info.Copyright;
         }
 
-        private void OKButton_Click(object sender, System.EventArgs e)
+        private void ButtonOk_Click(object sender, System.EventArgs e)
         {
             this.Close();
         }
 
-        private void HomepageLink_Click(object sender, System.EventArgs e)
+        private void LinkHomepage_Click(object sender, System.EventArgs e)
         {
             Process.Start("http://www.nerdoftheherd.com/tools/radiodld/");
         }

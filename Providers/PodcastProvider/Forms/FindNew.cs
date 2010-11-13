@@ -33,13 +33,13 @@ namespace PodcastProvider
             this.pluginInst = pluginInst;
         }
 
-        private void cmdViewEps_Click(object sender, System.EventArgs e)
+        private void ButtonView_Click(object sender, System.EventArgs e)
         {
             try
             {
-                this.cmdViewEps.Enabled = false;
-                this.lblResult.ForeColor = System.Drawing.Color.Black;
-                this.lblResult.Text = "Checking feed...";
+                this.ButtonView.Enabled = false;
+                this.LabelResult.ForeColor = System.Drawing.Color.Black;
+                this.LabelResult.Text = "Checking feed...";
 
                 Application.DoEvents();
 
@@ -48,13 +48,13 @@ namespace PodcastProvider
 
                 try
                 {
-                    feedUrl = new Uri(this.txtFeedURL.Text);
+                    feedUrl = new Uri(this.TextFeedUrl.Text);
                 }
                 catch (UriFormatException)
                 {
-                    this.lblResult.Text = "The specified URL was not valid.";
-                    this.lblResult.ForeColor = System.Drawing.Color.Red;
-                    this.cmdViewEps.Enabled = true;
+                    this.LabelResult.Text = "The specified URL was not valid.";
+                    this.LabelResult.ForeColor = System.Drawing.Color.Red;
+                    this.ButtonView.Enabled = true;
                     return;
                 }
 
@@ -65,16 +65,16 @@ namespace PodcastProvider
                 }
                 catch (WebException)
                 {
-                    this.lblResult.Text = "There was a problem requesting the feed from the specified URL.";
-                    this.lblResult.ForeColor = System.Drawing.Color.Red;
-                    this.cmdViewEps.Enabled = true;
+                    this.LabelResult.Text = "There was a problem requesting the feed from the specified URL.";
+                    this.LabelResult.ForeColor = System.Drawing.Color.Red;
+                    this.ButtonView.Enabled = true;
                     return;
                 }
                 catch (XmlException)
                 {
-                    this.lblResult.Text = "The data returned from the specified URL was not a valid RSS feed.";
-                    this.lblResult.ForeColor = System.Drawing.Color.Red;
-                    this.cmdViewEps.Enabled = true;
+                    this.LabelResult.Text = "The data returned from the specified URL was not a valid RSS feed.";
+                    this.LabelResult.ForeColor = System.Drawing.Color.Red;
+                    this.ButtonView.Enabled = true;
                     return;
                 }
 
@@ -84,19 +84,19 @@ namespace PodcastProvider
 
                 if (checkTitle == null | checkDescription == null)
                 {
-                    this.lblResult.Text = "The RSS feed returned from the specified URL was not valid.";
-                    this.lblResult.ForeColor = System.Drawing.Color.Red;
-                    this.cmdViewEps.Enabled = true;
+                    this.LabelResult.Text = "The RSS feed returned from the specified URL was not valid.";
+                    this.LabelResult.ForeColor = System.Drawing.Color.Red;
+                    this.ButtonView.Enabled = true;
                     return;
                 }
 
-                this.lblResult.Text = "Loading information...";
+                this.LabelResult.Text = "Loading information...";
                 Application.DoEvents();
 
                 this.pluginInst.RaiseFoundNew(feedUrl.ToString());
 
-                this.lblResult.Text = string.Empty;
-                this.cmdViewEps.Enabled = true;
+                this.LabelResult.Text = string.Empty;
+                this.ButtonView.Enabled = true;
             }
             catch (Exception unandled)
             {
@@ -104,15 +104,15 @@ namespace PodcastProvider
             }
         }
 
-        private void txtFeedURL_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        private void TextFeedUrl_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
         {
             try
             {
                 if (e.KeyChar == (char)Keys.Enter)
                 {
-                    if (this.cmdViewEps.Enabled)
+                    if (this.ButtonView.Enabled)
                     {
-                        this.cmdViewEps_Click(sender, e);
+                        this.ButtonView_Click(sender, e);
                     }
                 }
             }

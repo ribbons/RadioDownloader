@@ -34,18 +34,18 @@ namespace RadioDld
             this.Font = SystemFonts.MessageBoxFont;
         }
 
-        private void cmdCancel_Click(object eventSender, System.EventArgs eventArgs)
+        private void ButtonCancel_Click(object eventSender, System.EventArgs eventArgs)
         {
             this.Close();
             this.Dispose();
         }
 
-        private void cmdOK_Click(object sender, System.EventArgs e)
+        private void ButtonOk_Click(object sender, System.EventArgs e)
         {
-            this.cmdOK.Enabled = false;
-            this.cmdCancel.Enabled = false;
-            this.radType.Enabled = false;
-            this.lblExplainOrphan.Enabled = false;
+            this.ButtonOk.Enabled = false;
+            this.ButtonCancel.Enabled = false;
+            this.RadioOrphan.Enabled = false;
+            this.LabelOrphan.Enabled = false;
 
             this.progData.PerformCleanup();
 

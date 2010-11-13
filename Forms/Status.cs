@@ -35,7 +35,7 @@ namespace RadioDld
         {
             get
             {
-                return this.lblStatus.Text;
+                return this.LabelStatus.Text;
             }
 
             set
@@ -55,7 +55,7 @@ namespace RadioDld
         {
             get
             {
-                return this.prgProgress.Style == ProgressBarStyle.Marquee;
+                return this.Progress.Style == ProgressBarStyle.Marquee;
             }
 
             set
@@ -75,7 +75,7 @@ namespace RadioDld
         {
             get
             {
-                return this.prgProgress.Maximum;
+                return this.Progress.Maximum;
             }
 
             set
@@ -95,7 +95,7 @@ namespace RadioDld
         {
             get
             {
-                return this.prgProgress.Value;
+                return this.Progress.Value;
             }
 
             set
@@ -141,12 +141,12 @@ namespace RadioDld
 
         private void SetStatusText_FormThread(string text)
         {
-            this.lblStatus.Text = text;
+            this.LabelStatus.Text = text;
         }
 
         private void SetProgressBarMarquee_FormThread(bool marquee)
         {
-            this.prgProgress.Style = marquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
+            this.Progress.Style = marquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
 
             if (OsUtils.WinSevenOrLater() & this.IsHandleCreated)
             {
@@ -163,16 +163,16 @@ namespace RadioDld
 
         private void SetProgressBarMax_FormThread(int value)
         {
-            this.prgProgress.Maximum = value;
+            this.Progress.Maximum = value;
         }
 
         private void SetProgressBarValue_FormThread(int value)
         {
-            this.prgProgress.Value = value;
+            this.Progress.Value = value;
 
             if (OsUtils.WinSevenOrLater() & this.IsHandleCreated)
             {
-                this.tbarNotif.SetProgressValue(this, value, this.prgProgress.Maximum);
+                this.tbarNotif.SetProgressValue(this, value, this.Progress.Maximum);
             }
         }
 
@@ -195,15 +195,15 @@ namespace RadioDld
         {
             if (OsUtils.WinSevenOrLater())
             {
-                if (this.prgProgress.Style == ProgressBarStyle.Marquee)
+                if (this.Progress.Style == ProgressBarStyle.Marquee)
                 {
                     this.tbarNotif.SetProgressMarquee(this);
                 }
                 else
                 {
-                    if (this.prgProgress.Value != 0)
+                    if (this.Progress.Value != 0)
                     {
-                        this.tbarNotif.SetProgressValue(this, this.prgProgress.Value, this.prgProgress.Maximum);
+                        this.tbarNotif.SetProgressValue(this, this.Progress.Value, this.Progress.Maximum);
                     }
                 }
             }
