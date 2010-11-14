@@ -2136,11 +2136,13 @@ namespace RadioDld
             }
 
             // Convert the image into a byte array
-            MemoryStream memstream = new MemoryStream();
-            image.Save(memstream, System.Drawing.Imaging.ImageFormat.Png);
-            byte[] imageAsBytes = new byte[Convert.ToInt32(memstream.Length - 1) + 1];
-            memstream.Position = 0;
-            memstream.Read(imageAsBytes, 0, Convert.ToInt32(memstream.Length));
+            byte[] imageAsBytes = null;
+
+            using (MemoryStream memstream = new MemoryStream())
+            {
+                image.Save(memstream, System.Drawing.Imaging.ImageFormat.Png);
+                imageAsBytes = memstream.ToArray();
+            }
 
             lock (this.dbUpdateLock)
             {
@@ -2188,7 +2190,11 @@ namespace RadioDld
                     byte[] content = new byte[dataLength];
 
                     reader.GetBytes(reader.GetOrdinal("image"), 0, content, 0, dataLength);
-                    return new Bitmap(new MemoryStream(content));
+
+                    using (MemoryStream contentStream = new MemoryStream(content))
+                    {
+                        return new Bitmap(contentStream);
+                    }
                 }
             }
         }

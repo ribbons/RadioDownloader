@@ -523,11 +523,14 @@ namespace PodcastProvider
             byte[] encodedString = Encoding.UTF8.GetBytes(feedString);
 
             // And then load this into the XmlDocument via a stream
-            MemoryStream feedStream = new MemoryStream(encodedString);
-            feedStream.Flush();
-            feedStream.Position = 0;
+            using (MemoryStream feedStream = new MemoryStream(encodedString))
+            {
+                feedStream.Flush();
+                feedStream.Position = 0;
 
-            feedXml.Load(feedStream);
+                feedXml.Load(feedStream);
+            }
+
             return feedXml;
         }
 
@@ -571,7 +574,11 @@ namespace PodcastProvider
                 {
                     Uri imageUrl = new Uri(imageNode.Attributes["href"].Value);
                     byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
-                    return new Bitmap(new System.IO.MemoryStream(imageData));
+
+                    using (MemoryStream imageStream = new MemoryStream(imageData))
+                    {
+                        return new Bitmap(imageStream);
+                    }
                 }
             }
             catch
@@ -587,7 +594,11 @@ namespace PodcastProvider
                 {
                     Uri imageUrl = new Uri(imageUrlNode.InnerText);
                     byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
-                    return new Bitmap(new System.IO.MemoryStream(imageData));
+
+                    using (MemoryStream imageStream = new MemoryStream(imageData))
+                    {
+                        return new Bitmap(imageStream);
+                    }
                 }
             }
             catch
@@ -603,7 +614,11 @@ namespace PodcastProvider
                 {
                     Uri imageUrl = new Uri(imageNode.Attributes["url"].Value);
                     byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
-                    return new Bitmap(new System.IO.MemoryStream(imageData));
+
+                    using (MemoryStream imageStream = new MemoryStream(imageData))
+                    {
+                        return new Bitmap(imageStream);
+                    }
                 }
             }
             catch
