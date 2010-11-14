@@ -20,6 +20,7 @@ namespace RadioDld
     using System.Data.SQLite;
     using System.Diagnostics;
     using System.IO;
+    using System.IO.Compression;
     using System.Net;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
@@ -73,57 +74,86 @@ namespace RadioDld
                         }
                         else
                         {
-                            MemoryStream memoryStream = new MemoryStream(cacheData);
-                            System.Runtime.Serialization.Formatters.Binary.BinaryFormatter binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                            using (MemoryStream memoryStream = new MemoryStream(cacheData))
+                            {
+                                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
 
-                            // Deserialise the CacheWebException structure
-                            CacheWebExpInfo cachedException = default(CacheWebExpInfo);
-                            cachedException = (CacheWebExpInfo)binaryFormatter.Deserialize(memoryStream);
+                                // Deserialise the CacheWebException structure
+                                CacheWebExpInfo cachedException = default(CacheWebExpInfo);
+                                cachedException = (CacheWebExpInfo)binaryFormatter.Deserialize(memoryStream);
 
-                            // Crete a new WebException with the cached data and throw it
-                            throw new WebException(cachedException.Message, cachedException.InnerException, cachedException.Status, cachedException.Response);
+                                // Crete a new WebException with the cached data and throw it
+                                throw new WebException(cachedException.Message, cachedException.InnerException, cachedException.Status, cachedException.Response);
+                            }
                         }
                     }
                 }
             }
 
-            Debug.Print("Cached WebClient: Fetching " + uri.ToString());
-            WebClient webClient = new WebClient();
-            webClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
+            Debug.Print("CachedWebClient: Fetching " + uri.ToString());
 
-            byte[] data = null;
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
+            request.UserAgent = new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString();
+            request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip");
 
-            try
+            using (MemoryStream dataStream = new MemoryStream())
             {
-                data = webClient.DownloadData(uri);
-            }
-            catch (WebException webExp)
-            {
-                if (webExp.Status != WebExceptionStatus.NameResolutionFailure & webExp.Status != WebExceptionStatus.Timeout)
+                try
                 {
-                    // A WebException doesn't serialise well, as Response and Status get lost,
-                    // so store the information in a structure and then recreate it later
-                    CacheWebExpInfo cacheException = new CacheWebExpInfo();
-                    cacheException.Message = webExp.Message;
-                    cacheException.InnerException = webExp.InnerException;
-                    cacheException.Status = webExp.Status;
-                    cacheException.Response = webExp.Response;
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                    Stream responseStream = response.GetResponseStream();
 
-                    MemoryStream stream = new MemoryStream();
-                    BinaryFormatter formatter = new BinaryFormatter();
+                    if (response.ContentEncoding.ToUpperInvariant() == "GZIP")
+                    {
+                        // Decompress the gzipped response while it is being read into the memory stream
+                        responseStream = new GZipStream(responseStream, CompressionMode.Decompress);
+                    }
 
-                    // Serialise the CacheWebException and store it in the cache
-                    formatter.Serialize(stream, cacheException);
-                    this.AddToHTTPCache(uri, false, stream.ToArray());
+                    // Read the response into a MemoryStream in chunks, ready for the byte array
+                    byte[] buffer = new byte[10240];
+                    int readBytes;
+
+                    while ((readBytes = responseStream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        dataStream.Write(buffer, 0, readBytes);
+                    }
+
+                    if (response.ContentEncoding.ToUpperInvariant() == "GZIP")
+                    {
+                        responseStream.Dispose();
+                    }
+                }
+                catch (WebException webExp)
+                {
+                    if (webExp.Status != WebExceptionStatus.NameResolutionFailure & webExp.Status != WebExceptionStatus.Timeout)
+                    {
+                        // A WebException doesn't serialise well, as Response and Status get lost,
+                        // so store the information in a structure and then recreate it later
+                        CacheWebExpInfo cacheException = new CacheWebExpInfo();
+                        cacheException.Message = webExp.Message;
+                        cacheException.InnerException = webExp.InnerException;
+                        cacheException.Status = webExp.Status;
+                        cacheException.Response = webExp.Response;
+
+                        using (MemoryStream stream = new MemoryStream())
+                        {
+                            BinaryFormatter formatter = new BinaryFormatter();
+                            
+                            // Serialise the CacheWebException and store it in the cache
+                            formatter.Serialize(stream, cacheException);
+                            this.AddToHTTPCache(uri, false, stream.ToArray());
+                        }
+                    }
+
+                    // Re-throw the WebException
+                    throw;
                 }
 
-                // Re-throw the WebException
-                throw;
+                byte[] data = dataStream.ToArray();
+                this.AddToHTTPCache(uri, true, data);
+
+                return data;
             }
-
-            this.AddToHTTPCache(uri, true, data);
-
-            return data;
         }
 
         public string DownloadString(Uri uri, int fetchIntervalHrs)
