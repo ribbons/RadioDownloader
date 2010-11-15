@@ -112,7 +112,7 @@ namespace RadioDld
 
         private void SearchBox_HandleCreated(object sender, System.EventArgs e)
         {
-            if (OsUtils.WinXpOrLater())
+            if (OsUtils.WinVistaOrLater())
             {
                 // Set the theme of this parent control and the edit control, so they are rendered correctly
                 if (NativeMethods.SetWindowTheme(this.Handle, "SearchBoxComposited", null) != 0)
