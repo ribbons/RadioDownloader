@@ -94,7 +94,7 @@ namespace RadioDld
 
             using (ReportError showError = new ReportError())
             {
-                showError.ShowDialog();
+                showError.ShowReport(report);
             }
         }
     }
