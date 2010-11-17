@@ -75,11 +75,6 @@ namespace RadioDld
             Interaction.MsgBox(this.report.ToString());
         }
 
-        private void ButtonDontSend_Click(object sender, System.EventArgs e)
-        {
-            this.Close();
-        }
-
         private void Error_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
         {
             // As there has been an error, blow away the rest of the app reasonably tidily

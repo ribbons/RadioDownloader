@@ -129,6 +129,29 @@ namespace RadioDld
             LabelWeWill.TabIndex = 9;
             LabelWeWill.Text = "We will treat this report as confidential and anonymous.";
             // 
+            // ImageTopBar
+            // 
+            ImageTopBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            ImageTopBar.BackColor = System.Drawing.Color.White;
+            ImageTopBar.Location = new System.Drawing.Point(0, -1);
+            ImageTopBar.Name = "ImageTopBar";
+            ImageTopBar.Size = new System.Drawing.Size(493, 58);
+            ImageTopBar.TabIndex = 2;
+            ImageTopBar.TabStop = false;
+            // 
+            // ImageTopBorder
+            // 
+            ImageTopBorder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            ImageTopBorder.BackColor = System.Drawing.Color.Silver;
+            ImageTopBorder.ForeColor = System.Drawing.SystemColors.ControlText;
+            ImageTopBorder.Location = new System.Drawing.Point(0, 56);
+            ImageTopBorder.Name = "ImageTopBorder";
+            ImageTopBorder.Size = new System.Drawing.Size(493, 1);
+            ImageTopBorder.TabIndex = 5;
+            ImageTopBorder.TabStop = false;
+            // 
             // ButtonSend
             // 
             this.ButtonSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -152,30 +175,6 @@ namespace RadioDld
             this.ButtonDontSend.Size = new System.Drawing.Size(84, 26);
             this.ButtonDontSend.TabIndex = 1;
             this.ButtonDontSend.Text = "&Don\'t Send";
-            this.ButtonDontSend.Click += new System.EventHandler(this.ButtonDontSend_Click);
-            // 
-            // ImageTopBar
-            // 
-            ImageTopBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            ImageTopBar.BackColor = System.Drawing.Color.White;
-            ImageTopBar.Location = new System.Drawing.Point(0, -1);
-            ImageTopBar.Name = "ImageTopBar";
-            ImageTopBar.Size = new System.Drawing.Size(493, 58);
-            ImageTopBar.TabIndex = 2;
-            ImageTopBar.TabStop = false;
-            // 
-            // ImageTopBorder
-            // 
-            ImageTopBorder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            ImageTopBorder.BackColor = System.Drawing.Color.Silver;
-            ImageTopBorder.ForeColor = System.Drawing.SystemColors.ControlText;
-            ImageTopBorder.Location = new System.Drawing.Point(0, 56);
-            ImageTopBorder.Name = "ImageTopBorder";
-            ImageTopBorder.Size = new System.Drawing.Size(493, 1);
-            ImageTopBorder.TabIndex = 5;
-            ImageTopBorder.TabStop = false;
             // 
             // LinkWhatData
             // 
@@ -215,6 +214,7 @@ namespace RadioDld
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Radio Downloader";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Error_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(ImageIcon)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(ImageTopBar)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(ImageTopBorder)).EndInit();
