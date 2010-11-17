@@ -1988,8 +1988,6 @@ namespace RadioDld
 
         private void FindNewPluginInst_FindNewException(Exception exception, bool unhandled)
         {
-            ErrorReporting reportException = new ErrorReporting("Find New Error", exception);
-
             if (unhandled)
             {
                 ErrorReporting report = new ErrorReporting(exception);
@@ -2001,6 +1999,7 @@ namespace RadioDld
             }
             else
             {
+                ErrorReporting reportException = new ErrorReporting("Find New Error", exception);
                 reportException.SendReport(Properties.Settings.Default.ErrorReportURL);
             }
         }
