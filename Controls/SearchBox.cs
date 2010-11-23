@@ -148,8 +148,13 @@ namespace RadioDld
             }
             else
             {
-                e.Graphics.Clear(SystemColors.Window);
-
+                // It would be simpler to use e.Graphics.Clear(SystemColors.Window), but that crashes
+                // sometimes when running under terminal services due to a bug in GDI+
+                using (Brush windowBrush = new SolidBrush(SystemColors.Window))
+                {
+                    e.Graphics.FillRectangle(windowBrush, 0, 0, this.Width - 1, this.Height - 1);
+                }
+                
                 // Paint a 'classic textbox' border for the control
                 using (Pen controlDark = new Pen(SystemColors.ControlDark))
                 {
