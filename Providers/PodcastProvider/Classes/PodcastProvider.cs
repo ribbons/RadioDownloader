@@ -577,7 +577,10 @@ namespace PodcastProvider
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {
-                        return new Bitmap(imageStream);
+                        using (Bitmap streamBitmap = new Bitmap(imageStream))
+                        {
+                            return new Bitmap(streamBitmap);
+                        }
                     }
                 }
             }
@@ -597,7 +600,10 @@ namespace PodcastProvider
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {
-                        return new Bitmap(imageStream);
+                        using (Bitmap streamBitmap = new Bitmap(imageStream))
+                        {
+                            return new Bitmap(streamBitmap);
+                        }
                     }
                 }
             }
@@ -617,7 +623,10 @@ namespace PodcastProvider
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {
-                        return new Bitmap(imageStream);
+                        using (Bitmap streamBitmap = new Bitmap(imageStream))
+                        {
+                            return new Bitmap(streamBitmap);
+                        }
                     }
                 }
             }

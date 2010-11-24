@@ -2192,7 +2192,10 @@ namespace RadioDld
 
                     using (MemoryStream contentStream = new MemoryStream(content))
                     {
-                        return new Bitmap(contentStream);
+                        using (Bitmap streamBitmap = new Bitmap(contentStream))
+                        {
+                            return new Bitmap(streamBitmap);
+                        }
                     }
                 }
             }
