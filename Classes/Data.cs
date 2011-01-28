@@ -88,15 +88,14 @@ namespace RadioDld
 
             // Set the current database version.  This is done before the upgrades are attempted so that
             // if the upgrade throws an exception this can be reported, but the programme will run next time.
-            // NB: Remember to change default version in the database if this next line is changed!
-            this.SetDBSetting("databaseversion", 3);
+            this.SetDBSetting("databaseversion", 4);
 
             switch (currentVer)
             {
-                case 2:
-                    this.UpgradeDBv2to3();
-                    break;
                 case 3:
+                    this.UpgradeDBv3to4();
+                    break;
+                case 4:
                     // Nothing to do, this is the current version.
                     break;
             }
@@ -802,18 +801,19 @@ namespace RadioDld
 
         public SubscriptionData FetchSubscriptionData(int progid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, pluginid from programmes where progid=@progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select name, description, pluginid, latestdownload from programmes where progid=@progid", this.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    if (reader.Read() == false)
+                    if (!reader.Read())
                     {
                         throw new DataNotFoundException(progid, "Programme does not exist");
                     }
 
                     int descriptionOrdinal = reader.GetOrdinal("description");
+                    int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
 
                     SubscriptionData info = new SubscriptionData();
                     info.Name = reader.GetString(reader.GetOrdinal("name"));
@@ -823,7 +823,10 @@ namespace RadioDld
                         info.Description = reader.GetString(descriptionOrdinal);
                     }
 
-                    info.LatestDownload = this.LatestDownloadDate(progid);
+                    if (!reader.IsDBNull(latestdownloadOrdinal))
+                    {
+                        info.LatestDownload = reader.GetDateTime(latestdownloadOrdinal);
+                    }
 
                     Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
                     IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
@@ -926,115 +929,74 @@ namespace RadioDld
             return dbConn;
         }
 
-        private void UpgradeDBv2to3()
+        private void UpgradeDBv3to4()
         {
-            int count = 0;
-            string[] unusedTables =
-            {
-                "tblDownloads",
-                "tblInfo",
-                "tblLastFetch",
-                "tblSettings",
-                "tblStationVisibility",
-                "tblSubscribed"
-            };
-
             using (Status showStatus = new Status())
             {
-                showStatus.StatusText = "Removing unused tables...";
-                showStatus.ProgressBarMarquee = false;
-                showStatus.ProgressBarValue = 0;
-                showStatus.ProgressBarMax = unusedTables.GetUpperBound(0) + 1;
+                showStatus.StatusText = "Updating programme data...";
+                showStatus.ProgressBarMarquee = true;
                 showStatus.Show();
                 Application.DoEvents();
 
-                // Delete the unused (v0.4 era) tables if they exist
-                foreach (string unusedTable in unusedTables)
+                using (SQLiteCommand command = new SQLiteCommand("select count(*) from programmes where latestdownload is null", this.FetchDbConn()))
                 {
-                    showStatus.StatusText = "Removing unused table " + Convert.ToString(count, CultureInfo.CurrentCulture) + " of " + Convert.ToString(unusedTables.GetUpperBound(0) + 1, CultureInfo.CurrentCulture) + "...";
-                    showStatus.ProgressBarValue = count;
-                    Application.DoEvents();
-
-                    lock (this.dbUpdateLock)
-                    {
-                        using (SQLiteCommand command = new SQLiteCommand("drop table if exists " + unusedTable, this.FetchDbConn()))
-                        {
-                            command.ExecuteNonQuery();
-                        }
-                    }
-
-                    count += 1;
+                    showStatus.ProgressBarMax = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
                 }
 
-                showStatus.StatusText = "Finished removing unused tables";
-                showStatus.ProgressBarValue = count;
-                Application.DoEvents();
-
-                // Work through the images and re-save them to ensure they are compressed
-                List<int> compressImages = new List<int>();
-
-                using (SQLiteCommand command = new SQLiteCommand("select imgid from images", this.FetchDbConn()))
-                {
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        while (reader.Read())
-                        {
-                            compressImages.Add(reader.GetInt32(reader.GetOrdinal("imgid")));
-                        }
-                    }
-                }
-
-                showStatus.StatusText = "Compressing images...";
                 showStatus.ProgressBarValue = 0;
-                showStatus.ProgressBarMax = compressImages.Count;
-                Application.DoEvents();
+                showStatus.ProgressBarMarquee = false;
 
-                using (SQLiteCommand deleteCmd = new SQLiteCommand("delete from images where imgid=@imgid", this.FetchDbConn()))
+                int processCount = 0;
+
+                lock (this.dbUpdateLock)
                 {
-                    using (SQLiteCommand updateProgs = new SQLiteCommand("update programmes set image=@newimgid where image=@oldimgid", this.FetchDbConn()))
+                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(this.FetchDbConn().BeginTransaction()))
                     {
-                        using (SQLiteCommand updateEps = new SQLiteCommand("update episodes set image=@newimgid where image=@oldimgid", this.FetchDbConn()))
+                        using (SQLiteCommand findCommand = new SQLiteCommand("select progid from programmes where latestdownload is null", this.FetchDbConn()))
                         {
-                            int newImageID = 0;
-                            Bitmap image = null;
-                            count = 1;
-
-                            lock (this.dbUpdateLock)
+                            using (SQLiteCommand dateCommand = new SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", this.FetchDbConn()))
                             {
-                                foreach (int oldImageID in compressImages)
+                                using (SQLiteCommand updateCommand = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", this.FetchDbConn()))
                                 {
-                                    showStatus.StatusText = "Compressing image " + Convert.ToString(count, CultureInfo.CurrentCulture) + " of " + Convert.ToString(compressImages.Count, CultureInfo.CurrentCulture) + "...";
-                                    showStatus.ProgressBarValue = count - 1;
-                                    Application.DoEvents();
+                                    SQLiteParameter latestdownloadParam = new SQLiteParameter("latestdownload");
+                                    SQLiteParameter progidParam = new SQLiteParameter("progid");
 
-                                    image = this.RetrieveImage(oldImageID);
+                                    dateCommand.Parameters.Add(progidParam);
+                                    updateCommand.Parameters.Add(latestdownloadParam);
+                                    updateCommand.Parameters.Add(progidParam);
 
-                                    deleteCmd.Parameters.Add(new SQLiteParameter("@imgid", oldImageID));
-                                    deleteCmd.ExecuteNonQuery();
+                                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(findCommand.ExecuteReader()))
+                                    {
+                                        int progidOrdinal = reader.GetOrdinal("progid");
 
-                                    newImageID = this.StoreImage(image).Value;
-                                    Application.DoEvents();
+                                        while (reader.Read())
+                                        {
+                                            showStatus.ProgressBarValue = ++processCount;
 
-                                    updateProgs.Parameters.Add(new SQLiteParameter("@oldimgid", oldImageID));
-                                    updateProgs.Parameters.Add(new SQLiteParameter("@newimgid", newImageID));
+                                            progidParam.Value = reader.GetInt32(progidOrdinal);
 
-                                    updateProgs.ExecuteNonQuery();
+                                            using (SQLiteMonDataReader dateReader = new SQLiteMonDataReader(dateCommand.ExecuteReader()))
+                                            {
+                                                if (dateReader.Read())
+                                                {
+                                                    latestdownloadParam.Value = dateReader.GetDateTime(dateReader.GetOrdinal("date"));
+                                                }
+                                                else
+                                                {
+                                                    continue;
+                                                }
 
-                                    updateEps.Parameters.Add(new SQLiteParameter("@oldimgid", oldImageID));
-                                    updateEps.Parameters.Add(new SQLiteParameter("@newimgid", newImageID));
-
-                                    updateEps.ExecuteNonQuery();
-
-                                    count += 1;
+                                                updateCommand.ExecuteNonQuery();
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
+
+                        transMon.Trans.Commit();
                     }
                 }
-
-                showStatus.StatusText = "Finished compressing images";
-                showStatus.ProgressBarValue = compressImages.Count;
-                Application.DoEvents();
 
                 showStatus.Hide();
                 Application.DoEvents();
@@ -1047,7 +1009,7 @@ namespace RadioDld
             {
                 if (this.downloadThread == null)
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("select pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", this.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", this.FetchDbConn()))
                     {
                         command.Parameters.Add(new SQLiteParameter("@statuswait", DownloadStatus.Waiting));
                         command.Parameters.Add(new SQLiteParameter("@statuserr", DownloadStatus.Errored));
@@ -1152,6 +1114,7 @@ namespace RadioDld
                                     }
 
                                     this.curDldProgData.PluginId = pluginId;
+                                    this.curDldProgData.ProgId = reader.GetInt32(reader.GetOrdinal("progid"));
                                     this.curDldProgData.ProgExtId = reader.GetString(reader.GetOrdinal("progextid"));
                                     this.curDldProgData.EpId = epid;
                                     this.curDldProgData.EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
@@ -1589,27 +1552,6 @@ namespace RadioDld
             }
         }
 
-        private DateTime? LatestDownloadDate(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read() == false)
-                    {
-                        // No downloads of this program
-                        return null;
-                    }
-                    else
-                    {
-                        return reader.GetDateTime(reader.GetOrdinal("date"));
-                    }
-                }
-            }
-        }
-
         private void ResetDownloadAsync(int epid, bool auto)
         {
             lock (this.dbUpdateLock)
@@ -1827,6 +1769,13 @@ namespace RadioDld
                     command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpId));
                     command.ExecuteNonQuery();
                 }
+
+                using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", this.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@latestdownload", this.curDldProgData.EpisodeInfo.Date));
+                    command.Parameters.Add(new SQLiteParameter("@progid", this.curDldProgData.ProgId));
+                    command.ExecuteNonQuery();
+                }
             }
 
             lock (this.downloadSortCacheLock)
@@ -1850,24 +1799,16 @@ namespace RadioDld
             }
 
             // If the episode's programme is a subscription, clear the sort cache and raise an updated event
-            using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from episodes, subscriptions where epid=@epid and subscriptions.progid = episodes.progid", this.FetchDbConn()))
+            if (this.IsSubscribed(this.curDldProgData.ProgId))
             {
-                command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpId));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                lock (this.subscriptionSortCacheLock)
                 {
-                    if (reader.Read())
-                    {
-                        lock (this.subscriptionSortCacheLock)
-                        {
-                            this.subscriptionSortCache = null;
-                        }
+                    this.subscriptionSortCache = null;
+                }
 
-                        if (this.SubscriptionUpdated != null)
-                        {
-                            this.SubscriptionUpdated(reader.GetInt32(reader.GetOrdinal("progid")));
-                        }
-                    }
+                if (this.SubscriptionUpdated != null)
+                {
+                    this.SubscriptionUpdated(this.curDldProgData.ProgId);
                 }
             }
 

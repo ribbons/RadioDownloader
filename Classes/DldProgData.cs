@@ -22,6 +22,8 @@ namespace RadioDld
     {
         public Guid PluginId { get; set; }
 
+        public int ProgId { get; set; }
+
         public string ProgExtId { get; set; }
 
         public int EpId { get; set; }
