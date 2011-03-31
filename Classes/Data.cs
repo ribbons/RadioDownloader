@@ -521,11 +521,27 @@ namespace RadioDld
                     int epidOrd = reader.GetOrdinal("epid");
                     int filepathOrd = reader.GetOrdinal("filepath");
 
+                    List<string> ignoreRoots = new List<string>();
+
                     while (reader.Read())
                     {
+                        string filePath = reader.GetString(filepathOrd);
+
                         // Remove programmes for which the associated audio file no longer exists
-                        if (File.Exists(reader.GetString(filepathOrd)) == false)
+                        if (!File.Exists(filePath))
                         {
+                            string pathRoot = Path.GetPathRoot(filePath);
+
+                            if(!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
+                            {
+                                if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                                {
+                                    break;
+                                }
+
+                                ignoreRoots.Add(pathRoot);
+                            }
+
                             // Take the download out of the list and set the auto download flag to false
                             this.DownloadRemoveAsync(reader.GetInt32(epidOrd), false);
                         }
