@@ -532,7 +532,7 @@ namespace RadioDld
                         {
                             string pathRoot = Path.GetPathRoot(filePath);
 
-                            if(!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
+                            if (!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
                             {
                                 if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
                                 {
