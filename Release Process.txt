@@ -6,7 +6,7 @@ Beta & Full Releases
 
  1. Update version number in application & providers
  2. Commit version changes.
- 3. Run publish.bat to build & sign application, providers and installer
+ 3. Run build/publish-win32.bat to build & sign application, providers and installer
  4. Test installer - major upgrade
  5. Test installer - clean install
 
