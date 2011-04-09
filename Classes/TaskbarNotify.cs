@@ -37,15 +37,22 @@ namespace RadioDld
             {
                 this.taskBarListInst.SetOverlayIcon(parentWin.Handle, icon == null ? IntPtr.Zero : icon.Handle, description);
             }
-            catch (COMException)
+            catch
             {
-                // Ignore COMExceptions, as they seem to be erroneously thrown sometimes when calling SetOverlayIcon
+                // Ignore exceptions as SetOverlayIcon seems to throw various sorts for no apparent reason
             }
         }
 
         public void SetThumbnailTooltip(Form parentWin, string tooltip)
         {
-            this.taskBarListInst.SetThumbnailTooltip(parentWin.Handle, tooltip);
+            try
+            {
+                this.taskBarListInst.SetThumbnailTooltip(parentWin.Handle, tooltip);
+            }
+            catch (COMException)
+            {
+                // Ignore COMExceptions, as they seem to be erroneously thrown sometimes when calling SetThumbnailTooltip
+            }
         }
 
         public void SetProgressValue(Form parentWin, long value, long total)
