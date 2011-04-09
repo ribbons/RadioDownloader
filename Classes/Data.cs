@@ -869,6 +869,7 @@ namespace RadioDld
                     }
 
                     int descriptionOrdinal = reader.GetOrdinal("description");
+                    int durationOrdinal = reader.GetOrdinal("duration");
 
                     EpisodeData info = new EpisodeData();
                     info.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
@@ -879,7 +880,11 @@ namespace RadioDld
                         info.Description = reader.GetString(descriptionOrdinal);
                     }
 
-                    info.Duration = reader.GetInt32(reader.GetOrdinal("duration"));
+                    if (!reader.IsDBNull(durationOrdinal))
+                    {
+                        info.Duration = reader.GetInt32(durationOrdinal);
+                    }
+
                     info.AutoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
 
                     return info;
@@ -2336,6 +2341,7 @@ namespace RadioDld
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int filepathOrdinal = reader.GetOrdinal("filepath");
+            int durationOrdinal = reader.GetOrdinal("duration");
 
             DownloadData info = new DownloadData();
             info.Epid = epid;
@@ -2347,7 +2353,11 @@ namespace RadioDld
                 info.Description = reader.GetString(descriptionOrdinal);
             }
 
-            info.Duration = reader.GetInt32(reader.GetOrdinal("duration"));
+            if (!reader.IsDBNull(durationOrdinal))
+            {
+                info.Duration = reader.GetInt32(durationOrdinal);
+            }
+
             info.Status = (DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
 
             if (info.Status == DownloadStatus.Errored)
