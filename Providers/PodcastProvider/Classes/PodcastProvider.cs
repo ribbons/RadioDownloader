@@ -401,19 +401,17 @@ namespace PodcastProvider
 
                         try
                         {
-                            episodeInfoReturn.EpisodeInfo.Date = System.DateTime.Parse(pubDate, null, DateTimeStyles.AssumeUniversal);
+                            episodeInfoReturn.EpisodeInfo.Date = DateTime.Parse(pubDate, null, DateTimeStyles.AssumeUniversal);
+                            episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Value.Subtract(offset);
                         }
                         catch (FormatException)
                         {
-                            episodeInfoReturn.EpisodeInfo.Date = DateAndTime.Now;
-                            offset = new TimeSpan(0);
+                            episodeInfoReturn.EpisodeInfo.Date = null;
                         }
-
-                        episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Subtract(offset);
                     }
                     else
                     {
-                        episodeInfoReturn.EpisodeInfo.Date = DateAndTime.Now;
+                        episodeInfoReturn.EpisodeInfo.Date = null;
                     }
 
                     episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);

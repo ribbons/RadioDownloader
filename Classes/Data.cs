@@ -2196,7 +2196,7 @@ namespace RadioDld
 
             episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId);
 
-            if (episodeInfoReturn.Success == false)
+            if (!episodeInfoReturn.Success)
             {
                 return -1;
             }
@@ -2208,7 +2208,8 @@ namespace RadioDld
 
             if (episodeInfoReturn.EpisodeInfo.Date == null)
             {
-                throw new InvalidDataException("Episode date cannot be null ");
+                // The date of the episode isn't known, so use the current date
+                episodeInfoReturn.EpisodeInfo.Date = DateTime.Now;
             }
 
             lock (this.dbUpdateLock)

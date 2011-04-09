@@ -95,7 +95,7 @@ namespace RadioDld
         public string Name;
         public string Description;
         public int? DurationSecs;
-        public DateTime Date;
+        public DateTime? Date;
         public Bitmap Image;
         public Dictionary<string, string> ExtInfo;
     }
