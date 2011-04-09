@@ -39,7 +39,7 @@ namespace PodcastProvider
 
         public event FindNewViewChangeEventHandler FindNewViewChange
         {
-            add { throw new NotSupportedException(); }
+            add { }
             remove { }
         }
 
