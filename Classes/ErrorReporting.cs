@@ -263,7 +263,7 @@ namespace RadioDld
 
                         if (int.TryParse(returnLines[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out reportNum))
                         {
-                            successMessage += Environment.NewLine + Environment.NewLine + "The report number is " + reportNum.ToString() + ".";
+                            successMessage += Environment.NewLine + Environment.NewLine + "The report number is " + reportNum.ToString(CultureInfo.CurrentCulture) + ".";
                         }
                     }
 
