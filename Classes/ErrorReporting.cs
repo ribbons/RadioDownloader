@@ -255,9 +255,21 @@ namespace RadioDld
 
                 if (returnLines[0] == "success")
                 {
-                    Interaction.MsgBox("Your error report was sent successfully.", MsgBoxStyle.Information);
+                    string successMessage = "Your error report was sent successfully.";
 
-                    if (returnLines[1].StartsWith("http://", StringComparison.Ordinal) | returnLines[1].StartsWith("https://", StringComparison.Ordinal))
+                    if (returnLines.Length > 1)
+                    {
+                        int reportNum;
+
+                        if (int.TryParse(returnLines[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out reportNum))
+                        {
+                            successMessage += Environment.NewLine + Environment.NewLine + "The report number is " + reportNum.ToString() + ".";
+                        }
+                    }
+
+                    Interaction.MsgBox(successMessage, MsgBoxStyle.Information);
+
+                    if (returnLines[1].StartsWith("http://", StringComparison.Ordinal) || returnLines[1].StartsWith("https://", StringComparison.Ordinal))
                     {
                         Process.Start(returnLines[1]);
                     }
