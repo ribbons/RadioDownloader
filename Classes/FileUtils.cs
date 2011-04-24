@@ -62,7 +62,7 @@ namespace RadioDld
             return folderPath;
         }
 
-        public static string FindFreeSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime? episodeDate, string baseSavePath)
+        public static string FindFreeSaveFileName(string formatString, string programmeName, string episodeName, DateTime? episodeDate, string baseSavePath)
         {
             string saveName = CreateSaveFileName(formatString, programmeName, episodeName, episodeDate);
             string savePath = Path.Combine(baseSavePath, saveName);
@@ -80,7 +80,7 @@ namespace RadioDld
             return savePath;
         }
 
-        public static string CreateSaveFileName(string formatString, string programmeName, string episodeName, System.DateTime? episodeDate)
+        public static string CreateSaveFileName(string formatString, string programmeName, string episodeName, DateTime? episodeDate)
         {
             if (string.IsNullOrEmpty(formatString))
             {
@@ -102,6 +102,8 @@ namespace RadioDld
             // Make variable substitutions
             fileName = fileName.Replace("%progname%", programmeName);
             fileName = fileName.Replace("%epname%", episodeName);
+            fileName = fileName.Replace("%hour%", substDate.ToString("HH", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%minute%", substDate.ToString("mm", CultureInfo.CurrentCulture));
             fileName = fileName.Replace("%day%", substDate.ToString("dd", CultureInfo.CurrentCulture));
             fileName = fileName.Replace("%month%", substDate.ToString("MM", CultureInfo.CurrentCulture));
             fileName = fileName.Replace("%shortmonthname%", substDate.ToString("MMM", CultureInfo.CurrentCulture));
