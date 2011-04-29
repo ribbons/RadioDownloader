@@ -42,14 +42,31 @@ namespace RadioDld
         [STAThread]
         public static void Main(string[] args)
         {
-            Application.SetCompatibleTextRenderingDefault(false);
-            new AppInstance().Run(args);
+            try
+            {
+                Application.SetCompatibleTextRenderingDefault(false);
+                new AppInstance().Run(args);
+            }
+            catch (Exception exp)
+            {
+                ReportException(exp);
+            }
         }
 
         protected override void OnCreateMainForm()
         {
             this.MainForm = new Main();
             StartupNextInstance += ((Main)this.MainForm).App_StartupNextInstance;
+        }
+
+        private static void ReportException(Exception exp)
+        {
+            ErrorReporting report = new ErrorReporting(exp);
+
+            using (ReportError showError = new ReportError())
+            {
+                showError.ShowReport(report);
+            }
         }
 
         private void App_Startup(object sender, StartupEventArgs e)
@@ -67,12 +84,7 @@ namespace RadioDld
 
         private void App_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
         {
-            ErrorReporting report = new ErrorReporting(e.Exception);
-
-            using (ReportError showError = new ReportError())
-            {
-                showError.ShowReport(report);
-            }
+            ReportException(e.Exception);
         }
 
         private void AppDomainExceptionHandler(object sender, System.UnhandledExceptionEventArgs e)
@@ -90,12 +102,7 @@ namespace RadioDld
                 return;
             }
 
-            ErrorReporting report = new ErrorReporting(unhandledExp);
-
-            using (ReportError showError = new ReportError())
-            {
-                showError.ShowReport(report);
-            }
+            ReportException(unhandledExp);
         }
     }
 }
