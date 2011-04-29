@@ -27,7 +27,6 @@ namespace RadioDld
         {
             this.IsSingleInstance = true;
             this.EnableVisualStyles = true;
-            this.SaveMySettingsOnExit = true;
             this.ShutdownStyle = ShutdownMode.AfterMainFormCloses;
 
             Startup += this.App_Startup;
@@ -46,6 +45,7 @@ namespace RadioDld
             {
                 Application.SetCompatibleTextRenderingDefault(false);
                 new AppInstance().Run(args);
+                Properties.Settings.Default.Save();
             }
             catch (Exception exp)
             {
