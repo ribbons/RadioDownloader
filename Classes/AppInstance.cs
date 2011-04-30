@@ -30,27 +30,20 @@ namespace RadioDld
             this.ShutdownStyle = ShutdownMode.AfterMainFormCloses;
 
             Startup += this.App_Startup;
-
-            if (!Debugger.IsAttached)
-            {
-                UnhandledException += this.App_UnhandledException;
-                AppDomain.CurrentDomain.UnhandledException += this.AppDomainExceptionHandler;
-            }
+            UnhandledException += this.App_UnhandledException;
         }
 
         [STAThread]
         public static void Main(string[] args)
         {
-            try
+            if (!Debugger.IsAttached)
             {
-                Application.SetCompatibleTextRenderingDefault(false);
-                new AppInstance().Run(args);
-                Properties.Settings.Default.Save();
+                AppDomain.CurrentDomain.UnhandledException += AppDomainExceptionHandler;
             }
-            catch (Exception exp)
-            {
-                ReportException(exp);
-            }
+
+            Application.SetCompatibleTextRenderingDefault(false);
+            new AppInstance().Run(args);
+            Properties.Settings.Default.Save();
         }
 
         protected override void OnCreateMainForm()
@@ -69,6 +62,24 @@ namespace RadioDld
             }
         }
 
+        private static void AppDomainExceptionHandler(object sender, System.UnhandledExceptionEventArgs e)
+        {
+            Exception unhandledExp = null;
+
+            try
+            {
+                unhandledExp = (Exception)e.ExceptionObject;
+            }
+            catch (InvalidCastException)
+            {
+                // The ExceptionObject isn't a child of System.Exception, so we don't know
+                // how to report it.  Instead, let the standard .net dialog appear.
+                return;
+            }
+
+            ReportException(unhandledExp);
+        }
+
         private void App_Startup(object sender, StartupEventArgs e)
         {
             // If /exit was passed on the command line, then just exit immediately
@@ -85,24 +96,6 @@ namespace RadioDld
         private void App_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
         {
             ReportException(e.Exception);
-        }
-
-        private void AppDomainExceptionHandler(object sender, System.UnhandledExceptionEventArgs e)
-        {
-            Exception unhandledExp = null;
-
-            try
-            {
-                unhandledExp = (Exception)e.ExceptionObject;
-            }
-            catch (InvalidCastException)
-            {
-                // The ExceptionObject isn't a child of System.Exception, so we don't know
-                // how to report it.  Instead, let the standard .net dialog appear.
-                return;
-            }
-
-            ReportException(unhandledExp);
         }
     }
 }
