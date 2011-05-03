@@ -316,7 +316,7 @@ namespace RadioDld
                         {
                             using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", this.FetchDbConn()))
                             {
-                                progCmd.Parameters.Add(new SQLiteParameter("@epid", reader.GetInt32(progidOrdinal)));
+                                progCmd.Parameters.Add(new SQLiteParameter("@progid", reader.GetInt32(progidOrdinal)));
 
                                 using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
                                 {
