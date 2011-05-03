@@ -415,12 +415,6 @@ namespace PodcastProvider
                     }
 
                     episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);
-
-                    if (episodeInfoReturn.EpisodeInfo.Image == null)
-                    {
-                        episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(rss.SelectSingleNode("./rss/channel"), namespaceMgr);
-                    }
-
                     episodeInfoReturn.EpisodeInfo.ExtInfo = extInfo;
                     episodeInfoReturn.Success = true;
 
