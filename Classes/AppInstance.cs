@@ -30,6 +30,7 @@ namespace RadioDld
             this.ShutdownStyle = ShutdownMode.AfterMainFormCloses;
 
             Startup += this.App_Startup;
+            Shutdown += this.App_Shutdown;
             UnhandledException += this.App_UnhandledException;
         }
 
@@ -43,7 +44,6 @@ namespace RadioDld
 
             Application.SetCompatibleTextRenderingDefault(false);
             new AppInstance().Run(args);
-            Properties.Settings.Default.Save();
         }
 
         protected override void OnCreateMainForm()
@@ -91,6 +91,11 @@ namespace RadioDld
                     return;
                 }
             }
+        }
+
+        private void App_Shutdown(object sender, EventArgs e)
+        {
+            Properties.Settings.Default.Save();
         }
 
         private void App_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
