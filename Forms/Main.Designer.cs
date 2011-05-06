@@ -139,6 +139,7 @@ namespace RadioDld
             this.TextSidebarDescript.TabIndex = 1;
             this.TextSidebarDescript.TabStop = false;
             this.TextSidebarDescript.Text = "Description";
+            this.TextSidebarDescript.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.TextSidebarDescript_LinkClicked);
             // 
             // LabelSidebarTitle
             // 
@@ -168,6 +169,26 @@ namespace RadioDld
             this.ImageSidebar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
             this.ImageSidebar.TabIndex = 1;
             this.ImageSidebar.TabStop = false;
+            // 
+            // MenuTraySep
+            // 
+            MenuTraySep.Index = 1;
+            MenuTraySep.Text = "-";
+            // 
+            // MenuOptionsSep
+            // 
+            MenuOptionsSep.Index = 2;
+            MenuOptionsSep.Text = "-";
+            // 
+            // MenuHelpSep
+            // 
+            MenuHelpSep.Index = 2;
+            MenuHelpSep.Text = "-";
+            // 
+            // MenuListHdrsSep
+            // 
+            MenuListHdrsSep.Index = 1;
+            MenuListHdrsSep.Text = "-";
             // 
             // ToolbarView
             // 
@@ -289,11 +310,6 @@ namespace RadioDld
             this.MenuTrayShow.Text = "&Show Radio Downloader";
             this.MenuTrayShow.Click += new System.EventHandler(this.MenuTrayShow_Click);
             // 
-            // MenuTraySep
-            // 
-            MenuTraySep.Index = 1;
-            MenuTraySep.Text = "-";
-            // 
             // MenuTrayExit
             // 
             this.MenuTrayExit.Index = 2;
@@ -352,11 +368,6 @@ namespace RadioDld
             this.MenuOptionsProviderOptsNoProvs.Index = 0;
             this.MenuOptionsProviderOptsNoProvs.Text = "No providers";
             // 
-            // MenuOptionsSep
-            // 
-            MenuOptionsSep.Index = 2;
-            MenuOptionsSep.Text = "-";
-            // 
             // MenuOptionsExit
             // 
             this.MenuOptionsExit.Index = 3;
@@ -384,11 +395,6 @@ namespace RadioDld
             this.MenuHelpReportBug.Text = "Report a &Bug";
             this.MenuHelpReportBug.Click += new System.EventHandler(this.MenuHelpReportBug_Click);
             // 
-            // MenuHelpSep
-            // 
-            MenuHelpSep.Index = 2;
-            MenuHelpSep.Text = "-";
-            // 
             // MenuHelpAbout
             // 
             this.MenuHelpAbout.Index = 3;
@@ -403,9 +409,9 @@ namespace RadioDld
             // 
             // PanelPluginSpace
             // 
-            this.PanelPluginSpace.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.PanelPluginSpace.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.PanelPluginSpace.Location = new System.Drawing.Point(197, 118);
             this.PanelPluginSpace.Name = "PanelPluginSpace";
             this.PanelPluginSpace.Size = new System.Drawing.Size(560, 41);
@@ -594,11 +600,6 @@ namespace RadioDld
             this.MenuListHdrsColumns.Index = 0;
             this.MenuListHdrsColumns.Text = "Choose Columns...";
             this.MenuListHdrsColumns.Click += new System.EventHandler(this.MenuListHdrsColumns_Click);
-            // 
-            // MenuListHdrsSep
-            // 
-            MenuListHdrsSep.Index = 1;
-            MenuListHdrsSep.Text = "-";
             // 
             // MenuListHdrsReset
             // 
