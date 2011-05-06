@@ -140,6 +140,7 @@ namespace RadioDld
             this.TextSidebarDescript.TabStop = false;
             this.TextSidebarDescript.Text = "Description";
             this.TextSidebarDescript.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.TextSidebarDescript_LinkClicked);
+            this.TextSidebarDescript.Resize += new System.EventHandler(this.TextSidebarDescript_Resize);
             // 
             // LabelSidebarTitle
             // 
