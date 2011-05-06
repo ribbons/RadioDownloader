@@ -2108,11 +2108,6 @@ namespace RadioDld
             }
         }
 
-        private void TextSidebarDescript_GotFocus(object sender, System.EventArgs e)
-        {
-            this.LabelSidebarTitle.Focus();
-        }
-
         private void TextSidebarDescript_LinkClicked(object sender, System.Windows.Forms.LinkClickedEventArgs e)
         {
             Process.Start(e.LinkText);
