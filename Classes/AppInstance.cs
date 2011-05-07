@@ -43,7 +43,15 @@ namespace RadioDld
             }
 
             Application.SetCompatibleTextRenderingDefault(false);
-            new AppInstance().Run(args);
+
+            try
+            {
+                new AppInstance().Run(args);
+            }
+            catch (CantStartSingleInstanceException)
+            {
+                MessageBox.Show("Radio Downloader is already running, but is not responding." + Environment.NewLine + Environment.NewLine + "Please wait a few minutes and try again, or if the problem persists you can try restarting your system.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         protected override void OnCreateMainForm()
