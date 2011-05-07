@@ -134,7 +134,6 @@ namespace RadioDld
             this.TextSidebarDescript.Margin = new System.Windows.Forms.Padding(8, 5, 8, 6);
             this.TextSidebarDescript.Name = "TextSidebarDescript";
             this.TextSidebarDescript.ReadOnly = true;
-            this.TextSidebarDescript.ShortcutsEnabled = false;
             this.TextSidebarDescript.Size = new System.Drawing.Size(171, 259);
             this.TextSidebarDescript.TabIndex = 1;
             this.TextSidebarDescript.TabStop = false;
