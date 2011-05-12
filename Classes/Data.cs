@@ -957,7 +957,6 @@ namespace RadioDld
                 showStatus.StatusText = "Updating programme data...";
                 showStatus.ProgressBarMarquee = true;
                 showStatus.Show();
-                Application.DoEvents();
 
                 using (SQLiteCommand command = new SQLiteCommand("select count(*) from programmes where latestdownload is null", this.FetchDbConn()))
                 {
@@ -1020,7 +1019,6 @@ namespace RadioDld
                 }
 
                 showStatus.Hide();
-                Application.DoEvents();
             }
         }
 
@@ -1929,7 +1927,6 @@ namespace RadioDld
                     showStatus.StatusText = "Compacting Database..." + Environment.NewLine + Environment.NewLine + "This may take some time if you have downloaded a lot of programmes.";
                     showStatus.ProgressBarMarquee = true;
                     showStatus.Show();
-                    Application.DoEvents();
 
                     // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
                     lock (this.dbUpdateLock)
@@ -1943,7 +1940,6 @@ namespace RadioDld
                     this.SetDBSetting("lastvacuum", DateAndTime.Now.ToString("O", CultureInfo.InvariantCulture));
 
                     showStatus.Hide();
-                    Application.DoEvents();
                 }
             }
         }

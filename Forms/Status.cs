@@ -115,6 +115,7 @@ namespace RadioDld
         {
             this.showThread = new Thread(this.ShowFormThread);
             this.showThread.Start();
+            Application.DoEvents();
         }
 
         public new void Hide()
@@ -136,7 +137,10 @@ namespace RadioDld
                 this.tbarNotif = new TaskbarNotify();
             }
 
-            this.ShowDialog();
+            if (!this.IsDisposed)
+            {
+                this.ShowDialog();
+            }
         }
 
         private void SetStatusText_FormThread(string text)
