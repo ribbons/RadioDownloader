@@ -272,9 +272,9 @@ namespace PodcastProvider
                         string description = descriptionNode.InnerText;
 
                         // Replace common block level tags with newlines
-                        description = description.Replace("<br", Constants.vbCrLf + "<br");
-                        description = description.Replace("<p", Constants.vbCrLf + "<p");
-                        description = description.Replace("<div", Constants.vbCrLf + "<div");
+                        description = description.Replace("<br", "\r\n<br");
+                        description = description.Replace("<p", "\r\n<p");
+                        description = description.Replace("<div", "\r\n<div");
 
                         // Replace HTML entities with their character counterparts
                         description = HttpUtility.HtmlDecode(description);

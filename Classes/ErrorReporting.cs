@@ -45,9 +45,9 @@ namespace RadioDld
 
                 foreach (Assembly loadedAssembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    loadedAssemblies += loadedAssembly.GetName().Name + Constants.vbCrLf;
-                    loadedAssemblies += "Assembly Version: " + loadedAssembly.GetName().Version.ToString() + Constants.vbCrLf;
-                    loadedAssemblies += "CodeBase: " + loadedAssembly.CodeBase + Constants.vbCrLf + Constants.vbCrLf;
+                    loadedAssemblies += loadedAssembly.GetName().Name + "\r\n";
+                    loadedAssemblies += "Assembly Version: " + loadedAssembly.GetName().Version.ToString() + "\r\n";
+                    loadedAssemblies += "CodeBase: " + loadedAssembly.CodeBase + "\r\n\r\n";
                 }
 
                 this.fields.Add("loadedassemblies", loadedAssemblies);
@@ -88,7 +88,7 @@ namespace RadioDld
         }
 
         public ErrorReporting(Exception uncaughtException)
-            : this(uncaughtException.GetType().ToString() + ": " + uncaughtException.Message, uncaughtException.GetType().ToString() + Constants.vbCrLf + uncaughtException.StackTrace)
+            : this(uncaughtException.GetType().ToString() + ": " + uncaughtException.Message, uncaughtException.GetType().ToString() + "\r\n" + uncaughtException.StackTrace)
         {
             try
             {
@@ -223,7 +223,7 @@ namespace RadioDld
             {
                 foreach (KeyValuePair<string, string> reportField in this.fields)
                 {
-                    stringValue += reportField.Key + ": " + reportField.Value + Constants.vbCrLf;
+                    stringValue += reportField.Key + ": " + reportField.Value + "\r\n";
                 }
             }
             catch
@@ -251,7 +251,7 @@ namespace RadioDld
                 postData = postData.Substring(1);
 
                 byte[] result = sendClient.UploadData(sendUrl, "POST", System.Text.Encoding.ASCII.GetBytes(postData));
-                string[] returnLines = Strings.Split(System.Text.Encoding.ASCII.GetString(result), Constants.vbLf);
+                string[] returnLines = Strings.Split(System.Text.Encoding.ASCII.GetString(result), "\n");
 
                 if (returnLines[0] == "success")
                 {

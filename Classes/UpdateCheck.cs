@@ -57,7 +57,7 @@ namespace RadioDld
 
             if (!string.IsNullOrEmpty(versionInfo))
             {
-                versionInfo = Strings.Split(versionInfo, Constants.vbCrLf)[0];
+                versionInfo = Strings.Split(versionInfo, "\r\n")[0];
 
                 // There is a new version available
                 if (String.Compare(versionInfo, new ApplicationBase().Info.Version.ToString(), StringComparison.Ordinal) > 0)
