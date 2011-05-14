@@ -20,7 +20,6 @@ namespace RadioDld
     using System.Diagnostics;
     using System.Drawing;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic.ApplicationServices;
 
     internal sealed partial class About : Form
     {
@@ -31,22 +30,11 @@ namespace RadioDld
         
         private void About_Load(object sender, System.EventArgs e)
         {
-            // Set the title of the form.
-            string applicationTitle = null;
-            if (!string.IsNullOrEmpty(new ApplicationBase().Info.Title))
-            {
-                applicationTitle = new ApplicationBase().Info.Title;
-            }
-            else
-            {
-                applicationTitle = System.IO.Path.GetFileNameWithoutExtension(new ApplicationBase().Info.AssemblyName);
-            }
-
             this.Font = SystemFonts.MessageBoxFont;
 
-            this.Text = "About " + applicationTitle;
-            this.LabelNameAndVer.Text = new ApplicationBase().Info.ProductName + " " + new ApplicationBase().Info.Version.ToString();
-            this.LabelCopyright.Text = new ApplicationBase().Info.Copyright;
+            this.Text = "About " + Application.ProductName;
+            this.LabelNameAndVer.Text = Application.ProductName + " " + Application.ProductVersion;
+            this.LabelCopyright.Text = new Microsoft.VisualBasic.ApplicationServices.ApplicationBase().Info.Copyright;
         }
 
         private void ButtonOk_Click(object sender, System.EventArgs e)

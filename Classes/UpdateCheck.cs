@@ -18,8 +18,8 @@ namespace RadioDld
 {
     using System;
     using System.Net;
+    using System.Windows.Forms;
     using Microsoft.VisualBasic;
-    using Microsoft.VisualBasic.ApplicationServices;
 
     internal class UpdateCheck
     {
@@ -38,7 +38,7 @@ namespace RadioDld
             }
 
             WebClient checkUpdate = new WebClient();
-            checkUpdate.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
+            checkUpdate.Headers.Add("user-agent", Application.ProductName + " " + Application.ProductVersion);
 
             string versionInfo = null;
 
@@ -60,7 +60,7 @@ namespace RadioDld
                 versionInfo = Strings.Split(versionInfo, "\r\n")[0];
 
                 // There is a new version available
-                if (String.Compare(versionInfo, new ApplicationBase().Info.Version.ToString(), StringComparison.Ordinal) > 0)
+                if (String.Compare(versionInfo, Application.ProductVersion, StringComparison.Ordinal) > 0)
                 {
                     return true;
                 }

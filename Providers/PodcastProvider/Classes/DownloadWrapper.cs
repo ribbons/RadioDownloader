@@ -18,7 +18,7 @@ namespace PodcastProvider
 {
     using System;
     using System.Net;
-    using Microsoft.VisualBasic.ApplicationServices;
+    using System.Windows.Forms;
     using Microsoft.Win32;
 
     internal class DownloadWrapper
@@ -59,7 +59,7 @@ namespace PodcastProvider
             this.downloadClient.DownloadProgressChanged += this.DownloadClient_DownloadProgressChanged;
             this.downloadClient.DownloadFileCompleted += this.DownloadClient_DownloadFileCompleted;
 
-            this.downloadClient.Headers.Add("user-agent", new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString());
+            this.downloadClient.Headers.Add("user-agent", Application.ProductName + " " + Application.ProductVersion);
             this.downloadClient.DownloadFileAsync(this.downloadUrl, this.destPath);
         }
 

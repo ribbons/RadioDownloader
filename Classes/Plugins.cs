@@ -22,7 +22,6 @@ namespace RadioDld
     using System.IO;
     using System.Reflection;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic.ApplicationServices;
 
     public delegate void FindNewViewChangeEventHandler(object view);
 
@@ -118,7 +117,7 @@ namespace RadioDld
             this.interfaceName = typeof(IRadioProvider).Name;
 
             // Get an array of all of the dlls ending with the text Provider in the application folder
-            string pluginPath = new ApplicationBase().Info.DirectoryPath;
+            string pluginPath = AppDomain.CurrentDomain.BaseDirectory;
             string[] dlls = Directory.GetFileSystemEntries(pluginPath, "*Provider.dll");
             
             foreach (string dll in dlls)

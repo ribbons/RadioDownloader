@@ -27,7 +27,6 @@ namespace RadioDld
     using System.Windows.Forms;
     using System.Xml.Serialization;
     using Microsoft.VisualBasic;
-    using Microsoft.VisualBasic.ApplicationServices;
 
     internal class Data
     {

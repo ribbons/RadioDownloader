@@ -27,7 +27,6 @@ namespace RadioDld
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
     using Microsoft.VisualBasic;
-    using Microsoft.VisualBasic.ApplicationServices;
 
     internal partial class Main : GlassForm
     {
@@ -230,11 +229,11 @@ namespace RadioDld
             {
                 try
                 {
-                    System.IO.File.Copy(Path.Combine(new ApplicationBase().Info.DirectoryPath, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"));
+                    System.IO.File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"));
                 }
                 catch (FileNotFoundException)
                 {
-                    Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(new ApplicationBase().Info.DirectoryPath, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
+                    Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
                     this.Close();
                     this.Dispose();
                     return;
@@ -246,18 +245,18 @@ namespace RadioDld
                 // and then make sure that the current db's structure matches it.
                 try
                 {
-                    System.IO.File.Copy(Path.Combine(new ApplicationBase().Info.DirectoryPath, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), true);
+                    System.IO.File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), true);
                 }
                 catch (FileNotFoundException)
                 {
-                    Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(new ApplicationBase().Info.DirectoryPath, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
+                    Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
                     this.Close();
                     this.Dispose();
                     return;
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    Interaction.MsgBox("Access was denied when attempting to copy the Radio Downloader template database." + Environment.NewLine + Environment.NewLine + "Check that you have read access to '" + Path.Combine(new ApplicationBase().Info.DirectoryPath, "store.db") + "' and write access to '" + Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db") + "'.", MsgBoxStyle.Critical);
+                    Interaction.MsgBox("Access was denied when attempting to copy the Radio Downloader template database." + Environment.NewLine + Environment.NewLine + "Check that you have read access to '" + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db") + "' and write access to '" + Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db") + "'.", MsgBoxStyle.Critical);
                     this.Close();
                     this.Dispose();
                     return;
@@ -364,7 +363,7 @@ namespace RadioDld
             // Set up the initial notification status
             this.UpdateTrayStatus(false);
 
-            this.checkUpdate = new UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + new ApplicationBase().Info.Version.ToString());
+            this.checkUpdate = new UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + Application.ProductVersion);
 
             this.ImageSidebarBorder.Width = 2;
 
@@ -1592,7 +1591,7 @@ namespace RadioDld
 
                         if (showUpdate.ShowDialog(this) == DialogResult.Yes)
                         {
-                            Process.Start("http://www.nerdoftheherd.com/tools/radiodld/update.php?prevver=" + new ApplicationBase().Info.Version.ToString());
+                            Process.Start("http://www.nerdoftheherd.com/tools/radiodld/update.php?prevver=" + Application.ProductVersion);
                         }
                     }
                 }

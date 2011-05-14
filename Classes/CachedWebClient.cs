@@ -24,8 +24,8 @@ namespace RadioDld
     using System.Net;
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
+    using System.Windows.Forms;
     using Microsoft.VisualBasic;
-    using Microsoft.VisualBasic.ApplicationServices;
 
     public class CachedWebClient
     {
@@ -93,7 +93,7 @@ namespace RadioDld
             Debug.Print("CachedWebClient: Fetching " + uri.ToString());
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.UserAgent = new ApplicationBase().Info.AssemblyName + " " + new ApplicationBase().Info.Version.ToString();
+            request.UserAgent = Application.ProductName + " " + Application.ProductVersion;
             request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip");
 
             using (MemoryStream dataStream = new MemoryStream())

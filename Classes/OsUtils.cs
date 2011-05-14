@@ -21,7 +21,6 @@ namespace RadioDld
     using System.Drawing;
     using System.Text;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic.ApplicationServices;
     using Microsoft.Win32;
 
     internal class OsUtils
@@ -161,13 +160,13 @@ namespace RadioDld
 
             if (Properties.Settings.Default.RunOnStartup)
             {
-                runKey.SetValue(new ApplicationBase().Info.Title, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
+                runKey.SetValue(Application.ProductName, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
             }
             else
             {
-                if (runKey.GetValue(new ApplicationBase().Info.Title) != null)
+                if (runKey.GetValue(Application.ProductName) != null)
                 {
-                    runKey.DeleteValue(new ApplicationBase().Info.Title);
+                    runKey.DeleteValue(Application.ProductName);
                 }
             }
         }

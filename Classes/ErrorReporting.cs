@@ -25,9 +25,9 @@ namespace RadioDld
     using System.Net;
     using System.Reflection;
     using System.Web;
+    using System.Windows.Forms;
     using System.Xml.Serialization;
     using Microsoft.VisualBasic;
-    using Microsoft.VisualBasic.ApplicationServices;
 
     internal class ErrorReporting
     {
@@ -37,7 +37,7 @@ namespace RadioDld
         {
             try
             {
-                this.fields.Add("version", new ApplicationBase().Info.Version.ToString());
+                this.fields.Add("version", Application.ProductVersion);
                 this.fields.Add("errortext", errorText);
                 this.fields.Add("errordetails", errorDetails);
 
