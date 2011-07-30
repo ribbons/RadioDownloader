@@ -76,7 +76,7 @@ namespace RadioDld
                 }
                 else
                 {
-                    if (active == true)
+                    if (active)
                     {
                         this.tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_downloading, "Downloading");
                         this.tbarNotif.SetThumbnailTooltip(this, this.Text + ": Downloading");
@@ -98,7 +98,7 @@ namespace RadioDld
                 }
                 else
                 {
-                    if (active == true)
+                    if (active)
                     {
                         this.NotifyIcon.Icon = Properties.Resources.icon_working;
                         this.NotifyIcon.Text = this.Text + ": Downloading";
@@ -964,7 +964,7 @@ namespace RadioDld
             this.ListProviders.Items.Add(addItem);
 
             // Hide the 'No providers' provider options menu item
-            if (this.MenuOptionsProviderOptsNoProvs.Visible == true)
+            if (this.MenuOptionsProviderOptsNoProvs.Visible)
             {
                 this.MenuOptionsProviderOptsNoProvs.Visible = false;
             }

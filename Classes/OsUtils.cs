@@ -121,7 +121,7 @@ namespace RadioDld
             }
 
             // Perform the animation
-            if (down == true)
+            if (down)
             {
                 if (NativeMethods.DrawAnimatedRects(form.Handle, NativeMethods.IDANI_CAPTION, ref window, ref systray) == false)
                 {
