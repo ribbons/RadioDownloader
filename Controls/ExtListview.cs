@@ -89,7 +89,7 @@ namespace RadioDld
         {
             foreach (EmbeddedProgress control in this.embeddedControls)
             {
-                if (control.Item.Equals(parentItem) & control.Column == column)
+                if (control.Item.Equals(parentItem) && control.Column == column)
                 {
                     return control.Progress;
                 }
@@ -207,7 +207,7 @@ namespace RadioDld
                     {
                         Rectangle rect = this.GetSubItemBounds(emcControl.Item, emcControl.Column);
 
-                        if (((this.HeaderStyle != ColumnHeaderStyle.None) & (rect.Top < this.Font.Height)) || (rect.Top + rect.Height) <= 0 || (rect.Top > this.ClientRectangle.Height))
+                        if (((this.HeaderStyle != ColumnHeaderStyle.None) && (rect.Top < this.Font.Height)) || (rect.Top + rect.Height) <= 0 || (rect.Top > this.ClientRectangle.Height))
                         {
                             // Control overlaps ColumnHeader, is off the top, or is off the bottom of the listview
                             emcControl.Progress.Visible = false;

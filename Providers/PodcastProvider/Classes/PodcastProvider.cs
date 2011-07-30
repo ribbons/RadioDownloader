@@ -359,7 +359,7 @@ namespace PodcastProvider
                                     pubDate = zoneFree;
                                     break;
                                 default:
-                                    if (zone.Length >= 4 & Information.IsNumeric(zone) || Information.IsNumeric(zone.Substring(1)))
+                                    if (zone.Length >= 4 && Information.IsNumeric(zone) || Information.IsNumeric(zone.Substring(1)))
                                     {
                                         try
                                         {
@@ -445,7 +445,7 @@ namespace PodcastProvider
             this.doDownload.DownloadProgress += this.DoDownload_DownloadProgress;
             this.doDownload.Download();
 
-            while ((!this.doDownload.Complete) & this.doDownload.Error == null)
+            while ((!this.doDownload.Complete) && this.doDownload.Error == null)
             {
                 Thread.Sleep(500);
             }

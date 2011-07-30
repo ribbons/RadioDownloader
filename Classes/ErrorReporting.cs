@@ -202,7 +202,7 @@ namespace RadioDld
                 {
                     foreach (DictionaryEntry dataEntry in uncaughtException.Data)
                     {
-                        if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) & object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
+                        if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) && object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
                         {
                             this.fields.Add("expdata:Data:" + (string)dataEntry.Key, (string)dataEntry.Value);
                         }

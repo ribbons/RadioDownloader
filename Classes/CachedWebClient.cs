@@ -125,7 +125,7 @@ namespace RadioDld
                 }
                 catch (WebException webExp)
                 {
-                    if (webExp.Status != WebExceptionStatus.NameResolutionFailure & webExp.Status != WebExceptionStatus.Timeout)
+                    if (webExp.Status != WebExceptionStatus.NameResolutionFailure && webExp.Status != WebExceptionStatus.Timeout)
                     {
                         // A WebException doesn't serialise well, as Response and Status get lost,
                         // so store the information in a structure and then recreate it later

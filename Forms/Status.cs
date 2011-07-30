@@ -152,7 +152,7 @@ namespace RadioDld
         {
             this.Progress.Style = marquee ? ProgressBarStyle.Marquee : ProgressBarStyle.Blocks;
 
-            if (OsUtils.WinSevenOrLater() & this.IsHandleCreated)
+            if (OsUtils.WinSevenOrLater() && this.IsHandleCreated)
             {
                 if (marquee)
                 {
@@ -174,7 +174,7 @@ namespace RadioDld
         {
             this.Progress.Value = value;
 
-            if (OsUtils.WinSevenOrLater() & this.IsHandleCreated)
+            if (OsUtils.WinSevenOrLater() && this.IsHandleCreated)
             {
                 this.tbarNotif.SetProgressValue(this, value, this.Progress.Maximum);
             }

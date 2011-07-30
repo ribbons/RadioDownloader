@@ -54,7 +54,7 @@ namespace RadioDld
                     readable += Convert.ToString(hours, CultureInfo.CurrentCulture) + "hr" + (hours == 1 ? string.Empty : "s");
                 }
 
-                if (hours > 0 & mins > 0)
+                if (hours > 0 && mins > 0)
                 {
                     readable += " ";
                 }

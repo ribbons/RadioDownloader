@@ -286,7 +286,7 @@ namespace RadioDld
             this.textBox.Top = 4;
             this.textBox.Width = this.button.Left - (this.textBox.Left + 4);
 
-            if (OsUtils.WinVistaOrLater() & VisualStyleRenderer.IsSupported)
+            if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
             {
                 // The textbox is given extra padding as part of the visual style
                 this.textBox.Left = 2;

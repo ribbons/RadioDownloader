@@ -134,7 +134,7 @@ namespace RadioDld
 
                     break;
                 case Keys.Back:
-                    if (!object.ReferenceEquals(this.ActiveControl.GetType(), typeof(TextBox)) & !object.ReferenceEquals(this.ActiveControl.Parent.GetType(), typeof(ExtToolStrip)))
+                    if (!object.ReferenceEquals(this.ActiveControl.GetType(), typeof(TextBox)) && !object.ReferenceEquals(this.ActiveControl.Parent.GetType(), typeof(ExtToolStrip)))
                     {
                         if (e.Shift)
                         {
@@ -411,7 +411,7 @@ namespace RadioDld
                 this.TableToolbars.ColumnStyles[1] = new ColumnStyle(SizeType.Absolute, this.ButtonHelpMenu.Rectangle.Width + this.ToolbarHelp.Margin.Right);
             }
 
-            if (OsUtils.WinVistaOrLater() & VisualStyleRenderer.IsSupported)
+            if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
             {
                 this.ToolbarView.Margin = new Padding(0);
             }
