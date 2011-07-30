@@ -354,7 +354,7 @@ namespace RadioDld
                 this.tbarNotif = new TaskbarNotify();
             }
 
-            if (!OsUtils.WinSevenOrLater() | Properties.Settings.Default.CloseToSystray)
+            if (!OsUtils.WinSevenOrLater() || Properties.Settings.Default.CloseToSystray)
             {
                 // Show a system tray icon
                 this.NotifyIcon.Visible = true;
@@ -816,7 +816,7 @@ namespace RadioDld
 
             if (picture != null)
             {
-                if (picture.Width > this.ImageSidebar.MaximumSize.Width | picture.Height > this.ImageSidebar.MaximumSize.Height)
+                if (picture.Width > this.ImageSidebar.MaximumSize.Width || picture.Height > this.ImageSidebar.MaximumSize.Height)
                 {
                     int newWidth = 0;
                     int newHeight = 0;
@@ -1584,7 +1584,7 @@ namespace RadioDld
 
                     using (UpdateNotify showUpdate = new UpdateNotify())
                     {
-                        if (this.WindowState == FormWindowState.Minimized | this.Visible == false)
+                        if (this.WindowState == FormWindowState.Minimized || this.Visible == false)
                         {
                             showUpdate.StartPosition = FormStartPosition.CenterScreen;
                         }

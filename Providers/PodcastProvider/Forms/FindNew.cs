@@ -82,7 +82,7 @@ namespace PodcastProvider
                 XmlNode checkTitle = rss.SelectSingleNode("./rss/channel/title");
                 XmlNode checkDescription = rss.SelectSingleNode("./rss/channel/description");
 
-                if (checkTitle == null | checkDescription == null)
+                if (checkTitle == null || checkDescription == null)
                 {
                     this.LabelResult.Text = "The RSS feed returned from the specified URL was not valid.";
                     this.LabelResult.ForeColor = System.Drawing.Color.Red;

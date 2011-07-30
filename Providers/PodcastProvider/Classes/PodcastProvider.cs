@@ -121,7 +121,7 @@ namespace PodcastProvider
             XmlNode titleNode = rss.SelectSingleNode("./rss/channel/title");
             XmlNode descriptionNode = rss.SelectSingleNode("./rss/channel/description");
 
-            if (titleNode == null | descriptionNode == null)
+            if (titleNode == null || descriptionNode == null)
             {
                 return getProgInfo;
             }
@@ -359,7 +359,7 @@ namespace PodcastProvider
                                     pubDate = zoneFree;
                                     break;
                                 default:
-                                    if (zone.Length >= 4 & Information.IsNumeric(zone) | Information.IsNumeric(zone.Substring(1)))
+                                    if (zone.Length >= 4 & Information.IsNumeric(zone) || Information.IsNumeric(zone.Substring(1)))
                                     {
                                         try
                                         {
