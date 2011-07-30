@@ -1544,7 +1544,7 @@ namespace RadioDld
             {
                 if (commandLineArg.ToUpperInvariant() == "/HIDEMAINWINDOW")
                 {
-                    if (OsUtils.WinSevenOrLater())
+                    if (OsUtils.WinSevenOrLater() && !Properties.Settings.Default.CloseToSystray)
                     {
                         this.WindowState = FormWindowState.Minimized;
                     }
