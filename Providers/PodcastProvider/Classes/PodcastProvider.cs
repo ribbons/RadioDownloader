@@ -359,7 +359,7 @@ namespace PodcastProvider
                                     pubDate = zoneFree;
                                     break;
                                 default:
-                                    if (zone.Length >= 4 && Information.IsNumeric(zone) || Information.IsNumeric(zone.Substring(1)))
+                                    if (zone.Length >= 4 && (Information.IsNumeric(zone) || Information.IsNumeric(zone.Substring(1))))
                                     {
                                         try
                                         {
