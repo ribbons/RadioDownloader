@@ -105,14 +105,14 @@ namespace RadioDld
         public const int NM_RCLICK = NM_FIRST - 5;
 
         // ITaskbarList3 Flags
-        [Flags()]
+        [Flags]
         public enum TBATFLAG
         {
             TBATF_USEMDITHUMBNAIL = 0x1,
             TBATF_USEMDILIVEPREVIEW = 0x2
         }
 
-        [Flags()]
+        [Flags]
         public enum TBPFLAG
         {
             TBPF_NOPROGRESS = 0,
@@ -122,7 +122,7 @@ namespace RadioDld
             TBPF_PAUSED = 0x8
         }
 
-        [ComImport(), InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF")]
+        [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF")]
         public interface ITaskbarList3
         {
             void HrInit();

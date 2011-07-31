@@ -30,7 +30,7 @@ namespace RadioDld
 
     internal class Data
     {
-        [ThreadStatic()]
+        [ThreadStatic]
         private static SQLiteConnection dbConn;
         private static Data dataInstance;
 

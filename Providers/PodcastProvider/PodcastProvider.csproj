@@ -170,7 +170,7 @@
     <None Include="Resources\podcast_64.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(ProgramFiles)\MSBuild\Microsoft\StyleCop\v4.4\Microsoft.StyleCop.targets" Condition=" '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(ProgramFiles)\MSBuild\StyleCop\v4.5\StyleCop.targets" Condition=" '$(OS)' == 'Windows_NT' " />
   <Target Name="BeforeBuild">
   </Target>
 </Project>

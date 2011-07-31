@@ -60,7 +60,7 @@ namespace RadioDld
                 versionInfo = Strings.Split(versionInfo, "\r\n")[0];
 
                 // There is a new version available
-                if (String.Compare(versionInfo, Application.ProductVersion, StringComparison.Ordinal) > 0)
+                if (string.Compare(versionInfo, Application.ProductVersion, StringComparison.Ordinal) > 0)
                 {
                     return true;
                 }

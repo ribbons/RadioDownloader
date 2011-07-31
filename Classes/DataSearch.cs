@@ -25,7 +25,7 @@ namespace RadioDld
 
     internal class DataSearch
     {
-        [ThreadStatic()]
+        [ThreadStatic]
         private static SQLiteConnection dbConn;
         private static DataSearch searchInstance;
 

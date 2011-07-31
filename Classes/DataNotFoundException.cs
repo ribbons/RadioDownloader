@@ -22,7 +22,7 @@ namespace RadioDld
     using System.Security.Permissions;
     using System.Text;
 
-    [Serializable()]
+    [Serializable]
     public class DataNotFoundException : Exception
     {
         public DataNotFoundException()

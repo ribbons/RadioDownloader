@@ -31,7 +31,7 @@ namespace RadioDld
     {
         private static CachedWebClient instance = new CachedWebClient();
 
-        [ThreadStatic()]
+        [ThreadStatic]
         private static SQLiteConnection dbConn;
 
         private CachedWebClient()
@@ -237,7 +237,7 @@ namespace RadioDld
             }
         }
 
-        [Serializable()]
+        [Serializable]
         public struct CacheWebExpInfo
         {
             public string Message;

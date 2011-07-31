@@ -33,7 +33,7 @@ namespace RadioDld
         RemoteProblem = 7
     }
 
-    [Serializable()]
+    [Serializable]
     public class DldErrorDataItem
     {
         public DldErrorDataItem(string name, string data)
@@ -52,7 +52,7 @@ namespace RadioDld
         public string Data { get; set; }
     }
 
-    [Serializable()]
+    [Serializable]
     public class DownloadException : Exception
     {
         private readonly ErrorType type;
