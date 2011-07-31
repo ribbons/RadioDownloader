@@ -82,7 +82,7 @@ namespace RadioDld
 
                 try
                 {
-                    if (e.Item.Enabled == false)
+                    if (!e.Item.Enabled)
                     {
                         navigation = new VisualStyleRenderer("Navigation", stylePart, NativeMethods.NAV_BF_DISABLED);
                     }
@@ -202,7 +202,7 @@ namespace RadioDld
 
         protected override void OnRenderItemText(System.Windows.Forms.ToolStripItemTextRenderEventArgs e)
         {
-            if (OsUtils.CompositionEnabled() == false)
+            if (!OsUtils.CompositionEnabled())
             {
                 // The OS doesn't support desktop composition, or it isn't enabled
                 base.OnRenderItemText(e);
@@ -298,17 +298,17 @@ namespace RadioDld
             }
 
             // Clean up the GDI objects
-            if (NativeMethods.DeleteObject(hFont) == false)
+            if (!NativeMethods.DeleteObject(hFont))
             {
                 throw new Win32Exception();
             }
 
-            if (NativeMethods.DeleteObject(dib) == false)
+            if (!NativeMethods.DeleteObject(dib))
             {
                 throw new Win32Exception();
             }
 
-            if (NativeMethods.DeleteDC(memoryHdc) == false)
+            if (!NativeMethods.DeleteDC(memoryHdc))
             {
                 throw new Win32Exception();
             }
@@ -320,7 +320,7 @@ namespace RadioDld
         {
             if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
             {
-                if (OsUtils.CompositionEnabled() == false)
+                if (!OsUtils.CompositionEnabled())
                 {
                     e.Graphics.DrawLine(this.nonAeroBorder, 0, e.AffectedBounds.Bottom - 1, e.ToolStrip.Width, e.AffectedBounds.Bottom - 1);
                 }

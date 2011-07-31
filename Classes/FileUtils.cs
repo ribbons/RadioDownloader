@@ -32,7 +32,7 @@ namespace RadioDld
 
             if (!string.IsNullOrEmpty(Properties.Settings.Default.SaveFolder))
             {
-                if (new DirectoryInfo(Properties.Settings.Default.SaveFolder).Exists == false)
+                if (!new DirectoryInfo(Properties.Settings.Default.SaveFolder).Exists)
                 {
                     throw new DirectoryNotFoundException();
                 }

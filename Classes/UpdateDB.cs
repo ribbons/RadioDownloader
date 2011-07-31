@@ -82,7 +82,7 @@ namespace RadioDld
 
                             using (SQLiteDataReader checkUpdateRdr = checkUpdateCmd.ExecuteReader())
                             {
-                                if (checkUpdateRdr.Read() == false)
+                                if (!checkUpdateRdr.Read())
                                 {
                                     // The table doesn't exist
                                     updateReqd = UpdateType.Create;

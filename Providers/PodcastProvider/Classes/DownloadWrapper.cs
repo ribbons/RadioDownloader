@@ -73,7 +73,7 @@ namespace PodcastProvider
 
         private void DownloadClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            if (e.Cancelled == false)
+            if (!e.Cancelled)
             {
                 SystemEvents.PowerModeChanged -= this.PowerModeChange;
 

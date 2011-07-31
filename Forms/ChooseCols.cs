@@ -94,7 +94,7 @@ namespace RadioDld
             // Add the rest of the columns to the list in their defined order
             foreach (int column in this.columnNames.Keys)
             {
-                if (this.columnOrder.Contains(column) == false)
+                if (!this.columnOrder.Contains(column))
                 {
                     ListViewItem addCol = new ListViewItem(this.columnNames[column]);
                     addCol.Name = column.ToString(CultureInfo.InvariantCulture);

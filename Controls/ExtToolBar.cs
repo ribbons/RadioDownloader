@@ -33,7 +33,7 @@ namespace RadioDld
                 throw new ArgumentNullException("button");
             }
 
-            if (this.wholeDropDownButtons.Contains(button) == false)
+            if (!this.wholeDropDownButtons.Contains(button))
             {
                 this.wholeDropDownButtons.Add(button);
             }

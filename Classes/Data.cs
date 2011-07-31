@@ -766,7 +766,7 @@ namespace RadioDld
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    if (reader.Read() == false)
+                    if (!reader.Read())
                     {
                         throw new DataNotFoundException(epid, "Download does not exist");
                     }
@@ -804,7 +804,7 @@ namespace RadioDld
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    if (reader.Read() == false)
+                    if (!reader.Read())
                     {
                         throw new DataNotFoundException(progid, "Programme does not exist");
                     }
@@ -862,7 +862,7 @@ namespace RadioDld
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    if (reader.Read() == false)
+                    if (!reader.Read())
                     {
                         throw new DataNotFoundException(epid, "Episode does not exist");
                     }
@@ -901,7 +901,7 @@ namespace RadioDld
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    if (reader.Read() == false)
+                    if (!reader.Read())
                     {
                         throw new DataNotFoundException(progid, "Programme does not exist");
                     }
@@ -1313,7 +1313,7 @@ namespace RadioDld
 
                             using (SQLiteMonDataReader progInfReader = new SQLiteMonDataReader(progInfCmd.ExecuteReader()))
                             {
-                                if (progInfReader.Read() == false)
+                                if (!progInfReader.Read())
                                 {
                                     continue;
                                 }
@@ -1380,7 +1380,7 @@ namespace RadioDld
 
                                     using (SQLiteMonDataReader checkRdr = new SQLiteMonDataReader(checkCmd.ExecuteReader()))
                                     {
-                                        if (checkRdr.Read() == false)
+                                        if (!checkRdr.Read())
                                         {
                                             this.AddDownloadAsync(epid);
                                         }
@@ -1583,7 +1583,7 @@ namespace RadioDld
                         command.ExecuteNonQuery();
                     }
 
-                    if (auto == false)
+                    if (!auto)
                     {
                         using (SQLiteCommand command = new SQLiteCommand("update downloads set errorcount=0 where epid=@epid", this.FetchDbConn(), transMon.Trans))
                         {
@@ -1611,7 +1611,7 @@ namespace RadioDld
                 }
             }
 
-            if (auto == false)
+            if (!auto)
             {
                 this.StartDownloadAsync();
             }
@@ -1629,7 +1629,7 @@ namespace RadioDld
                         command.ExecuteNonQuery();
                     }
 
-                    if (auto == false)
+                    if (!auto)
                     {
                         // Unet the auto download flag, so if the user is subscribed it doesn't just download again
                         this.EpisodeSetAutoDownloadAsync(epid, false);
@@ -1670,7 +1670,7 @@ namespace RadioDld
                     // This episode is currently being downloaded
                     if (this.downloadThread != null)
                     {
-                        if (auto == false)
+                        if (!auto)
                         {
                             // This is called by the download thread if it is an automatic removal
                             this.downloadThread.Abort();
@@ -1894,7 +1894,7 @@ namespace RadioDld
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    if (reader.Read() == false)
+                    if (!reader.Read())
                     {
                         return null;
                     }
@@ -1988,7 +1988,7 @@ namespace RadioDld
 
         private int? StoreProgrammeInfo(Guid pluginId, string progExtId)
         {
-            if (this.pluginsInst.PluginExists(pluginId) == false)
+            if (!this.pluginsInst.PluginExists(pluginId))
             {
                 return null;
             }
@@ -1998,7 +1998,7 @@ namespace RadioDld
 
             progInfo = pluginInstance.GetProgrammeInfo(progExtId);
 
-            if (progInfo.Success == false)
+            if (!progInfo.Success)
             {
                 return null;
             }
@@ -2160,7 +2160,7 @@ namespace RadioDld
 
         private List<string> GetAvailableEpisodes(Guid providerId, string progExtId)
         {
-            if (this.pluginsInst.PluginExists(providerId) == false)
+            if (!this.pluginsInst.PluginExists(providerId))
             {
                 return null;
             }
@@ -2180,7 +2180,7 @@ namespace RadioDld
 
             foreach (string removeDups in extIds)
             {
-                if (extIdsUnique.Contains(removeDups) == false)
+                if (!extIdsUnique.Contains(removeDups))
                 {
                     extIdsUnique.Add(removeDups);
                 }
@@ -2266,7 +2266,7 @@ namespace RadioDld
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    if (reader.Read() == false)
+                    if (!reader.Read())
                     {
                         return;
                     }

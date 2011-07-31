@@ -225,7 +225,7 @@ namespace RadioDld
             // Make sure that the database exists.  If not, then copy across the empty database from the program's folder.
             System.IO.FileInfo fileExits = new System.IO.FileInfo(Path.Combine(FileUtils.GetAppDataFolder(), "store.db"));
 
-            if (fileExits.Exists == false)
+            if (!fileExits.Exists)
             {
                 try
                 {
@@ -443,7 +443,7 @@ namespace RadioDld
                     this.Visible = false;
                     eventArgs.Cancel = true;
 
-                    if (Properties.Settings.Default.ShownTrayBalloon == false)
+                    if (!Properties.Settings.Default.ShownTrayBalloon)
                     {
                         this.NotifyIcon.BalloonTipIcon = ToolTipIcon.Info;
                         this.NotifyIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + Environment.NewLine + "Click here to hide this message in future.";
@@ -877,7 +877,7 @@ namespace RadioDld
 
         private void MenuTrayShow_Click(object sender, System.EventArgs e)
         {
-            if (this.Visible == false)
+            if (!this.Visible)
             {
                 OsUtils.TrayAnimate(this, false);
                 this.Visible = true;
@@ -1507,7 +1507,7 @@ namespace RadioDld
                 return;
             }
 
-            if (this.IsDisposed == false)
+            if (!this.IsDisposed)
             {
                 this.UpdateTrayStatus(downloading);
 
@@ -1584,7 +1584,7 @@ namespace RadioDld
 
                     using (UpdateNotify showUpdate = new UpdateNotify())
                     {
-                        if (this.WindowState == FormWindowState.Minimized || this.Visible == false)
+                        if (this.WindowState == FormWindowState.Minimized || !this.Visible)
                         {
                             showUpdate.StartPosition = FormStartPosition.CenterScreen;
                         }

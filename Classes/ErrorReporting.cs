@@ -137,7 +137,7 @@ namespace RadioDld
                     // Test to see if this property is overloaded
                     foreach (PropertyInfo overloadChkProp in exceptionType.GetProperties())
                     {
-                        if (overloadChkProp.Equals(thisExpProperty) == false)
+                        if (!overloadChkProp.Equals(thisExpProperty))
                         {
                             if (overloadChkProp.Name == thisExpProperty.Name)
                             {
@@ -167,7 +167,7 @@ namespace RadioDld
 
                         if (propertyValue != null && !string.IsNullOrEmpty(propertyValue.ToString()))
                         {
-                            if (notSerialize.Contains(propertyValue.GetType()) == false)
+                            if (!notSerialize.Contains(propertyValue.GetType()))
                             {
                                 if (propertyValue.GetType().IsSerializable)
                                 {

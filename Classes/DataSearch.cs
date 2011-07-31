@@ -47,7 +47,7 @@ namespace RadioDld
 
             using (Status showStatus = new Status())
             {
-                if (this.CheckIndex(tableCols) == false)
+                if (!this.CheckIndex(tableCols))
                 {
                     // Close & clean up the connection used for testing
                     dbConn.Close();

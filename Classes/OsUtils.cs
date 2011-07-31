@@ -109,13 +109,13 @@ namespace RadioDld
             NativeMethods.RECT window = default(NativeMethods.RECT);
 
             // Fetch the location of the systray from its window handle
-            if (NativeMethods.GetWindowRect(trayHwnd, ref systray) == false)
+            if (!NativeMethods.GetWindowRect(trayHwnd, ref systray))
             {
                 throw new Win32Exception();
             }
 
             // Fetch the location of the window from its window handle
-            if (NativeMethods.GetWindowRect(form.Handle, ref window) == false)
+            if (!NativeMethods.GetWindowRect(form.Handle, ref window))
             {
                 throw new Win32Exception();
             }
@@ -123,14 +123,14 @@ namespace RadioDld
             // Perform the animation
             if (down)
             {
-                if (NativeMethods.DrawAnimatedRects(form.Handle, NativeMethods.IDANI_CAPTION, ref window, ref systray) == false)
+                if (!NativeMethods.DrawAnimatedRects(form.Handle, NativeMethods.IDANI_CAPTION, ref window, ref systray))
                 {
                     throw new Win32Exception();
                 }
             }
             else
             {
-                if (NativeMethods.DrawAnimatedRects(form.Handle, NativeMethods.IDANI_CAPTION, ref systray, ref window) == false)
+                if (!NativeMethods.DrawAnimatedRects(form.Handle, NativeMethods.IDANI_CAPTION, ref systray, ref window))
                 {
                     throw new Win32Exception();
                 }
