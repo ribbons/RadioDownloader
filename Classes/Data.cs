@@ -102,7 +102,12 @@ namespace RadioDld
             this.search = DataSearch.GetInstance(this);
 
             // Start regularly checking for new subscriptions in the background
-            ThreadPool.QueueUserWorkItem(delegate { this.CheckSubscriptions(); });
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                // Wait for 2 minutes while the application starts
+                Thread.Sleep(120000);
+                this.CheckSubscriptions();
+            });
         }
 
         public delegate void ProviderAddedEventHandler(Guid providerId);
@@ -1268,9 +1273,6 @@ namespace RadioDld
 
         private void CheckSubscriptions()
         {
-            // Wait for 10 minutes to give a pause between each check for new episodes
-            Thread.Sleep(600000);
-
             List<int> progids = new List<int>();
 
             // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
@@ -1391,6 +1393,9 @@ namespace RadioDld
                     }
                 }
             }
+
+            // Wait for 10 minutes to give a pause between each check for new episodes
+            Thread.Sleep(600000);
 
             // Queue the next subscription check.  This is used instead of a loop
             // as it frees up a slot in the thread pool other actions are waiting.
