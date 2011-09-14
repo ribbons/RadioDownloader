@@ -79,9 +79,9 @@ namespace RadioDld
                             showStatus.StatusText = "Building search index for downloads...";
 
                             int progress = 1;
-                            List<Data.DownloadData> downloadItems = this.dataInstance.FetchDownloadList(false);
+                            List<Model.Download> downloadItems = this.dataInstance.FetchDownloadList(false);
 
-                            foreach (Data.DownloadData downloadItem in downloadItems)
+                            foreach (Model.Download downloadItem in downloadItems)
                             {
                                 this.AddDownload(downloadItem);
 
@@ -159,7 +159,7 @@ namespace RadioDld
 
         public void AddDownload(int epid)
         {
-            Data.DownloadData downloadData = this.dataInstance.FetchDownloadData(epid);
+            Model.Download downloadData = this.dataInstance.FetchDownloadData(epid);
             this.AddDownload(downloadData);
         }
 
@@ -258,7 +258,7 @@ namespace RadioDld
             }
         }
 
-        private void AddDownload(Data.DownloadData storeData)
+        private void AddDownload(Model.Download storeData)
         {
             lock (this.updateIndexLock)
             {

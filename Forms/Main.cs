@@ -496,8 +496,8 @@ namespace RadioDld
 
         private void ShowEpisodeInfo(int epid)
         {
-            Data.ProgrammeData progInfo = this.progData.FetchProgrammeData((int)this.view.CurrentViewData);
-            Data.EpisodeData epInfo = this.progData.FetchEpisodeData(epid);
+            Model.Programme progInfo = this.progData.FetchProgrammeData((int)this.view.CurrentViewData);
+            Model.Episode epInfo = this.progData.FetchEpisodeData(epid);
             string infoText = string.Empty;
 
             if (epInfo.Description != null)
@@ -564,7 +564,7 @@ namespace RadioDld
 
         private void ShowFavouriteInfo(int progid)
         {
-            Data.FavouriteData info = this.progData.FetchFavouriteData(progid);
+            Model.Favourite info = this.progData.FetchFavouriteData(progid);
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.AddRange(new ToolBarButton[] { this.ButtonRemFavourite, this.ButtonCurrentEps });
@@ -599,7 +599,7 @@ namespace RadioDld
 
         private void ShowSubscriptionInfo(int progid)
         {
-            Data.SubscriptionData info = this.progData.FetchSubscriptionData(progid);
+            Model.Subscription info = this.progData.FetchSubscriptionData(progid);
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.Add(this.ButtonUnsubscribe);
@@ -727,7 +727,7 @@ namespace RadioDld
 
         private void ShowDownloadInfo(int epid)
         {
-            Data.DownloadData info = this.progData.FetchDownloadData(epid);
+            Model.Download info = this.progData.FetchDownloadData(epid);
 
             string infoText = string.Empty;
 
@@ -744,7 +744,7 @@ namespace RadioDld
 
             switch (info.Status)
             {
-                case Data.DownloadStatus.Downloaded:
+                case Model.Download.DownloadStatus.Downloaded:
                     if (File.Exists(info.DownloadPath))
                     {
                         buttons.Add(this.ButtonPlay);
@@ -754,7 +754,7 @@ namespace RadioDld
                     infoText += Environment.NewLine + "Play count: " + info.PlayCount.ToString(CultureInfo.CurrentCulture);
 
                     break;
-                case Data.DownloadStatus.Errored:
+                case Model.Download.DownloadStatus.Errored:
                     string errorName = string.Empty;
                     string errorDetails = info.ErrorDetails;
 
@@ -1022,7 +1022,7 @@ namespace RadioDld
 
         private void ShowProgrammeInfo(int progid)
         {
-            Data.ProgrammeData progInfo = this.progData.FetchProgrammeData((int)this.view.CurrentViewData);
+            Model.Programme progInfo = this.progData.FetchProgrammeData((int)this.view.CurrentViewData);
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
 
@@ -1048,7 +1048,7 @@ namespace RadioDld
             this.SetSideBar(progInfo.Name, progInfo.Description, this.progData.FetchProgrammeImage(progid));
         }
 
-        private void EpisodeListItem(int epid, Data.EpisodeData info, ref ListViewItem item)
+        private void EpisodeListItem(int epid, Model.Episode info, ref ListViewItem item)
         {
             item.Name = epid.ToString(CultureInfo.InvariantCulture);
             item.Text = info.EpisodeDate.ToShortDateString();
@@ -1065,7 +1065,7 @@ namespace RadioDld
                 return;
             }
 
-            Data.EpisodeData info = this.progData.FetchEpisodeData(epid);
+            Model.Episode info = this.progData.FetchEpisodeData(epid);
 
             ListViewItem addItem = new ListViewItem();
             addItem.SubItems.Add(string.Empty);
@@ -1086,7 +1086,7 @@ namespace RadioDld
                 return;
             }
 
-            Data.FavouriteData info = this.progData.FetchFavouriteData(progid);
+            Model.Favourite info = this.progData.FetchFavouriteData(progid);
 
             this.ListFavourites.Items.Add(this.FavouriteListItem(info, null));
 
@@ -1109,7 +1109,7 @@ namespace RadioDld
                 return;
             }
 
-            Data.FavouriteData info = this.progData.FetchFavouriteData(progid);
+            Model.Favourite info = this.progData.FetchFavouriteData(progid);
             ListViewItem item = this.ListFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)];
 
             item = this.FavouriteListItem(info, item);
@@ -1128,7 +1128,7 @@ namespace RadioDld
             }
         }
 
-        private ListViewItem FavouriteListItem(Data.FavouriteData info, ListViewItem item)
+        private ListViewItem FavouriteListItem(Model.Favourite info, ListViewItem item)
         {
             if (item == null)
             {
@@ -1166,7 +1166,7 @@ namespace RadioDld
             }
         }
 
-        private void SubscriptionListItem(int progid, Data.SubscriptionData info, ref ListViewItem item)
+        private void SubscriptionListItem(int progid, Model.Subscription info, ref ListViewItem item)
         {
             item.Name = progid.ToString(CultureInfo.InvariantCulture);
             item.Text = info.Name;
@@ -1193,7 +1193,7 @@ namespace RadioDld
                 return;
             }
 
-            Data.SubscriptionData info = this.progData.FetchSubscriptionData(progid);
+            Model.Subscription info = this.progData.FetchSubscriptionData(progid);
 
             ListViewItem addItem = new ListViewItem();
             addItem.SubItems.Add(string.Empty);
@@ -1221,7 +1221,7 @@ namespace RadioDld
                 return;
             }
 
-            Data.SubscriptionData info = this.progData.FetchSubscriptionData(progid);
+            Model.Subscription info = this.progData.FetchSubscriptionData(progid);
             ListViewItem item = this.ListSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)];
 
             this.SubscriptionListItem(progid, info, ref item);
@@ -1261,7 +1261,7 @@ namespace RadioDld
             }
         }
 
-        private ListViewItem DownloadListItem(Data.DownloadData info, ListViewItem item)
+        private ListViewItem DownloadListItem(Model.Download info, ListViewItem item)
         {
             if (item == null)
             {
@@ -1291,10 +1291,10 @@ namespace RadioDld
                     case Data.DownloadCols.Status:
                         switch (info.Status)
                         {
-                            case Data.DownloadStatus.Waiting:
+                            case Model.Download.DownloadStatus.Waiting:
                                 item.SubItems[column].Text = "Waiting";
                                 break;
-                            case Data.DownloadStatus.Downloaded:
+                            case Model.Download.DownloadStatus.Downloaded:
                                 if (info.PlayCount == 0)
                                 {
                                     item.SubItems[column].Text = "Newly Downloaded";
@@ -1305,7 +1305,7 @@ namespace RadioDld
                                 }
 
                                 break;
-                            case Data.DownloadStatus.Errored:
+                            case Model.Download.DownloadStatus.Errored:
                                 item.SubItems[column].Text = "Error";
                                 break;
                             default:
@@ -1337,10 +1337,10 @@ namespace RadioDld
 
             switch (info.Status)
             {
-                case Data.DownloadStatus.Waiting:
+                case Model.Download.DownloadStatus.Waiting:
                     item.ImageKey = "waiting";
                     break;
-                case Data.DownloadStatus.Downloaded:
+                case Model.Download.DownloadStatus.Downloaded:
                     if (info.PlayCount == 0)
                     {
                         item.ImageKey = "downloaded_new";
@@ -1351,7 +1351,7 @@ namespace RadioDld
                     }
 
                     break;
-                case Data.DownloadStatus.Errored:
+                case Model.Download.DownloadStatus.Errored:
                     item.ImageKey = "error";
                     break;
                 default:
@@ -1370,7 +1370,7 @@ namespace RadioDld
                 return;
             }
 
-            Data.DownloadData info = this.progData.FetchDownloadData(epid);
+            Model.Download info = this.progData.FetchDownloadData(epid);
             this.ListDownloads.Items.Add(this.DownloadListItem(info, null));
 
             if (this.view.CurrentView == ViewState.View.Downloads)
@@ -1468,7 +1468,7 @@ namespace RadioDld
                 return;
             }
 
-            Data.DownloadData info = this.progData.FetchDownloadData(epid);
+            Model.Download info = this.progData.FetchDownloadData(epid);
 
             ListViewItem item = this.ListDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
             item = this.DownloadListItem(info, item);
@@ -1705,9 +1705,9 @@ namespace RadioDld
         private void ButtonPlay_Click()
         {
             int epid = Convert.ToInt32(this.ListDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-            Data.DownloadData info = this.progData.FetchDownloadData(epid);
+            Model.Download info = this.progData.FetchDownloadData(epid);
 
-            if (info.Status == Data.DownloadStatus.Downloaded)
+            if (info.Status == Model.Download.DownloadStatus.Downloaded)
             {
                 if (File.Exists(info.DownloadPath))
                 {
@@ -1722,7 +1722,7 @@ namespace RadioDld
         private void ButtonDelete_Click()
         {
             int epid = Convert.ToInt32(this.ListDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-            Data.DownloadData info = this.progData.FetchDownloadData(epid);
+            Model.Download info = this.progData.FetchDownloadData(epid);
 
             bool fileExists = File.Exists(info.DownloadPath);
             string delQuestion = "Are you sure that you would like to delete this episode";
@@ -2155,7 +2155,7 @@ namespace RadioDld
             }
 
             // Convert the list of FavouriteData items to an array of ListItems
-            List<Data.FavouriteData> initData = this.progData.FetchFavouriteList();
+            List<Model.Favourite> initData = this.progData.FetchFavouriteList();
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
             for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
@@ -2224,7 +2224,7 @@ namespace RadioDld
             this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(this.progData.DownloadSortByCol), this.progData.DownloadSortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Convert the list of DownloadData items to an array of ListItems
-            List<Data.DownloadData> initData = this.progData.FetchDownloadList(true);
+            List<Model.Download> initData = this.progData.FetchDownloadList(true);
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
             for (int convItems = 0; convItems <= initData.Count - 1; convItems++)

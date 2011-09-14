@@ -174,13 +174,6 @@ namespace RadioDld
 
         public event DownloadProgressTotalEventHandler DownloadProgressTotal;
 
-        public enum DownloadStatus
-        {
-            Waiting = 0,
-            Downloaded = 1,
-            Errored = 2
-        }
-
         public enum DownloadCols
         {
             EpisodeName = 0,
@@ -347,7 +340,7 @@ namespace RadioDld
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", this.FetchDbConn()))
             {
-                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
+                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
             }
         }
@@ -356,7 +349,7 @@ namespace RadioDld
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", this.FetchDbConn()))
             {
-                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
+                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
             }
         }
@@ -518,7 +511,7 @@ namespace RadioDld
         {
             using (SQLiteCommand command = new SQLiteCommand("select epid, filepath from downloads where status=@status", this.FetchDbConn()))
             {
-                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
+                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -738,9 +731,9 @@ namespace RadioDld
             }
         }
 
-        public List<DownloadData> FetchDownloadList(bool filtered)
+        public List<Model.Download> FetchDownloadList(bool filtered)
         {
-            List<DownloadData> downloadList = new List<DownloadData>();
+            List<Model.Download> downloadList = new List<Model.Download>();
 
             using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", this.FetchDbConn()))
             {
@@ -763,7 +756,7 @@ namespace RadioDld
             return downloadList;
         }
 
-        public DownloadData FetchDownloadData(int epid)
+        public Model.Download FetchDownloadData(int epid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", this.FetchDbConn()))
             {
@@ -781,9 +774,9 @@ namespace RadioDld
             }
         }
 
-        public List<FavouriteData> FetchFavouriteList()
+        public List<Model.Favourite> FetchFavouriteList()
         {
-            List<FavouriteData> favouriteList = new List<FavouriteData>();
+            List<Model.Favourite> favouriteList = new List<Model.Favourite>();
 
             using (SQLiteCommand command = new SQLiteCommand("select favourites.progid, name, description, singleepisode, pluginid from favourites, programmes where favourites.progid = programmes.progid", this.FetchDbConn()))
             {
@@ -801,7 +794,7 @@ namespace RadioDld
             return favouriteList;
         }
 
-        public FavouriteData FetchFavouriteData(int progid)
+        public Model.Favourite FetchFavouriteData(int progid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select name, description, singleepisode, pluginid from programmes where progid=@progid", this.FetchDbConn()))
             {
@@ -819,7 +812,7 @@ namespace RadioDld
             }
         }
 
-        public SubscriptionData FetchSubscriptionData(int progid)
+        public Model.Subscription FetchSubscriptionData(int progid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select name, description, pluginid, latestdownload from programmes where progid=@progid", this.FetchDbConn()))
             {
@@ -835,7 +828,7 @@ namespace RadioDld
                     int descriptionOrdinal = reader.GetOrdinal("description");
                     int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
 
-                    SubscriptionData info = new SubscriptionData();
+                    Model.Subscription info = new Model.Subscription();
                     info.Name = reader.GetString(reader.GetOrdinal("name"));
 
                     if (!reader.IsDBNull(descriptionOrdinal))
@@ -859,7 +852,7 @@ namespace RadioDld
             }
         }
 
-        public EpisodeData FetchEpisodeData(int epid)
+        public Model.Episode FetchEpisodeData(int epid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select name, description, date, duration, autodownload from episodes where epid=@epid", this.FetchDbConn()))
             {
@@ -875,7 +868,7 @@ namespace RadioDld
                     int descriptionOrdinal = reader.GetOrdinal("description");
                     int durationOrdinal = reader.GetOrdinal("duration");
 
-                    EpisodeData info = new EpisodeData();
+                    Model.Episode info = new Model.Episode();
                     info.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
                     info.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.EpisodeDate);
 
@@ -896,9 +889,9 @@ namespace RadioDld
             }
         }
 
-        public ProgrammeData FetchProgrammeData(int progid)
+        public Model.Programme FetchProgrammeData(int progid)
         {
-            ProgrammeData info = new ProgrammeData();
+            Model.Programme info = new Model.Programme();
 
             using (SQLiteCommand command = new SQLiteCommand("select name, description, singleepisode from programmes where progid=@progid", this.FetchDbConn()))
             {
@@ -1034,8 +1027,8 @@ namespace RadioDld
                 {
                     using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", this.FetchDbConn()))
                     {
-                        command.Parameters.Add(new SQLiteParameter("@statuswait", DownloadStatus.Waiting));
-                        command.Parameters.Add(new SQLiteParameter("@statuserr", DownloadStatus.Errored));
+                        command.Parameters.Add(new SQLiteParameter("@statuswait", Model.Download.DownloadStatus.Waiting));
+                        command.Parameters.Add(new SQLiteParameter("@statuserr", Model.Download.DownloadStatus.Errored));
 
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {
@@ -1144,7 +1137,7 @@ namespace RadioDld
                                     this.curDldProgData.ProgInfo = progInfo;
                                     this.curDldProgData.EpisodeInfo = epiEpInfo;
 
-                                    if ((DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == DownloadStatus.Errored)
+                                    if ((Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == Model.Download.DownloadStatus.Errored)
                                     {
                                         this.ResetDownloadAsync(epid, true);
                                     }
@@ -1583,7 +1576,7 @@ namespace RadioDld
                 {
                     using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", this.FetchDbConn(), transMon.Trans))
                     {
-                        command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Waiting));
+                        command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Waiting));
                         command.Parameters.Add(new SQLiteParameter("@epid", epid));
                         command.ExecuteNonQuery();
                     }
@@ -1745,7 +1738,7 @@ namespace RadioDld
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", this.FetchDbConn()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
+                    command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
                     command.Parameters.Add(new SQLiteParameter("@errortype", errorType));
                     command.Parameters.Add(new SQLiteParameter("@errordetails", errorDetails));
                     command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpId));
@@ -1787,7 +1780,7 @@ namespace RadioDld
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", this.FetchDbConn()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
+                    command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
                     command.Parameters.Add(new SQLiteParameter("@filepath", this.curDldProgData.FinalName));
                     command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpId));
                     command.ExecuteNonQuery();
@@ -2337,13 +2330,13 @@ namespace RadioDld
             }
         }
 
-        private DownloadData ReadDownloadData(int epid, SQLiteMonDataReader reader)
+        private Model.Download ReadDownloadData(int epid, SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int filepathOrdinal = reader.GetOrdinal("filepath");
             int durationOrdinal = reader.GetOrdinal("duration");
 
-            DownloadData info = new DownloadData();
+            Model.Download info = new Model.Download();
             info.Epid = epid;
             info.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
             info.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.EpisodeDate);
@@ -2358,9 +2351,9 @@ namespace RadioDld
                 info.Duration = reader.GetInt32(durationOrdinal);
             }
 
-            info.Status = (DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
+            info.Status = (Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
 
-            if (info.Status == DownloadStatus.Errored)
+            if (info.Status == Model.Download.DownloadStatus.Errored)
             {
                 info.ErrorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
 
@@ -2380,11 +2373,11 @@ namespace RadioDld
             return info;
         }
 
-        private FavouriteData ReadFavouriteData(int progid, SQLiteMonDataReader reader)
+        private Model.Favourite ReadFavouriteData(int progid, SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
 
-            FavouriteData info = new FavouriteData();
+            Model.Favourite info = new Model.Favourite();
             info.Progid = progid;
             info.Name = reader.GetString(reader.GetOrdinal("name"));
 
@@ -2428,57 +2421,6 @@ namespace RadioDld
             public string Description;
             public Bitmap Icon;
             public EventHandler ShowOptionsHandler;
-        }
-
-        public struct EpisodeData
-        {
-            public string Name;
-            public string Description;
-            public System.DateTime EpisodeDate;
-            public int Duration;
-            public bool AutoDownload;
-        }
-
-        public struct ProgrammeData
-        {
-            public string Name;
-            public string Description;
-            public bool Favourite;
-            public bool Subscribed;
-            public bool SingleEpisode;
-        }
-
-        public struct FavouriteData
-        {
-            public int Progid;
-            public string Name;
-            public string Description;
-            public bool Subscribed;
-            public bool SingleEpisode;
-            public string ProviderName;
-        }
-
-        public struct SubscriptionData
-        {
-            public string Name;
-            public string Description;
-            public bool Favourite;
-            public DateTime? LatestDownload;
-            public string ProviderName;
-        }
-
-        public struct DownloadData
-        {
-            public int Epid;
-            public string Name;
-            public string Description;
-            public int Duration;
-            public System.DateTime EpisodeDate;
-            public DownloadStatus Status;
-            public ErrorType ErrorType;
-            public string ErrorDetails;
-            public string DownloadPath;
-            public int PlayCount;
         }
     }
 }

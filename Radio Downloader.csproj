@@ -178,9 +178,14 @@
     <Compile Include="Classes\AppInstance.cs" />
     <Compile Include="Classes\DataNotFoundException.cs" />
     <Compile Include="Classes\DownloadException.cs" />
+    <Compile Include="Classes\Model\Download.cs" />
+    <Compile Include="Classes\Model\Subscription.cs" />
+    <Compile Include="Classes\Model\Episode.cs" />
     <Compile Include="Classes\FileUtils.cs" />
     <Compile Include="Classes\DataSearch.cs" />
     <Compile Include="Classes\ListItemComparer.cs" />
+    <Compile Include="Classes\Model\Favourite.cs" />
+    <Compile Include="Classes\Model\Programme.cs" />
     <Compile Include="Classes\NativeMethods.cs" />
     <Compile Include="Classes\TabBarRenderer.cs" />
     <Compile Include="Classes\OsUtils.cs" />

@@ -1,0 +1,40 @@
+﻿/* 
+ * This file is part of Radio Downloader.
+ * Copyright © 2007-2011 Matt Robinson
+ * 
+ * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
+ * option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+ * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+ * License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with this program.  If not, see
+ * <http://www.gnu.org/licenses/>.
+ */
+
+namespace RadioDld.Model
+{
+    using System;
+
+    internal class Download : Episode
+    {
+        public enum DownloadStatus
+        {
+            Waiting = 0,
+            Downloaded = 1,
+            Errored = 2
+        }
+
+        public DownloadStatus Status { get; set; }
+
+        public ErrorType ErrorType { get; set; }
+
+        public string ErrorDetails { get; set; }
+
+        public string DownloadPath { get; set; }
+
+        public int PlayCount { get; set; }
+    }
+}
