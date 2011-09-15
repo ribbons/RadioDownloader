@@ -17,8 +17,23 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Data.SQLite;
+    using System.Globalization;
 
     internal class Favourite : Programme
     {
+        public Favourite(SQLiteMonDataReader reader)
+            : base(reader)
+        {
+        }
+
+        public static bool IsFavourite(int progid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from favourites where progid=@progid", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+            }
+        }
     }
 }

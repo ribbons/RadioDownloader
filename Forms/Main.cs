@@ -513,7 +513,7 @@ namespace RadioDld
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.Add(this.ButtonDownload);
 
-            if (progInfo.Favourite)
+            if (Model.Favourite.IsFavourite(progInfo.Progid))
             {
                 buttons.Add(this.ButtonRemFavourite);
             }
@@ -522,7 +522,7 @@ namespace RadioDld
                 buttons.Add(this.ButtonAddFavourite);
             }
 
-            if (progInfo.Subscribed)
+            if (Model.Subscription.IsSubscribed(progInfo.Progid))
             {
                 buttons.Add(this.ButtonUnsubscribe);
             }
@@ -569,7 +569,7 @@ namespace RadioDld
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.AddRange(new ToolBarButton[] { this.ButtonRemFavourite, this.ButtonCurrentEps });
 
-            if (info.Subscribed)
+            if (Model.Subscription.IsSubscribed(progid))
             {
                 buttons.Add(this.ButtonUnsubscribe);
             }
@@ -605,7 +605,7 @@ namespace RadioDld
             buttons.Add(this.ButtonUnsubscribe);
             buttons.Add(this.ButtonCurrentEps);
 
-            if (info.Favourite)
+            if (Model.Favourite.IsFavourite(progid))
             {
                 buttons.Add(this.ButtonRemFavourite);
             }
@@ -1026,7 +1026,7 @@ namespace RadioDld
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
 
-            if (progInfo.Favourite)
+            if (Model.Favourite.IsFavourite(progid))
             {
                 buttons.Add(this.ButtonRemFavourite);
             }
@@ -1035,7 +1035,7 @@ namespace RadioDld
                 buttons.Add(this.ButtonAddFavourite);
             }
 
-            if (progInfo.Subscribed)
+            if (Model.Subscription.IsSubscribed(progid))
             {
                 buttons.Add(this.ButtonUnsubscribe);
             }

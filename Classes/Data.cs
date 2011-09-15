@@ -37,7 +37,6 @@ namespace RadioDld
         private static object dataInstanceLock = new object();
 
         private object dbUpdateLock = new object();
-        private Plugins pluginsInst;
 
         private DataSearch search;
         private Thread episodeListThread;
@@ -69,9 +68,6 @@ namespace RadioDld
         {
             // Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
             this.VacuumDatabase();
-
-            // Setup an instance of the plugins class
-            this.pluginsInst = new Plugins();
 
             // Fetch the version of the database
             int currentVer = 0;
@@ -258,7 +254,7 @@ namespace RadioDld
 
         public Bitmap FetchProgrammeImage(int progid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -271,7 +267,7 @@ namespace RadioDld
                     else
                     {
                         // Find the id of the latest episode's image
-                        using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image not null order by date desc limit 1", this.FetchDbConn()))
+                        using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image not null order by date desc limit 1", FetchDbConn()))
                         {
                             latestCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -292,7 +288,7 @@ namespace RadioDld
 
         public Bitmap FetchEpisodeImage(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -311,7 +307,7 @@ namespace RadioDld
 
                         if (!reader.IsDBNull(progidOrdinal))
                         {
-                            using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", this.FetchDbConn()))
+                            using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
                             {
                                 progCmd.Parameters.Add(new SQLiteParameter("@progid", reader.GetInt32(progidOrdinal)));
 
@@ -338,7 +334,7 @@ namespace RadioDld
 
         public int CountDownloadsNew()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
@@ -347,7 +343,7 @@ namespace RadioDld
 
         public int CountDownloadsErrored()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
@@ -356,7 +352,7 @@ namespace RadioDld
 
         public bool AddDownload(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -376,7 +372,7 @@ namespace RadioDld
 
         public bool AddFavourite(int progid)
         {
-            if (this.IsFavourite(progid))
+            if (Model.Favourite.IsFavourite(progid))
             {
                 return false;
             }
@@ -393,7 +389,7 @@ namespace RadioDld
 
         public bool AddSubscription(int progid)
         {
-            if (this.IsSubscribed(progid))
+            if (Model.Subscription.IsSubscribed(progid))
             {
                 return false;
             }
@@ -432,7 +428,7 @@ namespace RadioDld
 
             XmlSerializer detailsSerializer = new XmlSerializer(typeof(List<DldErrorDataItem>));
 
-            using (SQLiteCommand command = new SQLiteCommand("select errortype, errordetails, ep.name as epname, ep.description as epdesc, date, duration, ep.extid as epextid, pr.name as progname, pr.description as progdesc, pr.extid as progextid, pluginid from downloads as dld, episodes as ep, programmes as pr where dld.epid=@epid and ep.epid=@epid and ep.progid=pr.progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select errortype, errordetails, ep.name as epname, ep.description as epdesc, date, duration, ep.extid as epextid, pr.name as progname, pr.description as progdesc, pr.extid as progextid, pluginid from downloads as dld, episodes as ep, programmes as pr where dld.epid=@epid and ep.epid=@epid and ep.progid=pr.progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -457,7 +453,7 @@ namespace RadioDld
                     errorExtraDetails.Add("programme:extid", reader.GetString(reader.GetOrdinal("progextid")));
 
                     Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-                    IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
+                    IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
 
                     errorExtraDetails.Add("provider:id", pluginId.ToString());
                     errorExtraDetails.Add("provider:name", providerInst.ProviderName);
@@ -509,7 +505,7 @@ namespace RadioDld
 
         public void PerformCleanup()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select epid, filepath from downloads where status=@status", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select epid, filepath from downloads where status=@status", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
 
@@ -549,9 +545,9 @@ namespace RadioDld
 
         public Panel GetFindNewPanel(Guid pluginID, object view)
         {
-            if (this.pluginsInst.PluginExists(pluginID))
+            if (Plugins.PluginExists(pluginID))
             {
-                this.findNewPluginInst = this.pluginsInst.GetPluginInstance(pluginID);
+                this.findNewPluginInst = Plugins.GetPluginInstance(pluginID);
                 this.findNewPluginInst.FindNewException += this.FindNewPluginInst_FindNewException;
                 this.findNewPluginInst.FindNewViewChange += this.FindNewPluginInst_FindNewViewChange;
                 this.findNewPluginInst.FoundNew += this.FindNewPluginInst_FoundNew;
@@ -593,7 +589,7 @@ namespace RadioDld
                             throw new InvalidDataException("Invalid column: " + this.downloadSortBy.ToString());
                     }
 
-                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, this.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {
@@ -631,7 +627,7 @@ namespace RadioDld
 
                     int sort = 0;
 
-                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", this.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {
@@ -661,7 +657,7 @@ namespace RadioDld
 
                     int sort = 0;
 
-                    using (SQLiteCommand command = new SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by name", this.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by name", FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {
@@ -683,7 +679,7 @@ namespace RadioDld
         public void InitProviderList()
         {
             Guid[] pluginIdList = null;
-            pluginIdList = this.pluginsInst.GetPluginIdList();
+            pluginIdList = Plugins.GetPluginIdList();
 
             foreach (Guid pluginId in pluginIdList)
             {
@@ -714,7 +710,7 @@ namespace RadioDld
 
         public void InitSubscriptionList()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where subscriptions.progid = programmes.progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where subscriptions.progid = programmes.progid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -735,7 +731,7 @@ namespace RadioDld
         {
             List<Model.Download> downloadList = new List<Model.Download>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -747,7 +743,7 @@ namespace RadioDld
 
                         if (!filtered || this.search.DownloadIsVisible(epid))
                         {
-                            downloadList.Add(this.ReadDownloadData(epid, reader));
+                            downloadList.Add(new Model.Download(reader));
                         }
                     }
                 }
@@ -758,7 +754,7 @@ namespace RadioDld
 
         public Model.Download FetchDownloadData(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, date, duration, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -769,7 +765,7 @@ namespace RadioDld
                         throw new DataNotFoundException(epid, "Download does not exist");
                     }
 
-                    return this.ReadDownloadData(epid, reader);
+                    return new Model.Download(reader);
                 }
             }
         }
@@ -778,15 +774,13 @@ namespace RadioDld
         {
             List<Model.Favourite> favouriteList = new List<Model.Favourite>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select favourites.progid, name, description, singleepisode, pluginid from favourites, programmes where favourites.progid = programmes.progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select favourites.progid, name, description, singleepisode, pluginid from favourites, programmes where favourites.progid = programmes.progid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    int progidOrdinal = reader.GetOrdinal("progid");
-
                     while (reader.Read())
                     {
-                        favouriteList.Add(this.ReadFavouriteData(reader.GetInt32(progidOrdinal), reader));
+                        favouriteList.Add(new Model.Favourite(reader));
                     }
                 }
             }
@@ -796,7 +790,7 @@ namespace RadioDld
 
         public Model.Favourite FetchFavouriteData(int progid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, singleepisode, pluginid from programmes where progid=@progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select progid, name, description, singleepisode, pluginid from programmes where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -807,14 +801,14 @@ namespace RadioDld
                         throw new DataNotFoundException(progid, "Programme does not exist");
                     }
 
-                    return this.ReadFavouriteData(progid, reader);
+                    return new Model.Favourite(reader);
                 }
             }
         }
 
         public Model.Subscription FetchSubscriptionData(int progid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, pluginid, latestdownload from programmes where progid=@progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select progid, name, description, pluginid, singleepisode, latestdownload from programmes where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -825,36 +819,14 @@ namespace RadioDld
                         throw new DataNotFoundException(progid, "Programme does not exist");
                     }
 
-                    int descriptionOrdinal = reader.GetOrdinal("description");
-                    int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
-
-                    Model.Subscription info = new Model.Subscription();
-                    info.Name = reader.GetString(reader.GetOrdinal("name"));
-
-                    if (!reader.IsDBNull(descriptionOrdinal))
-                    {
-                        info.Description = reader.GetString(descriptionOrdinal);
-                    }
-
-                    if (!reader.IsDBNull(latestdownloadOrdinal))
-                    {
-                        info.LatestDownload = reader.GetDateTime(latestdownloadOrdinal);
-                    }
-
-                    Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-                    IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
-                    info.ProviderName = providerInst.ProviderName;
-
-                    info.Favourite = this.IsFavourite(progid);
-
-                    return info;
+                    return new Model.Subscription(reader);
                 }
             }
         }
 
         public Model.Episode FetchEpisodeData(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, date, duration, autodownload from episodes where epid=@epid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select epid, name, description, date, duration, autodownload from episodes where epid=@epid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -865,35 +837,14 @@ namespace RadioDld
                         throw new DataNotFoundException(epid, "Episode does not exist");
                     }
 
-                    int descriptionOrdinal = reader.GetOrdinal("description");
-                    int durationOrdinal = reader.GetOrdinal("duration");
-
-                    Model.Episode info = new Model.Episode();
-                    info.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
-                    info.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.EpisodeDate);
-
-                    if (!reader.IsDBNull(descriptionOrdinal))
-                    {
-                        info.Description = reader.GetString(descriptionOrdinal);
-                    }
-
-                    if (!reader.IsDBNull(durationOrdinal))
-                    {
-                        info.Duration = reader.GetInt32(durationOrdinal);
-                    }
-
-                    info.AutoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
-
-                    return info;
+                    return new Model.Episode(reader);
                 }
             }
         }
 
         public Model.Programme FetchProgrammeData(int progid)
         {
-            Model.Programme info = new Model.Programme();
-
-            using (SQLiteCommand command = new SQLiteCommand("select name, description, singleepisode from programmes where progid=@progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select progid, name, description, singleepisode, pluginid from programmes where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -904,28 +855,14 @@ namespace RadioDld
                         throw new DataNotFoundException(progid, "Programme does not exist");
                     }
 
-                    int descriptionOrdinal = reader.GetOrdinal("description");
-
-                    info.Name = reader.GetString(reader.GetOrdinal("name"));
-
-                    if (!reader.IsDBNull(descriptionOrdinal))
-                    {
-                        info.Description = reader.GetString(descriptionOrdinal);
-                    }
-
-                    info.SingleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
+                    return new Model.Programme(reader);
                 }
             }
-
-            info.Favourite = this.IsFavourite(progid);
-            info.Subscribed = this.IsSubscribed(progid);
-
-            return info;
         }
 
         public ProviderData FetchProviderData(Guid providerId)
         {
-            IRadioProvider providerInstance = this.pluginsInst.GetPluginInstance(providerId);
+            IRadioProvider providerInstance = Plugins.GetPluginInstance(providerId);
 
             ProviderData info = new ProviderData();
             info.Name = providerInstance.ProviderName;
@@ -936,7 +873,7 @@ namespace RadioDld
             return info;
         }
 
-        private SQLiteConnection FetchDbConn()
+        internal static SQLiteConnection FetchDbConn()
         {
             if (dbConn == null)
             {
@@ -955,7 +892,7 @@ namespace RadioDld
                 showStatus.ProgressBarMarquee = true;
                 showStatus.Show();
 
-                using (SQLiteCommand command = new SQLiteCommand("select count(*) from programmes where latestdownload is null", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select count(*) from programmes where latestdownload is null", FetchDbConn()))
                 {
                     showStatus.ProgressBarMax = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
                 }
@@ -967,13 +904,13 @@ namespace RadioDld
 
                 lock (this.dbUpdateLock)
                 {
-                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(this.FetchDbConn().BeginTransaction()))
+                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                     {
-                        using (SQLiteCommand findCommand = new SQLiteCommand("select progid from programmes where latestdownload is null", this.FetchDbConn()))
+                        using (SQLiteCommand findCommand = new SQLiteCommand("select progid from programmes where latestdownload is null", FetchDbConn()))
                         {
-                            using (SQLiteCommand dateCommand = new SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", this.FetchDbConn()))
+                            using (SQLiteCommand dateCommand = new SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", FetchDbConn()))
                             {
-                                using (SQLiteCommand updateCommand = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", this.FetchDbConn()))
+                                using (SQLiteCommand updateCommand = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", FetchDbConn()))
                                 {
                                     SQLiteParameter latestdownloadParam = new SQLiteParameter("latestdownload");
                                     SQLiteParameter progidParam = new SQLiteParameter("progid");
@@ -1025,7 +962,7 @@ namespace RadioDld
             {
                 if (this.downloadThread == null)
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", this.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn()))
                     {
                         command.Parameters.Add(new SQLiteParameter("@statuswait", Model.Download.DownloadStatus.Waiting));
                         command.Parameters.Add(new SQLiteParameter("@statuserr", Model.Download.DownloadStatus.Errored));
@@ -1042,7 +979,7 @@ namespace RadioDld
                                 Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
                                 int epid = reader.GetInt32(reader.GetOrdinal("epid"));
 
-                                if (this.pluginsInst.PluginExists(pluginId))
+                                if (Plugins.PluginExists(pluginId))
                                 {
                                     this.curDldProgData = new DldProgData();
                                     ProgrammeInfo progInfo = default(ProgrammeInfo);
@@ -1116,7 +1053,7 @@ namespace RadioDld
 
                                     epiEpInfo.ExtInfo = new Dictionary<string, string>();
 
-                                    using (SQLiteCommand extCommand = new SQLiteCommand("select name, value from episodeext where epid=@epid", this.FetchDbConn()))
+                                    using (SQLiteCommand extCommand = new SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn()))
                                     {
                                         extCommand.Parameters.Add(new SQLiteParameter("@epid", reader.GetInt32(reader.GetOrdinal("epid"))));
 
@@ -1159,7 +1096,7 @@ namespace RadioDld
         {
             this.lastProgressVal = -1;
 
-            this.downloadPluginInst = this.pluginsInst.GetPluginInstance(this.curDldProgData.PluginId);
+            this.downloadPluginInst = Plugins.GetPluginInstance(this.curDldProgData.PluginId);
             this.downloadPluginInst.Finished += this.DownloadPluginInst_Finished;
             this.downloadPluginInst.Progress += this.DownloadPluginInst_Progress;
 
@@ -1220,7 +1157,7 @@ namespace RadioDld
             string updateExtid = null;
 
             // Test to see if an update is required, and then free up the database
-            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -1230,10 +1167,9 @@ namespace RadioDld
                     {
                         providerId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
 
-                        if (this.pluginsInst.PluginExists(providerId))
+                        if (Plugins.PluginExists(providerId))
                         {
-                            IRadioProvider pluginInstance = null;
-                            pluginInstance = this.pluginsInst.GetPluginInstance(providerId);
+                            IRadioProvider pluginInstance = Plugins.GetPluginInstance(providerId);
 
                             if (reader.GetDateTime(reader.GetOrdinal("lastupdate")).AddDays(pluginInstance.ProgInfoUpdateFreqDays) < DateAndTime.Now)
                             {
@@ -1255,7 +1191,7 @@ namespace RadioDld
         {
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
                     command.Parameters.Add(new SQLiteParameter("@autodownload", autoDownload ? 1 : 0));
@@ -1270,7 +1206,7 @@ namespace RadioDld
 
             // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
             // checking all of the subscriptions, as this blocks writes to the database from other threads
-            using (SQLiteCommand command = new SQLiteCommand("select progid from subscriptions", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select progid from subscriptions", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -1284,11 +1220,11 @@ namespace RadioDld
             }
 
             // Work through the list of subscriptions and check for new episodes
-            using (SQLiteCommand progInfCmd = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", this.FetchDbConn()))
+            using (SQLiteCommand progInfCmd = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
             {
-                using (SQLiteCommand checkCmd = new SQLiteCommand("select epid from downloads where epid=@epid", this.FetchDbConn()))
+                using (SQLiteCommand checkCmd = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
                 {
-                    using (SQLiteCommand findCmd = new SQLiteCommand("select epid, autodownload from episodes where progid=@progid and extid=@extid", this.FetchDbConn()))
+                    using (SQLiteCommand findCmd = new SQLiteCommand("select epid, autodownload from episodes where progid=@progid and extid=@extid", FetchDbConn()))
                     {
                         SQLiteParameter epidParam = new SQLiteParameter("@epid");
                         SQLiteParameter progidParam = new SQLiteParameter("@progid");
@@ -1401,7 +1337,7 @@ namespace RadioDld
             {
                 // Check again that the download doesn't exist, as it may have been
                 // added while this call was waiting in the thread pool
-                using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -1414,7 +1350,7 @@ namespace RadioDld
                     }
                 }
 
-                using (SQLiteCommand command = new SQLiteCommand("insert into downloads (epid) values (@epid)", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("insert into downloads (epid) values (@epid)", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
                     command.ExecuteNonQuery();
@@ -1440,12 +1376,12 @@ namespace RadioDld
             {
                 // Check again that the favourite doesn't exist, as it may have been
                 // added while this call was waiting in the thread pool
-                if (this.IsFavourite(progid))
+                if (Model.Favourite.IsFavourite(progid))
                 {
                     return;
                 }
 
-                using (SQLiteCommand command = new SQLiteCommand("insert into favourites (progid) values (@progid)", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("insert into favourites (progid) values (@progid)", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
                     command.ExecuteNonQuery();
@@ -1462,7 +1398,7 @@ namespace RadioDld
                 this.FavouriteAdded(progid);
             }
 
-            if (this.IsSubscribed(progid))
+            if (Model.Subscription.IsSubscribed(progid))
             {
                 if (this.SubscriptionUpdated != null)
                 {
@@ -1475,7 +1411,7 @@ namespace RadioDld
         {
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("delete from favourites where progid=@progid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("delete from favourites where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
                     command.ExecuteNonQuery();
@@ -1492,7 +1428,7 @@ namespace RadioDld
                 this.FavouriteRemoved(progid);
             }
 
-            if (this.IsSubscribed(progid))
+            if (Model.Subscription.IsSubscribed(progid))
             {
                 if (this.SubscriptionUpdated != null)
                 {
@@ -1507,12 +1443,12 @@ namespace RadioDld
             {
                 // Check again that the subscription doesn't exist, as it may have been
                 // added while this call was waiting in the thread pool
-                if (this.IsSubscribed(progid))
+                if (Model.Subscription.IsSubscribed(progid))
                 {
                     return;
                 }
 
-                using (SQLiteCommand command = new SQLiteCommand("insert into subscriptions (progid) values (@progid)", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("insert into subscriptions (progid) values (@progid)", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
                     command.ExecuteNonQuery();
@@ -1529,7 +1465,7 @@ namespace RadioDld
                 this.SubscriptionAdded(progid);
             }
 
-            if (this.IsFavourite(progid))
+            if (Model.Favourite.IsFavourite(progid))
             {
                 if (this.FavouriteUpdated != null)
                 {
@@ -1542,7 +1478,7 @@ namespace RadioDld
         {
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
                     command.ExecuteNonQuery();
@@ -1559,7 +1495,7 @@ namespace RadioDld
                 this.SubscriptionRemoved(progid);
             }
 
-            if (this.IsFavourite(progid))
+            if (Model.Favourite.IsFavourite(progid))
             {
                 if (this.FavouriteUpdated != null)
                 {
@@ -1572,9 +1508,9 @@ namespace RadioDld
         {
             lock (this.dbUpdateLock)
             {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(this.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", this.FetchDbConn(), transMon.Trans))
+                    using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", FetchDbConn(), transMon.Trans))
                     {
                         command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Waiting));
                         command.Parameters.Add(new SQLiteParameter("@epid", epid));
@@ -1583,7 +1519,7 @@ namespace RadioDld
 
                     if (!auto)
                     {
-                        using (SQLiteCommand command = new SQLiteCommand("update downloads set errorcount=0 where epid=@epid", this.FetchDbConn(), transMon.Trans))
+                        using (SQLiteCommand command = new SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn(), transMon.Trans))
                         {
                             command.Parameters.Add(new SQLiteParameter("@epid", epid));
                             command.ExecuteNonQuery();
@@ -1619,9 +1555,9 @@ namespace RadioDld
         {
             lock (this.dbUpdateLock)
             {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(this.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", this.FetchDbConn(), transMon.Trans))
+                    using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn(), transMon.Trans))
                     {
                         command.Parameters.Add(new SQLiteParameter("@epid", epid));
                         command.ExecuteNonQuery();
@@ -1686,7 +1622,7 @@ namespace RadioDld
         {
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
                     command.ExecuteNonQuery();
@@ -1736,7 +1672,7 @@ namespace RadioDld
 
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
                     command.Parameters.Add(new SQLiteParameter("@errortype", errorType));
@@ -1778,7 +1714,7 @@ namespace RadioDld
 
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
                     command.Parameters.Add(new SQLiteParameter("@filepath", this.curDldProgData.FinalName));
@@ -1786,7 +1722,7 @@ namespace RadioDld
                     command.ExecuteNonQuery();
                 }
 
-                using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@latestdownload", this.curDldProgData.EpisodeInfo.Date));
                     command.Parameters.Add(new SQLiteParameter("@progid", this.curDldProgData.ProgId));
@@ -1815,7 +1751,7 @@ namespace RadioDld
             }
 
             // If the episode's programme is a subscription, clear the sort cache and raise an updated event
-            if (this.IsSubscribed(this.curDldProgData.ProgId))
+            if (Model.Subscription.IsSubscribed(this.curDldProgData.ProgId))
             {
                 lock (this.subscriptionSortCacheLock)
                 {
@@ -1875,7 +1811,7 @@ namespace RadioDld
         {
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("insert or replace into settings (property, value) values (@property, @value)", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("insert or replace into settings (property, value) values (@property, @value)", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@property", propertyName));
                     command.Parameters.Add(new SQLiteParameter("@value", value));
@@ -1886,7 +1822,7 @@ namespace RadioDld
 
         private object GetDBSetting(string propertyName)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select value from settings where property=@property", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select value from settings where property=@property", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@property", propertyName));
 
@@ -1928,7 +1864,7 @@ namespace RadioDld
                     // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
                     lock (this.dbUpdateLock)
                     {
-                        using (SQLiteCommand command = new SQLiteCommand("vacuum", this.FetchDbConn()))
+                        using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
                         {
                             command.ExecuteNonQuery();
                         }
@@ -1986,12 +1922,12 @@ namespace RadioDld
 
         private int? StoreProgrammeInfo(Guid pluginId, string progExtId)
         {
-            if (!this.pluginsInst.PluginExists(pluginId))
+            if (!Plugins.PluginExists(pluginId))
             {
                 return null;
             }
 
-            IRadioProvider pluginInstance = this.pluginsInst.GetPluginInstance(pluginId);
+            IRadioProvider pluginInstance = Plugins.GetPluginInstance(pluginId);
             GetProgrammeInfoReturn progInfo = default(GetProgrammeInfoReturn);
 
             progInfo = pluginInstance.GetProgrammeInfo(progExtId);
@@ -2005,7 +1941,7 @@ namespace RadioDld
 
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
                     command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
@@ -2019,24 +1955,24 @@ namespace RadioDld
                     }
                 }
 
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(this.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
                     if (progid == null)
                     {
-                        using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", this.FetchDbConn()))
+                        using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn()))
                         {
                             command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
                             command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
                             command.ExecuteNonQuery();
                         }
 
-                        using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", this.FetchDbConn()))
+                        using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
                         {
                             progid = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
                         }
                     }
 
-                    using (SQLiteCommand command = new SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", this.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn()))
                     {
                         command.Parameters.Add(new SQLiteParameter("@name", progInfo.ProgrammeInfo.Name));
                         command.Parameters.Add(new SQLiteParameter("@description", progInfo.ProgrammeInfo.Description));
@@ -2052,7 +1988,7 @@ namespace RadioDld
             }
 
             // If the programme is in the list of favourites, clear the sort cache and raise an updated event
-            if (this.IsFavourite(progid.Value))
+            if (Model.Favourite.IsFavourite(progid.Value))
             {
                 lock (this.favouriteSortCacheLock)
                 {
@@ -2066,7 +2002,7 @@ namespace RadioDld
             }
 
             // If the programme is in the list of subscriptions, clear the sort cache and raise an updated event
-            if (this.IsSubscribed(progid.Value))
+            if (Model.Subscription.IsSubscribed(progid.Value))
             {
                 lock (this.subscriptionSortCacheLock)
                 {
@@ -2100,7 +2036,7 @@ namespace RadioDld
 
             lock (this.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("select imgid from images where image=@image", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select imgid from images where image=@image", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@image", imageAsBytes));
 
@@ -2113,13 +2049,13 @@ namespace RadioDld
                     }
                 }
 
-                using (SQLiteCommand command = new SQLiteCommand("insert into images (image) values (@image)", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("insert into images (image) values (@image)", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@image", imageAsBytes));
                     command.ExecuteNonQuery();
                 }
 
-                using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", this.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
                 {
                     return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
                 }
@@ -2128,7 +2064,7 @@ namespace RadioDld
 
         private Bitmap RetrieveImage(int imgid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select image from images where imgid=@imgid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select image from images where imgid=@imgid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@imgid", imgid));
 
@@ -2158,13 +2094,13 @@ namespace RadioDld
 
         private List<string> GetAvailableEpisodes(Guid providerId, string progExtId)
         {
-            if (!this.pluginsInst.PluginExists(providerId))
+            if (!Plugins.PluginExists(providerId))
             {
                 return null;
             }
 
             string[] extIds = null;
-            IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(providerId);
+            IRadioProvider providerInst = Plugins.GetPluginInstance(providerId);
 
             extIds = providerInst.GetAvailableEpisodeIds(progExtId);
 
@@ -2189,7 +2125,7 @@ namespace RadioDld
 
         private int StoreEpisodeInfo(Guid pluginId, int progid, string progExtId, string episodeExtId)
         {
-            IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
+            IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
             GetEpisodeInfoReturn episodeInfoReturn = default(GetEpisodeInfoReturn);
 
             episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId);
@@ -2212,11 +2148,11 @@ namespace RadioDld
 
             lock (this.dbUpdateLock)
             {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(this.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
                     int epid = 0;
 
-                    using (SQLiteCommand addEpisodeCmd = new SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", this.FetchDbConn(), transMon.Trans))
+                    using (SQLiteCommand addEpisodeCmd = new SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn(), transMon.Trans))
                     {
                         addEpisodeCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
                         addEpisodeCmd.Parameters.Add(new SQLiteParameter("@extid", episodeExtId));
@@ -2228,14 +2164,14 @@ namespace RadioDld
                         addEpisodeCmd.ExecuteNonQuery();
                     }
 
-                    using (SQLiteCommand getRowIDCmd = new SQLiteCommand("select last_insert_rowid()", this.FetchDbConn(), transMon.Trans))
+                    using (SQLiteCommand getRowIDCmd = new SQLiteCommand("select last_insert_rowid()", FetchDbConn(), transMon.Trans))
                     {
                         epid = Convert.ToInt32(getRowIDCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
                     }
 
                     if (episodeInfoReturn.EpisodeInfo.ExtInfo != null)
                     {
-                        using (SQLiteCommand addExtInfoCmd = new SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", this.FetchDbConn(), transMon.Trans))
+                        using (SQLiteCommand addExtInfoCmd = new SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn(), transMon.Trans))
                         {
                             foreach (KeyValuePair<string, string> extItem in episodeInfoReturn.EpisodeInfo.ExtInfo)
                             {
@@ -2258,7 +2194,7 @@ namespace RadioDld
             Guid providerId = default(Guid);
             string progExtId = null;
 
-            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -2278,7 +2214,7 @@ namespace RadioDld
 
             if (episodeExtIDs != null)
             {
-                using (SQLiteCommand findCmd = new SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", this.FetchDbConn()))
+                using (SQLiteCommand findCmd = new SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", FetchDbConn()))
                 {
                     SQLiteParameter progidParam = new SQLiteParameter("@progid");
                     SQLiteParameter extidParam = new SQLiteParameter("@extid");
@@ -2327,91 +2263,6 @@ namespace RadioDld
                         }
                     }
                 }
-            }
-        }
-
-        private Model.Download ReadDownloadData(int epid, SQLiteMonDataReader reader)
-        {
-            int descriptionOrdinal = reader.GetOrdinal("description");
-            int filepathOrdinal = reader.GetOrdinal("filepath");
-            int durationOrdinal = reader.GetOrdinal("duration");
-
-            Model.Download info = new Model.Download();
-            info.Epid = epid;
-            info.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
-            info.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), info.EpisodeDate);
-
-            if (!reader.IsDBNull(descriptionOrdinal))
-            {
-                info.Description = reader.GetString(descriptionOrdinal);
-            }
-
-            if (!reader.IsDBNull(durationOrdinal))
-            {
-                info.Duration = reader.GetInt32(durationOrdinal);
-            }
-
-            info.Status = (Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
-
-            if (info.Status == Model.Download.DownloadStatus.Errored)
-            {
-                info.ErrorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
-
-                if (info.ErrorType != ErrorType.UnknownError)
-                {
-                    info.ErrorDetails = reader.GetString(reader.GetOrdinal("errordetails"));
-                }
-            }
-
-            if (!reader.IsDBNull(filepathOrdinal))
-            {
-                info.DownloadPath = reader.GetString(filepathOrdinal);
-            }
-
-            info.PlayCount = reader.GetInt32(reader.GetOrdinal("playcount"));
-
-            return info;
-        }
-
-        private Model.Favourite ReadFavouriteData(int progid, SQLiteMonDataReader reader)
-        {
-            int descriptionOrdinal = reader.GetOrdinal("description");
-
-            Model.Favourite info = new Model.Favourite();
-            info.Progid = progid;
-            info.Name = reader.GetString(reader.GetOrdinal("name"));
-
-            if (!reader.IsDBNull(descriptionOrdinal))
-            {
-                info.Description = reader.GetString(descriptionOrdinal);
-            }
-
-            info.SingleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
-
-            Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-            IRadioProvider providerInst = this.pluginsInst.GetPluginInstance(pluginId);
-            info.ProviderName = providerInst.ProviderName;
-
-            info.Subscribed = this.IsSubscribed(progid);
-
-            return info;
-        }
-
-        private bool IsFavourite(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select count(*) from favourites where progid=@progid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
-            }
-        }
-
-        private bool IsSubscribed(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select count(*) from subscriptions where progid=@progid", this.FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
             }
         }
 

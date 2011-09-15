@@ -20,7 +20,29 @@ namespace RadioDld.Model
 
     internal class Episode
     {
-        public int Epid { get; set; }
+        public Episode(SQLiteMonDataReader reader)
+        {
+            int descriptionOrdinal = reader.GetOrdinal("description");
+            int durationOrdinal = reader.GetOrdinal("duration");
+
+            this.Epid = reader.GetInt32(reader.GetOrdinal("epid"));
+            this.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
+            this.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), this.EpisodeDate);
+
+            if (!reader.IsDBNull(descriptionOrdinal))
+            {
+                this.Description = reader.GetString(descriptionOrdinal);
+            }
+
+            if (!reader.IsDBNull(durationOrdinal))
+            {
+                this.Duration = reader.GetInt32(durationOrdinal);
+            }
+
+            this.AutoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
+        }
+
+        public int Epid { get; private set; }
 
         public string Name { get; set; }
 

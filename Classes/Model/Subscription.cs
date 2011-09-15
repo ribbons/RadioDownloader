@@ -17,9 +17,31 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Data.SQLite;
+    using System.Globalization;
 
     internal class Subscription : Programme
     {
+        public Subscription(SQLiteMonDataReader reader)
+            : base(reader)
+        {
+            int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
+
+            if (!reader.IsDBNull(latestdownloadOrdinal))
+            {
+                this.LatestDownload = reader.GetDateTime(latestdownloadOrdinal);
+            }
+        }
+
         public DateTime? LatestDownload { get; set; }
+
+        public static bool IsSubscribed(int progid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from subscriptions where progid=@progid", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+            }
+        }
     }
 }

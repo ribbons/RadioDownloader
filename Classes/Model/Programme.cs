@@ -17,18 +17,34 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Data.SQLite;
 
     internal class Programme
     {
-        public int Progid { get; set; }
+        public Programme(SQLiteMonDataReader reader)
+        {
+            int descriptionOrdinal = reader.GetOrdinal("description");
+
+            this.Progid = reader.GetInt32(reader.GetOrdinal("progid"));
+            this.Name = reader.GetString(reader.GetOrdinal("name"));
+
+            if (!reader.IsDBNull(descriptionOrdinal))
+            {
+                this.Description = reader.GetString(descriptionOrdinal);
+            }
+
+            this.SingleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
+
+            Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
+            IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
+            this.ProviderName = providerInst.ProviderName;
+        }
+
+        public int Progid { get; private set; }
 
         public string Name { get; set; }
 
         public string Description { get; set; }
-
-        public bool Favourite { get; set; }
-
-        public bool Subscribed { get; set; }
 
         public bool SingleEpisode { get; set; }
 

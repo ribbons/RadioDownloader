@@ -20,6 +20,31 @@ namespace RadioDld.Model
 
     internal class Download : Episode
     {
+        public Download(SQLiteMonDataReader reader)
+            : base(reader)
+        {
+            int filepathOrdinal = reader.GetOrdinal("filepath");
+
+            this.Status = (Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
+
+            if (this.Status == Model.Download.DownloadStatus.Errored)
+            {
+                this.ErrorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
+
+                if (this.ErrorType != ErrorType.UnknownError)
+                {
+                    this.ErrorDetails = reader.GetString(reader.GetOrdinal("errordetails"));
+                }
+            }
+
+            if (!reader.IsDBNull(filepathOrdinal))
+            {
+                this.DownloadPath = reader.GetString(filepathOrdinal);
+            }
+
+            this.PlayCount = reader.GetInt32(reader.GetOrdinal("playcount"));
+        }
+
         public enum DownloadStatus
         {
             Waiting = 0,

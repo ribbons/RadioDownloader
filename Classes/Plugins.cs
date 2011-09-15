@@ -106,16 +106,13 @@ namespace RadioDld
     }
 
     // Parts of this class are based on VB.net code from http://www.developerfusion.co.uk/show/4371/3/
-    internal class Plugins
+    internal static class Plugins
     {
-        private string interfaceName;
-        private Dictionary<Guid, AvailablePlugin> availablePlugins = new Dictionary<Guid, AvailablePlugin>();
+        private static string interfaceName = typeof(IRadioProvider).Name;
+        private static Dictionary<Guid, AvailablePlugin> availablePlugins = new Dictionary<Guid, AvailablePlugin>();
 
-        public Plugins()
+        static Plugins()
         {
-            // Fetch the name of the interface as a string
-            this.interfaceName = typeof(IRadioProvider).Name;
-
             // Get an array of all of the dlls ending with the text Provider in the application folder
             string pluginPath = AppDomain.CurrentDomain.BaseDirectory;
             string[] dlls = Directory.GetFileSystemEntries(pluginPath, "*Provider.dll");
@@ -125,7 +122,7 @@ namespace RadioDld
                 try
                 {
                     Assembly thisDll = Assembly.LoadFrom(dll);
-                    this.ExamineAssembly(thisDll);
+                    Plugins.ExamineAssembly(thisDll);
                 }
                 catch
                 {
@@ -134,16 +131,16 @@ namespace RadioDld
             }
         }
 
-        public bool PluginExists(Guid pluginId)
+        public static bool PluginExists(Guid pluginId)
         {
-            return this.availablePlugins.ContainsKey(pluginId);
+            return availablePlugins.ContainsKey(pluginId);
         }
 
-        public IRadioProvider GetPluginInstance(Guid pluginId)
+        public static IRadioProvider GetPluginInstance(Guid pluginId)
         {
-            if (this.PluginExists(pluginId))
+            if (PluginExists(pluginId))
             {
-                return this.CreateInstance(this.availablePlugins[pluginId]);
+                return CreateInstance(availablePlugins[pluginId]);
             }
             else
             {
@@ -151,15 +148,15 @@ namespace RadioDld
             }
         }
 
-        public Guid[] GetPluginIdList()
+        public static Guid[] GetPluginIdList()
         {
-            Guid[] pluginIDs = new Guid[this.availablePlugins.Keys.Count];
-            this.availablePlugins.Keys.CopyTo(pluginIDs, 0);
+            Guid[] pluginIDs = new Guid[availablePlugins.Keys.Count];
+            availablePlugins.Keys.CopyTo(pluginIDs, 0);
 
             return pluginIDs;
         }
 
-        private void ExamineAssembly(Assembly dll)
+        private static void ExamineAssembly(Assembly dll)
         {
             Type implInterface = null;
             AvailablePlugin pluginInfo = default(AvailablePlugin);
@@ -174,7 +171,7 @@ namespace RadioDld
                     if (!((thisType.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract))
                     {
                         // See if this type implements our interface
-                        implInterface = thisType.GetInterface(this.interfaceName, true);
+                        implInterface = thisType.GetInterface(interfaceName, true);
 
                         if (implInterface != null)
                         {
@@ -185,8 +182,8 @@ namespace RadioDld
                             try
                             {
                                 IRadioProvider pluginInst = null;
-                                pluginInst = this.CreateInstance(pluginInfo);
-                                this.availablePlugins.Add(pluginInst.ProviderId, pluginInfo);
+                                pluginInst = CreateInstance(pluginInfo);
+                                availablePlugins.Add(pluginInst.ProviderId, pluginInfo);
                             }
                             catch
                             {
@@ -198,7 +195,7 @@ namespace RadioDld
             }
         }
 
-        private IRadioProvider CreateInstance(AvailablePlugin plugin)
+        private static IRadioProvider CreateInstance(AvailablePlugin plugin)
         {
             try
             {
