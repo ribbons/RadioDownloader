@@ -27,7 +27,8 @@ namespace RadioDld.Model
         {
         }
 
-        public Subscription(int progid) : base(progid)
+        public Subscription(int progid)
+            : base(progid)
         {
         }
 

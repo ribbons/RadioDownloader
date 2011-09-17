@@ -27,7 +27,8 @@ namespace RadioDld.Model
             this.FetchData(reader);
         }
 
-        public Download(int epid) : base(epid)
+        public Download(int epid)
+            : base(epid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select status, errortype, errordetails, filepath, playcount from downloads where downloads.epid=@epid", Data.FetchDbConn()))
             {

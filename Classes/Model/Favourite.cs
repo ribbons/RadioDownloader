@@ -27,7 +27,8 @@ namespace RadioDld.Model
         {
         }
 
-        public Favourite(int progid) : base(progid)
+        public Favourite(int progid)
+            : base(progid)
         {
         }
 
