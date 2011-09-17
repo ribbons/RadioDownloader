@@ -69,23 +69,20 @@ namespace RadioDld
             // Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
             this.VacuumDatabase();
 
-            // Fetch the version of the database
-            int currentVer = 0;
+            const int CurrentVer = 4;
+            int dbVersion = CurrentVer;
 
-            if (this.GetDBSetting("databaseversion") == null)
+            // Fetch the version of the database
+            if (this.GetDBSetting("databaseversion") != null)
             {
-                currentVer = 1;
-            }
-            else
-            {
-                currentVer = Convert.ToInt32(this.GetDBSetting("databaseversion"), CultureInfo.InvariantCulture);
+                dbVersion = Convert.ToInt32(this.GetDBSetting("databaseversion"), CultureInfo.InvariantCulture);
             }
 
             // Set the current database version.  This is done before the upgrades are attempted so that
             // if the upgrade throws an exception this can be reported, but the programme will run next time.
-            this.SetDBSetting("databaseversion", 4);
+            this.SetDBSetting("databaseversion", CurrentVer);
 
-            switch (currentVer)
+            switch (dbVersion)
             {
                 case 3:
                     this.UpgradeDBv3to4();
