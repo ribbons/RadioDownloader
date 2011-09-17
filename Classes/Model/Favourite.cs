@@ -27,6 +27,10 @@ namespace RadioDld.Model
         {
         }
 
+        public Favourite(int progid) : base(progid)
+        {
+        }
+
         public static bool IsFavourite(int progid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(*) from favourites where progid=@progid", Data.FetchDbConn()))

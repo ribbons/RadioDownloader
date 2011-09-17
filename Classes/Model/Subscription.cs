@@ -25,15 +25,11 @@ namespace RadioDld.Model
         public Subscription(SQLiteMonDataReader reader)
             : base(reader)
         {
-            int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
-
-            if (!reader.IsDBNull(latestdownloadOrdinal))
-            {
-                this.LatestDownload = reader.GetDateTime(latestdownloadOrdinal);
-            }
         }
 
-        public DateTime? LatestDownload { get; set; }
+        public Subscription(int progid) : base(progid)
+        {
+        }
 
         public static bool IsSubscribed(int progid)
         {

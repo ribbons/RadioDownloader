@@ -159,7 +159,7 @@ namespace RadioDld
 
         public void AddDownload(int epid)
         {
-            Model.Download downloadData = this.dataInstance.FetchDownloadData(epid);
+            Model.Download downloadData = new Model.Download(epid);
             this.AddDownload(downloadData);
         }
 

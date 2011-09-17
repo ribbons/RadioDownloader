@@ -23,7 +23,43 @@ namespace RadioDld.Model
     {
         public Programme(SQLiteMonDataReader reader)
         {
+            this.FetchData(reader);
+        }
+
+        public Programme(int progid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select progid, name, description, singleepisode, pluginid, latestdownload from programmes where progid=@progid", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (!reader.Read())
+                    {
+                        throw new DataNotFoundException(progid, "Programme does not exist");
+                    }
+
+                    this.FetchData(reader);
+                }
+            }
+        }
+
+        public int Progid { get; private set; }
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        public bool SingleEpisode { get; set; }
+
+        public string ProviderName { get; set; }
+
+        public DateTime? LatestDownload { get; set; }
+
+        private void FetchData(SQLiteMonDataReader reader)
+        {
             int descriptionOrdinal = reader.GetOrdinal("description");
+            int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
 
             this.Progid = reader.GetInt32(reader.GetOrdinal("progid"));
             this.Name = reader.GetString(reader.GetOrdinal("name"));
@@ -38,16 +74,11 @@ namespace RadioDld.Model
             Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
             IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
             this.ProviderName = providerInst.ProviderName;
+
+            if (!reader.IsDBNull(latestdownloadOrdinal))
+            {
+                this.LatestDownload = reader.GetDateTime(latestdownloadOrdinal);
+            }
         }
-
-        public int Progid { get; private set; }
-
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        public bool SingleEpisode { get; set; }
-
-        public string ProviderName { get; set; }
     }
 }

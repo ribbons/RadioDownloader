@@ -17,10 +17,46 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Data.SQLite;
 
     internal class Episode
     {
         public Episode(SQLiteMonDataReader reader)
+        {
+            this.FetchData(reader);
+        }
+
+        public Episode(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select epid, name, description, date, duration, autodownload from episodes where epid=@epid", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (!reader.Read())
+                    {
+                        throw new DataNotFoundException(epid, "Episode does not exist");
+                    }
+
+                    this.FetchData(reader);
+                }
+            }
+        }
+
+        public int Epid { get; private set; }
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
+
+        public DateTime EpisodeDate { get; set; }
+
+        public int Duration { get; set; }
+
+        public bool AutoDownload { get; set; }
+
+        private void FetchData(SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int durationOrdinal = reader.GetOrdinal("duration");
@@ -41,17 +77,5 @@ namespace RadioDld.Model
 
             this.AutoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
         }
-
-        public int Epid { get; private set; }
-
-        public string Name { get; set; }
-
-        public string Description { get; set; }
-
-        public DateTime EpisodeDate { get; set; }
-
-        public int Duration { get; set; }
-
-        public bool AutoDownload { get; set; }
     }
 }

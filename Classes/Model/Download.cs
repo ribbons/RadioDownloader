@@ -17,11 +17,52 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Data.SQLite;
 
     internal class Download : Episode
     {
         public Download(SQLiteMonDataReader reader)
             : base(reader)
+        {
+            this.FetchData(reader);
+        }
+
+        public Download(int epid) : base(epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select status, errortype, errordetails, filepath, playcount from downloads where downloads.epid=@epid", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (!reader.Read())
+                    {
+                        throw new DataNotFoundException(epid, "Download does not exist");
+                    }
+
+                    this.FetchData(reader);
+                }
+            }
+        }
+
+        public enum DownloadStatus
+        {
+            Waiting = 0,
+            Downloaded = 1,
+            Errored = 2
+        }
+
+        public DownloadStatus Status { get; set; }
+
+        public ErrorType ErrorType { get; set; }
+
+        public string ErrorDetails { get; set; }
+
+        public string DownloadPath { get; set; }
+
+        public int PlayCount { get; set; }
+
+        private void FetchData(SQLiteMonDataReader reader)
         {
             int filepathOrdinal = reader.GetOrdinal("filepath");
 
@@ -44,22 +85,5 @@ namespace RadioDld.Model
 
             this.PlayCount = reader.GetInt32(reader.GetOrdinal("playcount"));
         }
-
-        public enum DownloadStatus
-        {
-            Waiting = 0,
-            Downloaded = 1,
-            Errored = 2
-        }
-
-        public DownloadStatus Status { get; set; }
-
-        public ErrorType ErrorType { get; set; }
-
-        public string ErrorDetails { get; set; }
-
-        public string DownloadPath { get; set; }
-
-        public int PlayCount { get; set; }
     }
 }

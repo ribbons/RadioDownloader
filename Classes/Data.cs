@@ -752,24 +752,6 @@ namespace RadioDld
             return downloadList;
         }
 
-        public Model.Download FetchDownloadData(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=@epid and episodes.epid=@epid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        throw new DataNotFoundException(epid, "Download does not exist");
-                    }
-
-                    return new Model.Download(reader);
-                }
-            }
-        }
-
         public List<Model.Favourite> FetchFavouriteList()
         {
             List<Model.Favourite> favouriteList = new List<Model.Favourite>();
@@ -786,78 +768,6 @@ namespace RadioDld
             }
 
             return favouriteList;
-        }
-
-        public Model.Favourite FetchFavouriteData(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select progid, name, description, singleepisode, pluginid from programmes where progid=@progid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        throw new DataNotFoundException(progid, "Programme does not exist");
-                    }
-
-                    return new Model.Favourite(reader);
-                }
-            }
-        }
-
-        public Model.Subscription FetchSubscriptionData(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select progid, name, description, pluginid, singleepisode, latestdownload from programmes where progid=@progid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        throw new DataNotFoundException(progid, "Programme does not exist");
-                    }
-
-                    return new Model.Subscription(reader);
-                }
-            }
-        }
-
-        public Model.Episode FetchEpisodeData(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select epid, name, description, date, duration, autodownload from episodes where epid=@epid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        throw new DataNotFoundException(epid, "Episode does not exist");
-                    }
-
-                    return new Model.Episode(reader);
-                }
-            }
-        }
-
-        public Model.Programme FetchProgrammeData(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select progid, name, description, singleepisode, pluginid from programmes where progid=@progid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        throw new DataNotFoundException(progid, "Programme does not exist");
-                    }
-
-                    return new Model.Programme(reader);
-                }
-            }
         }
 
         public ProviderData FetchProviderData(Guid providerId)
