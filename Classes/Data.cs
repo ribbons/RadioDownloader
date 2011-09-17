@@ -332,24 +332,6 @@ namespace RadioDld
             ThreadPool.QueueUserWorkItem(delegate { this.EpisodeSetAutoDownloadAsync(epid, autoDownload); });
         }
 
-        public int CountDownloadsNew()
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-            }
-        }
-
-        public int CountDownloadsErrored()
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-            }
-        }
-
         public bool AddDownload(int epid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))

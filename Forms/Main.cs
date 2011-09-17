@@ -69,7 +69,7 @@ namespace RadioDld
         {
             if (OsUtils.WinSevenOrLater())
             {
-                if (this.progData.CountDownloadsErrored() > 0)
+                if (Model.Download.CountErrored() > 0)
                 {
                     this.tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_error, "Error");
                     this.tbarNotif.SetThumbnailTooltip(this, this.Text + ": Error");
@@ -91,7 +91,7 @@ namespace RadioDld
 
             if (this.NotifyIcon.Visible)
             {
-                if (this.progData.CountDownloadsErrored() > 0)
+                if (Model.Download.CountErrored() > 0)
                 {
                     this.NotifyIcon.Icon = Properties.Resources.icon_error;
                     this.NotifyIcon.Text = this.Text + ": Error";
@@ -2004,8 +2004,8 @@ namespace RadioDld
                     else
                     {
                         string description = string.Empty;
-                        int newCount = this.progData.CountDownloadsNew();
-                        int errorCount = this.progData.CountDownloadsErrored();
+                        int newCount = Model.Download.CountNew();
+                        int errorCount = Model.Download.CountErrored();
 
                         if (newCount > 0)
                         {

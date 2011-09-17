@@ -18,6 +18,7 @@ namespace RadioDld.Model
 {
     using System;
     using System.Data.SQLite;
+    using System.Globalization;
 
     internal class Download : Episode
     {
@@ -62,6 +63,24 @@ namespace RadioDld.Model
         public string DownloadPath { get; set; }
 
         public int PlayCount { get; set; }
+
+        public static int CountNew()
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
+                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+            }
+        }
+
+        public static int CountErrored()
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
+                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+            }
+        }
 
         private void FetchData(SQLiteMonDataReader reader)
         {
