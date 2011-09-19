@@ -17,8 +17,12 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.SQLite;
     using System.Globalization;
+    using System.IO;
+    using System.Text.RegularExpressions;
+    using System.Windows.Forms;
 
     internal class Download : Episode
     {
@@ -79,6 +83,161 @@ namespace RadioDld.Model
             {
                 command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+            }
+        }
+
+        public static string FindFreeSaveFileName(string formatString, Model.Programme progInfo, Model.Episode epInfo, string baseSavePath)
+        {
+            string rootName = Path.Combine(baseSavePath, CreateSaveFileName(formatString, progInfo, epInfo));
+            string savePath = rootName;
+
+            // Make sure the save folder exists (to support subfolders in the save file name template)
+            string saveDir = Path.GetDirectoryName(savePath);
+            Directory.CreateDirectory(saveDir);
+
+            string currentFileName = null;
+
+            // If the passed episode info is actually a download, get it's current path
+            if (typeof(Model.Download) == epInfo.GetType())
+            {
+                currentFileName = ((Download)epInfo).DownloadPath;
+
+                // Remove the extension from the current name if applicable
+                if (currentFileName != null)
+                {
+                    int extensionPos = currentFileName.LastIndexOf('.');
+
+                    if (extensionPos > -1)
+                    {
+                        currentFileName = currentFileName.Substring(0, extensionPos);
+                    }
+                }
+            }
+
+            int diffNum = 1;
+
+            // Check for a pre-existing file with the same name (ignoring the current name for this file)
+            while (Directory.GetFiles(saveDir, Path.GetFileName(savePath) + ".*").Length > 0 &&
+                   savePath != currentFileName)
+            {
+                savePath = rootName + " (" + Convert.ToString(diffNum, CultureInfo.CurrentCulture) + ")";
+                diffNum += 1;
+            }
+
+            return savePath;
+        }
+
+        public static string CreateSaveFileName(string formatString, Model.Programme progInfo, Model.Episode epInfo)
+        {
+            if (string.IsNullOrEmpty(formatString))
+            {
+                // The format string is an empty string, so the output must be an empty string
+                return string.Empty;
+            }
+
+            string fileName = formatString;
+
+            // Convert %title% -> %epname% for backwards compatability
+            fileName = fileName.Replace("%title%", "%epname%");
+
+            // Make variable substitutions
+            fileName = fileName.Replace("%progname%", progInfo.Name);
+            fileName = fileName.Replace("%epname%", epInfo.Name);
+            fileName = fileName.Replace("%hour%", epInfo.EpisodeDate.ToString("HH", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%minute%", epInfo.EpisodeDate.ToString("mm", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%day%", epInfo.EpisodeDate.ToString("dd", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%month%", epInfo.EpisodeDate.ToString("MM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%shortmonthname%", epInfo.EpisodeDate.ToString("MMM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%monthname%", epInfo.EpisodeDate.ToString("MMMM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%year%", epInfo.EpisodeDate.ToString("yy", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%longyear%", epInfo.EpisodeDate.ToString("yyyy", CultureInfo.CurrentCulture));
+
+            // Replace invalid file name characters with spaces (except for directory separators
+            // as this then allows the flexibility of storing the downloads in subdirectories)
+            foreach (char removeChar in Path.GetInvalidFileNameChars())
+            {
+                if (removeChar != Path.DirectorySeparatorChar)
+                {
+                    fileName = fileName.Replace(removeChar, ' ');
+                }
+            }
+
+            // Replace runs of spaces with a single space
+            fileName = Regex.Replace(fileName, " {2,}", " ");
+
+            return fileName.Trim();
+        }
+
+        public static void UpdatePaths(string newPath, string newFormat)
+        {
+            List<Download> downloads = new List<Download>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select episodes.epid, progid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from episodes, downloads where episodes.epid=downloads.epid", Data.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    while (reader.Read())
+                    {
+                        downloads.Add(new Download(reader));
+                    }
+                }
+            }
+
+            if (downloads.Count > 0)
+            {
+                Dictionary<int, Programme> programmes = new Dictionary<int, Programme>();
+                int progress = 0;
+
+                using (Status showStatus = new Status())
+                {
+                    showStatus.StatusText = "Moving downloads...";
+                    showStatus.ProgressBarMax = downloads.Count;
+                    showStatus.Show();
+                    Application.DoEvents();
+
+                    using (SQLiteCommand command = new SQLiteCommand("update downloads set filepath=@filepath where epid=@epid", Data.FetchDbConn()))
+                    {
+                        SQLiteParameter epidParam = new SQLiteParameter("epid");
+                        SQLiteParameter filepathParam = new SQLiteParameter("filepath");
+
+                        command.Parameters.Add(epidParam);
+                        command.Parameters.Add(filepathParam);
+
+                        foreach (Download download in downloads)
+                        {
+                            if (File.Exists(download.DownloadPath))
+                            {
+                                if (!programmes.ContainsKey(download.Progid))
+                                {
+                                    programmes.Add(download.Progid, new Programme(download.Progid));
+                                }
+
+                                string newDownloadPath = Download.FindFreeSaveFileName(newFormat, programmes[download.Progid], download, newPath) + Path.GetExtension(download.DownloadPath);
+
+                                if (newDownloadPath != download.DownloadPath)
+                                {
+                                    lock (Data.DbUpdateLock)
+                                    {
+                                        using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                                        {
+                                            epidParam.Value = download.Epid;
+                                            filepathParam.Value = newDownloadPath;
+                                            command.ExecuteNonQuery();
+
+                                            File.Move(download.DownloadPath, newDownloadPath);
+                                            transMon.Trans.Commit();
+                                        }
+                                    }
+                                }
+                            }
+
+                            showStatus.ProgressBarValue = ++progress;
+                        }
+                    }
+
+                    showStatus.Hide();
+                    Application.DoEvents();
+                }
             }
         }
 

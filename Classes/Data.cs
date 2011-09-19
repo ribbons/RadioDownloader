@@ -36,7 +36,7 @@ namespace RadioDld
 
         private static object dataInstanceLock = new object();
 
-        private object dbUpdateLock = new object();
+        private static object dbUpdateLock = new object();
 
         private DataSearch search;
         private Thread episodeListThread;
@@ -174,6 +174,14 @@ namespace RadioDld
             Status = 2,
             Progress = 3,
             Duration = 4
+        }
+
+        public static object DbUpdateLock
+        {
+            get
+            {
+                return dbUpdateLock;
+            }
         }
 
         public DownloadCols DownloadSortByCol
@@ -710,7 +718,7 @@ namespace RadioDld
         {
             List<Model.Download> downloadList = new List<Model.Download>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from downloads, episodes where downloads.epid=episodes.epid", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount, progid from downloads, episodes where downloads.epid=episodes.epid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -791,7 +799,7 @@ namespace RadioDld
 
                 int processCount = 0;
 
-                lock (this.dbUpdateLock)
+                lock (Data.dbUpdateLock)
                 {
                     using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                     {
@@ -851,7 +859,7 @@ namespace RadioDld
             {
                 if (this.downloadThread == null)
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.name as progname, pr.description as progdesc, pr.image as progimg, ep.name as epname, ep.description as epdesc, ep.duration, ep.date, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.image as progimg, ep.duration, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn()))
                     {
                         command.Parameters.Add(new SQLiteParameter("@statuswait", Model.Download.DownloadStatus.Waiting));
                         command.Parameters.Add(new SQLiteParameter("@statuserr", Model.Download.DownloadStatus.Errored));
@@ -866,81 +874,50 @@ namespace RadioDld
                                 }
 
                                 Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-                                int epid = reader.GetInt32(reader.GetOrdinal("epid"));
 
                                 if (Plugins.PluginExists(pluginId))
                                 {
                                     this.curDldProgData = new DldProgData();
-                                    ProgrammeInfo progInfo = default(ProgrammeInfo);
+                                    Model.Programme progInfo = new Model.Programme(reader.GetInt32(reader.GetOrdinal("progid")));
+                                    Model.Episode epInfo = new Model.Episode(reader.GetInt32(reader.GetOrdinal("epid")));
+                                    ProgrammeInfo provProgInfo = new ProgrammeInfo();
 
-                                    if (reader.IsDBNull(reader.GetOrdinal("progname")))
-                                    {
-                                        progInfo.Name = null;
-                                    }
-                                    else
-                                    {
-                                        progInfo.Name = reader.GetString(reader.GetOrdinal("progname"));
-                                    }
-
-                                    if (reader.IsDBNull(reader.GetOrdinal("progdesc")))
-                                    {
-                                        progInfo.Description = null;
-                                    }
-                                    else
-                                    {
-                                        progInfo.Description = reader.GetString(reader.GetOrdinal("progdesc"));
-                                    }
+                                    provProgInfo.Name = progInfo.Name;
+                                    provProgInfo.Description = progInfo.Description;
 
                                     if (reader.IsDBNull(reader.GetOrdinal("progimg")))
                                     {
-                                        progInfo.Image = null;
+                                        provProgInfo.Image = null;
                                     }
                                     else
                                     {
-                                        progInfo.Image = this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
+                                        provProgInfo.Image = this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
                                     }
 
-                                    EpisodeInfo epiEpInfo = default(EpisodeInfo);
-
-                                    if (reader.IsDBNull(reader.GetOrdinal("epname")))
-                                    {
-                                        epiEpInfo.Name = null;
-                                    }
-                                    else
-                                    {
-                                        epiEpInfo.Name = reader.GetString(reader.GetOrdinal("epname"));
-                                    }
-
-                                    if (reader.IsDBNull(reader.GetOrdinal("epdesc")))
-                                    {
-                                        epiEpInfo.Description = null;
-                                    }
-                                    else
-                                    {
-                                        epiEpInfo.Description = reader.GetString(reader.GetOrdinal("epdesc"));
-                                    }
+                                    EpisodeInfo provEpInfo = new EpisodeInfo();
+                                    provEpInfo.Name = progInfo.Name;
+                                    provEpInfo.Description = progInfo.Description;
+                                    provEpInfo.Date = epInfo.EpisodeDate;
 
                                     if (reader.IsDBNull(reader.GetOrdinal("duration")))
                                     {
-                                        epiEpInfo.DurationSecs = null;
+                                        provEpInfo.DurationSecs = null;
                                     }
                                     else
                                     {
-                                        epiEpInfo.DurationSecs = reader.GetInt32(reader.GetOrdinal("duration"));
+                                        provEpInfo.DurationSecs = reader.GetInt32(reader.GetOrdinal("duration"));
                                     }
-
-                                    epiEpInfo.Date = reader.GetDateTime(reader.GetOrdinal("date"));
 
                                     if (reader.IsDBNull(reader.GetOrdinal("epimg")))
                                     {
-                                        epiEpInfo.Image = null;
+                                        provEpInfo.Image = null;
                                     }
                                     else
                                     {
-                                        epiEpInfo.Image = this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
+                                        provEpInfo.Image = this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
                                     }
 
-                                    epiEpInfo.ExtInfo = new Dictionary<string, string>();
+                                    provEpInfo.ExtInfo = new Dictionary<string, string>();
 
                                     using (SQLiteCommand extCommand = new SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn()))
                                     {
@@ -950,22 +927,24 @@ namespace RadioDld
                                         {
                                             while (extReader.Read())
                                             {
-                                                epiEpInfo.ExtInfo.Add(extReader.GetString(extReader.GetOrdinal("name")), extReader.GetString(extReader.GetOrdinal("value")));
+                                                provEpInfo.ExtInfo.Add(extReader.GetString(extReader.GetOrdinal("name")), extReader.GetString(extReader.GetOrdinal("value")));
                                             }
                                         }
                                     }
 
                                     this.curDldProgData.PluginId = pluginId;
-                                    this.curDldProgData.ProgId = reader.GetInt32(reader.GetOrdinal("progid"));
+                                    this.curDldProgData.ProgId = progInfo.Progid;
                                     this.curDldProgData.ProgExtId = reader.GetString(reader.GetOrdinal("progextid"));
-                                    this.curDldProgData.EpId = epid;
+                                    this.curDldProgData.EpId = epInfo.Epid;
                                     this.curDldProgData.EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
                                     this.curDldProgData.ProgInfo = progInfo;
-                                    this.curDldProgData.EpisodeInfo = epiEpInfo;
+                                    this.curDldProgData.ProviderProgInfo = provProgInfo;
+                                    this.curDldProgData.EpisodeInfo = epInfo;
+                                    this.curDldProgData.ProviderEpisodeInfo = provEpInfo;
 
                                     if ((Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == Model.Download.DownloadStatus.Errored)
                                     {
-                                        this.ResetDownloadAsync(epid, true);
+                                        this.ResetDownloadAsync(epInfo.Epid, true);
                                     }
 
                                     this.downloadThread = new Thread(this.DownloadProgThread);
@@ -996,7 +975,7 @@ namespace RadioDld
 
                 try
                 {
-                    this.curDldProgData.FinalName = FileUtils.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, this.curDldProgData.ProgInfo.Name, this.curDldProgData.EpisodeInfo.Name, this.curDldProgData.EpisodeInfo.Date, FileUtils.GetSaveFolder());
+                    this.curDldProgData.FinalName = Model.Download.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, this.curDldProgData.ProgInfo,  this.curDldProgData.EpisodeInfo, FileUtils.GetSaveFolder());
                 }
                 catch (DirectoryNotFoundException)
                 {
@@ -1009,7 +988,7 @@ namespace RadioDld
                     return;
                 }
 
-                this.downloadPluginInst.DownloadProgramme(this.curDldProgData.ProgExtId, this.curDldProgData.EpisodeExtId, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, this.curDldProgData.FinalName);
+                this.downloadPluginInst.DownloadProgramme(this.curDldProgData.ProgExtId, this.curDldProgData.EpisodeExtId, this.curDldProgData.ProviderProgInfo, this.curDldProgData.ProviderEpisodeInfo, this.curDldProgData.FinalName);
             }
             catch (ThreadAbortException)
             {
@@ -1078,7 +1057,7 @@ namespace RadioDld
 
         private void EpisodeSetAutoDownloadAsync(int epid, bool autoDownload)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn()))
                 {
@@ -1222,7 +1201,7 @@ namespace RadioDld
 
         private void AddDownloadAsync(int epid)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 // Check again that the download doesn't exist, as it may have been
                 // added while this call was waiting in the thread pool
@@ -1261,7 +1240,7 @@ namespace RadioDld
 
         private void AddFavouriteAsync(int progid)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 // Check again that the favourite doesn't exist, as it may have been
                 // added while this call was waiting in the thread pool
@@ -1298,7 +1277,7 @@ namespace RadioDld
 
         private void RemoveFavouriteAsync(int progid)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("delete from favourites where progid=@progid", FetchDbConn()))
                 {
@@ -1328,7 +1307,7 @@ namespace RadioDld
 
         private void AddSubscriptionAsync(int progid)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 // Check again that the subscription doesn't exist, as it may have been
                 // added while this call was waiting in the thread pool
@@ -1365,7 +1344,7 @@ namespace RadioDld
 
         private void RemoveSubscriptionAsync(int progid)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn()))
                 {
@@ -1395,7 +1374,7 @@ namespace RadioDld
 
         private void ResetDownloadAsync(int epid, bool auto)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
@@ -1442,7 +1421,7 @@ namespace RadioDld
 
         private void DownloadRemoveAsync(int epid, bool auto)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
@@ -1509,7 +1488,7 @@ namespace RadioDld
 
         private void DownloadBumpPlayCountAsync(int epid)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn()))
                 {
@@ -1559,7 +1538,7 @@ namespace RadioDld
                     break;
             }
 
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn()))
                 {
@@ -1601,7 +1580,7 @@ namespace RadioDld
         {
             this.curDldProgData.FinalName += "." + fileExtension;
 
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn()))
                 {
@@ -1613,7 +1592,7 @@ namespace RadioDld
 
                 using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", FetchDbConn()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@latestdownload", this.curDldProgData.EpisodeInfo.Date));
+                    command.Parameters.Add(new SQLiteParameter("@latestdownload", this.curDldProgData.ProviderEpisodeInfo.Date));
                     command.Parameters.Add(new SQLiteParameter("@progid", this.curDldProgData.ProgId));
                     command.ExecuteNonQuery();
                 }
@@ -1698,7 +1677,7 @@ namespace RadioDld
 
         private void SetDBSetting(string propertyName, object value)
         {
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("insert or replace into settings (property, value) values (@property, @value)", FetchDbConn()))
                 {
@@ -1751,7 +1730,7 @@ namespace RadioDld
                     showStatus.Show();
 
                     // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-                    lock (this.dbUpdateLock)
+                    lock (Data.dbUpdateLock)
                     {
                         using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
                         {
@@ -1828,7 +1807,7 @@ namespace RadioDld
 
             int? progid = null;
 
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
                 {
@@ -1923,7 +1902,7 @@ namespace RadioDld
                 imageAsBytes = memstream.ToArray();
             }
 
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("select imgid from images where image=@image", FetchDbConn()))
                 {
@@ -2035,7 +2014,7 @@ namespace RadioDld
                 episodeInfoReturn.EpisodeInfo.Date = DateTime.Now;
             }
 
-            lock (this.dbUpdateLock)
+            lock (Data.dbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {

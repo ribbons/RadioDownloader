@@ -21,6 +21,10 @@ namespace RadioDld.Model
 
     internal class Programme
     {
+        public Programme()
+        {
+        }
+
         public Programme(SQLiteMonDataReader reader)
         {
             this.FetchData(reader);

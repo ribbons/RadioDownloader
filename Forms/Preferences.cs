@@ -26,6 +26,7 @@ namespace RadioDld
     internal partial class Preferences : Form
     {
         private bool cancelClose;
+        private bool folderChanged;
 
         public Preferences()
         {
@@ -41,6 +42,7 @@ namespace RadioDld
             if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 this.TextSaveIn.Text = browse.SelectedPath;
+                this.folderChanged = true;
             }
         }
 
@@ -55,9 +57,32 @@ namespace RadioDld
             }
 
             Properties.Settings.Default.RunOnStartup = this.CheckRunOnStartup.Checked;
-            Properties.Settings.Default.SaveFolder = this.TextSaveIn.Text;
-            Properties.Settings.Default.FileNameFormat = this.TextFileNameFormat.Text;
             Properties.Settings.Default.RunAfterCommand = this.TextRunAfter.Text;
+
+            bool formatChanged = Properties.Settings.Default.FileNameFormat != this.TextFileNameFormat.Text;
+
+            if (this.folderChanged || formatChanged)
+            {
+                string message = "Move existing downloads to \"" + this.TextSaveIn.Text + "\" and rename to new naming format?";
+
+                if (!formatChanged)
+                {
+                    message = "Move existing downloads to \"" + this.TextSaveIn.Text + "\"?";
+                }
+                else if (!this.folderChanged)
+                {
+                    message = "Rename existing downloads to new naming format?";
+                }
+
+                if (MessageBox.Show(message, Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    Data dataInst = Data.GetInstance();
+                    Model.Download.UpdatePaths(this.TextSaveIn.Text, this.TextFileNameFormat.Text);
+                }
+
+                Properties.Settings.Default.SaveFolder = this.TextSaveIn.Text;
+                Properties.Settings.Default.FileNameFormat = this.TextFileNameFormat.Text;
+            }
 
             if (OsUtils.WinSevenOrLater())
             {
@@ -109,7 +134,14 @@ namespace RadioDld
 
         private void TextFileNameFormat_TextChanged(object sender, System.EventArgs e)
         {
-            this.LabelFilenameFormatResult.Text = "Result: " + FileUtils.CreateSaveFileName(this.TextFileNameFormat.Text, "Programme Name", "Episode Name", DateAndTime.Now) + ".mp3";
+            Model.Programme dummyProg = new Model.Programme();
+            dummyProg.Name = "Programme Name";
+
+            Model.Episode dummyEp = new Model.Episode();
+            dummyEp.Name = "Episode Name";
+            dummyEp.EpisodeDate = DateAndTime.Now;
+
+            this.LabelFilenameFormatResult.Text = "Result: " + Model.Download.CreateSaveFileName(this.TextFileNameFormat.Text, dummyProg, dummyEp) + ".mp3";
         }
 
         private void ButtonReset_Click(object sender, System.EventArgs e)

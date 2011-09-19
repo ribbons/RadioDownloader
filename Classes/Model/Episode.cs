@@ -21,6 +21,10 @@ namespace RadioDld.Model
 
     internal class Episode
     {
+        public Episode()
+        {
+        }
+
         public Episode(SQLiteMonDataReader reader)
         {
             this.FetchData(reader);
@@ -28,7 +32,7 @@ namespace RadioDld.Model
 
         public Episode(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select epid, name, description, date, duration, autodownload from episodes where epid=@epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select epid, progid, name, description, date, duration, autodownload from episodes where epid=@epid", Data.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -46,6 +50,8 @@ namespace RadioDld.Model
 
         public int Epid { get; private set; }
 
+        public int Progid { get; set; }
+
         public string Name { get; set; }
 
         public string Description { get; set; }
@@ -62,6 +68,7 @@ namespace RadioDld.Model
             int durationOrdinal = reader.GetOrdinal("duration");
 
             this.Epid = reader.GetInt32(reader.GetOrdinal("epid"));
+            this.Progid = reader.GetInt32(reader.GetOrdinal("progid"));
             this.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
             this.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), this.EpisodeDate);
 

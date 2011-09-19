@@ -30,9 +30,13 @@ namespace RadioDld
 
         public string EpisodeExtId { get; set; }
 
-        public ProgrammeInfo ProgInfo { get; set; }
+        public Model.Programme ProgInfo { get; set; }
 
-        public EpisodeInfo EpisodeInfo { get; set; }
+        public Model.Episode EpisodeInfo { get; set; }
+
+        public ProgrammeInfo ProviderProgInfo { get; set; }
+
+        public EpisodeInfo ProviderEpisodeInfo { get; set; }
 
         public string FinalName { get; set; }
     }
