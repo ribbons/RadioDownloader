@@ -508,7 +508,7 @@ namespace RadioDld
             infoText += "Date: " + epInfo.EpisodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
             infoText += TextUtils.DescDuration(epInfo.Duration);
 
-            this.SetSideBar(epInfo.Name, infoText, this.progData.FetchEpisodeImage(epid));
+            this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.EpisodeDate), infoText, this.progData.FetchEpisodeImage(epid));
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.Add(this.ButtonDownload);
@@ -802,7 +802,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(info.Name, infoText, this.progData.FetchEpisodeImage(epid));
+            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.EpisodeDate), infoText, this.progData.FetchEpisodeImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
@@ -1052,7 +1052,7 @@ namespace RadioDld
         {
             item.Name = epid.ToString(CultureInfo.InvariantCulture);
             item.Text = info.EpisodeDate.ToShortDateString();
-            item.SubItems[1].Text = info.Name;
+            item.SubItems[1].Text = TextUtils.StripDateFromName(info.Name, info.EpisodeDate);
             item.Checked = info.AutoDownload;
         }
 
@@ -1283,7 +1283,7 @@ namespace RadioDld
                 switch (this.downloadColOrder[column])
                 {
                     case Data.DownloadCols.EpisodeName:
-                        item.SubItems[column].Text = info.Name;
+                        item.SubItems[column].Text = TextUtils.StripDateFromName(info.Name, info.EpisodeDate);
                         break;
                     case Data.DownloadCols.EpisodeDate:
                         item.SubItems[column].Text = info.EpisodeDate.ToShortDateString();

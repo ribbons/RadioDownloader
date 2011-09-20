@@ -70,7 +70,7 @@ namespace RadioDld.Model
             this.Epid = reader.GetInt32(reader.GetOrdinal("epid"));
             this.Progid = reader.GetInt32(reader.GetOrdinal("progid"));
             this.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
-            this.Name = TextUtils.StripDateFromName(reader.GetString(reader.GetOrdinal("name")), this.EpisodeDate);
+            this.Name = reader.GetString(reader.GetOrdinal("name"));
 
             if (!reader.IsDBNull(descriptionOrdinal))
             {
