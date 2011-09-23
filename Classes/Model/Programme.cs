@@ -21,6 +21,8 @@ namespace RadioDld.Model
 
     internal class Programme
     {
+        internal const string Columns = "progid, name, description, singleepisode, pluginid, latestdownload";
+
         public Programme()
         {
         }
@@ -32,7 +34,7 @@ namespace RadioDld.Model
 
         public Programme(int progid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select progid, name, description, singleepisode, pluginid, latestdownload from programmes where progid=@progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from programmes where progid=@progid", Data.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -60,7 +62,7 @@ namespace RadioDld.Model
 
         public DateTime? LatestDownload { get; set; }
 
-        private void FetchData(SQLiteMonDataReader reader)
+        internal void FetchData(SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");

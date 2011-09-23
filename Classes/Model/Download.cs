@@ -26,16 +26,16 @@ namespace RadioDld.Model
 
     internal class Download : Episode
     {
+        internal new const string Columns = Episode.Columns + ", status, errortype, errordetails, filepath, playcount";
+
         public Download(SQLiteMonDataReader reader)
-            : base(reader)
         {
             this.FetchData(reader);
         }
 
         public Download(int epid)
-            : base(epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select status, errortype, errordetails, filepath, playcount from downloads where downloads.epid=@epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where episodes.epid=@epid and downloads.epid=episodes.epid", Data.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -241,8 +241,10 @@ namespace RadioDld.Model
             }
         }
 
-        private void FetchData(SQLiteMonDataReader reader)
+        internal new void FetchData(SQLiteMonDataReader reader)
         {
+            base.FetchData(reader);
+
             int filepathOrdinal = reader.GetOrdinal("filepath");
 
             this.Status = (Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
