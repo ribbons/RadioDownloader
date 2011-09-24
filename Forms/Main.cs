@@ -342,7 +342,7 @@ namespace RadioDld
 
             this.progData.InitProviderList();
             this.InitFavouriteList();
-            this.progData.InitSubscriptionList();
+            this.InitSubscriptionList();
             this.InitDownloadList();
 
             this.ListFavourites.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Favourite);
@@ -1167,9 +1167,16 @@ namespace RadioDld
             }
         }
 
-        private void SubscriptionListItem(int progid, Model.Subscription info, ref ListViewItem item)
+        private ListViewItem SubscriptionListItem(Model.Subscription info, ListViewItem item)
         {
-            item.Name = progid.ToString(CultureInfo.InvariantCulture);
+            if (item == null)
+            {
+                item = new ListViewItem();
+                item.SubItems.Add(string.Empty);
+                item.SubItems.Add(string.Empty);
+            }
+
+            item.Name = info.Progid.ToString(CultureInfo.InvariantCulture);
             item.Text = info.Name;
 
             if (info.LatestDownload == null)
@@ -1191,6 +1198,8 @@ namespace RadioDld
             {
                 item.ImageKey = "subscribed_multi";
             }
+
+            return item;
         }
 
         private void ProgData_SubscriptionAdded(int progid)
@@ -1203,13 +1212,7 @@ namespace RadioDld
             }
 
             Model.Subscription info = new Model.Subscription(progid);
-
-            ListViewItem addItem = new ListViewItem();
-            addItem.SubItems.Add(string.Empty);
-            addItem.SubItems.Add(string.Empty);
-
-            this.SubscriptionListItem(progid, info, ref addItem);
-            this.ListSubscribed.Items.Add(addItem);
+            this.ListSubscribed.Items.Add(this.SubscriptionListItem(info, null));
 
             if (this.view.CurrentView == ViewState.View.Subscriptions)
             {
@@ -1233,7 +1236,7 @@ namespace RadioDld
             Model.Subscription info = new Model.Subscription(progid);
             ListViewItem item = this.ListSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)];
 
-            this.SubscriptionListItem(progid, info, ref item);
+            item = this.SubscriptionListItem(info, item);
 
             if (this.view.CurrentView == ViewState.View.Subscriptions)
             {
@@ -2163,7 +2166,7 @@ namespace RadioDld
                 this.SetViewDefaults(); // Revert back to default sidebar and toolbar
             }
 
-            // Convert the list of FavouriteData items to an array of ListItems
+            // Convert the list of Favourite items to an array of ListItems
             List<Model.Favourite> initData = this.progData.FetchFavouriteList();
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
@@ -2174,6 +2177,26 @@ namespace RadioDld
 
             // Add the whole array of ListItems at once
             this.ListFavourites.Items.AddRange(initItems);
+        }
+
+        private void InitSubscriptionList()
+        {
+            if (this.ListSubscribed.SelectedItems.Count > 0)
+            {
+                this.SetViewDefaults(); // Revert back to default sidebar and toolbar
+            }
+
+            // Convert the list of Subscription items to an array of ListItems
+            List<Model.Subscription> initData = Model.Subscription.FetchAll();
+            ListViewItem[] initItems = new ListViewItem[initData.Count];
+
+            for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
+            {
+                initItems[convItems] = this.SubscriptionListItem(initData[convItems], null);
+            }
+
+            // Add the whole array of ListItems at once
+            this.ListSubscribed.Items.AddRange(initItems);
         }
 
         private void InitDownloadList()
@@ -2232,7 +2255,7 @@ namespace RadioDld
             this.progData.DownloadSortAscending = Properties.Settings.Default.DownloadColSortAsc;
             this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(this.progData.DownloadSortByCol), this.progData.DownloadSortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
-            // Convert the list of DownloadData items to an array of ListItems
+            // Convert the list of Download items to an array of ListItems
             List<Model.Download> initData = this.progData.FetchDownloadList(true);
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 

@@ -21,7 +21,7 @@ namespace RadioDld.Model
 
     internal class Programme
     {
-        internal const string Columns = "progid, name, description, singleepisode, pluginid, latestdownload";
+        internal const string Columns = "programmes.progid, name, description, singleepisode, pluginid, latestdownload";
 
         public Programme()
         {

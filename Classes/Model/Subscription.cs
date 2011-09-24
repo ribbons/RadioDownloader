@@ -17,6 +17,7 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.SQLite;
     using System.Globalization;
 
@@ -30,6 +31,24 @@ namespace RadioDld.Model
         public Subscription(int progid)
             : base(progid)
         {
+        }
+
+        public static List<Subscription> FetchAll()
+        {
+            List<Subscription> items = new List<Subscription>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from subscriptions, programmes where subscriptions.progid=programmes.progid", Data.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(new Subscription(reader));
+                    }
+                }
+            }
+
+            return items;
         }
 
         public static bool IsSubscribed(int progid)

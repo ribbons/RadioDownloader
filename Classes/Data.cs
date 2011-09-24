@@ -714,25 +714,6 @@ namespace RadioDld
             }
         }
 
-        public void InitSubscriptionList()
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where subscriptions.progid = programmes.progid", FetchDbConn()))
-            {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    int progidOrdinal = reader.GetOrdinal("progid");
-
-                    while (reader.Read())
-                    {
-                        if (this.SubscriptionAdded != null)
-                        {
-                            this.SubscriptionAdded(reader.GetInt32(progidOrdinal));
-                        }
-                    }
-                }
-            }
-        }
-
         public List<Model.Download> FetchDownloadList(bool filtered)
         {
             List<Model.Download> downloadList = new List<Model.Download>();
@@ -1087,22 +1068,9 @@ namespace RadioDld
 
         private void CheckSubscriptions()
         {
-            List<int> progids = new List<int>();
-
             // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
             // checking all of the subscriptions, as this blocks writes to the database from other threads
-            using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where subscriptions.progid=programmes.progid", FetchDbConn()))
-            {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    int progidOrdinal = reader.GetOrdinal("progid");
-
-                    while (reader.Read())
-                    {
-                        progids.Add(reader.GetInt32(progidOrdinal));
-                    }
-                }
-            }
+            List<Model.Subscription> subscriptions = Model.Subscription.FetchAll();
 
             // Work through the list of subscriptions and check for new episodes
             using (SQLiteCommand progInfCmd = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
@@ -1120,13 +1088,12 @@ namespace RadioDld
                         findCmd.Parameters.Add(extidParam);
                         checkCmd.Parameters.Add(epidParam);
 
-                        foreach (int progid in progids)
+                        foreach (Model.Subscription subscription in subscriptions)
                         {
-                            Model.Programme progInfo = new Model.Programme(progid);
                             Guid providerId = default(Guid);
                             string progExtId = null;
 
-                            progidParam.Value = progid;
+                            progidParam.Value = subscription.Progid;
 
                             using (SQLiteMonDataReader progInfReader = new SQLiteMonDataReader(progInfCmd.ExecuteReader()))
                             {
@@ -1167,7 +1134,7 @@ namespace RadioDld
                                             needEpInfo = false;
                                             epid = findReader.GetInt32(findReader.GetOrdinal("epid"));
 
-                                            if (!progInfo.SingleEpisode)
+                                            if (!subscription.SingleEpisode)
                                             {
                                                 if (findReader.GetInt32(findReader.GetOrdinal("autodownload")) != 1)
                                                 {
@@ -1182,7 +1149,7 @@ namespace RadioDld
                                     {
                                         try
                                         {
-                                            epid = this.StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId);
+                                            epid = this.StoreEpisodeInfo(providerId, subscription.Progid, progExtId, episodeExtId);
                                         }
                                         catch
                                         {
