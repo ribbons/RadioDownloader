@@ -381,6 +381,25 @@ namespace RadioDld
                 return false;
             }
 
+            Model.Programme progInfo = new Model.Programme(progid);
+
+            if (progInfo.SingleEpisode)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid and progid=@progid", FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("progid", progid));
+
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                    {
+                        if (reader.Read())
+                        {
+                            // The one download for this programme is already in the downloads list
+                            return false;
+                        }
+                    }
+                }
+            }
+
             ThreadPool.QueueUserWorkItem(delegate { this.AddSubscriptionAsync(progid); });
 
             return true;
@@ -1074,7 +1093,7 @@ namespace RadioDld
 
             // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
             // checking all of the subscriptions, as this blocks writes to the database from other threads
-            using (SQLiteCommand command = new SQLiteCommand("select progid from subscriptions", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where subscriptions.progid=programmes.progid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -1105,6 +1124,7 @@ namespace RadioDld
 
                         foreach (int progid in progids)
                         {
+                            Model.Programme progInfo = new Model.Programme(progid);
                             Guid providerId = default(Guid);
                             string progExtId = null;
 
@@ -1149,10 +1169,13 @@ namespace RadioDld
                                             needEpInfo = false;
                                             epid = findReader.GetInt32(findReader.GetOrdinal("epid"));
 
-                                            if (findReader.GetInt32(findReader.GetOrdinal("autodownload")) != 1)
+                                            if (!progInfo.SingleEpisode)
                                             {
-                                                // Don't download the episode automatically, skip to the next one
-                                                continue;
+                                                if (findReader.GetInt32(findReader.GetOrdinal("autodownload")) != 1)
+                                                {
+                                                    // Don't download the episode automatically, skip to the next one
+                                                    continue;
+                                                }
                                             }
                                         }
                                     }
@@ -1618,17 +1641,24 @@ namespace RadioDld
                 this.DownloadProgressTotal(false, 100);
             }
 
-            // If the episode's programme is a subscription, clear the sort cache and raise an updated event
+            // Remove single episode subscriptions, or clear the sort cache and raise an updated event if multiple
             if (Model.Subscription.IsSubscribed(this.curDldProgData.ProgId))
             {
-                lock (this.subscriptionSortCacheLock)
+                if (this.curDldProgData.ProgInfo.SingleEpisode)
                 {
-                    this.subscriptionSortCache = null;
+                    this.RemoveSubscriptionAsync(this.curDldProgData.ProgId);
                 }
-
-                if (this.SubscriptionUpdated != null)
+                else
                 {
-                    this.SubscriptionUpdated(this.curDldProgData.ProgId);
+                    lock (this.subscriptionSortCacheLock)
+                    {
+                        this.subscriptionSortCache = null;
+                    }
+
+                    if (this.SubscriptionUpdated != null)
+                    {
+                        this.SubscriptionUpdated(this.curDldProgData.ProgId);
+                    }
                 }
             }
 

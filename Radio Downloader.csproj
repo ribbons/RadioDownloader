@@ -341,6 +341,7 @@
     <None Include="Resources\icons\Error.ico" />
     <None Include="Resources\provider_default_64.png" />
     <None Include="Resources\list icons\subscribed_16.png" />
+    <None Include="Resources\list icons\subscribed_multi_16.png" />
     <None Include="Resources\list icons\waiting_16.png" />
     <None Include="Resources\list icons\error_16.png" />
     <None Include="Resources\list icons\downloading_16.png" />

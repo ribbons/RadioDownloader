@@ -274,6 +274,7 @@ namespace RadioDld
             this.ImagesListIcons.Images.Add("downloaded_new", Properties.Resources.list_downloaded_new);
             this.ImagesListIcons.Images.Add("downloaded", Properties.Resources.list_downloaded);
             this.ImagesListIcons.Images.Add("subscribed", Properties.Resources.list_subscribed);
+            this.ImagesListIcons.Images.Add("subscribed_multi", Properties.Resources.list_subscribed_multi);
             this.ImagesListIcons.Images.Add("error", Properties.Resources.list_error);
             this.ImagesListIcons.Images.Add("favourite", Properties.Resources.list_favourite);
 
@@ -526,7 +527,7 @@ namespace RadioDld
             {
                 buttons.Add(this.ButtonUnsubscribe);
             }
-            else if (!progInfo.SingleEpisode)
+            else
             {
                 buttons.Add(this.ButtonSubscribe);
             }
@@ -573,7 +574,7 @@ namespace RadioDld
             {
                 buttons.Add(this.ButtonUnsubscribe);
             }
-            else if (!info.SingleEpisode)
+            else
             {
                 buttons.Add(this.ButtonSubscribe);
             }
@@ -1039,7 +1040,7 @@ namespace RadioDld
             {
                 buttons.Add(this.ButtonUnsubscribe);
             }
-            else if (!progInfo.SingleEpisode)
+            else
             {
                 buttons.Add(this.ButtonSubscribe);
             }
@@ -1181,7 +1182,15 @@ namespace RadioDld
             }
 
             item.SubItems[2].Text = info.ProviderName;
-            item.ImageKey = "subscribed";
+
+            if (info.SingleEpisode)
+            {
+                item.ImageKey = "subscribed";
+            }
+            else
+            {
+                item.ImageKey = "subscribed_multi";
+            }
         }
 
         private void ProgData_SubscriptionAdded(int progid)
@@ -1665,7 +1674,7 @@ namespace RadioDld
             }
             else
             {
-                Interaction.MsgBox("You are already subscribed to this programme!", MsgBoxStyle.Exclamation);
+                MessageBox.Show("This programme only has one episode, which is already in the download list!", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
 
