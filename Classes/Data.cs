@@ -952,9 +952,7 @@ namespace RadioDld
                                     }
 
                                     this.curDldProgData.PluginId = pluginId;
-                                    this.curDldProgData.ProgId = progInfo.Progid;
                                     this.curDldProgData.ProgExtId = reader.GetString(reader.GetOrdinal("progextid"));
-                                    this.curDldProgData.EpId = epInfo.Epid;
                                     this.curDldProgData.EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
                                     this.curDldProgData.ProgInfo = progInfo;
                                     this.curDldProgData.ProviderProgInfo = provProgInfo;
@@ -1490,7 +1488,7 @@ namespace RadioDld
 
             if (this.curDldProgData != null)
             {
-                if (this.curDldProgData.EpId == epid)
+                if (this.curDldProgData.EpisodeInfo.Epid == epid)
                 {
                     // This episode is currently being downloaded
                     if (this.downloadThread != null)
@@ -1541,7 +1539,7 @@ namespace RadioDld
             switch (errorType)
             {
                 case ErrorType.RemoveFromList:
-                    this.DownloadRemoveAsync(this.curDldProgData.EpId, true);
+                    this.DownloadRemoveAsync(this.curDldProgData.EpisodeInfo.Epid, true);
                     return;
                 case ErrorType.UnknownError:
                     if (furtherDetails == null)
@@ -1568,7 +1566,7 @@ namespace RadioDld
                     command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
                     command.Parameters.Add(new SQLiteParameter("@errortype", errorType));
                     command.Parameters.Add(new SQLiteParameter("@errordetails", errorDetails));
-                    command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpId));
+                    command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpisodeInfo.Epid));
                     command.ExecuteNonQuery();
                 }
             }
@@ -1578,13 +1576,13 @@ namespace RadioDld
                 this.downloadSortCache = null;
             }
 
-            this.search.UpdateDownload(this.curDldProgData.EpId);
+            this.search.UpdateDownload(this.curDldProgData.EpisodeInfo.Epid);
 
-            if (this.search.DownloadIsVisible(this.curDldProgData.EpId))
+            if (this.search.DownloadIsVisible(this.curDldProgData.EpisodeInfo.Epid))
             {
                 if (this.DownloadUpdated != null)
                 {
-                    this.DownloadUpdated(this.curDldProgData.EpId);
+                    this.DownloadUpdated(this.curDldProgData.EpisodeInfo.Epid);
                 }
             }
 
@@ -1609,14 +1607,14 @@ namespace RadioDld
                 {
                     command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
                     command.Parameters.Add(new SQLiteParameter("@filepath", this.curDldProgData.FinalName));
-                    command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpId));
+                    command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpisodeInfo.Epid));
                     command.ExecuteNonQuery();
                 }
 
                 using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@latestdownload", this.curDldProgData.ProviderEpisodeInfo.Date));
-                    command.Parameters.Add(new SQLiteParameter("@progid", this.curDldProgData.ProgId));
+                    command.Parameters.Add(new SQLiteParameter("@progid", this.curDldProgData.ProgInfo.Progid));
                     command.ExecuteNonQuery();
                 }
             }
@@ -1626,13 +1624,13 @@ namespace RadioDld
                 this.downloadSortCache = null;
             }
 
-            this.search.UpdateDownload(this.curDldProgData.EpId);
+            this.search.UpdateDownload(this.curDldProgData.EpisodeInfo.Epid);
 
-            if (this.search.DownloadIsVisible(this.curDldProgData.EpId))
+            if (this.search.DownloadIsVisible(this.curDldProgData.EpisodeInfo.Epid))
             {
                 if (this.DownloadUpdated != null)
                 {
-                    this.DownloadUpdated(this.curDldProgData.EpId);
+                    this.DownloadUpdated(this.curDldProgData.EpisodeInfo.Epid);
                 }
             }
 
@@ -1642,11 +1640,11 @@ namespace RadioDld
             }
 
             // Remove single episode subscriptions, or clear the sort cache and raise an updated event if multiple
-            if (Model.Subscription.IsSubscribed(this.curDldProgData.ProgId))
+            if (Model.Subscription.IsSubscribed(this.curDldProgData.ProgInfo.Progid))
             {
                 if (this.curDldProgData.ProgInfo.SingleEpisode)
                 {
-                    this.RemoveSubscriptionAsync(this.curDldProgData.ProgId);
+                    this.RemoveSubscriptionAsync(this.curDldProgData.ProgInfo.Progid);
                 }
                 else
                 {
@@ -1657,7 +1655,7 @@ namespace RadioDld
 
                     if (this.SubscriptionUpdated != null)
                     {
-                        this.SubscriptionUpdated(this.curDldProgData.ProgId);
+                        this.SubscriptionUpdated(this.curDldProgData.ProgInfo.Progid);
                     }
                 }
             }
@@ -1691,11 +1689,11 @@ namespace RadioDld
 
             this.lastProgressVal = percent;
 
-            if (this.search.DownloadIsVisible(this.curDldProgData.EpId))
+            if (this.search.DownloadIsVisible(this.curDldProgData.EpisodeInfo.Epid))
             {
                 if (this.DownloadProgress != null)
                 {
-                    this.DownloadProgress(this.curDldProgData.EpId, percent, statusText, icon);
+                    this.DownloadProgress(this.curDldProgData.EpisodeInfo.Epid, percent, statusText, icon);
                 }
             }
 
