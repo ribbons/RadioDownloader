@@ -739,24 +739,6 @@ namespace RadioDld
             return downloadList;
         }
 
-        public List<Model.Favourite> FetchFavouriteList()
-        {
-            List<Model.Favourite> favouriteList = new List<Model.Favourite>();
-
-            using (SQLiteCommand command = new SQLiteCommand("select favourites.progid, name, description, singleepisode, pluginid from favourites, programmes where favourites.progid = programmes.progid", FetchDbConn()))
-            {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    while (reader.Read())
-                    {
-                        favouriteList.Add(new Model.Favourite(reader));
-                    }
-                }
-            }
-
-            return favouriteList;
-        }
-
         public ProviderData FetchProviderData(Guid providerId)
         {
             IRadioProvider providerInstance = Plugins.GetPluginInstance(providerId);

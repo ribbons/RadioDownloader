@@ -2167,7 +2167,7 @@ namespace RadioDld
             }
 
             // Convert the list of Favourite items to an array of ListItems
-            List<Model.Favourite> initData = this.progData.FetchFavouriteList();
+            List<Model.Favourite> initData = Model.Favourite.FetchAll();
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
             for (int convItems = 0; convItems <= initData.Count - 1; convItems++)

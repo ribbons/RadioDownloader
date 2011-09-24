@@ -17,6 +17,7 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.SQLite;
     using System.Globalization;
 
@@ -30,6 +31,24 @@ namespace RadioDld.Model
         public Favourite(int progid)
             : base(progid)
         {
+        }
+
+        public static List<Favourite> FetchAll()
+        {
+            List<Favourite> items = new List<Favourite>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from favourites, programmes where favourites.progid=programmes.progid", Data.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(new Favourite(reader));
+                    }
+                }
+            }
+
+            return items;
         }
 
         public static bool IsFavourite(int progid)
