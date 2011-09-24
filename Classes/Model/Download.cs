@@ -22,6 +22,7 @@ namespace RadioDld.Model
     using System.Globalization;
     using System.IO;
     using System.Text.RegularExpressions;
+    using System.Threading;
     using System.Windows.Forms;
 
     internal class Download : Episode
@@ -50,6 +51,10 @@ namespace RadioDld.Model
                 }
             }
         }
+
+        public delegate void AddedEventHandler(int epid);
+
+        public static event AddedEventHandler Added;
 
         public enum DownloadStatus
         {
@@ -84,6 +89,26 @@ namespace RadioDld.Model
                 command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
             }
+        }
+
+        public static bool Add(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            ThreadPool.QueueUserWorkItem(delegate { AddAsync(epid); });
+
+            return true;
         }
 
         public static string FindFreeSaveFileName(string formatString, Model.Programme progInfo, Model.Episode epInfo, string baseSavePath)
@@ -265,6 +290,40 @@ namespace RadioDld.Model
             }
 
             this.PlayCount = reader.GetInt32(reader.GetOrdinal("playcount"));
+        }
+
+        private static void AddAsync(int epid)
+        {
+            lock (Data.DbUpdateLock)
+            {
+                // Check again that the download doesn't exist, as it may have been
+                // added while this call was waiting in the thread pool
+                using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", Data.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                    {
+                        if (reader.Read())
+                        {
+                            return;
+                        }
+                    }
+                }
+
+                using (SQLiteCommand command = new SQLiteCommand("insert into downloads (epid) values (@epid)", Data.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            if (Added != null)
+            {
+                Added(epid);
+            }
+            
+            Data.GetInstance().StartDownload();
         }
     }
 }

@@ -98,7 +98,13 @@ namespace RadioDld
                     showStatus.Hide();
                 }
             }
+
+            Model.Download.Added += this.Download_Added;
         }
+
+        public delegate void DownloadAddedEventHandler(int epid);
+
+        public event DownloadAddedEventHandler DownloadAdded;
 
         public string DownloadQuery
         {
@@ -155,12 +161,6 @@ namespace RadioDld
 
                 return this.downloadsVisible.Contains(epid);
             }
-        }
-
-        public void AddDownload(int epid)
-        {
-            Model.Download downloadData = new Model.Download(epid);
-            this.AddDownload(downloadData);
         }
 
         public void UpdateDownload(int epid)
@@ -256,6 +256,22 @@ namespace RadioDld
                     }
                 }
             }
+        }
+
+        private void Download_Added(int epid)
+        {
+            this.AddDownload(epid);
+
+            if (this.DownloadAdded != null && this.DownloadIsVisible(epid))
+            {
+                this.DownloadAdded(epid);
+            }
+        }
+
+        private void AddDownload(int epid)
+        {
+            Model.Download downloadData = new Model.Download(epid);
+            this.AddDownload(downloadData);
         }
 
         private void AddDownload(Model.Download storeData)

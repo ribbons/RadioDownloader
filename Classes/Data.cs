@@ -125,8 +125,6 @@ namespace RadioDld
 
         public delegate void SubscriptionRemovedEventHandler(int progid);
 
-        public delegate void DownloadAddedEventHandler(int epid);
-
         public delegate void DownloadUpdatedEventHandler(int epid);
 
         public delegate void DownloadProgressEventHandler(int epid, int percent, string statusText, ProgressIcon icon);
@@ -156,8 +154,6 @@ namespace RadioDld
         public event SubscriptionUpdatedEventHandler SubscriptionUpdated;
 
         public event SubscriptionRemovedEventHandler SubscriptionRemoved;
-
-        public event DownloadAddedEventHandler DownloadAdded;
 
         public event DownloadUpdatedEventHandler DownloadUpdated;
 
@@ -335,26 +331,6 @@ namespace RadioDld
         public void EpisodeSetAutoDownload(int epid, bool autoDownload)
         {
             ThreadPool.QueueUserWorkItem(delegate { this.EpisodeSetAutoDownloadAsync(epid, autoDownload); });
-        }
-
-        public bool AddDownload(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read())
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            ThreadPool.QueueUserWorkItem(delegate { this.AddDownloadAsync(epid); });
-
-            return true;
         }
 
         public bool AddFavourite(int progid)
@@ -1154,7 +1130,7 @@ namespace RadioDld
                                     {
                                         if (!checkRdr.Read())
                                         {
-                                            this.AddDownloadAsync(epid);
+                                            Model.Download.Add(epid);
                                         }
                                     }
                                 }
@@ -1170,45 +1146,6 @@ namespace RadioDld
             // Queue the next subscription check.  This is used instead of a loop
             // as it frees up a slot in the thread pool other actions are waiting.
             ThreadPool.QueueUserWorkItem(delegate { this.CheckSubscriptions(); });
-        }
-
-        private void AddDownloadAsync(int epid)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                // Check again that the download doesn't exist, as it may have been
-                // added while this call was waiting in the thread pool
-                using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        if (reader.Read())
-                        {
-                            return;
-                        }
-                    }
-                }
-
-                using (SQLiteCommand command = new SQLiteCommand("insert into downloads (epid) values (@epid)", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            this.search.AddDownload(epid);
-
-            if (this.search.DownloadIsVisible(epid))
-            {
-                if (this.DownloadAdded != null)
-                {
-                    this.DownloadAdded(epid);
-                }
-            }
-
-            this.StartDownload();
         }
 
         private void AddFavouriteAsync(int progid)

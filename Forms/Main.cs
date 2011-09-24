@@ -31,6 +31,7 @@ namespace RadioDld
     internal partial class Main : GlassForm
     {
         private Data progData;
+        private DataSearch dataSearch;
         private ViewState view;
         private UpdateCheck checkUpdate;
         private TaskbarNotify tbarNotif;
@@ -332,13 +333,15 @@ namespace RadioDld
             this.progData.SubscriptionAdded += this.ProgData_SubscriptionAdded;
             this.progData.SubscriptionUpdated += this.ProgData_SubscriptionUpdated;
             this.progData.SubscriptionRemoved += this.ProgData_SubscriptionRemoved;
-            this.progData.DownloadAdded += this.ProgData_DownloadAdded;
             this.progData.DownloadProgress += this.ProgData_DownloadProgress;
             this.progData.DownloadRemoved += this.ProgData_DownloadRemoved;
             this.progData.DownloadUpdated += this.ProgData_DownloadUpdated;
             this.progData.DownloadProgressTotal += this.ProgData_DownloadProgressTotal;
             this.progData.FindNewViewChange += this.ProgData_FindNewViewChange;
             this.progData.FoundNew += this.ProgData_FoundNew;
+
+            this.dataSearch = DataSearch.GetInstance(this.progData);
+            this.dataSearch.DownloadAdded += this.DataSearch_DownloadAdded;
 
             this.progData.InitProviderList();
             this.InitFavouriteList();
@@ -1373,12 +1376,12 @@ namespace RadioDld
             return item;
         }
 
-        private void ProgData_DownloadAdded(int epid)
+        private void DataSearch_DownloadAdded(int epid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_DownloadAdded(epid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.DataSearch_DownloadAdded(epid); });
                 return;
             }
 
@@ -1781,7 +1784,7 @@ namespace RadioDld
         {
             int epid = Convert.ToInt32(this.ListEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-            if (this.progData.AddDownload(epid))
+            if (Model.Download.Add(epid))
             {
                 this.view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
             }
