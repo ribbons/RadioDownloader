@@ -24,10 +24,17 @@ namespace RadioDld.Model
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Windows.Forms;
+    using System.Xml.Serialization;
 
     internal class Download : Episode
     {
         internal new const string Columns = Episode.Columns + ", status, errortype, errordetails, filepath, playcount";
+
+        private static Dictionary<int, int> sortCache;
+        private static object sortCacheLock = new object();
+
+        private static DownloadCols sortBy = DownloadCols.EpisodeDate;
+        private static bool sortAsc;
 
         public Download(SQLiteMonDataReader reader)
         {
@@ -52,15 +59,70 @@ namespace RadioDld.Model
             }
         }
 
-        public delegate void AddedEventHandler(int epid);
+        public delegate void DownloadEventHandler(int epid);
 
-        public static event AddedEventHandler Added;
+        public static event DownloadEventHandler Added;
+
+        public static event DownloadEventHandler Updated;
+
+        public static event DownloadEventHandler Removed;
+
+        public enum DownloadCols
+        {
+            EpisodeName = 0,
+            EpisodeDate = 1,
+            Status = 2,
+            Progress = 3,
+            Duration = 4
+        }
 
         public enum DownloadStatus
         {
             Waiting = 0,
             Downloaded = 1,
             Errored = 2
+        }
+
+        public static DownloadCols SortByColumn
+        {
+            get
+            {
+                return sortBy;
+            }
+
+            set
+            {
+                lock (sortCacheLock)
+                {
+                    if (value != sortBy)
+                    {
+                        sortCache = null;
+                    }
+
+                    sortBy = value;
+                }
+            }
+        }
+
+        public static bool SortAscending
+        {
+            get
+            {
+                return sortAsc;
+            }
+
+            set
+            {
+                lock (sortCacheLock)
+                {
+                    if (value != sortAsc)
+                    {
+                        sortCache = null;
+                    }
+
+                    sortAsc = value;
+                }
+            }
         }
 
         public DownloadStatus Status { get; set; }
@@ -109,6 +171,135 @@ namespace RadioDld.Model
             ThreadPool.QueueUserWorkItem(delegate { AddAsync(epid); });
 
             return true;
+        }
+
+        public static void SetComplete(int epid, string fileName)
+        {
+            lock (Data.DbUpdateLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", Data.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
+                    command.Parameters.Add(new SQLiteParameter("@filepath", fileName));
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            lock (sortCacheLock)
+            {
+                sortCache = null;
+            }
+
+            if (Updated != null)
+            {
+                Updated(epid);
+            }
+        }
+
+        public static void SetErrorred(int epid, ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
+        {
+            switch (errorType)
+            {
+                case ErrorType.RemoveFromList:
+                    RemoveAsync(epid, true);
+                    return;
+                case ErrorType.UnknownError:
+                    if (furtherDetails == null)
+                    {
+                        furtherDetails = new List<DldErrorDataItem>();
+                    }
+
+                    if (errorDetails != null)
+                    {
+                        furtherDetails.Add(new DldErrorDataItem("details", errorDetails));
+                    }
+
+                    StringWriter detailsStringWriter = new StringWriter(CultureInfo.InvariantCulture);
+                    XmlSerializer detailsSerializer = new XmlSerializer(typeof(List<DldErrorDataItem>));
+                    detailsSerializer.Serialize(detailsStringWriter, furtherDetails);
+                    errorDetails = detailsStringWriter.ToString();
+                    break;
+            }
+
+            lock (Data.DbUpdateLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", Data.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
+                    command.Parameters.Add(new SQLiteParameter("@errortype", errorType));
+                    command.Parameters.Add(new SQLiteParameter("@errordetails", errorDetails));
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            lock (sortCacheLock)
+            {
+                sortCache = null;
+            }
+
+            if (Updated != null)
+            {
+                Updated(epid);
+            }
+        }
+
+        public static void Reset(int epid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { ResetAsync(epid, false); });
+        }
+
+        public static void ResetAsync(int epid, bool auto)
+        {
+            lock (Data.DbUpdateLock)
+            {
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                {
+                    using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", Data.FetchDbConn(), transMon.Trans))
+                    {
+                        command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Waiting));
+                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                        command.ExecuteNonQuery();
+                    }
+
+                    if (!auto)
+                    {
+                        using (SQLiteCommand command = new SQLiteCommand("update downloads set errorcount=0 where epid=@epid", Data.FetchDbConn(), transMon.Trans))
+                        {
+                            command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    transMon.Trans.Commit();
+                }
+            }
+
+            lock (sortCacheLock)
+            {
+                sortCache = null;
+            }
+
+            if (Updated != null)
+            {
+                Updated(epid);
+            }
+
+            if (!auto)
+            {
+                Data.GetInstance().StartDownload();
+            }
+        }
+
+        public static void BumpPlayCount(int epid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { BumpPlayCountAsync(epid); });
+        }
+
+        public static void Remove(int epid)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { RemoveAsync(epid, false); });
         }
 
         public static string FindFreeSaveFileName(string formatString, Model.Programme progInfo, Model.Episode epInfo, string baseSavePath)
@@ -266,6 +457,106 @@ namespace RadioDld.Model
             }
         }
 
+        public static void PerformCleanup()
+        {
+            // Fetch a list of the downloads first to prevent locking the database during cleanup
+            List<Model.Download> downloads = new List<Model.Download>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select " + Model.Download.Columns + " from downloads, episodes where downloads.epid=episodes.epid and status=@status", Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    while (reader.Read())
+                    {
+                        downloads.Add(new Model.Download(reader));
+                    }
+                }
+            }
+
+            foreach (Model.Download download in downloads)
+            {
+                List<string> ignoreRoots = new List<string>();
+
+                // Remove programmes for which the associated audio file no longer exists
+                if (!File.Exists(download.DownloadPath))
+                {
+                    string pathRoot = Path.GetPathRoot(download.DownloadPath);
+
+                    if (!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
+                    {
+                        if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                        {
+                            break;
+                        }
+
+                        ignoreRoots.Add(pathRoot);
+                    }
+
+                    // Take the download out of the list and set the auto download flag to false
+                    RemoveAsync(download.Epid, false);
+                }
+            }
+        }
+
+        public static int Compare(int epid1, int epid2)
+        {
+            lock (sortCacheLock)
+            {
+                if (sortCache == null || !sortCache.ContainsKey(epid1) || !sortCache.ContainsKey(epid2))
+                {
+                    // The sort cache is either empty or missing one of the values that are required, so recreate it
+                    sortCache = new Dictionary<int, int>();
+
+                    int sort = 0;
+                    string orderBy = null;
+
+                    switch (sortBy)
+                    {
+                        case DownloadCols.EpisodeName:
+                            orderBy = "name" + (sortAsc ? string.Empty : " desc");
+                            break;
+                        case DownloadCols.EpisodeDate:
+                            orderBy = "date" + (sortAsc ? string.Empty : " desc");
+                            break;
+                        case DownloadCols.Status:
+                            orderBy = "status = 0" + (sortAsc ? " desc" : string.Empty) + ", status" + (sortAsc ? " desc" : string.Empty) + ", playcount > 0" + (sortAsc ? string.Empty : " desc") + ", date" + (sortAsc ? " desc" : string.Empty);
+                            break;
+                        case DownloadCols.Duration:
+                            orderBy = "duration" + (sortAsc ? string.Empty : " desc");
+                            break;
+                        default:
+                            throw new InvalidDataException("Invalid column: " + sortBy.ToString());
+                    }
+
+                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, Data.FetchDbConn()))
+                    {
+                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                        {
+                            int epidOrdinal = reader.GetOrdinal("epid");
+
+                            while (reader.Read())
+                            {
+                                sortCache.Add(reader.GetInt32(epidOrdinal), sort);
+                                sort += 1;
+                            }
+                        }
+                    }
+                }
+
+                try
+                {
+                    return sortCache[epid1] - sortCache[epid2];
+                }
+                catch (KeyNotFoundException)
+                {
+                    // One of the entries has been removed from the database, but not yet from the list
+                    return 0;
+                }
+            }
+        }
+
         internal new void FetchData(SQLiteMonDataReader reader)
         {
             base.FetchData(reader);
@@ -324,6 +615,67 @@ namespace RadioDld.Model
             }
             
             Data.GetInstance().StartDownload();
+        }
+
+        private static void BumpPlayCountAsync(int epid)
+        {
+            lock (Data.DbUpdateLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", Data.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            lock (sortCacheLock)
+            {
+                sortCache = null;
+            }
+
+            if (Updated != null)
+            {
+                Updated(epid);
+            }
+        }
+
+        private static void RemoveAsync(int epid, bool auto)
+        {
+            lock (Data.DbUpdateLock)
+            {
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                {
+                    using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", Data.FetchDbConn(), transMon.Trans))
+                    {
+                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                        command.ExecuteNonQuery();
+                    }
+
+                    if (!auto)
+                    {
+                        // Unset the auto download flag, so if the user is subscribed it doesn't just download again
+                        Data.GetInstance().EpisodeSetAutoDownload(epid, false);
+                    }
+
+                    transMon.Trans.Commit();
+                }
+            }
+
+            lock (sortCacheLock)
+            {
+                // No need to clear the sort cache, just remove this episodes entry
+                if (sortCache != null)
+                {
+                    sortCache.Remove(epid);
+                }
+            }
+
+            if (Removed != null)
+            {
+                Removed(epid);
+            }
+
+            Data.GetInstance().DownloadCancel(epid, auto);
         }
     }
 }

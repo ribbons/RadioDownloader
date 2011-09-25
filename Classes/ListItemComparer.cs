@@ -51,7 +51,7 @@ namespace RadioDld
                 case ListType.Subscription:
                     return this.dataInstance.CompareSubscriptions(itemXId, itemYId);
                 case ListType.Download:
-                    return this.dataInstance.CompareDownloads(itemXId, itemYId);
+                    return Model.Download.Compare(itemXId, itemYId);
                 default:
                     throw new InvalidOperationException("Unknown compare type of " + this.compareType.ToString());
             }

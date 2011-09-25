@@ -54,12 +54,6 @@ namespace RadioDld
         private Dictionary<int, int> subscriptionSortCache;
         private object subscriptionSortCacheLock = new object();
 
-        private DownloadCols downloadSortBy = DownloadCols.EpisodeDate;
-        private bool downloadSortAsc;
-
-        private Dictionary<int, int> downloadSortCache;
-        private object downloadSortCacheLock = new object();
-
         private object findDownloadLock = new object();
         private int lastProgressVal = -1;
 
@@ -125,11 +119,7 @@ namespace RadioDld
 
         public delegate void SubscriptionRemovedEventHandler(int progid);
 
-        public delegate void DownloadUpdatedEventHandler(int epid);
-
         public delegate void DownloadProgressEventHandler(int epid, int percent, string statusText, ProgressIcon icon);
-
-        public delegate void DownloadRemovedEventHandler(int epid);
 
         public delegate void DownloadProgressTotalEventHandler(bool downloading, int percent);
 
@@ -155,70 +145,15 @@ namespace RadioDld
 
         public event SubscriptionRemovedEventHandler SubscriptionRemoved;
 
-        public event DownloadUpdatedEventHandler DownloadUpdated;
-
         public event DownloadProgressEventHandler DownloadProgress;
 
-        public event DownloadRemovedEventHandler DownloadRemoved;
-
         public event DownloadProgressTotalEventHandler DownloadProgressTotal;
-
-        public enum DownloadCols
-        {
-            EpisodeName = 0,
-            EpisodeDate = 1,
-            Status = 2,
-            Progress = 3,
-            Duration = 4
-        }
 
         public static object DbUpdateLock
         {
             get
             {
                 return dbUpdateLock;
-            }
-        }
-
-        public DownloadCols DownloadSortByCol
-        {
-            get
-            {
-                return this.downloadSortBy;
-            }
-
-            set
-            {
-                lock (this.downloadSortCacheLock)
-                {
-                    if (value != this.downloadSortBy)
-                    {
-                        this.downloadSortCache = null;
-                    }
-
-                    this.downloadSortBy = value;
-                }
-            }
-        }
-
-        public bool DownloadSortAscending
-        {
-            get
-            {
-                return this.downloadSortAsc;
-            }
-
-            set
-            {
-                lock (this.downloadSortCacheLock)
-                {
-                    if (value != this.downloadSortAsc)
-                    {
-                        this.downloadSortCache = null;
-                    }
-
-                    this.downloadSortAsc = value;
-                }
             }
         }
 
@@ -386,21 +321,6 @@ namespace RadioDld
             ThreadPool.QueueUserWorkItem(delegate { this.RemoveSubscriptionAsync(progid); });
         }
 
-        public void ResetDownload(int epid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.ResetDownloadAsync(epid, false); });
-        }
-
-        public void DownloadRemove(int epid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.DownloadRemoveAsync(epid, false); });
-        }
-
-        public void DownloadBumpPlayCount(int epid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.DownloadBumpPlayCountAsync(epid); });
-        }
-
         public void DownloadReportError(int epid)
         {
             ErrorType errorType = default(ErrorType);
@@ -485,49 +405,6 @@ namespace RadioDld
             report.SendReport(Properties.Settings.Default.ErrorReportURL);
         }
 
-        public void PerformCleanup()
-        {
-            // Fetch a list of the downloads first to prevent locking the database during cleanup
-            List<Model.Download> downloads = new List<Model.Download>();
-
-            using (SQLiteCommand command = new SQLiteCommand("select " + Model.Download.Columns + " from downloads, episodes where downloads.epid=episodes.epid and status=@status", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    while (reader.Read())
-                    {
-                        downloads.Add(new Model.Download(reader));
-                    }
-                }
-            }
-
-            foreach (Model.Download download in downloads)
-            {
-                List<string> ignoreRoots = new List<string>();
-
-                // Remove programmes for which the associated audio file no longer exists
-                if (!File.Exists(download.DownloadPath))
-                {
-                    string pathRoot = Path.GetPathRoot(download.DownloadPath);
-
-                    if (!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
-                    {
-                        if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        {
-                            break;
-                        }
-
-                        ignoreRoots.Add(pathRoot);
-                    }
-
-                    // Take the download out of the list and set the auto download flag to false
-                    this.DownloadRemoveAsync(download.Epid, false);
-                }
-            }
-        }
-
         public Panel GetFindNewPanel(Guid pluginID, object view)
         {
             if (Plugins.PluginExists(pluginID))
@@ -541,63 +418,6 @@ namespace RadioDld
             else
             {
                 return new Panel();
-            }
-        }
-
-        public int CompareDownloads(int epid1, int epid2)
-        {
-            lock (this.downloadSortCacheLock)
-            {
-                if (this.downloadSortCache == null || !this.downloadSortCache.ContainsKey(epid1) || !this.downloadSortCache.ContainsKey(epid2))
-                {
-                    // The sort cache is either empty or missing one of the values that are required, so recreate it
-                    this.downloadSortCache = new Dictionary<int, int>();
-
-                    int sort = 0;
-                    string orderBy = null;
-
-                    switch (this.downloadSortBy)
-                    {
-                        case DownloadCols.EpisodeName:
-                            orderBy = "name" + (this.downloadSortAsc ? string.Empty : " desc");
-                            break;
-                        case DownloadCols.EpisodeDate:
-                            orderBy = "date" + (this.downloadSortAsc ? string.Empty : " desc");
-                            break;
-                        case DownloadCols.Status:
-                            orderBy = "status = 0" + (this.downloadSortAsc ? " desc" : string.Empty) + ", status" + (this.downloadSortAsc ? " desc" : string.Empty) + ", playcount > 0" + (this.downloadSortAsc ? string.Empty : " desc") + ", date" + (this.downloadSortAsc ? " desc" : string.Empty);
-                            break;
-                        case DownloadCols.Duration:
-                            orderBy = "duration" + (this.downloadSortAsc ? string.Empty : " desc");
-                            break;
-                        default:
-                            throw new InvalidDataException("Invalid column: " + this.downloadSortBy.ToString());
-                    }
-
-                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, FetchDbConn()))
-                    {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int epidOrdinal = reader.GetOrdinal("epid");
-
-                            while (reader.Read())
-                            {
-                                this.downloadSortCache.Add(reader.GetInt32(epidOrdinal), sort);
-                                sort += 1;
-                            }
-                        }
-                    }
-                }
-
-                try
-                {
-                    return this.downloadSortCache[epid1] - this.downloadSortCache[epid2];
-                }
-                catch (KeyNotFoundException)
-                {
-                    // One of the entries has been removed from the database, but not yet from the list
-                    return 0;
-                }
             }
         }
 
@@ -729,6 +549,29 @@ namespace RadioDld
             info.ShowOptionsHandler = providerInstance.GetShowOptionsHandler();
 
             return info;
+        }
+
+        public void DownloadCancel(int epid, bool auto)
+        {
+            if (this.curDldProgData != null)
+            {
+                if (this.curDldProgData.EpisodeInfo.Epid == epid)
+                {
+                    // This episode is currently being downloaded
+                    if (this.downloadThread != null)
+                    {
+                        if (!auto)
+                        {
+                            // This is called by the download thread if it is an automatic removal
+                            this.downloadThread.Abort();
+                        }
+
+                        this.downloadThread = null;
+                    }
+                }
+
+                this.StartDownload();
+            }
         }
 
         internal static SQLiteConnection FetchDbConn()
@@ -903,7 +746,7 @@ namespace RadioDld
 
                                     if ((Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == Model.Download.DownloadStatus.Errored)
                                     {
-                                        this.ResetDownloadAsync(epInfo.Epid, true);
+                                        Model.Download.ResetAsync(epInfo.Epid, true);
                                     }
 
                                     this.downloadThread = new Thread(this.DownloadProgThread);
@@ -1282,198 +1125,9 @@ namespace RadioDld
             }
         }
 
-        private void ResetDownloadAsync(int epid, bool auto)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
-                {
-                    using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", FetchDbConn(), transMon.Trans))
-                    {
-                        command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Waiting));
-                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                        command.ExecuteNonQuery();
-                    }
-
-                    if (!auto)
-                    {
-                        using (SQLiteCommand command = new SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn(), transMon.Trans))
-                        {
-                            command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                            command.ExecuteNonQuery();
-                        }
-                    }
-
-                    transMon.Trans.Commit();
-                }
-            }
-
-            lock (this.downloadSortCacheLock)
-            {
-                this.downloadSortCache = null;
-            }
-
-            this.search.UpdateDownload(epid);
-
-            if (this.search.DownloadIsVisible(epid))
-            {
-                if (this.DownloadUpdated != null)
-                {
-                    this.DownloadUpdated(epid);
-                }
-            }
-
-            if (!auto)
-            {
-                this.StartDownloadAsync();
-            }
-        }
-
-        private void DownloadRemoveAsync(int epid, bool auto)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
-                {
-                    using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn(), transMon.Trans))
-                    {
-                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                        command.ExecuteNonQuery();
-                    }
-
-                    if (!auto)
-                    {
-                        // Unet the auto download flag, so if the user is subscribed it doesn't just download again
-                        this.EpisodeSetAutoDownloadAsync(epid, false);
-                    }
-
-                    transMon.Trans.Commit();
-                }
-            }
-
-            lock (this.downloadSortCacheLock)
-            {
-                // No need to clear the sort cache, just remove this episodes entry
-                if (this.downloadSortCache != null)
-                {
-                    this.downloadSortCache.Remove(epid);
-                }
-            }
-
-            if (this.search.DownloadIsVisible(epid))
-            {
-                if (this.DownloadRemoved != null)
-                {
-                    this.DownloadRemoved(epid);
-                }
-            }
-
-            if (this.DownloadProgressTotal != null)
-            {
-                this.DownloadProgressTotal(false, 0);
-            }
-
-            this.search.RemoveDownload(epid);
-
-            if (this.curDldProgData != null)
-            {
-                if (this.curDldProgData.EpisodeInfo.Epid == epid)
-                {
-                    // This episode is currently being downloaded
-                    if (this.downloadThread != null)
-                    {
-                        if (!auto)
-                        {
-                            // This is called by the download thread if it is an automatic removal
-                            this.downloadThread.Abort();
-                        }
-
-                        this.downloadThread = null;
-                    }
-                }
-
-                this.StartDownload();
-            }
-        }
-
-        private void DownloadBumpPlayCountAsync(int epid)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            lock (this.downloadSortCacheLock)
-            {
-                this.downloadSortCache = null;
-            }
-
-            this.search.UpdateDownload(epid);
-
-            if (this.search.DownloadIsVisible(epid))
-            {
-                if (this.DownloadUpdated != null)
-                {
-                    this.DownloadUpdated(epid);
-                }
-            }
-        }
-
         private void DownloadError(ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
         {
-            switch (errorType)
-            {
-                case ErrorType.RemoveFromList:
-                    this.DownloadRemoveAsync(this.curDldProgData.EpisodeInfo.Epid, true);
-                    return;
-                case ErrorType.UnknownError:
-                    if (furtherDetails == null)
-                    {
-                        furtherDetails = new List<DldErrorDataItem>();
-                    }
-
-                    if (errorDetails != null)
-                    {
-                        furtherDetails.Add(new DldErrorDataItem("details", errorDetails));
-                    }
-
-                    StringWriter detailsStringWriter = new StringWriter(CultureInfo.InvariantCulture);
-                    XmlSerializer detailsSerializer = new XmlSerializer(typeof(List<DldErrorDataItem>));
-                    detailsSerializer.Serialize(detailsStringWriter, furtherDetails);
-                    errorDetails = detailsStringWriter.ToString();
-                    break;
-            }
-
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
-                    command.Parameters.Add(new SQLiteParameter("@errortype", errorType));
-                    command.Parameters.Add(new SQLiteParameter("@errordetails", errorDetails));
-                    command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpisodeInfo.Epid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            lock (this.downloadSortCacheLock)
-            {
-                this.downloadSortCache = null;
-            }
-
-            this.search.UpdateDownload(this.curDldProgData.EpisodeInfo.Epid);
-
-            if (this.search.DownloadIsVisible(this.curDldProgData.EpisodeInfo.Epid))
-            {
-                if (this.DownloadUpdated != null)
-                {
-                    this.DownloadUpdated(this.curDldProgData.EpisodeInfo.Epid);
-                }
-            }
+            Model.Download.SetErrorred(this.curDldProgData.EpisodeInfo.Epid, errorType, errorDetails, furtherDetails);
 
             if (this.DownloadProgressTotal != null)
             {
@@ -1492,34 +1146,13 @@ namespace RadioDld
 
             lock (Data.dbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
-                    command.Parameters.Add(new SQLiteParameter("@filepath", this.curDldProgData.FinalName));
-                    command.Parameters.Add(new SQLiteParameter("@epid", this.curDldProgData.EpisodeInfo.Epid));
-                    command.ExecuteNonQuery();
-                }
+                Model.Download.SetComplete(this.curDldProgData.EpisodeInfo.Epid, this.curDldProgData.FinalName);
 
                 using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@latestdownload", this.curDldProgData.ProviderEpisodeInfo.Date));
                     command.Parameters.Add(new SQLiteParameter("@progid", this.curDldProgData.ProgInfo.Progid));
                     command.ExecuteNonQuery();
-                }
-            }
-
-            lock (this.downloadSortCacheLock)
-            {
-                this.downloadSortCache = null;
-            }
-
-            this.search.UpdateDownload(this.curDldProgData.EpisodeInfo.Epid);
-
-            if (this.search.DownloadIsVisible(this.curDldProgData.EpisodeInfo.Epid))
-            {
-                if (this.DownloadUpdated != null)
-                {
-                    this.DownloadUpdated(this.curDldProgData.EpisodeInfo.Epid);
                 }
             }
 

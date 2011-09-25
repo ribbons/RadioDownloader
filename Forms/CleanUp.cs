@@ -21,8 +21,6 @@ namespace RadioDld
 
     internal partial class CleanUp : Form
     {
-        private Data progData;
-
         public CleanUp()
         {
             this.InitializeComponent();
@@ -30,7 +28,6 @@ namespace RadioDld
 
         private void CleanUp_Load(object sender, System.EventArgs e)
         {
-            this.progData = Data.GetInstance();
             this.Font = SystemFonts.MessageBoxFont;
         }
 
@@ -47,7 +44,7 @@ namespace RadioDld
             this.RadioOrphan.Enabled = false;
             this.LabelOrphan.Enabled = false;
 
-            this.progData.PerformCleanup();
+            Model.Download.PerformCleanup();
 
             this.Close();
             this.Dispose();

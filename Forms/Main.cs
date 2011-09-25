@@ -41,7 +41,7 @@ namespace RadioDld
 
         private Dictionary<int, string> downloadColNames = new Dictionary<int, string>();
         private Dictionary<int, int> downloadColSizes = new Dictionary<int, int>();
-        private List<Data.DownloadCols> downloadColOrder = new List<Data.DownloadCols>();
+        private List<Model.Download.DownloadCols> downloadColOrder = new List<Model.Download.DownloadCols>();
 
         private bool windowPosLoaded;
 
@@ -312,11 +312,11 @@ namespace RadioDld
             this.ListSubscribed.Columns.Add("Provider", Convert.ToInt32(0.304 * this.ListSubscribed.Width));
 
             // NB - these are defined in alphabetical order to save sorting later
-            this.downloadColNames.Add((int)Data.DownloadCols.EpisodeDate, "Date");
-            this.downloadColNames.Add((int)Data.DownloadCols.Duration, "Duration");
-            this.downloadColNames.Add((int)Data.DownloadCols.EpisodeName, "Episode Name");
-            this.downloadColNames.Add((int)Data.DownloadCols.Progress, "Progress");
-            this.downloadColNames.Add((int)Data.DownloadCols.Status, "Status");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.EpisodeDate, "Date");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.Duration, "Duration");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.EpisodeName, "Episode Name");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.Progress, "Progress");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
 
             this.view = new ViewState();
             this.view.UpdateNavBtnState += this.View_UpdateNavBtnState;
@@ -334,14 +334,14 @@ namespace RadioDld
             this.progData.SubscriptionUpdated += this.ProgData_SubscriptionUpdated;
             this.progData.SubscriptionRemoved += this.ProgData_SubscriptionRemoved;
             this.progData.DownloadProgress += this.ProgData_DownloadProgress;
-            this.progData.DownloadRemoved += this.ProgData_DownloadRemoved;
-            this.progData.DownloadUpdated += this.ProgData_DownloadUpdated;
             this.progData.DownloadProgressTotal += this.ProgData_DownloadProgressTotal;
             this.progData.FindNewViewChange += this.ProgData_FindNewViewChange;
             this.progData.FoundNew += this.ProgData_FoundNew;
 
             this.dataSearch = DataSearch.GetInstance(this.progData);
             this.dataSearch.DownloadAdded += this.DataSearch_DownloadAdded;
+            this.dataSearch.DownloadUpdated += this.DataSearch_DownloadUpdated;
+            this.dataSearch.DownloadRemoved += this.DataSearch_DownloadRemoved;
 
             this.progData.InitProviderList();
             this.InitFavouriteList();
@@ -625,29 +625,29 @@ namespace RadioDld
 
         private void ListDownloads_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
         {
-            Data.DownloadCols clickedCol = this.downloadColOrder[e.Column];
+            Model.Download.DownloadCols clickedCol = this.downloadColOrder[e.Column];
 
-            if (clickedCol == Data.DownloadCols.Progress)
+            if (clickedCol == Model.Download.DownloadCols.Progress)
             {
                 return;
             }
 
-            if (this.progData.DownloadSortByCol != clickedCol)
+            if (Model.Download.SortByColumn != clickedCol)
             {
-                this.progData.DownloadSortByCol = clickedCol;
-                this.progData.DownloadSortAscending = true;
+                Model.Download.SortByColumn = clickedCol;
+                Model.Download.SortAscending = true;
             }
             else
             {
-                this.progData.DownloadSortAscending = !this.progData.DownloadSortAscending;
+                Model.Download.SortAscending = !Model.Download.SortAscending;
             }
 
             // Set the column header to display the new sort order
-            this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(this.progData.DownloadSortByCol), this.progData.DownloadSortAscending ? SortOrder.Ascending : SortOrder.Descending);
+            this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(Model.Download.SortByColumn), Model.Download.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Save the current sort
-            Properties.Settings.Default.DownloadColSortBy = (int)this.progData.DownloadSortByCol;
-            Properties.Settings.Default.DownloadColSortAsc = this.progData.DownloadSortAscending;
+            Properties.Settings.Default.DownloadColSortBy = (int)Model.Download.SortByColumn;
+            Properties.Settings.Default.DownloadColSortAsc = Model.Download.SortAscending;
 
             this.ListDownloads.Sort();
         }
@@ -1297,13 +1297,13 @@ namespace RadioDld
             {
                 switch (this.downloadColOrder[column])
                 {
-                    case Data.DownloadCols.EpisodeName:
+                    case Model.Download.DownloadCols.EpisodeName:
                         item.SubItems[column].Text = TextUtils.StripDateFromName(info.Name, info.EpisodeDate);
                         break;
-                    case Data.DownloadCols.EpisodeDate:
+                    case Model.Download.DownloadCols.EpisodeDate:
                         item.SubItems[column].Text = info.EpisodeDate.ToShortDateString();
                         break;
-                    case Data.DownloadCols.Status:
+                    case Model.Download.DownloadCols.Status:
                         switch (info.Status)
                         {
                             case Model.Download.DownloadStatus.Waiting:
@@ -1328,10 +1328,10 @@ namespace RadioDld
                         }
 
                         break;
-                    case Data.DownloadCols.Progress:
+                    case Model.Download.DownloadCols.Progress:
                         item.SubItems[column].Text = string.Empty;
                         break;
-                    case Data.DownloadCols.Duration:
+                    case Model.Download.DownloadCols.Duration:
                         string durationText = string.Empty;
 
                         if (info.Duration != 0)
@@ -1414,18 +1414,18 @@ namespace RadioDld
                 return;
             }
 
-            if (this.downloadColOrder.Contains(Data.DownloadCols.Status))
+            if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Status))
             {
-                item.SubItems[this.downloadColOrder.IndexOf(Data.DownloadCols.Status)].Text = statusText;
+                item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Status)].Text = statusText;
             }
 
-            if (this.downloadColOrder.Contains(Data.DownloadCols.Progress))
+            if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Progress))
             {
                 this.ProgressDownload.Value = percent;
 
                 if (this.ListDownloads.Controls.Count == 0)
                 {
-                    this.ListDownloads.AddProgressBar(ref this.ProgressDownload, item, this.downloadColOrder.IndexOf(Data.DownloadCols.Progress));
+                    this.ListDownloads.AddProgressBar(ref this.ProgressDownload, item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress));
                 }
             }
 
@@ -1440,12 +1440,12 @@ namespace RadioDld
             }
         }
 
-        private void ProgData_DownloadRemoved(int epid)
+        private void DataSearch_DownloadRemoved(int epid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_DownloadRemoved(epid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.DataSearch_DownloadRemoved(epid); });
                 return;
             }
 
@@ -1453,9 +1453,9 @@ namespace RadioDld
 
             if (item != null)
             {
-                if (this.downloadColOrder.Contains(Data.DownloadCols.Progress))
+                if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Progress))
                 {
-                    if (this.ListDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null)
+                    if (this.ListDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress)) != null)
                     {
                         this.ListDownloads.RemoveProgressBar(ref this.ProgressDownload);
                     }
@@ -1474,12 +1474,12 @@ namespace RadioDld
             }
         }
 
-        private void ProgData_DownloadUpdated(int epid)
+        private void DataSearch_DownloadUpdated(int epid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_DownloadUpdated(epid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.DataSearch_DownloadUpdated(epid); });
                 return;
             }
 
@@ -1488,9 +1488,9 @@ namespace RadioDld
             ListViewItem item = this.ListDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
             item = this.DownloadListItem(info, item);
 
-            if (this.downloadColOrder.Contains(Data.DownloadCols.Progress))
+            if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Progress))
             {
-                if (this.ListDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Data.DownloadCols.Progress)) != null)
+                if (this.ListDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress)) != null)
                 {
                     this.ListDownloads.RemoveProgressBar(ref this.ProgressDownload);
                 }
@@ -1713,7 +1713,7 @@ namespace RadioDld
 
             if (Interaction.MsgBox("Are you sure that you would like to stop downloading this programme?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
             {
-                this.progData.DownloadRemove(epid);
+                Model.Download.Remove(epid);
             }
         }
 
@@ -1729,7 +1729,7 @@ namespace RadioDld
                     Process.Start(info.DownloadPath);
 
                     // Bump the play count of this item up by one
-                    this.progData.DownloadBumpPlayCount(epid);
+                    Model.Download.BumpPlayCount(epid);
                 }
             }
         }
@@ -1771,13 +1771,13 @@ namespace RadioDld
                     }
                 }
 
-                this.progData.DownloadRemove(epid);
+                Model.Download.Remove(epid);
             }
         }
 
         private void ButtonRetry_Click()
         {
-            this.progData.ResetDownload(Convert.ToInt32(this.ListDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
+            Model.Download.Reset(Convert.ToInt32(this.ListDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture));
         }
 
         private void ButtonDownload_Click()
@@ -2248,15 +2248,15 @@ namespace RadioDld
                 foreach (string column in columns)
                 {
                     int colVal = int.Parse(column, CultureInfo.InvariantCulture);
-                    this.downloadColOrder.Add((Data.DownloadCols)colVal);
+                    this.downloadColOrder.Add((Model.Download.DownloadCols)colVal);
                     this.ListDownloads.Columns.Add(this.downloadColNames[colVal], this.downloadColSizes[colVal]);
                 }
             }
 
             // Apply the sort from the current settings
-            this.progData.DownloadSortByCol = (Data.DownloadCols)Properties.Settings.Default.DownloadColSortBy;
-            this.progData.DownloadSortAscending = Properties.Settings.Default.DownloadColSortAsc;
-            this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(this.progData.DownloadSortByCol), this.progData.DownloadSortAscending ? SortOrder.Ascending : SortOrder.Descending);
+            Model.Download.SortByColumn = (Model.Download.DownloadCols)Properties.Settings.Default.DownloadColSortBy;
+            Model.Download.SortAscending = Properties.Settings.Default.DownloadColSortAsc;
+            this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(Model.Download.SortByColumn), Model.Download.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Convert the list of Download items to an array of ListItems
             List<Model.Download> initData = this.progData.FetchDownloadList(true);

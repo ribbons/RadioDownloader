@@ -100,11 +100,17 @@ namespace RadioDld
             }
 
             Model.Download.Added += this.Download_Added;
+            Model.Download.Updated += this.Download_Updated;
+            Model.Download.Removed += this.Download_Removed;
         }
 
-        public delegate void DownloadAddedEventHandler(int epid);
+        public delegate void DownloadEventHandler(int epid);
 
-        public event DownloadAddedEventHandler DownloadAdded;
+        public event DownloadEventHandler DownloadAdded;
+
+        public event DownloadEventHandler DownloadUpdated;
+
+        public event DownloadEventHandler DownloadRemoved;
 
         public string DownloadQuery
         {
@@ -161,32 +167,6 @@ namespace RadioDld
 
                 return this.downloadsVisible.Contains(epid);
             }
-        }
-
-        public void UpdateDownload(int epid)
-        {
-            lock (this.updateIndexLock)
-            {
-                using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
-                {
-                    this.RemoveDownload(epid);
-                    this.AddDownload(epid);
-                }
-            }
-        }
-
-        public void RemoveDownload(int epid)
-        {
-            lock (this.updateIndexLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", this.FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            // No need to clear the visibility cache, as having an extra entry won't cause an issue
         }
 
         private string DatabasePath()
@@ -268,10 +248,51 @@ namespace RadioDld
             }
         }
 
+        private void Download_Updated(int epid)
+        {
+            lock (this.updateIndexLock)
+            {
+                using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
+                {
+                    this.RemoveDownload(epid);
+                    this.AddDownload(epid);
+                }
+            }
+
+            if (this.DownloadUpdated != null && this.DownloadIsVisible(epid))
+            {
+                this.DownloadUpdated(epid);
+            }
+        }
+
+        private void Download_Removed(int epid)
+        {
+            if (this.DownloadRemoved != null && this.DownloadIsVisible(epid))
+            {
+                this.DownloadRemoved(epid);
+            }
+
+            this.RemoveDownload(epid);
+        }
+
         private void AddDownload(int epid)
         {
             Model.Download downloadData = new Model.Download(epid);
             this.AddDownload(downloadData);
+        }
+
+        private void RemoveDownload(int epid)
+        {
+            lock (this.updateIndexLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", this.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.ExecuteNonQuery();
+                }
+            }
+
+            // No need to clear the visibility cache, as having an extra entry won't cause an issue
         }
 
         private void AddDownload(Model.Download storeData)
