@@ -139,7 +139,7 @@ namespace RadioDld.Model
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", Data.FetchDbConn()))
             {
-                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
+                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
             }
         }
@@ -148,7 +148,7 @@ namespace RadioDld.Model
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", Data.FetchDbConn()))
             {
-                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
+                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
             }
         }
@@ -220,7 +220,7 @@ namespace RadioDld.Model
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", Data.FetchDbConn()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
+                    command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
                     command.Parameters.Add(new SQLiteParameter("@filepath", fileName));
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
                     command.ExecuteNonQuery();
@@ -267,7 +267,7 @@ namespace RadioDld.Model
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", Data.FetchDbConn()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Errored));
+                    command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
                     command.Parameters.Add(new SQLiteParameter("@errortype", errorType));
                     command.Parameters.Add(new SQLiteParameter("@errordetails", errorDetails));
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
@@ -299,7 +299,7 @@ namespace RadioDld.Model
                 {
                     using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", Data.FetchDbConn(), transMon.Trans))
                     {
-                        command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Waiting));
+                        command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Waiting));
                         command.Parameters.Add(new SQLiteParameter("@epid", epid));
                         command.ExecuteNonQuery();
                     }
@@ -355,7 +355,7 @@ namespace RadioDld.Model
             string currentFileName = null;
 
             // If the passed episode info is actually a download, get it's current path
-            if (typeof(Model.Download) == epInfo.GetType())
+            if (typeof(Download) == epInfo.GetType())
             {
                 currentFileName = ((Download)epInfo).DownloadPath;
 
@@ -469,7 +469,7 @@ namespace RadioDld.Model
                                     programmes.Add(download.Progid, new Programme(download.Progid));
                                 }
 
-                                string newDownloadPath = Download.FindFreeSaveFileName(newFormat, programmes[download.Progid], download, newPath) + Path.GetExtension(download.DownloadPath);
+                                string newDownloadPath = FindFreeSaveFileName(newFormat, programmes[download.Progid], download, newPath) + Path.GetExtension(download.DownloadPath);
 
                                 if (newDownloadPath != download.DownloadPath)
                                 {
@@ -501,22 +501,22 @@ namespace RadioDld.Model
         public static void PerformCleanup()
         {
             // Fetch a list of the downloads first to prevent locking the database during cleanup
-            List<Model.Download> downloads = new List<Model.Download>();
+            List<Download> downloads = new List<Download>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select " + Model.Download.Columns + " from downloads, episodes where downloads.epid=episodes.epid and status=@status", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from downloads, episodes where downloads.epid=episodes.epid and status=@status", Data.FetchDbConn()))
             {
-                command.Parameters.Add(new SQLiteParameter("@status", Model.Download.DownloadStatus.Downloaded));
+                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
                     while (reader.Read())
                     {
-                        downloads.Add(new Model.Download(reader));
+                        downloads.Add(new Download(reader));
                     }
                 }
             }
 
-            foreach (Model.Download download in downloads)
+            foreach (Download download in downloads)
             {
                 List<string> ignoreRoots = new List<string>();
 
@@ -604,9 +604,9 @@ namespace RadioDld.Model
 
             int filepathOrdinal = reader.GetOrdinal("filepath");
 
-            this.Status = (Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
+            this.Status = (DownloadStatus)reader.GetInt32(reader.GetOrdinal("status"));
 
-            if (this.Status == Model.Download.DownloadStatus.Errored)
+            if (this.Status == DownloadStatus.Errored)
             {
                 this.ErrorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
 
