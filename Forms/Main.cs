@@ -2012,7 +2012,7 @@ namespace RadioDld
                 case ViewState.View.Downloads:
                     this.SetToolbarButtons(new ToolBarButton[] { this.ButtonCleanUp });
 
-                    if (!string.IsNullOrEmpty(this.progData.DownloadQuery))
+                    if (!string.IsNullOrEmpty(this.dataSearch.DownloadQuery))
                     {
                         this.SetSideBar(Convert.ToString(this.ListDownloads.Items.Count, CultureInfo.CurrentCulture) + " result" + (this.ListDownloads.Items.Count == 1 ? string.Empty : "s"), string.Empty, null);
                     }
@@ -2328,7 +2328,7 @@ namespace RadioDld
                     }
                 }
 
-                this.progData.DownloadQuery = search;
+                this.dataSearch.DownloadQuery = search;
                 this.InitDownloadList();
                 this.SetViewDefaults();
             }

@@ -157,12 +157,6 @@ namespace RadioDld
             }
         }
 
-        public string DownloadQuery
-        {
-            get { return this.search.DownloadQuery; }
-            set { this.search.DownloadQuery = value; }
-        }
-
         public static Data GetInstance()
         {
             // Need to use a lock instead of declaring the instance variable as New, as otherwise
