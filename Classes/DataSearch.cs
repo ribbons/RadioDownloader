@@ -79,7 +79,7 @@ namespace RadioDld
                             showStatus.StatusText = "Building search index for downloads...";
 
                             int progress = 1;
-                            List<Model.Download> downloadItems = this.dataInstance.FetchDownloadList(false);
+                            List<Model.Download> downloadItems = Model.Download.FetchAll();
 
                             foreach (Model.Download downloadItem in downloadItems)
                             {

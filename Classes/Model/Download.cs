@@ -153,6 +153,47 @@ namespace RadioDld.Model
             }
         }
 
+        public static List<Download> FetchAll()
+        {
+            List<Download> items = new List<Download>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid", Data.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(new Download(reader));
+                    }
+                }
+            }
+
+            return items;
+        }
+
+        public static List<Download> FetchVisible(DataSearch dataSearch)
+        {
+            List<Download> items = new List<Download>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid", Data.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    int epidOrdinal = reader.GetOrdinal("epid");
+
+                    while (reader.Read())
+                    {
+                        if (dataSearch.DownloadIsVisible(reader.GetInt32(epidOrdinal)))
+                        {
+                            items.Add(new Download(reader));
+                        }
+                    }
+                }
+            }
+
+            return items;
+        }
+
         public static bool Add(int epid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", Data.FetchDbConn()))

@@ -507,31 +507,6 @@ namespace RadioDld
             }
         }
 
-        public List<Model.Download> FetchDownloadList(bool filtered)
-        {
-            List<Model.Download> downloadList = new List<Model.Download>();
-
-            using (SQLiteCommand command = new SQLiteCommand("select downloads.epid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount, progid from downloads, episodes where downloads.epid=episodes.epid", FetchDbConn()))
-            {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    int epidOrdinal = reader.GetOrdinal("epid");
-
-                    while (reader.Read())
-                    {
-                        int epid = reader.GetInt32(epidOrdinal);
-
-                        if (!filtered || this.search.DownloadIsVisible(epid))
-                        {
-                            downloadList.Add(new Model.Download(reader));
-                        }
-                    }
-                }
-            }
-
-            return downloadList;
-        }
-
         public ProviderData FetchProviderData(Guid providerId)
         {
             IRadioProvider providerInstance = Plugins.GetPluginInstance(providerId);

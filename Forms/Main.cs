@@ -2173,7 +2173,7 @@ namespace RadioDld
             List<Model.Favourite> initData = Model.Favourite.FetchAll();
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
-            for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
+            for (int convItems = 0; convItems < initData.Count; convItems++)
             {
                 initItems[convItems] = this.FavouriteListItem(initData[convItems], null);
             }
@@ -2193,7 +2193,7 @@ namespace RadioDld
             List<Model.Subscription> initData = Model.Subscription.FetchAll();
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
-            for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
+            for (int convItems = 0; convItems < initData.Count; convItems++)
             {
                 initItems[convItems] = this.SubscriptionListItem(initData[convItems], null);
             }
@@ -2259,10 +2259,10 @@ namespace RadioDld
             this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(Model.Download.SortByColumn), Model.Download.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Convert the list of Download items to an array of ListItems
-            List<Model.Download> initData = this.progData.FetchDownloadList(true);
+            List<Model.Download> initData = Model.Download.FetchVisible(this.dataSearch);
             ListViewItem[] initItems = new ListViewItem[initData.Count];
 
-            for (int convItems = 0; convItems <= initData.Count - 1; convItems++)
+            for (int convItems = 0; convItems < initData.Count; convItems++)
             {
                 initItems[convItems] = this.DownloadListItem(initData[convItems], null);
             }
