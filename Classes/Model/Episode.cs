@@ -64,7 +64,7 @@ namespace RadioDld.Model
 
         public bool AutoDownload { get; set; }
 
-        internal void FetchData(SQLiteMonDataReader reader)
+        protected virtual void FetchData(SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int durationOrdinal = reader.GetOrdinal("duration");

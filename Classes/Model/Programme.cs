@@ -157,7 +157,15 @@ namespace RadioDld.Model
             }
         }
 
-        internal void FetchData(SQLiteMonDataReader reader)
+        protected static void RaiseUpdated(int progid)
+        {
+            if (Updated != null)
+            {
+                Updated(progid);
+            }
+        }
+
+        protected virtual void FetchData(SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
@@ -179,14 +187,6 @@ namespace RadioDld.Model
             if (!reader.IsDBNull(latestdownloadOrdinal))
             {
                 this.LatestDownload = reader.GetDateTime(latestdownloadOrdinal);
-            }
-        }
-
-        protected static void RaiseUpdated(int progid)
-        {
-            if (Updated != null)
-            {
-                Updated(progid);
             }
         }
     }
