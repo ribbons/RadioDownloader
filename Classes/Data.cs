@@ -48,12 +48,6 @@ namespace RadioDld
         private IRadioProvider downloadPluginInst;
         private IRadioProvider findNewPluginInst;
 
-        private Dictionary<int, int> favouriteSortCache;
-        private object favouriteSortCacheLock = new object();
-
-        private Dictionary<int, int> subscriptionSortCache;
-        private object subscriptionSortCacheLock = new object();
-
         private object findDownloadLock = new object();
         private int lastProgressVal = -1;
 
@@ -103,21 +97,7 @@ namespace RadioDld
 
         public delegate void FoundNewEventHandler(int progid);
 
-        public delegate void ProgrammeUpdatedEventHandler(int progid);
-
         public delegate void EpisodeAddedEventHandler(int epid);
-
-        public delegate void FavouriteAddedEventHandler(int progid);
-
-        public delegate void FavouriteUpdatedEventHandler(int progid);
-
-        public delegate void FavouriteRemovedEventHandler(int progid);
-
-        public delegate void SubscriptionAddedEventHandler(int progid);
-
-        public delegate void SubscriptionUpdatedEventHandler(int progid);
-
-        public delegate void SubscriptionRemovedEventHandler(int progid);
 
         public delegate void DownloadProgressEventHandler(int epid, int percent, string statusText, ProgressIcon icon);
 
@@ -129,21 +109,7 @@ namespace RadioDld
 
         public event FoundNewEventHandler FoundNew;
 
-        public event ProgrammeUpdatedEventHandler ProgrammeUpdated;
-
         public event EpisodeAddedEventHandler EpisodeAdded;
-
-        public event FavouriteAddedEventHandler FavouriteAdded;
-
-        public event FavouriteUpdatedEventHandler FavouriteUpdated;
-
-        public event FavouriteRemovedEventHandler FavouriteRemoved;
-
-        public event SubscriptionAddedEventHandler SubscriptionAdded;
-
-        public event SubscriptionUpdatedEventHandler SubscriptionUpdated;
-
-        public event SubscriptionRemovedEventHandler SubscriptionRemoved;
 
         public event DownloadProgressEventHandler DownloadProgress;
 
@@ -262,59 +228,6 @@ namespace RadioDld
             ThreadPool.QueueUserWorkItem(delegate { this.EpisodeSetAutoDownloadAsync(epid, autoDownload); });
         }
 
-        public bool AddFavourite(int progid)
-        {
-            if (Model.Favourite.IsFavourite(progid))
-            {
-                return false;
-            }
-
-            ThreadPool.QueueUserWorkItem(delegate { this.AddFavouriteAsync(progid); });
-
-            return true;
-        }
-
-        public void RemoveFavourite(int progid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.RemoveFavouriteAsync(progid); });
-        }
-
-        public bool AddSubscription(int progid)
-        {
-            if (Model.Subscription.IsSubscribed(progid))
-            {
-                return false;
-            }
-
-            Model.Programme progInfo = new Model.Programme(progid);
-
-            if (progInfo.SingleEpisode)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid and progid=@progid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("progid", progid));
-
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        if (reader.Read())
-                        {
-                            // The one download for this programme is already in the downloads list
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            ThreadPool.QueueUserWorkItem(delegate { this.AddSubscriptionAsync(progid); });
-
-            return true;
-        }
-
-        public void RemoveSubscription(int progid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.RemoveSubscriptionAsync(progid); });
-        }
-
         public void DownloadReportError(int epid)
         {
             ErrorType errorType = default(ErrorType);
@@ -415,66 +328,6 @@ namespace RadioDld
             }
         }
 
-        public int CompareSubscriptions(int progid1, int progid2)
-        {
-            lock (this.subscriptionSortCacheLock)
-            {
-                if (this.subscriptionSortCache == null || !this.subscriptionSortCache.ContainsKey(progid1) || !this.subscriptionSortCache.ContainsKey(progid2))
-                {
-                    // The sort cache is either empty or missing one of the values that are required, so recreate it
-                    this.subscriptionSortCache = new Dictionary<int, int>();
-
-                    int sort = 0;
-
-                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", FetchDbConn()))
-                    {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int progidOrdinal = reader.GetOrdinal("progid");
-
-                            while (reader.Read())
-                            {
-                                this.subscriptionSortCache.Add(reader.GetInt32(progidOrdinal), sort);
-                                sort += 1;
-                            }
-                        }
-                    }
-                }
-
-                return this.subscriptionSortCache[progid1] - this.subscriptionSortCache[progid2];
-            }
-        }
-
-        public int CompareFavourites(int progid1, int progid2)
-        {
-            lock (this.favouriteSortCacheLock)
-            {
-                if (this.favouriteSortCache == null || !this.favouriteSortCache.ContainsKey(progid1) || !this.favouriteSortCache.ContainsKey(progid2))
-                {
-                    // The sort cache is either empty or missing one of the values that are required, so recreate it
-                    this.favouriteSortCache = new Dictionary<int, int>();
-
-                    int sort = 0;
-
-                    using (SQLiteCommand command = new SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by name", FetchDbConn()))
-                    {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int progidOrdinal = reader.GetOrdinal("progid");
-
-                            while (reader.Read())
-                            {
-                                this.favouriteSortCache.Add(reader.GetInt32(progidOrdinal), sort);
-                                sort += 1;
-                            }
-                        }
-                    }
-                }
-
-                return this.favouriteSortCache[progid1] - this.favouriteSortCache[progid2];
-            }
-        }
-
         public void InitProviderList()
         {
             Guid[] pluginIdList = null;
@@ -540,6 +393,50 @@ namespace RadioDld
                 }
 
                 this.StartDownload();
+            }
+        }
+
+        public int? StoreImage(Bitmap image)
+        {
+            if (image == null)
+            {
+                return null;
+            }
+
+            // Convert the image into a byte array
+            byte[] imageAsBytes = null;
+
+            using (MemoryStream memstream = new MemoryStream())
+            {
+                image.Save(memstream, System.Drawing.Imaging.ImageFormat.Png);
+                imageAsBytes = memstream.ToArray();
+            }
+
+            lock (Data.dbUpdateLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("select imgid from images where image=@image", FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@image", imageAsBytes));
+
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                    {
+                        if (reader.Read())
+                        {
+                            return reader.GetInt32(reader.GetOrdinal("imgid"));
+                        }
+                    }
+                }
+
+                using (SQLiteCommand command = new SQLiteCommand("insert into images (image) values (@image)", FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@image", imageAsBytes));
+                    command.ExecuteNonQuery();
+                }
+
+                using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
+                {
+                    return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                }
             }
         }
 
@@ -822,7 +719,7 @@ namespace RadioDld
             // Now perform the update if required
             if (updateExtid != null)
             {
-                this.StoreProgrammeInfo(providerId, updateExtid);
+                Model.Programme.Update(providerId, updateExtid);
             }
         }
 
@@ -960,140 +857,6 @@ namespace RadioDld
             ThreadPool.QueueUserWorkItem(delegate { this.CheckSubscriptions(); });
         }
 
-        private void AddFavouriteAsync(int progid)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                // Check again that the favourite doesn't exist, as it may have been
-                // added while this call was waiting in the thread pool
-                if (Model.Favourite.IsFavourite(progid))
-                {
-                    return;
-                }
-
-                using (SQLiteCommand command = new SQLiteCommand("insert into favourites (progid) values (@progid)", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            if (this.ProgrammeUpdated != null)
-            {
-                this.ProgrammeUpdated(progid);
-            }
-
-            if (this.FavouriteAdded != null)
-            {
-                this.FavouriteAdded(progid);
-            }
-
-            if (Model.Subscription.IsSubscribed(progid))
-            {
-                if (this.SubscriptionUpdated != null)
-                {
-                    this.SubscriptionUpdated(progid);
-                }
-            }
-        }
-
-        private void RemoveFavouriteAsync(int progid)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("delete from favourites where progid=@progid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            if (this.ProgrammeUpdated != null)
-            {
-                this.ProgrammeUpdated(progid);
-            }
-
-            if (this.FavouriteRemoved != null)
-            {
-                this.FavouriteRemoved(progid);
-            }
-
-            if (Model.Subscription.IsSubscribed(progid))
-            {
-                if (this.SubscriptionUpdated != null)
-                {
-                    this.SubscriptionUpdated(progid);
-                }
-            }
-        }
-
-        private void AddSubscriptionAsync(int progid)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                // Check again that the subscription doesn't exist, as it may have been
-                // added while this call was waiting in the thread pool
-                if (Model.Subscription.IsSubscribed(progid))
-                {
-                    return;
-                }
-
-                using (SQLiteCommand command = new SQLiteCommand("insert into subscriptions (progid) values (@progid)", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            if (this.ProgrammeUpdated != null)
-            {
-                this.ProgrammeUpdated(progid);
-            }
-
-            if (this.SubscriptionAdded != null)
-            {
-                this.SubscriptionAdded(progid);
-            }
-
-            if (Model.Favourite.IsFavourite(progid))
-            {
-                if (this.FavouriteUpdated != null)
-                {
-                    this.FavouriteUpdated(progid);
-                }
-            }
-        }
-
-        private void RemoveSubscriptionAsync(int progid)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                    command.ExecuteNonQuery();
-                }
-            }
-
-            if (this.ProgrammeUpdated != null)
-            {
-                this.ProgrammeUpdated(progid);
-            }
-
-            if (this.SubscriptionRemoved != null)
-            {
-                this.SubscriptionRemoved(progid);
-            }
-
-            if (Model.Favourite.IsFavourite(progid))
-            {
-                if (this.FavouriteUpdated != null)
-                {
-                    this.FavouriteUpdated(progid);
-                }
-            }
-        }
-
         private void DownloadError(ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
         {
             Model.Download.SetErrorred(this.curDldProgData.EpisodeInfo.Epid, errorType, errorDetails, furtherDetails);
@@ -1116,13 +879,7 @@ namespace RadioDld
             lock (Data.dbUpdateLock)
             {
                 Model.Download.SetComplete(this.curDldProgData.EpisodeInfo.Epid, this.curDldProgData.FinalName);
-
-                using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@latestdownload", this.curDldProgData.ProviderEpisodeInfo.Date));
-                    command.Parameters.Add(new SQLiteParameter("@progid", this.curDldProgData.ProgInfo.Progid));
-                    command.ExecuteNonQuery();
-                }
+                Model.Programme.SetLatestDownload(this.curDldProgData.ProgInfo.Progid, this.curDldProgData.EpisodeInfo.EpisodeDate);
             }
 
             if (this.DownloadProgressTotal != null)
@@ -1130,24 +887,12 @@ namespace RadioDld
                 this.DownloadProgressTotal(false, 100);
             }
 
-            // Remove single episode subscriptions, or clear the sort cache and raise an updated event if multiple
+            // Remove single episode subscriptions
             if (Model.Subscription.IsSubscribed(this.curDldProgData.ProgInfo.Progid))
             {
                 if (this.curDldProgData.ProgInfo.SingleEpisode)
                 {
-                    this.RemoveSubscriptionAsync(this.curDldProgData.ProgInfo.Progid);
-                }
-                else
-                {
-                    lock (this.subscriptionSortCacheLock)
-                    {
-                        this.subscriptionSortCache = null;
-                    }
-
-                    if (this.SubscriptionUpdated != null)
-                    {
-                        this.SubscriptionUpdated(this.curDldProgData.ProgInfo.Progid);
-                    }
+                    Model.Subscription.Remove(this.curDldProgData.ProgInfo.Progid);
                 }
             }
 
@@ -1293,7 +1038,7 @@ namespace RadioDld
         private void FindNewPluginInst_FoundNew(string progExtId)
         {
             Guid pluginId = this.findNewPluginInst.ProviderId;
-            int? progid = this.StoreProgrammeInfo(pluginId, progExtId);
+            int? progid = Model.Programme.Update(pluginId, progExtId);
 
             if (progid == null)
             {
@@ -1304,148 +1049,6 @@ namespace RadioDld
             if (this.FoundNew != null)
             {
                 this.FoundNew(progid.Value);
-            }
-        }
-
-        private int? StoreProgrammeInfo(Guid pluginId, string progExtId)
-        {
-            if (!Plugins.PluginExists(pluginId))
-            {
-                return null;
-            }
-
-            IRadioProvider pluginInstance = Plugins.GetPluginInstance(pluginId);
-            GetProgrammeInfoReturn progInfo = default(GetProgrammeInfoReturn);
-
-            progInfo = pluginInstance.GetProgrammeInfo(progExtId);
-
-            if (!progInfo.Success)
-            {
-                return null;
-            }
-
-            int? progid = null;
-
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
-                    command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
-
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        if (reader.Read())
-                        {
-                            progid = reader.GetInt32(reader.GetOrdinal("progid"));
-                        }
-                    }
-                }
-
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
-                {
-                    if (progid == null)
-                    {
-                        using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn()))
-                        {
-                            command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
-                            command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
-                            command.ExecuteNonQuery();
-                        }
-
-                        using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
-                        {
-                            progid = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-                        }
-                    }
-
-                    using (SQLiteCommand command = new SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn()))
-                    {
-                        command.Parameters.Add(new SQLiteParameter("@name", progInfo.ProgrammeInfo.Name));
-                        command.Parameters.Add(new SQLiteParameter("@description", progInfo.ProgrammeInfo.Description));
-                        command.Parameters.Add(new SQLiteParameter("@image", this.StoreImage(progInfo.ProgrammeInfo.Image)));
-                        command.Parameters.Add(new SQLiteParameter("@singleepisode", progInfo.ProgrammeInfo.SingleEpisode));
-                        command.Parameters.Add(new SQLiteParameter("@lastupdate", DateAndTime.Now));
-                        command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                        command.ExecuteNonQuery();
-                    }
-
-                    transMon.Trans.Commit();
-                }
-            }
-
-            // If the programme is in the list of favourites, clear the sort cache and raise an updated event
-            if (Model.Favourite.IsFavourite(progid.Value))
-            {
-                lock (this.favouriteSortCacheLock)
-                {
-                    this.favouriteSortCache = null;
-                }
-
-                if (this.FavouriteUpdated != null)
-                {
-                    this.FavouriteUpdated(progid.Value);
-                }
-            }
-
-            // If the programme is in the list of subscriptions, clear the sort cache and raise an updated event
-            if (Model.Subscription.IsSubscribed(progid.Value))
-            {
-                lock (this.subscriptionSortCacheLock)
-                {
-                    this.subscriptionSortCache = null;
-                }
-
-                if (this.SubscriptionUpdated != null)
-                {
-                    this.SubscriptionUpdated(progid.Value);
-                }
-            }
-
-            return progid;
-        }
-
-        private int? StoreImage(Bitmap image)
-        {
-            if (image == null)
-            {
-                return null;
-            }
-
-            // Convert the image into a byte array
-            byte[] imageAsBytes = null;
-
-            using (MemoryStream memstream = new MemoryStream())
-            {
-                image.Save(memstream, System.Drawing.Imaging.ImageFormat.Png);
-                imageAsBytes = memstream.ToArray();
-            }
-
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("select imgid from images where image=@image", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@image", imageAsBytes));
-
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        if (reader.Read())
-                        {
-                            return reader.GetInt32(reader.GetOrdinal("imgid"));
-                        }
-                    }
-                }
-
-                using (SQLiteCommand command = new SQLiteCommand("insert into images (image) values (@image)", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@image", imageAsBytes));
-                    command.ExecuteNonQuery();
-                }
-
-                using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
-                {
-                    return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-                }
             }
         }
 

@@ -47,9 +47,9 @@ namespace RadioDld
             switch (this.compareType)
             {
                 case ListType.Favourite:
-                    return this.dataInstance.CompareFavourites(itemXId, itemYId);
+                    return Model.Favourite.Compare(itemXId, itemYId);
                 case ListType.Subscription:
-                    return this.dataInstance.CompareSubscriptions(itemXId, itemYId);
+                    return Model.Subscription.Compare(itemXId, itemYId);
                 case ListType.Download:
                     return Model.Download.Compare(itemXId, itemYId);
                 default:

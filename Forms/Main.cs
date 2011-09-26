@@ -325,18 +325,19 @@ namespace RadioDld
 
             this.progData = Data.GetInstance();
             this.progData.ProviderAdded += this.ProgData_ProviderAdded;
-            this.progData.ProgrammeUpdated += this.ProgData_ProgrammeUpdated;
             this.progData.EpisodeAdded += this.ProgData_EpisodeAdded;
-            this.progData.FavouriteAdded += this.ProgData_FavouriteAdded;
-            this.progData.FavouriteUpdated += this.ProgData_FavouriteUpdated;
-            this.progData.FavouriteRemoved += this.ProgData_FavouriteRemoved;
-            this.progData.SubscriptionAdded += this.ProgData_SubscriptionAdded;
-            this.progData.SubscriptionUpdated += this.ProgData_SubscriptionUpdated;
-            this.progData.SubscriptionRemoved += this.ProgData_SubscriptionRemoved;
             this.progData.DownloadProgress += this.ProgData_DownloadProgress;
             this.progData.DownloadProgressTotal += this.ProgData_DownloadProgressTotal;
             this.progData.FindNewViewChange += this.ProgData_FindNewViewChange;
             this.progData.FoundNew += this.ProgData_FoundNew;
+
+            Model.Programme.Updated += this.Programme_Updated;
+            Model.Favourite.Added += this.Favourite_Added;
+            Model.Favourite.Updated += this.Favourite_Updated;
+            Model.Favourite.Removed += this.Favourite_Removed;
+            Model.Subscription.Added += this.Subscription_Added;
+            Model.Subscription.Updated += this.Subscription_Updated;
+            Model.Subscription.Removed += this.Subscription_Removed;
 
             this.dataSearch = DataSearch.GetInstance(this.progData);
             this.dataSearch.DownloadAdded += this.DataSearch_DownloadAdded;
@@ -996,12 +997,12 @@ namespace RadioDld
             }
         }
 
-        private void ProgData_ProgrammeUpdated(int progid)
+        private void Programme_Updated(int progid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_ProgrammeUpdated(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.Programme_Updated(progid); });
                 return;
             }
 
@@ -1081,12 +1082,12 @@ namespace RadioDld
             this.ListEpisodes.ItemCheck += this.ListEpisodes_ItemCheck;
         }
 
-        private void ProgData_FavouriteAdded(int progid)
+        private void Favourite_Added(int progid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_FavouriteAdded(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.Favourite_Added(progid); });
                 return;
             }
 
@@ -1104,12 +1105,12 @@ namespace RadioDld
             }
         }
 
-        private void ProgData_FavouriteUpdated(int progid)
+        private void Favourite_Updated(int progid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_FavouriteUpdated(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.Favourite_Updated(progid); });
                 return;
             }
 
@@ -1149,12 +1150,12 @@ namespace RadioDld
             return item;
         }
 
-        private void ProgData_FavouriteRemoved(int progid)
+        private void Favourite_Removed(int progid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_FavouriteRemoved(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.Favourite_Removed(progid); });
                 return;
             }
 
@@ -1205,12 +1206,12 @@ namespace RadioDld
             return item;
         }
 
-        private void ProgData_SubscriptionAdded(int progid)
+        private void Subscription_Added(int progid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_SubscriptionAdded(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.Subscription_Added(progid); });
                 return;
             }
 
@@ -1227,12 +1228,12 @@ namespace RadioDld
             }
         }
 
-        private void ProgData_SubscriptionUpdated(int progid)
+        private void Subscription_Updated(int progid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_SubscriptionUpdated(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.Subscription_Updated(progid); });
                 return;
             }
 
@@ -1255,12 +1256,12 @@ namespace RadioDld
             }
         }
 
-        private void ProgData_SubscriptionRemoved(int progid)
+        private void Subscription_Removed(int progid)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_SubscriptionRemoved(progid); });
+                this.BeginInvoke((MethodInvoker)delegate { this.Subscription_Removed(progid); });
                 return;
             }
 
@@ -1627,7 +1628,7 @@ namespace RadioDld
                     break;
             }
 
-            if (this.progData.AddFavourite(progid))
+            if (Model.Favourite.Add(progid))
             {
                 this.view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites, null);
             }
@@ -1656,7 +1657,7 @@ namespace RadioDld
 
             if (Interaction.MsgBox("Are you sure you would like to remove this programme from your list of favourites?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
             {
-                this.progData.RemoveFavourite(progid);
+                Model.Favourite.Remove(progid);
             }
         }
 
@@ -1674,7 +1675,7 @@ namespace RadioDld
                     break;
             }
 
-            if (this.progData.AddSubscription(progid))
+            if (Model.Subscription.Add(progid))
             {
                 this.view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions, null);
             }
@@ -1703,7 +1704,7 @@ namespace RadioDld
 
             if (Interaction.MsgBox("Are you sure you would like to stop having new episodes of this programme downloaded automatically?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
             {
-                this.progData.RemoveSubscription(progid);
+                Model.Subscription.Remove(progid);
             }
         }
 
