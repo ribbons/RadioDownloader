@@ -18,6 +18,7 @@ namespace RadioDld.Model
 {
     using System;
     using System.Data.SQLite;
+    using System.Threading;
 
     internal class Episode
     {
@@ -63,6 +64,24 @@ namespace RadioDld.Model
         public int Duration { get; set; }
 
         public bool AutoDownload { get; set; }
+
+        public static void EpisodeSetAutoDownload(int epid, bool autoDownload)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { EpisodeSetAutoDownloadAsync(epid, autoDownload); });
+        }
+
+        protected static void EpisodeSetAutoDownloadAsync(int epid, bool autoDownload)
+        {
+            lock (Data.DbUpdateLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", Data.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.Parameters.Add(new SQLiteParameter("@autodownload", autoDownload ? 1 : 0));
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
 
         protected virtual void FetchData(SQLiteMonDataReader reader)
         {

@@ -223,11 +223,6 @@ namespace RadioDld
             return null;
         }
 
-        public void EpisodeSetAutoDownload(int epid, bool autoDownload)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.EpisodeSetAutoDownloadAsync(epid, autoDownload); });
-        }
-
         public void DownloadReportError(int epid)
         {
             ErrorType errorType = default(ErrorType);
@@ -720,19 +715,6 @@ namespace RadioDld
             if (updateExtid != null)
             {
                 Model.Programme.Update(providerId, updateExtid);
-            }
-        }
-
-        private void EpisodeSetAutoDownloadAsync(int epid, bool autoDownload)
-        {
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                    command.Parameters.Add(new SQLiteParameter("@autodownload", autoDownload ? 1 : 0));
-                    command.ExecuteNonQuery();
-                }
             }
         }
 
