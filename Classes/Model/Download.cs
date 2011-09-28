@@ -695,7 +695,7 @@ namespace RadioDld.Model
                     if (!auto)
                     {
                         // Unset the auto download flag, so if the user is subscribed it doesn't just download again
-                        Episode.EpisodeSetAutoDownloadAsync(epid, false);
+                        Episode.SetAutoDownloadAsync(epid, false);
                     }
 
                     transMon.Trans.Commit();

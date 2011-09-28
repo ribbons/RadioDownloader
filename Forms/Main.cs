@@ -496,7 +496,7 @@ namespace RadioDld
 
         private void ListEpisodes_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e)
         {
-            Model.Episode.EpisodeSetAutoDownload(Convert.ToInt32(this.ListEpisodes.Items[e.Index].Name, CultureInfo.InvariantCulture), e.NewValue == CheckState.Checked);
+            Model.Episode.SetAutoDownload(Convert.ToInt32(this.ListEpisodes.Items[e.Index].Name, CultureInfo.InvariantCulture), e.NewValue == CheckState.Checked);
         }
 
         private void ShowEpisodeInfo(int epid)

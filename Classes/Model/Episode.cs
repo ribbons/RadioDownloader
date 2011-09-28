@@ -65,12 +65,12 @@ namespace RadioDld.Model
 
         public bool AutoDownload { get; set; }
 
-        public static void EpisodeSetAutoDownload(int epid, bool autoDownload)
+        public static void SetAutoDownload(int epid, bool autoDownload)
         {
-            ThreadPool.QueueUserWorkItem(delegate { EpisodeSetAutoDownloadAsync(epid, autoDownload); });
+            ThreadPool.QueueUserWorkItem(delegate { SetAutoDownloadAsync(epid, autoDownload); });
         }
 
-        protected static void EpisodeSetAutoDownloadAsync(int epid, bool autoDownload)
+        protected static void SetAutoDownloadAsync(int epid, bool autoDownload)
         {
             lock (Data.DbUpdateLock)
             {
