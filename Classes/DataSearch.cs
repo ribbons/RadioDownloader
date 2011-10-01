@@ -31,7 +31,6 @@ namespace RadioDld
 
         private static object searchInstanceLock = new object();
 
-        private Data dataInstance;
         private string downloadQuery = string.Empty;
 
         private List<int> downloadsVisible;
@@ -40,8 +39,6 @@ namespace RadioDld
 
         private DataSearch(Data instance)
         {
-            this.dataInstance = instance;
-
             Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
             tableCols.Add("downloads", new string[] { "name", "description" });
 

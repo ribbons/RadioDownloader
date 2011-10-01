@@ -23,12 +23,10 @@ namespace RadioDld
 
     internal class ListItemComparer : IComparer
     {
-        private Data dataInstance;
         private ListType compareType;
 
         public ListItemComparer(ListType compareType)
         {
-            this.dataInstance = Data.GetInstance();
             this.compareType = compareType;
         }
 
