@@ -35,8 +35,8 @@ namespace RadioDld
             // 
             // LabelStatus
             // 
-            this.LabelStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.LabelStatus.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LabelStatus.Location = new System.Drawing.Point(12, 9);
             this.LabelStatus.Name = "LabelStatus";
             this.LabelStatus.Size = new System.Drawing.Size(414, 86);
@@ -59,6 +59,7 @@ namespace RadioDld
             this.ControlBox = false;
             this.Controls.Add(this.Progress);
             this.Controls.Add(this.LabelStatus);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = global::RadioDld.Properties.Resources.icon_main;
             this.MaximizeBox = false;

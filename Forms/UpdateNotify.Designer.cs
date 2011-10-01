@@ -40,9 +40,9 @@ namespace RadioDld
             // 
             // LabelMessage
             // 
-            LabelMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            LabelMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             LabelMessage.Location = new System.Drawing.Point(12, 12);
             LabelMessage.Margin = new System.Windows.Forms.Padding(3);
             LabelMessage.Name = "LabelMessage";
@@ -84,6 +84,7 @@ namespace RadioDld
             this.Controls.Add(ButtonNo);
             this.Controls.Add(ButtonYes);
             this.Controls.Add(LabelMessage);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

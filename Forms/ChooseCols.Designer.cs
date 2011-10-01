@@ -43,6 +43,37 @@ namespace RadioDld
             LabelColumns = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
+            // ButtonCancel
+            // 
+            ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
+            ButtonCancel.Location = new System.Drawing.Point(251, 286);
+            ButtonCancel.Name = "ButtonCancel";
+            ButtonCancel.Size = new System.Drawing.Size(77, 25);
+            ButtonCancel.TabIndex = 1;
+            ButtonCancel.Text = "Cancel";
+            ButtonCancel.UseVisualStyleBackColor = true;
+            // 
+            // LabelInfo
+            // 
+            LabelInfo.Location = new System.Drawing.Point(9, 11);
+            LabelInfo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 0);
+            LabelInfo.Name = "LabelInfo";
+            LabelInfo.Size = new System.Drawing.Size(315, 35);
+            LabelInfo.TabIndex = 2;
+            LabelInfo.Text = "Select the columns you want to display for this list.";
+            // 
+            // LabelColumns
+            // 
+            LabelColumns.AutoSize = true;
+            LabelColumns.Location = new System.Drawing.Point(9, 46);
+            LabelColumns.Margin = new System.Windows.Forms.Padding(3, 0, 3, 2);
+            LabelColumns.Name = "LabelColumns";
+            LabelColumns.Size = new System.Drawing.Size(58, 15);
+            LabelColumns.TabIndex = 3;
+            LabelColumns.Text = "&Columns:";
+            // 
             // ButtonHide
             // 
             this.ButtonHide.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -108,22 +139,10 @@ namespace RadioDld
             this.ButtonOk.UseVisualStyleBackColor = true;
             this.ButtonOk.Click += new System.EventHandler(this.ButtonOk_Click);
             // 
-            // ButtonCancel
-            // 
-            ButtonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            ButtonCancel.Location = new System.Drawing.Point(251, 286);
-            ButtonCancel.Name = "ButtonCancel";
-            ButtonCancel.Size = new System.Drawing.Size(77, 25);
-            ButtonCancel.TabIndex = 1;
-            ButtonCancel.Text = "Cancel";
-            ButtonCancel.UseVisualStyleBackColor = true;
-            // 
             // ListColumns
             // 
-            this.ListColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.ListColumns.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ListColumns.CheckBoxes = true;
             this.ListColumns.HideSelection = false;
             this.ListColumns.Location = new System.Drawing.Point(12, 64);
@@ -135,25 +154,6 @@ namespace RadioDld
             this.ListColumns.View = System.Windows.Forms.View.List;
             this.ListColumns.ItemChecked += new System.Windows.Forms.ItemCheckedEventHandler(this.ListColumns_ItemChecked);
             this.ListColumns.Click += new System.EventHandler(this.ListColumns_SelectedIndexChanged);
-            // 
-            // LabelInfo
-            // 
-            LabelInfo.Location = new System.Drawing.Point(9, 11);
-            LabelInfo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 0);
-            LabelInfo.Name = "LabelInfo";
-            LabelInfo.Size = new System.Drawing.Size(315, 35);
-            LabelInfo.TabIndex = 2;
-            LabelInfo.Text = "Select the columns you want to display for this list.";
-            // 
-            // LabelColumns
-            // 
-            LabelColumns.AutoSize = true;
-            LabelColumns.Location = new System.Drawing.Point(9, 46);
-            LabelColumns.Margin = new System.Windows.Forms.Padding(3, 0, 3, 2);
-            LabelColumns.Name = "LabelColumns";
-            LabelColumns.Size = new System.Drawing.Size(50, 13);
-            LabelColumns.TabIndex = 3;
-            LabelColumns.Text = "&Columns:";
             // 
             // ChooseCols
             // 
@@ -170,6 +170,7 @@ namespace RadioDld
             this.Controls.Add(this.ButtonMoveDown);
             this.Controls.Add(this.ButtonShow);
             this.Controls.Add(this.ButtonHide);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

@@ -53,19 +53,10 @@ namespace RadioDld
             ImageLogo.TabIndex = 1;
             ImageLogo.TabStop = false;
             // 
-            // LabelNameAndVer
-            // 
-            this.LabelNameAndVer.AutoSize = true;
-            this.LabelNameAndVer.Location = new System.Drawing.Point(82, 16);
-            this.LabelNameAndVer.Name = "LabelNameAndVer";
-            this.LabelNameAndVer.Size = new System.Drawing.Size(131, 13);
-            this.LabelNameAndVer.TabIndex = 1;
-            this.LabelNameAndVer.Text = "Radio Downloader ?.?.?.?";
-            // 
             // TextLicense
             // 
-            TextLicense.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            TextLicense.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             TextLicense.Location = new System.Drawing.Point(12, 108);
             TextLicense.Multiline = true;
             TextLicense.Name = "TextLicense";
@@ -75,12 +66,31 @@ namespace RadioDld
             TextLicense.TabIndex = 5;
             TextLicense.Text = resources.GetString("TextLicense.Text");
             // 
+            // LabelLicense
+            // 
+            LabelLicense.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            LabelLicense.AutoSize = true;
+            LabelLicense.Location = new System.Drawing.Point(12, 92);
+            LabelLicense.Name = "LabelLicense";
+            LabelLicense.Size = new System.Drawing.Size(49, 15);
+            LabelLicense.TabIndex = 4;
+            LabelLicense.Text = "&License:";
+            // 
+            // LabelNameAndVer
+            // 
+            this.LabelNameAndVer.AutoSize = true;
+            this.LabelNameAndVer.Location = new System.Drawing.Point(82, 16);
+            this.LabelNameAndVer.Name = "LabelNameAndVer";
+            this.LabelNameAndVer.Size = new System.Drawing.Size(136, 15);
+            this.LabelNameAndVer.TabIndex = 1;
+            this.LabelNameAndVer.Text = "Radio Downloader ?.?.?.?";
+            // 
             // LabelCopyright
             // 
             this.LabelCopyright.AutoSize = true;
             this.LabelCopyright.Location = new System.Drawing.Point(82, 37);
             this.LabelCopyright.Name = "LabelCopyright";
-            this.LabelCopyright.Size = new System.Drawing.Size(90, 13);
+            this.LabelCopyright.Size = new System.Drawing.Size(99, 15);
             this.LabelCopyright.TabIndex = 2;
             this.LabelCopyright.Text = "Copyright © 20??";
             // 
@@ -89,21 +99,11 @@ namespace RadioDld
             this.LinkHomepage.AutoSize = true;
             this.LinkHomepage.Location = new System.Drawing.Point(82, 56);
             this.LinkHomepage.Name = "LinkHomepage";
-            this.LinkHomepage.Size = new System.Drawing.Size(228, 13);
+            this.LinkHomepage.Size = new System.Drawing.Size(260, 15);
             this.LinkHomepage.TabIndex = 3;
             this.LinkHomepage.TabStop = true;
             this.LinkHomepage.Text = "http://www.nerdoftheherd.com/tools/radiodld/";
             this.LinkHomepage.Click += new System.EventHandler(this.LinkHomepage_Click);
-            // 
-            // LabelLicense
-            // 
-            LabelLicense.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            LabelLicense.AutoSize = true;
-            LabelLicense.Location = new System.Drawing.Point(12, 92);
-            LabelLicense.Name = "LabelLicense";
-            LabelLicense.Size = new System.Drawing.Size(47, 13);
-            LabelLicense.TabIndex = 4;
-            LabelLicense.Text = "&License:";
             // 
             // ButtonOk
             // 
@@ -131,6 +131,7 @@ namespace RadioDld
             this.Controls.Add(TextLicense);
             this.Controls.Add(this.LabelNameAndVer);
             this.Controls.Add(ImageLogo);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = global::RadioDld.Properties.Resources.icon_main;
             this.MaximizeBox = false;

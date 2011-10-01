@@ -71,8 +71,8 @@ namespace RadioDld
             // 
             // LabelOrphan
             // 
-            this.LabelOrphan.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.LabelOrphan.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LabelOrphan.BackColor = System.Drawing.SystemColors.Control;
             this.LabelOrphan.Cursor = System.Windows.Forms.Cursors.Default;
             this.LabelOrphan.ForeColor = System.Drawing.SystemColors.ControlText;
@@ -82,7 +82,7 @@ namespace RadioDld
             this.LabelOrphan.Size = new System.Drawing.Size(311, 44);
             this.LabelOrphan.TabIndex = 3;
             this.LabelOrphan.Text = "This will remove the programmes in your download list for which the audio file ha" +
-                "s been moved or deleted.";
+    "s been moved or deleted.";
             // 
             // RadioOrphan
             // 
@@ -91,7 +91,7 @@ namespace RadioDld
             this.RadioOrphan.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.RadioOrphan.Location = new System.Drawing.Point(12, 15);
             this.RadioOrphan.Name = "RadioOrphan";
-            this.RadioOrphan.Size = new System.Drawing.Size(141, 18);
+            this.RadioOrphan.Size = new System.Drawing.Size(153, 20);
             this.RadioOrphan.TabIndex = 2;
             this.RadioOrphan.TabStop = true;
             this.RadioOrphan.Text = "&Remove orphan entries";
@@ -110,6 +110,7 @@ namespace RadioDld
             this.Controls.Add(this.ButtonOk);
             this.Controls.Add(this.LabelOrphan);
             this.Cursor = System.Windows.Forms.Cursors.Default;
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = global::RadioDld.Properties.Resources.icon_main;
             this.Location = new System.Drawing.Point(3, 29);
