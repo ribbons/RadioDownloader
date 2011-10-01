@@ -143,11 +143,6 @@ namespace RadioDld
             ThreadPool.QueueUserWorkItem(delegate { this.StartDownloadAsync(); });
         }
 
-        public void UpdateProgInfoIfRequired(int progid)
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.UpdateProgInfoIfRequiredAsync(progid); });
-        }
-
         public Bitmap FetchProgrammeImage(int progid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
@@ -682,42 +677,6 @@ namespace RadioDld
             }
         }
 
-        private void UpdateProgInfoIfRequiredAsync(int progid)
-        {
-            Guid providerId = Guid.Empty;
-            string updateExtid = null;
-
-            // Test to see if an update is required, and then free up the database
-            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read())
-                    {
-                        providerId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-
-                        if (Plugins.PluginExists(providerId))
-                        {
-                            IRadioProvider pluginInstance = Plugins.GetPluginInstance(providerId);
-
-                            if (reader.GetDateTime(reader.GetOrdinal("lastupdate")).AddDays(pluginInstance.ProgInfoUpdateFreqDays) < DateAndTime.Now)
-                            {
-                                updateExtid = reader.GetString(reader.GetOrdinal("extid"));
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Now perform the update if required
-            if (updateExtid != null)
-            {
-                Model.Programme.Update(providerId, updateExtid);
-            }
-        }
-
         private void CheckSubscriptions()
         {
             // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
@@ -1020,7 +979,7 @@ namespace RadioDld
         private void FindNewPluginInst_FoundNew(string progExtId)
         {
             Guid pluginId = this.findNewPluginInst.ProviderId;
-            int? progid = Model.Programme.Update(pluginId, progExtId);
+            int? progid = Model.Programme.FetchInfo(pluginId, progExtId);
 
             if (progid == null)
             {

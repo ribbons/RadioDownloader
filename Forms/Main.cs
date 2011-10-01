@@ -558,7 +558,7 @@ namespace RadioDld
             {
                 int progid = Convert.ToInt32(this.ListFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-                this.progData.UpdateProgInfoIfRequired(progid);
+                Model.Programme.UpdateInfoIfRequired(progid);
                 this.ShowFavouriteInfo(progid);
             }
             else
@@ -593,7 +593,7 @@ namespace RadioDld
             {
                 int progid = Convert.ToInt32(this.ListSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-                this.progData.UpdateProgInfoIfRequired(progid);
+                Model.Programme.UpdateInfoIfRequired(progid);
                 this.ShowSubscriptionInfo(progid);
             }
             else
