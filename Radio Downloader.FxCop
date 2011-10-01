@@ -122,7 +122,6 @@
     <Rule Name="AvoidUnsealedAttributes" Enabled="True" />
     <Rule Name="AvoidUnusedPrivateFields" Enabled="True" />
     <Rule Name="DoNotCastUnnecessarily" Enabled="True" />
-    <Rule Name="InitializeReferenceTypeStaticFieldsInline" Enabled="True" />
     <Rule Name="MarkAssembliesWithNeutralResourcesLanguage" Enabled="True" />
     <Rule Name="PreferJaggedArraysOverMultidimensional" Enabled="True" />
     <Rule Name="PropertiesShouldNotReturnArrays" Enabled="True" />
