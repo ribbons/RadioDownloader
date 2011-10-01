@@ -598,7 +598,7 @@ namespace RadioDld.Model
             }
         }
 
-        protected override void FetchData(SQLiteMonDataReader reader)
+        protected new void FetchData(SQLiteMonDataReader reader)
         {
             base.FetchData(reader);
 

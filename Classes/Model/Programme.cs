@@ -146,7 +146,7 @@ namespace RadioDld.Model
             }
         }
 
-        protected virtual void FetchData(SQLiteMonDataReader reader)
+        protected void FetchData(SQLiteMonDataReader reader)
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
