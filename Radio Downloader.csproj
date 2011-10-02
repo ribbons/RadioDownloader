@@ -176,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AppInstance.cs" />
+    <Compile Include="Classes\ComboNameValue.cs" />
     <Compile Include="Classes\DataNotFoundException.cs" />
     <Compile Include="Classes\DownloadException.cs" />
     <Compile Include="Classes\Model\Download.cs" />

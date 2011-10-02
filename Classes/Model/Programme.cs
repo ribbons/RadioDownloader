@@ -17,13 +17,14 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.SQLite;
     using System.Globalization;
     using System.Threading;
 
     internal class Programme
     {
-        internal const string Columns = "programmes.progid, name, description, singleepisode, pluginid, latestdownload";
+        internal const string Columns = "programmes.progid, programmes.name, programmes.description, singleepisode, pluginid, latestdownload";
 
         public Programme()
         {
@@ -67,6 +68,24 @@ namespace RadioDld.Model
         public string ProviderName { get; set; }
 
         public DateTime? LatestDownload { get; set; }
+
+        public static List<Programme> FetchAllWithDownloads()
+        {
+            List<Programme> items = new List<Programme>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select distinct " + Columns + " from programmes, episodes, downloads where downloads.epid=episodes.epid and episodes.progid=programmes.progid", Data.FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    while (reader.Read())
+                    {
+                        items.Add(new Programme(reader));
+                    }
+                }
+            }
+
+            return items;
+        }
 
         public static int? FetchInfo(Guid pluginId, string progExtId)
         {

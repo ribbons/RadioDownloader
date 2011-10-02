@@ -498,46 +498,106 @@ namespace RadioDld.Model
             }
         }
 
-        public static void PerformCleanup()
+        public static void Cleanup(DateTime? olderThan, int? progid, bool orphans, bool played, bool noDeleteAudio)
         {
-            // Fetch a list of the downloads first to prevent locking the database during cleanup
-            List<Download> downloads = new List<Download>();
-
-            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from downloads, episodes where downloads.epid=episodes.epid and status=@status", Data.FetchDbConn()))
+            if (!(olderThan != null || progid != null || orphans || played))
             {
-                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    while (reader.Read())
-                    {
-                        downloads.Add(new Download(reader));
-                    }
-                }
+                throw new ArgumentException("At least one kind of cleanup filter must be set!");
+            }
+            else if (orphans && noDeleteAudio)
+            {
+                throw new ArgumentException("Cannot remove orphans and not delete audio files at the same time!");
             }
 
-            foreach (Download download in downloads)
+            using (Status status = new Status())
             {
-                List<string> ignoreRoots = new List<string>();
+                status.StatusText = "Fetching downloads...";
+                status.ProgressBarMarquee = true;
+                status.Show();
 
-                // Remove programmes for which the associated audio file no longer exists
-                if (!File.Exists(download.DownloadPath))
+                string query = "select " + Columns + " from downloads, episodes where downloads.epid=episodes.epid and status=@status";
+
+                if (olderThan != null)
                 {
-                    string pathRoot = Path.GetPathRoot(download.DownloadPath);
+                    query += " and date < @date";
+                }
 
-                    if (!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
+                if (progid != null)
+                {
+                    query += " and progid=@progid";
+                }
+
+                if (played)
+                {
+                    query += " and playcount > 0";
+                }
+
+                // Fetch a list of the downloads first to prevent locking the database during cleanup
+                List<Download> downloads = new List<Download>();
+
+                using (SQLiteCommand command = new SQLiteCommand(query, Data.FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
+
+                    if (olderThan != null)
                     {
-                        if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        {
-                            break;
-                        }
-
-                        ignoreRoots.Add(pathRoot);
+                        command.Parameters.Add(new SQLiteParameter("@date", olderThan.Value));
                     }
 
-                    // Take the download out of the list and set the auto download flag to false
-                    RemoveAsync(download.Epid, false);
+                    if (progid != null)
+                    {
+                        command.Parameters.Add(new SQLiteParameter("@progid", progid.Value));
+                    }
+
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                    {
+                        while (reader.Read())
+                        {
+                            downloads.Add(new Download(reader));
+                        }
+                    }
                 }
+
+                status.ProgressBarMax = downloads.Count;
+                status.StatusText = "Cleaning up downloads...";
+                status.ProgressBarMarquee = false;
+
+                foreach (Download download in downloads)
+                {
+                    List<string> ignoreRoots = new List<string>();
+
+                    if (!orphans || !File.Exists(download.DownloadPath))
+                    {
+                        if (orphans)
+                        {
+                            string pathRoot = Path.GetPathRoot(download.DownloadPath);
+
+                            if (!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
+                            {
+                                if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                                {
+                                    break;
+                                }
+
+                                ignoreRoots.Add(pathRoot);
+                            }
+                        }
+
+                        // Take the download out of the list and set the auto download flag to false
+                        RemoveAsync(download.Epid, false);
+
+                        // Delete the audio file too (if it exists, and the user wants to remove it)
+                        if (!orphans && !noDeleteAudio)
+                        {
+                            File.Delete(download.DownloadPath);
+                        }
+                    }
+
+                    status.ProgressBarValue++;
+                }
+
+                status.ProgressBarValue = status.ProgressBarMax;
+                status.Hide();
             }
         }
 
