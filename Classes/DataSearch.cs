@@ -42,9 +42,9 @@ namespace RadioDld
             Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
             tableCols.Add("downloads", new string[] { "name", "description" });
 
-            using (Status showStatus = new Status())
+            if (!this.CheckIndex(tableCols))
             {
-                if (!this.CheckIndex(tableCols))
+                using (Status showStatus = new Status())
                 {
                     // Close & clean up the connection used for testing
                     dbConn.Close();
