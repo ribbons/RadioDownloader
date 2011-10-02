@@ -42,7 +42,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.SetStatusText_FormThread(value); });
+                    this.BeginInvoke((MethodInvoker)delegate { this.SetStatusText_FormThread(value); });
                 }
                 else
                 {
@@ -62,7 +62,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarMarquee_FormThread(value); });
+                    this.BeginInvoke((MethodInvoker)delegate { this.SetProgressBarMarquee_FormThread(value); });
                 }
                 else
                 {
@@ -82,7 +82,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarMax_FormThread(value); });
+                    this.BeginInvoke((MethodInvoker)delegate { this.SetProgressBarMax_FormThread(value); });
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarValue_FormThread(value); });
+                    this.BeginInvoke((MethodInvoker)delegate { this.SetProgressBarValue_FormThread(value); });
                 }
                 else
                 {
@@ -122,12 +122,31 @@ namespace RadioDld
         {
             if (this.IsHandleCreated)
             {
-                this.Invoke((MethodInvoker)delegate { this.HideForm_FormThread(); });
+                this.BeginInvoke((MethodInvoker)delegate { this.Hide(); });
+                return;
             }
-            else
+
+            base.Hide();
+        }
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (this.IsHandleCreated)
             {
-                this.HideForm_FormThread();
+                this.BeginInvoke((MethodInvoker)delegate { this.Dispose(disposing); });
+                return;
             }
+
+            if (disposing && (this.components != null))
+            {
+                this.components.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         private void ShowFormThread()
@@ -178,11 +197,6 @@ namespace RadioDld
             {
                 this.tbarNotif.SetProgressValue(this, value, this.Progress.Maximum);
             }
-        }
-
-        private void HideForm_FormThread()
-        {
-            base.Hide();
         }
 
         private void Status_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
