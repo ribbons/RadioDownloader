@@ -87,8 +87,6 @@ namespace RadioDld
 
         private void ButtonOk_Click(object sender, EventArgs e)
         {
-            this.Hide();
-
             DateTime? olderThan = null;
             int? progid = null;
 
@@ -103,7 +101,15 @@ namespace RadioDld
                 progid = ((ComboNameValue<int>)this.ListProgrammes.SelectedItem).Value;
             }
 
-            Model.Download.Cleanup(olderThan, progid, this.CheckOrphan.Checked, this.CheckPlayed.Checked, this.CheckKeepFiles.Checked);
+            using (Status status = new Status())
+            {
+                status.ShowDialog(
+                    this,
+                    delegate
+                    {
+                        Model.Download.Cleanup(status, olderThan, progid, this.CheckOrphan.Checked, this.CheckPlayed.Checked, this.CheckKeepFiles.Checked);
+                    });
+            }
         }
     }
 }

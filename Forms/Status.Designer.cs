@@ -7,6 +7,20 @@ namespace RadioDld
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (this.components != null))
+            {
+                this.components.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -35,6 +49,7 @@ namespace RadioDld
             this.Progress.Location = new System.Drawing.Point(15, 110);
             this.Progress.Name = "Progress";
             this.Progress.Size = new System.Drawing.Size(411, 23);
+            this.Progress.Style = System.Windows.Forms.ProgressBarStyle.Marquee;
             this.Progress.TabIndex = 1;
             // 
             // Status
@@ -51,7 +66,7 @@ namespace RadioDld
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "Status";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Radio Downloader";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Status_FormClosing);
             this.Load += new System.EventHandler(this.Status_Load);

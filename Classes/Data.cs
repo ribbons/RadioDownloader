@@ -54,8 +54,29 @@ namespace RadioDld
         private Data()
             : base()
         {
-            // Vacuum the database every so often.  Works best as the first command, as reduces risk of conflicts.
-            this.VacuumDatabase();
+            // Vacuum the database every few months - vacuums are spaced like this as they take ages to run
+            bool runVacuum = false;
+            object lastVacuum = this.GetDBSetting("lastvacuum");
+
+            if (lastVacuum == null)
+            {
+                runVacuum = true;
+            }
+            else
+            {
+                runVacuum = DateTime.ParseExact((string)lastVacuum, "O", CultureInfo.InvariantCulture).AddMonths(3) < DateTime.Now;
+            }
+
+            if (runVacuum)
+            {
+                using (Status status = new Status())
+                {
+                    status.ShowDialog(delegate
+                    {
+                        this.VacuumDatabase(status);
+                    });
+                }
+            }
 
             const int CurrentVer = 4;
             int dbVersion = CurrentVer;
@@ -66,19 +87,15 @@ namespace RadioDld
                 dbVersion = Convert.ToInt32(this.GetDBSetting("databaseversion"), CultureInfo.InvariantCulture);
             }
 
-            // Set the current database version.  This is done before the upgrades are attempted so that
-            // if the upgrade throws an exception this can be reported, but the programme will run next time.
-            this.SetDBSetting("databaseversion", CurrentVer);
-
             switch (dbVersion)
             {
-                case 3:
-                    this.UpgradeDBv3to4();
-                    break;
                 case 4:
                     // Nothing to do, this is the current version.
                     break;
             }
+
+            // Set the current database version.
+            this.SetDBSetting("databaseversion", CurrentVer);
 
             this.search = DataSearch.GetInstance(this);
 
@@ -439,78 +456,6 @@ namespace RadioDld
             }
 
             return dbConn;
-        }
-
-        private void UpgradeDBv3to4()
-        {
-            using (Status showStatus = new Status())
-            {
-                showStatus.StatusText = "Updating programme data...";
-                showStatus.ProgressBarMarquee = true;
-                showStatus.Show();
-
-                using (SQLiteCommand command = new SQLiteCommand("select count(*) from programmes where latestdownload is null", FetchDbConn()))
-                {
-                    showStatus.ProgressBarMax = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
-                }
-
-                showStatus.ProgressBarValue = 0;
-                showStatus.ProgressBarMarquee = false;
-
-                int processCount = 0;
-
-                lock (Data.dbUpdateLock)
-                {
-                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
-                    {
-                        using (SQLiteCommand findCommand = new SQLiteCommand("select progid from programmes where latestdownload is null", FetchDbConn()))
-                        {
-                            using (SQLiteCommand dateCommand = new SQLiteCommand("select date from episodes, downloads where episodes.epid=downloads.epid and progid=@progid order by date desc limit 1", FetchDbConn()))
-                            {
-                                using (SQLiteCommand updateCommand = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", FetchDbConn()))
-                                {
-                                    SQLiteParameter latestdownloadParam = new SQLiteParameter("latestdownload");
-                                    SQLiteParameter progidParam = new SQLiteParameter("progid");
-
-                                    dateCommand.Parameters.Add(progidParam);
-                                    updateCommand.Parameters.Add(latestdownloadParam);
-                                    updateCommand.Parameters.Add(progidParam);
-
-                                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(findCommand.ExecuteReader()))
-                                    {
-                                        int progidOrdinal = reader.GetOrdinal("progid");
-
-                                        while (reader.Read())
-                                        {
-                                            showStatus.ProgressBarValue = ++processCount;
-
-                                            progidParam.Value = reader.GetInt32(progidOrdinal);
-
-                                            using (SQLiteMonDataReader dateReader = new SQLiteMonDataReader(dateCommand.ExecuteReader()))
-                                            {
-                                                if (dateReader.Read())
-                                                {
-                                                    latestdownloadParam.Value = dateReader.GetDateTime(dateReader.GetOrdinal("date"));
-                                                }
-                                                else
-                                                {
-                                                    continue;
-                                                }
-
-                                                updateCommand.ExecuteNonQuery();
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
-                        transMon.Trans.Commit();
-                    }
-                }
-
-                showStatus.Hide();
-            }
         }
 
         private void StartDownloadAsync()
@@ -911,42 +856,19 @@ namespace RadioDld
             }
         }
 
-        private void VacuumDatabase()
+        private void VacuumDatabase(Status status)
         {
-            // Vacuum the database every few months - vacuums are spaced like this as they take ages to run
-            bool runVacuum = false;
-            object lastVacuum = this.GetDBSetting("lastvacuum");
+            status.StatusText = "Compacting Database..." + Environment.NewLine + Environment.NewLine + "This may take some time if you have downloaded a lot of programmes.";
 
-            if (lastVacuum == null)
+            // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
+            lock (Data.dbUpdateLock)
             {
-                runVacuum = true;
-            }
-            else
-            {
-                runVacuum = DateTime.ParseExact((string)lastVacuum, "O", CultureInfo.InvariantCulture).AddMonths(3) < DateAndTime.Now;
-            }
-
-            if (runVacuum)
-            {
-                using (Status showStatus = new Status())
+                using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
                 {
-                    showStatus.StatusText = "Compacting Database..." + Environment.NewLine + Environment.NewLine + "This may take some time if you have downloaded a lot of programmes.";
-                    showStatus.ProgressBarMarquee = true;
-                    showStatus.Show();
-
-                    // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-                    lock (Data.dbUpdateLock)
-                    {
-                        using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
-                        {
-                            command.ExecuteNonQuery();
-                        }
-                    }
-
-                    this.SetDBSetting("lastvacuum", DateAndTime.Now.ToString("O", CultureInfo.InvariantCulture));
-
-                    showStatus.Hide();
+                    command.ExecuteNonQuery();
                 }
+
+                this.SetDBSetting("lastvacuum", DateTime.Now.ToString("O", CultureInfo.InvariantCulture));
             }
         }
 

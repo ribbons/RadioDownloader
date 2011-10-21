@@ -946,7 +946,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_ProviderAdded(providerId); });
+                this.Invoke((MethodInvoker)delegate { this.ProgData_ProviderAdded(providerId); });
                 return;
             }
 
@@ -1002,7 +1002,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.Programme_Updated(progid); });
+                this.Invoke((MethodInvoker)delegate { this.Programme_Updated(progid); });
                 return;
             }
 
@@ -1066,7 +1066,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_EpisodeAdded(epid); });
+                this.Invoke((MethodInvoker)delegate { this.ProgData_EpisodeAdded(epid); });
                 return;
             }
 
@@ -1087,7 +1087,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.Favourite_Added(progid); });
+                this.Invoke((MethodInvoker)delegate { this.Favourite_Added(progid); });
                 return;
             }
 
@@ -1110,7 +1110,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.Favourite_Updated(progid); });
+                this.Invoke((MethodInvoker)delegate { this.Favourite_Updated(progid); });
                 return;
             }
 
@@ -1155,7 +1155,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.Favourite_Removed(progid); });
+                this.Invoke((MethodInvoker)delegate { this.Favourite_Removed(progid); });
                 return;
             }
 
@@ -1211,7 +1211,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.Subscription_Added(progid); });
+                this.Invoke((MethodInvoker)delegate { this.Subscription_Added(progid); });
                 return;
             }
 
@@ -1233,7 +1233,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.Subscription_Updated(progid); });
+                this.Invoke((MethodInvoker)delegate { this.Subscription_Updated(progid); });
                 return;
             }
 
@@ -1261,7 +1261,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.Subscription_Removed(progid); });
+                this.Invoke((MethodInvoker)delegate { this.Subscription_Removed(progid); });
                 return;
             }
 
@@ -1382,7 +1382,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.DataSearch_DownloadAdded(epid); });
+                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadAdded(epid); });
                 return;
             }
 
@@ -1404,7 +1404,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_DownloadProgress(epid, percent, statusText, icon); });
+                this.Invoke((MethodInvoker)delegate { this.ProgData_DownloadProgress(epid, percent, statusText, icon); });
                 return;
             }
 
@@ -1446,7 +1446,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.DataSearch_DownloadRemoved(epid); });
+                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadRemoved(epid); });
                 return;
             }
 
@@ -1480,7 +1480,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.DataSearch_DownloadUpdated(epid); });
+                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadUpdated(epid); });
                 return;
             }
 
@@ -1519,7 +1519,7 @@ namespace RadioDld
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.BeginInvoke((MethodInvoker)delegate { this.ProgData_DownloadProgressTotal(downloading, percent); });
+                this.Invoke((MethodInvoker)delegate { this.ProgData_DownloadProgressTotal(downloading, percent); });
                 return;
             }
 
@@ -1938,7 +1938,7 @@ namespace RadioDld
                     this.ListEpisodes.Visible = true;
                     this.progData.CancelEpisodeListing();
                     this.ListEpisodes.Items.Clear(); // Clear before DoEvents so that old items don't flash up on screen
-                    Application.DoEvents(); // Give any queued BeginInvoke calls a chance to be processed
+                    Application.DoEvents(); // Give any queued Invoke calls a chance to be processed
                     this.ListEpisodes.Items.Clear();
                     this.progData.InitEpisodeList((int)data);
                     break;

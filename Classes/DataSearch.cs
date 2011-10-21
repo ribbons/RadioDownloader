@@ -44,55 +44,17 @@ namespace RadioDld
 
             if (!this.CheckIndex(tableCols))
             {
-                using (Status showStatus = new Status())
+                // Close & clean up the connection used for testing
+                dbConn.Close();
+                dbConn.Dispose();
+                dbConn = null;
+                
+                using (Status status = new Status())
                 {
-                    // Close & clean up the connection used for testing
-                    dbConn.Close();
-                    dbConn.Dispose();
-                    dbConn = null;
-
-                    // Clean up the old index
-                    File.Delete(this.DatabasePath());
-
-                    showStatus.StatusText = "Building search index...";
-                    showStatus.ProgressBarMarquee = false;
-                    showStatus.ProgressBarValue = 0;
-                    showStatus.ProgressBarMax = 100 * tableCols.Count;
-                    showStatus.Show();
-
-                    lock (this.updateIndexLock)
+                    status.ShowDialog(delegate
                     {
-                        using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
-                        {
-                            // Create the index tables
-                            foreach (KeyValuePair<string, string[]> table in tableCols)
-                            {
-                                using (SQLiteCommand command = new SQLiteCommand(this.TableSql(table.Key, table.Value), this.FetchDbConn(), trans))
-                                {
-                                    command.ExecuteNonQuery();
-                                }
-                            }
-
-                            showStatus.StatusText = "Building search index for downloads...";
-
-                            int progress = 1;
-                            List<Model.Download> downloadItems = Model.Download.FetchAll();
-
-                            foreach (Model.Download downloadItem in downloadItems)
-                            {
-                                this.AddDownload(downloadItem);
-
-                                showStatus.ProgressBarValue = Convert.ToInt32((progress / downloadItems.Count) * 100);
-                                progress += 1;
-                            }
-
-                            showStatus.ProgressBarValue = 100;
-
-                            trans.Commit();
-                        }
-                    }
-
-                    showStatus.Hide();
+                        this.RebuildIndex(status, tableCols);
+                    });
                 }
             }
 
@@ -210,6 +172,47 @@ namespace RadioDld
         private string TableSql(string tableName, string[] columns)
         {
             return "CREATE VIRTUAL TABLE " + tableName + " USING fts3(" + Strings.Join(columns, ", ") + ")";
+        }
+
+        private void RebuildIndex(Status status, Dictionary<string, string[]> tableCols)
+        {
+            // Clean up the old index
+            File.Delete(this.DatabasePath());
+
+            status.StatusText = "Building search index...";
+            status.ProgressBarMax = 100 * tableCols.Count;
+            status.ProgressBarMarquee = false;
+
+            lock (this.updateIndexLock)
+            {
+                using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
+                {
+                    // Create the index tables
+                    foreach (KeyValuePair<string, string[]> table in tableCols)
+                    {
+                        using (SQLiteCommand command = new SQLiteCommand(this.TableSql(table.Key, table.Value), this.FetchDbConn(), trans))
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    status.StatusText = "Building search index for downloads...";
+
+                    int progress = 1;
+                    List<Model.Download> downloadItems = Model.Download.FetchAll();
+
+                    foreach (Model.Download downloadItem in downloadItems)
+                    {
+                        this.AddDownload(downloadItem);
+
+                        status.ProgressBarValue = Convert.ToInt32((progress / downloadItems.Count) * 100);
+                        progress += 1;
+                    }
+
+                    status.ProgressBarValue = 100;
+                    trans.Commit();
+                }
+            }
         }
 
         private void RunQuery(string query)

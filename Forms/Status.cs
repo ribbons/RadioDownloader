@@ -23,7 +23,8 @@ namespace RadioDld
 
     internal partial class Status : Form
     {
-        private Thread showThread;
+        private MethodInvoker work;
+        private Thread workThread;
         private TaskbarNotify tbarNotif;
 
         public Status()
@@ -42,7 +43,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.BeginInvoke((MethodInvoker)delegate { this.SetStatusText_FormThread(value); });
+                    this.Invoke((MethodInvoker)delegate { this.SetStatusText_FormThread(value); });
                 }
                 else
                 {
@@ -62,7 +63,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.BeginInvoke((MethodInvoker)delegate { this.SetProgressBarMarquee_FormThread(value); });
+                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarMarquee_FormThread(value); });
                 }
                 else
                 {
@@ -82,7 +83,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.BeginInvoke((MethodInvoker)delegate { this.SetProgressBarMax_FormThread(value); });
+                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarMax_FormThread(value); });
                 }
                 else
                 {
@@ -102,7 +103,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.BeginInvoke((MethodInvoker)delegate { this.SetProgressBarValue_FormThread(value); });
+                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarValue_FormThread(value); });
                 }
                 else
                 {
@@ -111,55 +112,27 @@ namespace RadioDld
             }
         }
 
-        public new void Show()
+        public DialogResult ShowDialog(MethodInvoker work)
         {
-            this.showThread = new Thread(this.ShowFormThread);
-            this.showThread.Start();
-            Application.DoEvents();
+            this.work = work;
+            return this.ShowDialog();
         }
 
-        public new void Hide()
+        public DialogResult ShowDialog(Form parent, MethodInvoker work)
         {
-            if (this.IsHandleCreated)
+            this.work = work;
+            return this.ShowDialog(parent);
+        }
+
+        private new void Hide()
+        {
+            if (this.InvokeRequired)
             {
-                this.BeginInvoke((MethodInvoker)delegate { this.Hide(); });
+                this.Invoke((MethodInvoker)delegate { this.Hide(); });
                 return;
             }
 
             base.Hide();
-        }
-
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (this.IsHandleCreated)
-            {
-                this.BeginInvoke((MethodInvoker)delegate { this.Dispose(disposing); });
-                return;
-            }
-
-            if (disposing && (this.components != null))
-            {
-                this.components.Dispose();
-            }
-
-            base.Dispose(disposing);
-        }
-
-        private void ShowFormThread()
-        {
-            if (OsUtils.WinSevenOrLater())
-            {
-                this.tbarNotif = new TaskbarNotify();
-            }
-
-            if (!this.IsDisposed)
-            {
-                this.ShowDialog();
-            }
         }
 
         private void SetStatusText_FormThread(string text)
@@ -201,12 +174,20 @@ namespace RadioDld
 
         private void Status_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
         {
-            e.Cancel = true;
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                e.Cancel = true;
+            }
         }
 
         private void Status_Load(object sender, System.EventArgs e)
         {
             this.Font = SystemFonts.MessageBoxFont;
+
+            if (OsUtils.WinSevenOrLater())
+            {
+                this.tbarNotif = new TaskbarNotify();
+            }
         }
 
         private void Status_Shown(object sender, System.EventArgs e)
@@ -225,6 +206,15 @@ namespace RadioDld
                     }
                 }
             }
+
+            this.workThread = new Thread(this.WorkThread);
+            this.workThread.Start();
+        }
+
+        private void WorkThread()
+        {
+            this.work();
+            this.Hide();
         }
     }
 }

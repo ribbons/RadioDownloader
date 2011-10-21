@@ -425,8 +425,10 @@ namespace RadioDld.Model
             return fileName.Trim();
         }
 
-        public static void UpdatePaths(string newPath, string newFormat)
+        public static void UpdatePaths(Status status, string newPath, string newFormat)
         {
+            status.StatusText = "Fetching list of downloads...";
+
             List<Download> downloads = new List<Download>();
 
             using (SQLiteCommand command = new SQLiteCommand("select episodes.epid, progid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from episodes, downloads where episodes.epid=downloads.epid", Data.FetchDbConn()))
@@ -445,60 +447,55 @@ namespace RadioDld.Model
                 Dictionary<int, Programme> programmes = new Dictionary<int, Programme>();
                 int progress = 0;
 
-                using (Status showStatus = new Status())
+                status.StatusText = "Updating download paths...";
+                status.ProgressBarMax = downloads.Count;
+                status.ProgressBarMarquee = false;
+
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set filepath=@filepath where epid=@epid", Data.FetchDbConn()))
                 {
-                    showStatus.StatusText = "Moving downloads...";
-                    showStatus.ProgressBarMax = downloads.Count;
-                    showStatus.Show();
-                    Application.DoEvents();
+                    SQLiteParameter epidParam = new SQLiteParameter("epid");
+                    SQLiteParameter filepathParam = new SQLiteParameter("filepath");
 
-                    using (SQLiteCommand command = new SQLiteCommand("update downloads set filepath=@filepath where epid=@epid", Data.FetchDbConn()))
+                    command.Parameters.Add(epidParam);
+                    command.Parameters.Add(filepathParam);
+
+                    foreach (Download download in downloads)
                     {
-                        SQLiteParameter epidParam = new SQLiteParameter("epid");
-                        SQLiteParameter filepathParam = new SQLiteParameter("filepath");
-
-                        command.Parameters.Add(epidParam);
-                        command.Parameters.Add(filepathParam);
-
-                        foreach (Download download in downloads)
+                        if (File.Exists(download.DownloadPath))
                         {
-                            if (File.Exists(download.DownloadPath))
+                            if (!programmes.ContainsKey(download.Progid))
                             {
-                                if (!programmes.ContainsKey(download.Progid))
-                                {
-                                    programmes.Add(download.Progid, new Programme(download.Progid));
-                                }
+                                programmes.Add(download.Progid, new Programme(download.Progid));
+                            }
 
-                                string newDownloadPath = FindFreeSaveFileName(newFormat, programmes[download.Progid], download, newPath) + Path.GetExtension(download.DownloadPath);
+                            string newDownloadPath = FindFreeSaveFileName(newFormat, programmes[download.Progid], download, newPath) + Path.GetExtension(download.DownloadPath);
 
-                                if (newDownloadPath != download.DownloadPath)
+                            if (newDownloadPath != download.DownloadPath)
+                            {
+                                lock (Data.DbUpdateLock)
                                 {
-                                    lock (Data.DbUpdateLock)
+                                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
                                     {
-                                        using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
-                                        {
-                                            epidParam.Value = download.Epid;
-                                            filepathParam.Value = newDownloadPath;
-                                            command.ExecuteNonQuery();
+                                        epidParam.Value = download.Epid;
+                                        filepathParam.Value = newDownloadPath;
+                                        command.ExecuteNonQuery();
 
-                                            File.Move(download.DownloadPath, newDownloadPath);
-                                            transMon.Trans.Commit();
-                                        }
+                                        File.Move(download.DownloadPath, newDownloadPath);
+                                        transMon.Trans.Commit();
                                     }
                                 }
                             }
-
-                            showStatus.ProgressBarValue = ++progress;
                         }
-                    }
 
-                    showStatus.Hide();
-                    Application.DoEvents();
+                        status.ProgressBarValue = ++progress;
+                    }
                 }
+
+                status.ProgressBarValue = 100;
             }
         }
 
-        public static void Cleanup(DateTime? olderThan, int? progid, bool orphans, bool played, bool noDeleteAudio)
+        public static void Cleanup(Status status, DateTime? olderThan, int? progid, bool orphans, bool played, bool noDeleteAudio)
         {
             if (!(olderThan != null || progid != null || orphans || played))
             {
@@ -509,96 +506,90 @@ namespace RadioDld.Model
                 throw new ArgumentException("Cannot remove orphans and not delete audio files at the same time!");
             }
 
-            using (Status status = new Status())
-            {
-                status.StatusText = "Fetching downloads...";
-                status.ProgressBarMarquee = true;
-                status.Show();
+            status.StatusText = "Fetching downloads...";
 
-                string query = "select " + Columns + " from downloads, episodes where downloads.epid=episodes.epid and status=@status";
+            string query = "select " + Columns + " from downloads, episodes where downloads.epid=episodes.epid and status=@status";
+
+            if (olderThan != null)
+            {
+                query += " and date < @date";
+            }
+
+            if (progid != null)
+            {
+                query += " and progid=@progid";
+            }
+
+            if (played)
+            {
+                query += " and playcount > 0";
+            }
+
+            // Fetch a list of the downloads first to prevent locking the database during cleanup
+            List<Download> downloads = new List<Download>();
+
+            using (SQLiteCommand command = new SQLiteCommand(query, Data.FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
 
                 if (olderThan != null)
                 {
-                    query += " and date < @date";
+                    command.Parameters.Add(new SQLiteParameter("@date", olderThan.Value));
                 }
 
                 if (progid != null)
                 {
-                    query += " and progid=@progid";
+                    command.Parameters.Add(new SQLiteParameter("@progid", progid.Value));
                 }
 
-                if (played)
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    query += " and playcount > 0";
-                }
-
-                // Fetch a list of the downloads first to prevent locking the database during cleanup
-                List<Download> downloads = new List<Download>();
-
-                using (SQLiteCommand command = new SQLiteCommand(query, Data.FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
-
-                    if (olderThan != null)
+                    while (reader.Read())
                     {
-                        command.Parameters.Add(new SQLiteParameter("@date", olderThan.Value));
-                    }
-
-                    if (progid != null)
-                    {
-                        command.Parameters.Add(new SQLiteParameter("@progid", progid.Value));
-                    }
-
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        while (reader.Read())
-                        {
-                            downloads.Add(new Download(reader));
-                        }
+                        downloads.Add(new Download(reader));
                     }
                 }
-
-                status.ProgressBarMax = downloads.Count;
-                status.StatusText = "Cleaning up downloads...";
-                status.ProgressBarMarquee = false;
-
-                foreach (Download download in downloads)
-                {
-                    List<string> ignoreRoots = new List<string>();
-
-                    if (!orphans || !File.Exists(download.DownloadPath))
-                    {
-                        if (orphans)
-                        {
-                            string pathRoot = Path.GetPathRoot(download.DownloadPath);
-
-                            if (!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
-                            {
-                                if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                                {
-                                    break;
-                                }
-
-                                ignoreRoots.Add(pathRoot);
-                            }
-                        }
-
-                        // Take the download out of the list and set the auto download flag to false
-                        RemoveAsync(download.Epid, false);
-
-                        // Delete the audio file too (if it exists, and the user wants to remove it)
-                        if (!orphans && !noDeleteAudio)
-                        {
-                            File.Delete(download.DownloadPath);
-                        }
-                    }
-
-                    status.ProgressBarValue++;
-                }
-
-                status.ProgressBarValue = status.ProgressBarMax;
-                status.Hide();
             }
+
+            status.ProgressBarMax = downloads.Count;
+            status.StatusText = "Cleaning up downloads...";
+            status.ProgressBarMarquee = false;
+
+            foreach (Download download in downloads)
+            {
+                List<string> ignoreRoots = new List<string>();
+
+                if (!orphans || !File.Exists(download.DownloadPath))
+                {
+                    if (orphans)
+                    {
+                        string pathRoot = Path.GetPathRoot(download.DownloadPath);
+
+                        if (!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
+                        {
+                            if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                            {
+                                break;
+                            }
+
+                            ignoreRoots.Add(pathRoot);
+                        }
+                    }
+
+                    // Take the download out of the list and set the auto download flag to false
+                    RemoveAsync(download.Epid, false);
+
+                    // Delete the audio file too (if it exists, and the user wants to remove it)
+                    if (!orphans && !noDeleteAudio)
+                    {
+                        File.Delete(download.DownloadPath);
+                    }
+                }
+
+                status.ProgressBarValue++;
+            }
+
+            status.ProgressBarValue = status.ProgressBarMax;
         }
 
         public static int Compare(int epid1, int epid2)

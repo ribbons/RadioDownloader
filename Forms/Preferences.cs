@@ -56,9 +56,6 @@ namespace RadioDld
                 return;
             }
 
-            Properties.Settings.Default.RunOnStartup = this.CheckRunOnStartup.Checked;
-            Properties.Settings.Default.RunAfterCommand = this.TextRunAfter.Text;
-
             bool formatChanged = Properties.Settings.Default.FileNameFormat != this.TextFileNameFormat.Text;
 
             if (this.folderChanged || formatChanged)
@@ -76,13 +73,23 @@ namespace RadioDld
 
                 if (MessageBox.Show(message, Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
                 {
-                    Data dataInst = Data.GetInstance();
-                    Model.Download.UpdatePaths(this.TextSaveIn.Text, this.TextFileNameFormat.Text);
+                    using (Status status = new Status())
+                    {
+                        status.ShowDialog(
+                            this,
+                            delegate
+                            {
+                                Model.Download.UpdatePaths(status, this.TextSaveIn.Text, this.TextFileNameFormat.Text);
+                            });
+                    }
                 }
 
                 Properties.Settings.Default.SaveFolder = this.TextSaveIn.Text;
                 Properties.Settings.Default.FileNameFormat = this.TextFileNameFormat.Text;
             }
+
+            Properties.Settings.Default.RunOnStartup = this.CheckRunOnStartup.Checked;
+            Properties.Settings.Default.RunAfterCommand = this.TextRunAfter.Text;
 
             if (OsUtils.WinSevenOrLater())
             {
