@@ -1593,9 +1593,9 @@ namespace RadioDld
         {
             if (this.checkUpdate.IsUpdateAvailable())
             {
-                if (Properties.Settings.Default.LastUpdatePrompt.AddDays(7) < DateAndTime.Now)
+                if (Properties.Settings.Default.LastUpdatePrompt.AddDays(7) < DateTime.Now)
                 {
-                    Properties.Settings.Default.LastUpdatePrompt = DateAndTime.Now;
+                    Properties.Settings.Default.LastUpdatePrompt = DateTime.Now;
                     Properties.Settings.Default.Save(); // Save the last prompt time in case of unexpected termination
 
                     using (UpdateNotify showUpdate = new UpdateNotify())

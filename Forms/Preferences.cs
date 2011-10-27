@@ -146,7 +146,7 @@ namespace RadioDld
 
             Model.Episode dummyEp = new Model.Episode();
             dummyEp.Name = "Episode Name";
-            dummyEp.EpisodeDate = DateAndTime.Now;
+            dummyEp.EpisodeDate = DateTime.Now;
 
             this.LabelFilenameFormatResult.Text = "Result: " + Model.Download.CreateSaveFileName(this.TextFileNameFormat.Text, dummyProg, dummyEp) + ".mp3";
         }

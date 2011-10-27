@@ -25,7 +25,6 @@ namespace RadioDld
     using System.Runtime.Serialization.Formatters.Binary;
     using System.Text;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic;
 
     public class CachedWebClient
     {
@@ -61,7 +60,7 @@ namespace RadioDld
 
             if (lastFetch != null)
             {
-                if (lastFetch.Value.AddHours(fetchIntervalHrs) > DateAndTime.Now)
+                if (lastFetch.Value.AddHours(fetchIntervalHrs) > DateTime.Now)
                 {
                     bool requestSuccess = false;
                     byte[] cacheData = this.GetHTTPCacheContent(uri, ref requestSuccess);
@@ -182,7 +181,7 @@ namespace RadioDld
             using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", this.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
-                command.Parameters.Add(new SQLiteParameter("@lastfetch", DateAndTime.Now));
+                command.Parameters.Add(new SQLiteParameter("@lastfetch", DateTime.Now));
                 command.Parameters.Add(new SQLiteParameter("@success", requestSuccess));
                 command.Parameters.Add(new SQLiteParameter("@data", data));
                 command.ExecuteNonQuery();
