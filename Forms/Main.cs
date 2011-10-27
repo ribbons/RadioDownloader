@@ -671,7 +671,7 @@ namespace RadioDld
             newOrder.Insert(e.NewDisplayIndex, moveCol);
 
             // Save the new column order to the preference
-            Properties.Settings.Default.DownloadCols = Strings.Join(newOrder.ToArray(), ",");
+            Properties.Settings.Default.DownloadCols = string.Join(",", newOrder.ToArray());
 
             if (e.OldDisplayIndex == 0 || e.NewDisplayIndex == 0)
             {
@@ -2218,9 +2218,9 @@ namespace RadioDld
             string newItems = string.Empty;
 
             // Find any columns without widths defined in the current setting
-            foreach (string sizePair in Strings.Split(Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue.ToString(), "|"))
+            foreach (string sizePair in Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue.ToString().Split('|'))
             {
-                if (!("|" + Properties.Settings.Default.DownloadColSizes).Contains("|" + Strings.Split(sizePair, ",")[0] + ","))
+                if (!("|" + Properties.Settings.Default.DownloadColSizes).Contains("|" + sizePair.Split(',')[0] + ","))
                 {
                     newItems += "|" + sizePair;
                 }
@@ -2233,9 +2233,9 @@ namespace RadioDld
             }
 
             // Fetch the column sizes into downloadColSizes for ease of access
-            foreach (string sizePair in Strings.Split(Properties.Settings.Default.DownloadColSizes, "|"))
+            foreach (string sizePair in Properties.Settings.Default.DownloadColSizes.Split('|'))
             {
-                string[] splitPair = Strings.Split(sizePair, ",");
+                string[] splitPair = sizePair.Split(',');
                 int pixelSize = Convert.ToInt32(float.Parse(splitPair[1], CultureInfo.InvariantCulture) * this.CurrentAutoScaleDimensions.Width);
 
                 this.downloadColSizes.Add(int.Parse(splitPair[0], CultureInfo.InvariantCulture), pixelSize);
@@ -2244,7 +2244,7 @@ namespace RadioDld
             // Set up the columns specified in the DownloadCols setting
             if (!string.IsNullOrEmpty(Properties.Settings.Default.DownloadCols))
             {
-                string[] columns = Strings.Split(Properties.Settings.Default.DownloadCols, ",");
+                string[] columns = Properties.Settings.Default.DownloadCols.Split(',');
 
                 foreach (string column in columns)
                 {

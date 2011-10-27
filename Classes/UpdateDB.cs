@@ -20,7 +20,6 @@ namespace RadioDld
     using System.Collections.Generic;
     using System.Data;
     using System.Data.SQLite;
-    using Microsoft.VisualBasic;
 
     internal class UpdateDB : IDisposable
     {
@@ -181,7 +180,7 @@ namespace RadioDld
 
             if (resultCols.Count > 0)
             {
-                return "[" + Strings.Join(resultCols.ToArray(), "], [") + "]";
+                return "[" + string.Join("], [", resultCols.ToArray()) + "]";
             }
             else
             {

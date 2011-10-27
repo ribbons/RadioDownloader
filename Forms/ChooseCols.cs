@@ -21,7 +21,6 @@ namespace RadioDld
     using System.Drawing;
     using System.Globalization;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic;
 
     internal partial class ChooseCols : Form
     {
@@ -44,7 +43,7 @@ namespace RadioDld
                     stringCols[column] = this.columnOrder[column].ToString(CultureInfo.InvariantCulture);
                 }
 
-                return Strings.Join(stringCols, ",");
+                return string.Join(",", stringCols);
             }
 
             set
@@ -53,9 +52,7 @@ namespace RadioDld
 
                 if (!string.IsNullOrEmpty(value))
                 {
-                    string[] stringCols = Strings.Split(value, ",");
-
-                    foreach (string column in stringCols)
+                    foreach (string column in value.Split(','))
                     {
                         this.columnOrder.Add(Convert.ToInt32(column, CultureInfo.InvariantCulture));
                     }

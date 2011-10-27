@@ -290,7 +290,7 @@ namespace PodcastProvider
 
                         if (durationNode != null)
                         {
-                            string[] splitDuration = Strings.Split(durationNode.InnerText.Replace(".", ":"), ":");
+                            string[] splitDuration = durationNode.InnerText.Split(new char[] { '.', ':' });
 
                             if (splitDuration.GetUpperBound(0) == 0)
                             {

@@ -19,7 +19,6 @@ namespace RadioDld
     using System;
     using System.Net;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic;
 
     internal class UpdateCheck
     {
@@ -57,7 +56,7 @@ namespace RadioDld
 
             if (!string.IsNullOrEmpty(versionInfo))
             {
-                versionInfo = Strings.Split(versionInfo, "\r\n")[0];
+                versionInfo = versionInfo.Split(new string[] { "\r\n" }, StringSplitOptions.None)[0];
 
                 // There is a new version available
                 if (string.Compare(versionInfo, Application.ProductVersion, StringComparison.Ordinal) > 0)

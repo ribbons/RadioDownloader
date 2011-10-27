@@ -251,7 +251,7 @@ namespace RadioDld
                 postData = postData.Substring(1);
 
                 byte[] result = sendClient.UploadData(sendUrl, "POST", System.Text.Encoding.ASCII.GetBytes(postData));
-                string[] returnLines = Strings.Split(System.Text.Encoding.ASCII.GetString(result), "\n");
+                string[] returnLines = System.Text.Encoding.ASCII.GetString(result).Split('\n');
 
                 if (returnLines[0] == "success")
                 {

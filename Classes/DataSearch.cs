@@ -21,7 +21,6 @@ namespace RadioDld
     using System.Data.SQLite;
     using System.Globalization;
     using System.IO;
-    using Microsoft.VisualBasic;
 
     internal class DataSearch
     {
@@ -171,7 +170,7 @@ namespace RadioDld
 
         private string TableSql(string tableName, string[] columns)
         {
-            return "CREATE VIRTUAL TABLE " + tableName + " USING fts3(" + Strings.Join(columns, ", ") + ")";
+            return "CREATE VIRTUAL TABLE " + tableName + " USING fts3(" + string.Join(", ", columns) + ")";
         }
 
         private void RebuildIndex(Status status, Dictionary<string, string[]> tableCols)
