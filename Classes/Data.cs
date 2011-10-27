@@ -858,7 +858,7 @@ namespace RadioDld
 
         private void VacuumDatabase(Status status)
         {
-            status.StatusText = "Compacting Database..." + Environment.NewLine + Environment.NewLine + "This may take some time if you have downloaded a lot of programmes.";
+            status.StatusText = "Compacting database.  This may take several minutes...";
 
             // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
             lock (Data.dbUpdateLock)

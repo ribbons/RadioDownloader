@@ -50,10 +50,10 @@ namespace RadioDld
             this.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ButtonOk.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.ButtonOk.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ButtonOk.Location = new System.Drawing.Point(126, 295);
+            this.ButtonOk.Location = new System.Drawing.Point(130, 297);
             this.ButtonOk.Name = "ButtonOk";
             this.ButtonOk.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ButtonOk.Size = new System.Drawing.Size(77, 25);
+            this.ButtonOk.Size = new System.Drawing.Size(75, 23);
             this.ButtonOk.TabIndex = 0;
             this.ButtonOk.Text = "OK";
             this.ButtonOk.UseVisualStyleBackColor = false;
@@ -67,10 +67,10 @@ namespace RadioDld
             this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.ButtonCancel.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ButtonCancel.Location = new System.Drawing.Point(209, 295);
+            this.ButtonCancel.Location = new System.Drawing.Point(211, 297);
             this.ButtonCancel.Name = "ButtonCancel";
             this.ButtonCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ButtonCancel.Size = new System.Drawing.Size(77, 25);
+            this.ButtonCancel.Size = new System.Drawing.Size(75, 23);
             this.ButtonCancel.TabIndex = 1;
             this.ButtonCancel.Text = "Cancel";
             this.ButtonCancel.UseVisualStyleBackColor = false;

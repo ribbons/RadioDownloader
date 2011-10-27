@@ -46,7 +46,7 @@ namespace RadioDld
             LabelMessage.Location = new System.Drawing.Point(12, 12);
             LabelMessage.Margin = new System.Windows.Forms.Padding(3);
             LabelMessage.Name = "LabelMessage";
-            LabelMessage.Size = new System.Drawing.Size(355, 108);
+            LabelMessage.Size = new System.Drawing.Size(355, 105);
             LabelMessage.TabIndex = 2;
             LabelMessage.Text = resources.GetString("LabelMessage.Text");
             // 
@@ -55,9 +55,9 @@ namespace RadioDld
             ButtonYes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             ButtonYes.DialogResult = System.Windows.Forms.DialogResult.Yes;
             ButtonYes.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            ButtonYes.Location = new System.Drawing.Point(207, 126);
+            ButtonYes.Location = new System.Drawing.Point(211, 123);
             ButtonYes.Name = "ButtonYes";
-            ButtonYes.Size = new System.Drawing.Size(77, 25);
+            ButtonYes.Size = new System.Drawing.Size(75, 23);
             ButtonYes.TabIndex = 0;
             ButtonYes.Text = "Yes";
             ButtonYes.UseVisualStyleBackColor = true;
@@ -67,9 +67,9 @@ namespace RadioDld
             ButtonNo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             ButtonNo.DialogResult = System.Windows.Forms.DialogResult.No;
             ButtonNo.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            ButtonNo.Location = new System.Drawing.Point(290, 126);
+            ButtonNo.Location = new System.Drawing.Point(292, 123);
             ButtonNo.Name = "ButtonNo";
-            ButtonNo.Size = new System.Drawing.Size(77, 25);
+            ButtonNo.Size = new System.Drawing.Size(75, 23);
             ButtonNo.TabIndex = 1;
             ButtonNo.Text = "No";
             ButtonNo.UseVisualStyleBackColor = true;
@@ -80,7 +80,7 @@ namespace RadioDld
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.CancelButton = ButtonNo;
-            this.ClientSize = new System.Drawing.Size(379, 163);
+            this.ClientSize = new System.Drawing.Size(379, 158);
             this.Controls.Add(ButtonNo);
             this.Controls.Add(ButtonYes);
             this.Controls.Add(LabelMessage);

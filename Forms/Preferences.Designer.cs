@@ -54,33 +54,30 @@ namespace RadioDld
             LabelSaveIn.BackColor = System.Drawing.SystemColors.Control;
             LabelSaveIn.Cursor = System.Windows.Forms.Cursors.Default;
             LabelSaveIn.ForeColor = System.Drawing.SystemColors.ControlText;
-            LabelSaveIn.Location = new System.Drawing.Point(12, 88);
-            LabelSaveIn.Margin = new System.Windows.Forms.Padding(3, 0, 3, 5);
+            LabelSaveIn.Location = new System.Drawing.Point(9, 67);
             LabelSaveIn.Name = "LabelSaveIn";
             LabelSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No;
             LabelSaveIn.Size = new System.Drawing.Size(187, 15);
             LabelSaveIn.TabIndex = 5;
-            LabelSaveIn.Text = "Save &downloaded programmes in:";
+            LabelSaveIn.Text = "Save downloaded programmes in:";
             // 
             // LabelFileNameFormat
             // 
             LabelFileNameFormat.AutoSize = true;
-            LabelFileNameFormat.Location = new System.Drawing.Point(12, 145);
-            LabelFileNameFormat.Margin = new System.Windows.Forms.Padding(3, 0, 3, 5);
+            LabelFileNameFormat.Location = new System.Drawing.Point(9, 119);
             LabelFileNameFormat.Name = "LabelFileNameFormat";
-            LabelFileNameFormat.Size = new System.Drawing.Size(234, 15);
+            LabelFileNameFormat.Size = new System.Drawing.Size(179, 15);
             LabelFileNameFormat.TabIndex = 8;
-            LabelFileNameFormat.Text = "Downloaded programme file name &format:";
+            LabelFileNameFormat.Text = "&File name format for downloads:";
             // 
             // LabelRunAfter
             // 
             LabelRunAfter.AutoSize = true;
-            LabelRunAfter.Location = new System.Drawing.Point(12, 223);
-            LabelRunAfter.Margin = new System.Windows.Forms.Padding(3, 0, 3, 5);
+            LabelRunAfter.Location = new System.Drawing.Point(9, 193);
             LabelRunAfter.Name = "LabelRunAfter";
-            LabelRunAfter.Size = new System.Drawing.Size(260, 15);
+            LabelRunAfter.Size = new System.Drawing.Size(172, 15);
             LabelRunAfter.TabIndex = 11;
-            LabelRunAfter.Text = "Run command &after download (blank for none):";
+            LabelRunAfter.Text = "Run command &after download:";
             // 
             // ButtonCancel
             // 
@@ -89,10 +86,10 @@ namespace RadioDld
             this.ButtonCancel.Cursor = System.Windows.Forms.Cursors.Default;
             this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonCancel.Location = new System.Drawing.Point(318, 313);
+            this.ButtonCancel.Location = new System.Drawing.Point(312, 275);
             this.ButtonCancel.Name = "ButtonCancel";
             this.ButtonCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ButtonCancel.Size = new System.Drawing.Size(77, 25);
+            this.ButtonCancel.Size = new System.Drawing.Size(75, 23);
             this.ButtonCancel.TabIndex = 1;
             this.ButtonCancel.Text = "Cancel";
             this.ButtonCancel.UseVisualStyleBackColor = false;
@@ -104,10 +101,10 @@ namespace RadioDld
             this.ButtonOk.Cursor = System.Windows.Forms.Cursors.Default;
             this.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ButtonOk.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonOk.Location = new System.Drawing.Point(235, 313);
+            this.ButtonOk.Location = new System.Drawing.Point(231, 275);
             this.ButtonOk.Name = "ButtonOk";
             this.ButtonOk.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ButtonOk.Size = new System.Drawing.Size(77, 25);
+            this.ButtonOk.Size = new System.Drawing.Size(75, 23);
             this.ButtonOk.TabIndex = 0;
             this.ButtonOk.Text = "OK";
             this.ButtonOk.UseVisualStyleBackColor = false;
@@ -120,10 +117,10 @@ namespace RadioDld
             this.ButtonChangeFolder.Cursor = System.Windows.Forms.Cursors.Default;
             this.ButtonChangeFolder.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.ButtonChangeFolder.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ButtonChangeFolder.Location = new System.Drawing.Point(405, 106);
+            this.ButtonChangeFolder.Location = new System.Drawing.Point(393, 85);
             this.ButtonChangeFolder.Name = "ButtonChangeFolder";
             this.ButtonChangeFolder.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ButtonChangeFolder.Size = new System.Drawing.Size(73, 25);
+            this.ButtonChangeFolder.Size = new System.Drawing.Size(75, 23);
             this.ButtonChangeFolder.TabIndex = 7;
             this.ButtonChangeFolder.Text = "&Change";
             this.ButtonChangeFolder.UseVisualStyleBackColor = false;
@@ -136,30 +133,31 @@ namespace RadioDld
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TextSaveIn.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.TextSaveIn.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.TextSaveIn.Location = new System.Drawing.Point(37, 109);
-            this.TextSaveIn.Margin = new System.Windows.Forms.Padding(3, 3, 3, 20);
+            this.TextSaveIn.Location = new System.Drawing.Point(12, 85);
+            this.TextSaveIn.Margin = new System.Windows.Forms.Padding(23, 3, 3, 11);
             this.TextSaveIn.MaxLength = 0;
             this.TextSaveIn.Name = "TextSaveIn";
             this.TextSaveIn.ReadOnly = true;
             this.TextSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.TextSaveIn.Size = new System.Drawing.Size(362, 23);
+            this.TextSaveIn.Size = new System.Drawing.Size(375, 23);
             this.TextSaveIn.TabIndex = 6;
             // 
             // TextFileNameFormat
             // 
             this.TextFileNameFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextFileNameFormat.Location = new System.Drawing.Point(37, 166);
+            this.TextFileNameFormat.Location = new System.Drawing.Point(12, 137);
+            this.TextFileNameFormat.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
             this.TextFileNameFormat.Name = "TextFileNameFormat";
-            this.TextFileNameFormat.Size = new System.Drawing.Size(441, 23);
+            this.TextFileNameFormat.Size = new System.Drawing.Size(456, 23);
             this.TextFileNameFormat.TabIndex = 9;
             this.TextFileNameFormat.TextChanged += new System.EventHandler(this.TextFileNameFormat_TextChanged);
             // 
             // LabelFilenameFormatResult
             // 
             this.LabelFilenameFormatResult.AutoSize = true;
-            this.LabelFilenameFormatResult.Location = new System.Drawing.Point(34, 196);
-            this.LabelFilenameFormatResult.Margin = new System.Windows.Forms.Padding(3, 3, 3, 17);
+            this.LabelFilenameFormatResult.Location = new System.Drawing.Point(9, 163);
+            this.LabelFilenameFormatResult.Margin = new System.Windows.Forms.Padding(23, 0, 3, 15);
             this.LabelFilenameFormatResult.Name = "LabelFilenameFormatResult";
             this.LabelFilenameFormatResult.Size = new System.Drawing.Size(42, 15);
             this.LabelFilenameFormatResult.TabIndex = 10;
@@ -171,10 +169,10 @@ namespace RadioDld
             this.ButtonReset.BackColor = System.Drawing.SystemColors.Control;
             this.ButtonReset.Cursor = System.Windows.Forms.Cursors.Default;
             this.ButtonReset.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonReset.Location = new System.Drawing.Point(401, 313);
+            this.ButtonReset.Location = new System.Drawing.Point(393, 275);
             this.ButtonReset.Name = "ButtonReset";
             this.ButtonReset.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.ButtonReset.Size = new System.Drawing.Size(77, 25);
+            this.ButtonReset.Size = new System.Drawing.Size(75, 23);
             this.ButtonReset.TabIndex = 2;
             this.ButtonReset.Text = "&Reset";
             this.ButtonReset.UseVisualStyleBackColor = false;
@@ -184,16 +182,17 @@ namespace RadioDld
             // 
             this.TextRunAfter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextRunAfter.Location = new System.Drawing.Point(37, 244);
+            this.TextRunAfter.Location = new System.Drawing.Point(12, 211);
+            this.TextRunAfter.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
             this.TextRunAfter.Name = "TextRunAfter";
-            this.TextRunAfter.Size = new System.Drawing.Size(441, 23);
+            this.TextRunAfter.Size = new System.Drawing.Size(456, 23);
             this.TextRunAfter.TabIndex = 12;
             // 
             // LabelRunAfterTokDef
             // 
             this.LabelRunAfterTokDef.AutoSize = true;
-            this.LabelRunAfterTokDef.Location = new System.Drawing.Point(34, 271);
-            this.LabelRunAfterTokDef.Margin = new System.Windows.Forms.Padding(3, 3, 3, 17);
+            this.LabelRunAfterTokDef.Location = new System.Drawing.Point(9, 237);
+            this.LabelRunAfterTokDef.Margin = new System.Windows.Forms.Padding(23, 0, 3, 0);
             this.LabelRunAfterTokDef.Name = "LabelRunAfterTokDef";
             this.LabelRunAfterTokDef.Size = new System.Drawing.Size(223, 15);
             this.LabelRunAfterTokDef.TabIndex = 13;
@@ -202,19 +201,18 @@ namespace RadioDld
             // CheckRunOnStartup
             // 
             this.CheckRunOnStartup.AutoSize = true;
-            this.CheckRunOnStartup.Location = new System.Drawing.Point(15, 19);
-            this.CheckRunOnStartup.Margin = new System.Windows.Forms.Padding(6, 10, 3, 15);
+            this.CheckRunOnStartup.Location = new System.Drawing.Point(12, 12);
             this.CheckRunOnStartup.Name = "CheckRunOnStartup";
-            this.CheckRunOnStartup.Size = new System.Drawing.Size(264, 19);
+            this.CheckRunOnStartup.Size = new System.Drawing.Size(259, 19);
             this.CheckRunOnStartup.TabIndex = 3;
-            this.CheckRunOnStartup.Text = "Run Radio Downloader on computer &startup?";
+            this.CheckRunOnStartup.Text = "Run Radio Downloader on computer &startup";
             this.CheckRunOnStartup.UseVisualStyleBackColor = true;
             // 
             // CheckCloseToSystray
             // 
             this.CheckCloseToSystray.AutoSize = true;
-            this.CheckCloseToSystray.Location = new System.Drawing.Point(15, 51);
-            this.CheckCloseToSystray.Margin = new System.Windows.Forms.Padding(6, 0, 3, 20);
+            this.CheckCloseToSystray.Location = new System.Drawing.Point(12, 37);
+            this.CheckCloseToSystray.Margin = new System.Windows.Forms.Padding(3, 3, 3, 11);
             this.CheckCloseToSystray.Name = "CheckCloseToSystray";
             this.CheckCloseToSystray.Size = new System.Drawing.Size(449, 19);
             this.CheckCloseToSystray.TabIndex = 4;
@@ -229,7 +227,7 @@ namespace RadioDld
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.CancelButton = this.ButtonCancel;
-            this.ClientSize = new System.Drawing.Size(490, 350);
+            this.ClientSize = new System.Drawing.Size(480, 310);
             this.Controls.Add(this.CheckCloseToSystray);
             this.Controls.Add(this.CheckRunOnStartup);
             this.Controls.Add(this.LabelRunAfterTokDef);

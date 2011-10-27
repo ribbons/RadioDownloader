@@ -380,7 +380,7 @@ namespace RadioDld
             this.ListDownloads.Dock = DockStyle.Fill;
 
             this.Font = SystemFonts.MessageBoxFont;
-            this.LabelSidebarTitle.Font = new Font(this.Font.FontFamily, Convert.ToSingle(this.Font.SizeInPoints * 1.16), this.Font.Style, GraphicsUnit.Point);
+            this.LabelSidebarTitle.Font = new Font(this.Font.FontFamily, (int)(this.Font.SizeInPoints * 1.2), this.Font.Style, GraphicsUnit.Point);
 
             // Scale the max size of the sidebar image for values other than 96 dpi, as it is specified in pixels
             using (Graphics graphicsForDpi = this.CreateGraphics())

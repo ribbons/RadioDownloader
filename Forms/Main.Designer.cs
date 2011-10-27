@@ -130,11 +130,11 @@ namespace RadioDld
             this.TextSidebarDescript.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.TextSidebarDescript.Cursor = System.Windows.Forms.Cursors.Default;
             this.TextSidebarDescript.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TextSidebarDescript.Location = new System.Drawing.Point(8, 122);
+            this.TextSidebarDescript.Location = new System.Drawing.Point(8, 114);
             this.TextSidebarDescript.Margin = new System.Windows.Forms.Padding(8, 5, 8, 6);
             this.TextSidebarDescript.Name = "TextSidebarDescript";
             this.TextSidebarDescript.ReadOnly = true;
-            this.TextSidebarDescript.Size = new System.Drawing.Size(171, 257);
+            this.TextSidebarDescript.Size = new System.Drawing.Size(171, 265);
             this.TextSidebarDescript.TabIndex = 1;
             this.TextSidebarDescript.TabStop = false;
             this.TextSidebarDescript.Text = "Description";
@@ -146,12 +146,12 @@ namespace RadioDld
             this.LabelSidebarTitle.AutoSize = true;
             this.LabelSidebarTitle.BackColor = System.Drawing.Color.Transparent;
             this.LabelSidebarTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.LabelSidebarTitle.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.LabelSidebarTitle.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.LabelSidebarTitle.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.LabelSidebarTitle.Location = new System.Drawing.Point(8, 10);
-            this.LabelSidebarTitle.Margin = new System.Windows.Forms.Padding(8, 10, 8, 8);
+            this.LabelSidebarTitle.Location = new System.Drawing.Point(5, 8);
+            this.LabelSidebarTitle.Margin = new System.Windows.Forms.Padding(5, 8, 8, 0);
             this.LabelSidebarTitle.Name = "LabelSidebarTitle";
-            this.LabelSidebarTitle.Size = new System.Drawing.Size(171, 21);
+            this.LabelSidebarTitle.Size = new System.Drawing.Size(174, 20);
             this.LabelSidebarTitle.TabIndex = 0;
             this.LabelSidebarTitle.Text = "Title";
             this.LabelSidebarTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -161,9 +161,9 @@ namespace RadioDld
             // 
             this.ImageSidebar.ErrorImage = null;
             this.ImageSidebar.InitialImage = null;
-            this.ImageSidebar.Location = new System.Drawing.Point(12, 42);
-            this.ImageSidebar.Margin = new System.Windows.Forms.Padding(12, 3, 12, 5);
-            this.ImageSidebar.MaximumSize = new System.Drawing.Size(160, 100);
+            this.ImageSidebar.Location = new System.Drawing.Point(9, 36);
+            this.ImageSidebar.Margin = new System.Windows.Forms.Padding(9, 8, 9, 3);
+            this.ImageSidebar.MaximumSize = new System.Drawing.Size(172, 100);
             this.ImageSidebar.Name = "ImageSidebar";
             this.ImageSidebar.Size = new System.Drawing.Size(70, 70);
             this.ImageSidebar.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;

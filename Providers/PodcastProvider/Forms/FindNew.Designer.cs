@@ -51,7 +51,7 @@ namespace PodcastProvider
             // LabelResult
             // 
             this.LabelResult.AutoSize = true;
-            this.LabelResult.Location = new System.Drawing.Point(36, 108);
+            this.LabelResult.Location = new System.Drawing.Point(35, 108);
             this.LabelResult.Margin = new System.Windows.Forms.Padding(4, 20, 3, 0);
             this.LabelResult.Name = "LabelResult";
             this.LabelResult.Size = new System.Drawing.Size(0, 13);
@@ -60,8 +60,7 @@ namespace PodcastProvider
             // LabelFeedUrl
             // 
             this.LabelFeedUrl.AutoSize = true;
-            this.LabelFeedUrl.Location = new System.Drawing.Point(36, 39);
-            this.LabelFeedUrl.Margin = new System.Windows.Forms.Padding(4, 0, 3, 10);
+            this.LabelFeedUrl.Location = new System.Drawing.Point(35, 49);
             this.LabelFeedUrl.Name = "LabelFeedUrl";
             this.LabelFeedUrl.Size = new System.Drawing.Size(189, 13);
             this.LabelFeedUrl.TabIndex = 0;
@@ -70,9 +69,9 @@ namespace PodcastProvider
             // ButtonView
             // 
             this.ButtonView.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.ButtonView.Location = new System.Drawing.Point(461, 63);
+            this.ButtonView.Location = new System.Drawing.Point(460, 63);
             this.ButtonView.Name = "ButtonView";
-            this.ButtonView.Size = new System.Drawing.Size(73, 23);
+            this.ButtonView.Size = new System.Drawing.Size(75, 23);
             this.ButtonView.TabIndex = 2;
             this.ButtonView.Text = "&View";
             this.ButtonView.UseVisualStyleBackColor = true;
@@ -80,9 +79,9 @@ namespace PodcastProvider
             // 
             // TextFeedUrl
             // 
-            this.TextFeedUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextFeedUrl.Location = new System.Drawing.Point(39, 65);
+            this.TextFeedUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TextFeedUrl.Location = new System.Drawing.Point(38, 65);
             this.TextFeedUrl.Name = "TextFeedUrl";
             this.TextFeedUrl.Size = new System.Drawing.Size(416, 20);
             this.TextFeedUrl.TabIndex = 1;

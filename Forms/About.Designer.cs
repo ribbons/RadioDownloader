@@ -55,20 +55,20 @@ namespace RadioDld
             // 
             // TextLicense
             // 
-            TextLicense.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            TextLicense.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             TextLicense.Location = new System.Drawing.Point(12, 108);
             TextLicense.Multiline = true;
             TextLicense.Name = "TextLicense";
             TextLicense.ReadOnly = true;
             TextLicense.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            TextLicense.Size = new System.Drawing.Size(489, 140);
+            TextLicense.Size = new System.Drawing.Size(489, 139);
             TextLicense.TabIndex = 5;
             TextLicense.Text = resources.GetString("TextLicense.Text");
             // 
             // LabelLicense
             // 
-            LabelLicense.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             LabelLicense.AutoSize = true;
             LabelLicense.Location = new System.Drawing.Point(12, 92);
             LabelLicense.Name = "LabelLicense";
@@ -110,9 +110,9 @@ namespace RadioDld
             this.ButtonOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ButtonOk.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonOk.Location = new System.Drawing.Point(419, 254);
+            this.ButtonOk.Location = new System.Drawing.Point(426, 253);
             this.ButtonOk.Name = "ButtonOk";
-            this.ButtonOk.Size = new System.Drawing.Size(82, 26);
+            this.ButtonOk.Size = new System.Drawing.Size(75, 23);
             this.ButtonOk.TabIndex = 0;
             this.ButtonOk.Text = "OK";
             this.ButtonOk.UseVisualStyleBackColor = true;
@@ -123,7 +123,7 @@ namespace RadioDld
             this.AcceptButton = this.ButtonOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(513, 292);
+            this.ClientSize = new System.Drawing.Size(513, 288);
             this.Controls.Add(this.ButtonOk);
             this.Controls.Add(LabelLicense);
             this.Controls.Add(this.LinkHomepage);

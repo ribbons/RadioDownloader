@@ -427,7 +427,7 @@ namespace RadioDld.Model
 
         public static void UpdatePaths(Status status, string newPath, string newFormat)
         {
-            status.StatusText = "Fetching list of downloads...";
+            status.StatusText = "Fetching downloads...";
 
             List<Download> downloads = new List<Download>();
 

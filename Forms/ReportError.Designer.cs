@@ -80,18 +80,18 @@ namespace RadioDld
             // LabelIfYouWere
             // 
             LabelIfYouWere.AutoSize = true;
-            LabelIfYouWere.Location = new System.Drawing.Point(30, 69);
+            LabelIfYouWere.Location = new System.Drawing.Point(21, 69);
             LabelIfYouWere.Name = "LabelIfYouWere";
             LabelIfYouWere.Size = new System.Drawing.Size(425, 13);
             LabelIfYouWere.TabIndex = 6;
             LabelIfYouWere.Text = "If you were in the middle of something, the information you were working on might" +
-                " be lost.";
+    " be lost.";
             // 
             // LabelPleaseTell
             // 
             LabelPleaseTell.AutoSize = true;
             LabelPleaseTell.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            LabelPleaseTell.Location = new System.Drawing.Point(30, 91);
+            LabelPleaseTell.Location = new System.Drawing.Point(21, 91);
             LabelPleaseTell.Name = "LabelPleaseTell";
             LabelPleaseTell.Size = new System.Drawing.Size(292, 13);
             LabelPleaseTell.TabIndex = 7;
@@ -113,17 +113,17 @@ namespace RadioDld
             // LabelWeHaveCreated
             // 
             LabelWeHaveCreated.AutoSize = true;
-            LabelWeHaveCreated.Location = new System.Drawing.Point(30, 113);
+            LabelWeHaveCreated.Location = new System.Drawing.Point(21, 113);
             LabelWeHaveCreated.Name = "LabelWeHaveCreated";
             LabelWeHaveCreated.Size = new System.Drawing.Size(430, 13);
             LabelWeHaveCreated.TabIndex = 8;
             LabelWeHaveCreated.Text = "We have created an error report that you can send to help us improve Radio Downlo" +
-                "ader.";
+    "ader.";
             // 
             // LabelWeWill
             // 
             LabelWeWill.AutoSize = true;
-            LabelWeWill.Location = new System.Drawing.Point(30, 135);
+            LabelWeWill.Location = new System.Drawing.Point(21, 135);
             LabelWeWill.Name = "LabelWeWill";
             LabelWeWill.Size = new System.Drawing.Size(266, 13);
             LabelWeWill.TabIndex = 9;
@@ -131,8 +131,8 @@ namespace RadioDld
             // 
             // ImageTopBar
             // 
-            ImageTopBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            ImageTopBar.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             ImageTopBar.BackColor = System.Drawing.Color.White;
             ImageTopBar.Location = new System.Drawing.Point(0, -1);
             ImageTopBar.Name = "ImageTopBar";
@@ -142,8 +142,8 @@ namespace RadioDld
             // 
             // ImageTopBorder
             // 
-            ImageTopBorder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            ImageTopBorder.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             ImageTopBorder.BackColor = System.Drawing.Color.Silver;
             ImageTopBorder.ForeColor = System.Drawing.SystemColors.ControlText;
             ImageTopBorder.Location = new System.Drawing.Point(0, 56);
@@ -157,10 +157,10 @@ namespace RadioDld
             this.ButtonSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonSend.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ButtonSend.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonSend.Location = new System.Drawing.Point(277, 188);
+            this.ButtonSend.Location = new System.Drawing.Point(277, 191);
             this.ButtonSend.Margin = new System.Windows.Forms.Padding(4);
             this.ButtonSend.Name = "ButtonSend";
-            this.ButtonSend.Size = new System.Drawing.Size(113, 26);
+            this.ButtonSend.Size = new System.Drawing.Size(113, 23);
             this.ButtonSend.TabIndex = 0;
             this.ButtonSend.Text = "&Send Error Report";
             this.ButtonSend.Click += new System.EventHandler(this.ButtonSend_Click);
@@ -170,16 +170,16 @@ namespace RadioDld
             this.ButtonDontSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonDontSend.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.ButtonDontSend.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonDontSend.Location = new System.Drawing.Point(397, 188);
+            this.ButtonDontSend.Location = new System.Drawing.Point(397, 191);
             this.ButtonDontSend.Name = "ButtonDontSend";
-            this.ButtonDontSend.Size = new System.Drawing.Size(84, 26);
+            this.ButtonDontSend.Size = new System.Drawing.Size(84, 23);
             this.ButtonDontSend.TabIndex = 1;
             this.ButtonDontSend.Text = "&Don\'t Send";
             // 
             // LinkWhatData
             // 
             this.LinkWhatData.AutoSize = true;
-            this.LinkWhatData.Location = new System.Drawing.Point(30, 158);
+            this.LinkWhatData.Location = new System.Drawing.Point(21, 158);
             this.LinkWhatData.Name = "LinkWhatData";
             this.LinkWhatData.Size = new System.Drawing.Size(200, 13);
             this.LinkWhatData.TabIndex = 10;
