@@ -128,11 +128,21 @@ namespace RadioDld
                     // Set the background the same as the title bar to give the illusion of an extended frame
                     if (this.isActive)
                     {
-                        e.Graphics.Clear(SystemColors.GradientActiveCaption);
+                        // It would be simpler to use e.Graphics.Clear(SystemColors.GradientActiveCaption), but
+                        // that crashes sometimes when running under terminal services due to a bug in GDI+
+                        using (Brush backgroundBrush = new SolidBrush(SystemColors.GradientActiveCaption))
+                        {
+                            e.Graphics.FillRectangle(backgroundBrush, e.AffectedBounds);
+                        }
                     }
                     else
                     {
-                        e.Graphics.Clear(SystemColors.GradientInactiveCaption);
+                        // It would be simpler to use e.Graphics.Clear(SystemColors.GradientInactiveCaption), but
+                        // that crashes sometimes when running under terminal services due to a bug in GDI+
+                        using (Brush backgroundBrush = new SolidBrush(SystemColors.GradientInactiveCaption))
+                        {
+                            e.Graphics.FillRectangle(backgroundBrush, e.AffectedBounds);
+                        }
                     }
                 }
                 else
