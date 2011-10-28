@@ -41,7 +41,24 @@ namespace RadioDld
             Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
             tableCols.Add("downloads", new string[] { "name", "description" });
 
+            bool rebuild = false;
+
             if (!this.CheckIndex(tableCols))
+            {
+                rebuild = true;
+            }
+            else
+            {
+                using (SQLiteCommand command = new SQLiteCommand("select count(*) from downloads", this.FetchDbConn()))
+                {
+                    if (Model.Download.Count() != Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture))
+                    {
+                        rebuild = true;
+                    }
+                }
+            }
+
+            if (rebuild)
             {
                 // Close & clean up the connection used for testing
                 dbConn.Close();

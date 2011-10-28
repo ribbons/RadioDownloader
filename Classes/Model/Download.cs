@@ -135,9 +135,17 @@ namespace RadioDld.Model
 
         public int PlayCount { get; set; }
 
+        public static int Count()
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid", Data.FetchDbConn()))
+            {
+                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+            }
+        }
+
         public static int CountNew()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where playcount=0 and status=@status", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid and playcount=0 and status=@status", Data.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
@@ -146,7 +154,7 @@ namespace RadioDld.Model
 
         public static int CountErrored()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(epid) from downloads where status=@status", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid and status=@status", Data.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
                 return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
