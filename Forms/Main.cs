@@ -339,7 +339,7 @@ namespace RadioDld
             Model.Subscription.Updated += this.Subscription_Updated;
             Model.Subscription.Removed += this.Subscription_Removed;
 
-            this.dataSearch = DataSearch.GetInstance(this.progData);
+            this.dataSearch = DataSearch.GetInstance();
             this.dataSearch.DownloadAdded += this.DataSearch_DownloadAdded;
             this.dataSearch.DownloadUpdated += this.DataSearch_DownloadUpdated;
             this.dataSearch.DownloadRemoved += this.DataSearch_DownloadRemoved;

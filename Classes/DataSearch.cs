@@ -36,7 +36,7 @@ namespace RadioDld
         private object updateIndexLock = new object();
         private object downloadVisLock = new object();
 
-        private DataSearch(Data instance)
+        private DataSearch()
         {
             Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
             tableCols.Add("downloads", new string[] { "name", "description" });
@@ -94,7 +94,7 @@ namespace RadioDld
             }
         }
 
-        public static DataSearch GetInstance(Data instance)
+        public static DataSearch GetInstance()
         {
             // Need to use a lock instead of declaring the instance variable as New,
             // as otherwise New gets called before the Data class is ready
@@ -102,7 +102,7 @@ namespace RadioDld
             {
                 if (searchInstance == null)
                 {
-                    searchInstance = new DataSearch(instance);
+                    searchInstance = new DataSearch();
                 }
 
                 return searchInstance;

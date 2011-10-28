@@ -97,7 +97,7 @@ namespace RadioDld
             // Set the current database version.
             this.SetDBSetting("databaseversion", CurrentVer);
 
-            this.search = DataSearch.GetInstance(this);
+            this.search = DataSearch.GetInstance();
 
             // Start regularly checking for new subscriptions in the background
             ThreadPool.QueueUserWorkItem(delegate
