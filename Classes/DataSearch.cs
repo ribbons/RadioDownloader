@@ -187,7 +187,7 @@ namespace RadioDld
 
         private string TableSql(string tableName, string[] columns)
         {
-            return "CREATE VIRTUAL TABLE " + tableName + " USING fts3(" + string.Join(", ", columns) + ")";
+            return "CREATE VIRTUAL TABLE " + tableName + " USING fts4(" + string.Join(", ", columns) + ")";
         }
 
         private void RebuildIndex(Status status, Dictionary<string, string[]> tableCols)
