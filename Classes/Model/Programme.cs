@@ -238,7 +238,7 @@ namespace RadioDld.Model
 
                         using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", Data.FetchDbConn()))
                         {
-                            progid = Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                            progid = (int)(long)command.ExecuteScalar();
                         }
                     }
 

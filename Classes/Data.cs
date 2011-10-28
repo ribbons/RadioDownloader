@@ -442,7 +442,7 @@ namespace RadioDld
 
                 using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
                 {
-                    return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                    return (int)(long)command.ExecuteScalar();
                 }
             }
         }
@@ -929,7 +929,7 @@ namespace RadioDld
                     }
 
                     // Get the size of the image data by passing nothing to getbytes
-                    int dataLength = Convert.ToInt32(reader.GetBytes(reader.GetOrdinal("image"), 0, null, 0, 0));
+                    int dataLength = (int)reader.GetBytes(reader.GetOrdinal("image"), 0, null, 0, 0);
                     byte[] content = new byte[dataLength];
 
                     reader.GetBytes(reader.GetOrdinal("image"), 0, content, 0, dataLength);
@@ -1019,7 +1019,7 @@ namespace RadioDld
 
                     using (SQLiteCommand getRowIDCmd = new SQLiteCommand("select last_insert_rowid()", FetchDbConn(), transMon.Trans))
                     {
-                        epid = Convert.ToInt32(getRowIDCmd.ExecuteScalar(), CultureInfo.InvariantCulture);
+                        epid = (int)(long)getRowIDCmd.ExecuteScalar();
                     }
 
                     if (episodeInfoReturn.EpisodeInfo.ExtInfo != null)

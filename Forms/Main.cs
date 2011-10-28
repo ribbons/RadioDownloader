@@ -303,13 +303,13 @@ namespace RadioDld
             this.ListSubscribed.SmallImageList = this.ImagesListIcons;
             this.ListDownloads.SmallImageList = this.ImagesListIcons;
 
-            this.ListEpisodes.Columns.Add("Date", Convert.ToInt32(0.179 * this.ListEpisodes.Width));
-            this.ListEpisodes.Columns.Add("Episode Name", Convert.ToInt32(0.786 * this.ListEpisodes.Width));
-            this.ListFavourites.Columns.Add("Programme Name", Convert.ToInt32(0.661 * this.ListFavourites.Width));
-            this.ListFavourites.Columns.Add("Provider", Convert.ToInt32(0.304 * this.ListFavourites.Width));
-            this.ListSubscribed.Columns.Add("Programme Name", Convert.ToInt32(0.482 * this.ListSubscribed.Width));
-            this.ListSubscribed.Columns.Add("Last Download", Convert.ToInt32(0.179 * this.ListSubscribed.Width));
-            this.ListSubscribed.Columns.Add("Provider", Convert.ToInt32(0.304 * this.ListSubscribed.Width));
+            this.ListEpisodes.Columns.Add("Date", (int)(0.179 * this.ListEpisodes.Width));
+            this.ListEpisodes.Columns.Add("Episode Name", (int)(0.786 * this.ListEpisodes.Width));
+            this.ListFavourites.Columns.Add("Programme Name", (int)(0.661 * this.ListFavourites.Width));
+            this.ListFavourites.Columns.Add("Provider", (int)(0.304 * this.ListFavourites.Width));
+            this.ListSubscribed.Columns.Add("Programme Name", (int)(0.482 * this.ListSubscribed.Width));
+            this.ListSubscribed.Columns.Add("Last Download", (int)(0.179 * this.ListSubscribed.Width));
+            this.ListSubscribed.Columns.Add("Provider", (int)(0.304 * this.ListSubscribed.Width));
 
             // NB - these are defined in alphabetical order to save sorting later
             this.downloadColNames.Add((int)Model.Download.DownloadCols.EpisodeDate, "Date");
@@ -385,7 +385,7 @@ namespace RadioDld
             // Scale the max size of the sidebar image for values other than 96 dpi, as it is specified in pixels
             using (Graphics graphicsForDpi = this.CreateGraphics())
             {
-                this.ImageSidebar.MaximumSize = new Size(Convert.ToInt32(this.ImageSidebar.MaximumSize.Width * (graphicsForDpi.DpiX / 96)), Convert.ToInt32(this.ImageSidebar.MaximumSize.Height * (graphicsForDpi.DpiY / 96)));
+                this.ImageSidebar.MaximumSize = new Size((int)(this.ImageSidebar.MaximumSize.Width * (graphicsForDpi.DpiX / 96)), (int)(this.ImageSidebar.MaximumSize.Height * (graphicsForDpi.DpiY / 96)));
             }
 
             if (Properties.Settings.Default.MainFormPos != Rectangle.Empty)
@@ -1337,7 +1337,7 @@ namespace RadioDld
 
                         if (info.Duration != 0)
                         {
-                            int mins = Convert.ToInt32(Math.Round(info.Duration / (decimal)60, 0));
+                            int mins = (int)Math.Round(info.Duration / (decimal)60, 0);
                             int hours = mins / 60;
                             mins = mins % 60;
 
@@ -2020,8 +2020,8 @@ namespace RadioDld
                     else
                     {
                         string description = string.Empty;
-                        int newCount = Model.Download.CountNew();
-                        int errorCount = Model.Download.CountErrored();
+                        long newCount = Model.Download.CountNew();
+                        long errorCount = Model.Download.CountErrored();
 
                         if (newCount > 0)
                         {
@@ -2236,7 +2236,7 @@ namespace RadioDld
             foreach (string sizePair in Properties.Settings.Default.DownloadColSizes.Split('|'))
             {
                 string[] splitPair = sizePair.Split(',');
-                int pixelSize = Convert.ToInt32(float.Parse(splitPair[1], CultureInfo.InvariantCulture) * this.CurrentAutoScaleDimensions.Width);
+                int pixelSize = (int)(float.Parse(splitPair[1], CultureInfo.InvariantCulture) * this.CurrentAutoScaleDimensions.Width);
 
                 this.downloadColSizes.Add(int.Parse(splitPair[0], CultureInfo.InvariantCulture), pixelSize);
             }

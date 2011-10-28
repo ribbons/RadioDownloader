@@ -135,29 +135,29 @@ namespace RadioDld.Model
 
         public int PlayCount { get; set; }
 
-        public static int Count()
+        public static long Count()
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid", Data.FetchDbConn()))
             {
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                return (long)command.ExecuteScalar();
             }
         }
 
-        public static int CountNew()
+        public static long CountNew()
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid and playcount=0 and status=@status", Data.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                return (long)command.ExecuteScalar();
             }
         }
 
-        public static int CountErrored()
+        public static long CountErrored()
         {
             using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid and status=@status", Data.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture);
+                return (long)command.ExecuteScalar();
             }
         }
 

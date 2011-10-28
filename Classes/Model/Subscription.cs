@@ -71,7 +71,7 @@ namespace RadioDld.Model
             using (SQLiteCommand command = new SQLiteCommand("select count(*) from subscriptions where progid=@progid", Data.FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                return Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) > 0;
+                return (long)command.ExecuteScalar() > 0;
             }
         }
 

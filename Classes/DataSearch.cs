@@ -51,7 +51,7 @@ namespace RadioDld
             {
                 using (SQLiteCommand command = new SQLiteCommand("select count(*) from downloads", this.FetchDbConn()))
                 {
-                    if (Model.Download.Count() != Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture))
+                    if (Model.Download.Count() != (long)command.ExecuteScalar())
                     {
                         rebuild = true;
                     }
@@ -175,7 +175,7 @@ namespace RadioDld
                     nameParam.Value = table.Key;
                     sqlParam.Value = this.TableSql(table.Key, table.Value);
 
-                    if (Convert.ToInt32(command.ExecuteScalar(), CultureInfo.InvariantCulture) != 1)
+                    if ((long)command.ExecuteScalar() != 1)
                     {
                         return false;
                     }
@@ -221,7 +221,7 @@ namespace RadioDld
                     {
                         this.AddDownload(downloadItem);
 
-                        status.ProgressBarValue = Convert.ToInt32((progress / downloadItems.Count) * 100);
+                        status.ProgressBarValue = (int)((progress / downloadItems.Count) * 100);
                         progress += 1;
                     }
 
