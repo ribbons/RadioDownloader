@@ -249,14 +249,7 @@ namespace RadioDld
 
         private void Download_Updated(int epid)
         {
-            lock (this.updateIndexLock)
-            {
-                using (SQLiteTransaction trans = this.FetchDbConn().BeginTransaction())
-                {
-                    this.RemoveDownload(epid);
-                    this.AddDownload(epid);
-                }
-            }
+            this.AddDownload(epid);
 
             if (this.DownloadUpdated != null && this.DownloadIsVisible(epid))
             {
@@ -271,17 +264,6 @@ namespace RadioDld
                 this.DownloadRemoved(epid);
             }
 
-            this.RemoveDownload(epid);
-        }
-
-        private void AddDownload(int epid)
-        {
-            Model.Download downloadData = new Model.Download(epid);
-            this.AddDownload(downloadData);
-        }
-
-        private void RemoveDownload(int epid)
-        {
             lock (this.updateIndexLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("delete from downloads where docid = @epid", this.FetchDbConn()))
@@ -292,6 +274,12 @@ namespace RadioDld
             }
 
             // No need to clear the visibility cache, as having an extra entry won't cause an issue
+        }
+
+        private void AddDownload(int epid)
+        {
+            Model.Download downloadData = new Model.Download(epid);
+            this.AddDownload(downloadData);
         }
 
         private void AddDownload(Model.Download storeData)
