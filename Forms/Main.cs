@@ -1452,18 +1452,15 @@ namespace RadioDld
 
             ListViewItem item = this.ListDownloads.Items[epid.ToString(CultureInfo.InvariantCulture)];
 
-            if (item != null)
+            if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Progress))
             {
-                if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Progress))
+                if (this.ListDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress)) != null)
                 {
-                    if (this.ListDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress)) != null)
-                    {
-                        this.ListDownloads.RemoveProgressBar(ref this.ProgressDownload);
-                    }
+                    this.ListDownloads.RemoveProgressBar(ref this.ProgressDownload);
                 }
-
-                item.Remove();
             }
+
+            item.Remove();
 
             if (this.view.CurrentView == ViewState.View.Downloads)
             {
