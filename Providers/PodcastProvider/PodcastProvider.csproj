@@ -82,7 +82,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\bin\win_x64\</OutputPath>
+    <OutputPath>..\..\bin\win64\</OutputPath>
     <DocumentationFile>
     </DocumentationFile>
     <NoWarn>
@@ -94,7 +94,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DefineTrace>true</DefineTrace>
-    <OutputPath>..\..\bin\win_x64\</OutputPath>
+    <OutputPath>..\..\bin\win64\</OutputPath>
     <DocumentationFile>
     </DocumentationFile>
     <Optimize>true</Optimize>
