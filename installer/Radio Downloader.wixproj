@@ -5,19 +5,12 @@
 		<ProductVersion>3.0</ProductVersion>
 		<ProjectGuid>{15922BEB-0E0B-4c73-993A-6678F139F477}</ProjectGuid>
 		<SchemaVersion>2.0</SchemaVersion>
+		<IntermediateOutputPath>obj\</IntermediateOutputPath>
+		<OutputPath>.\</OutputPath>
 		<OutputName>Radio Downloader</OutputName>
 		<OutputType>Package</OutputType>
 		<WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
 		<DefineSolutionProperties>false</DefineSolutionProperties>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-		<OutputPath>.\</OutputPath>
-		<IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
-		<DefineConstants>Debug</DefineConstants>
-	</PropertyGroup>
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-		<OutputPath>.\</OutputPath>
-		<IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include="Radio Downloader.wxs" />
