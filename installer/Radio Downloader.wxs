@@ -2,7 +2,7 @@
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product Id="*" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader"
 	         Version="!(bind.FileVersion.RadioDownloaderExe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
-		<Package Compressed="yes" Keywords="Radio Downloader,Installer,Radio,Podcasts"
+		<Package InstallScope="perMachine" Compressed="yes" Keywords="Radio Downloader,Installer,Radio,Podcasts"
 		         Comments="Radio Downloader allows you to easily download radio station content and podcasts." />
 		<Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes" />
 		
@@ -17,7 +17,6 @@
 		<?endif ?>
 		
 		<Property Id="InstallMode"><![CDATA[Custom]]></Property>
-		<Property Id="ALLUSERS"><![CDATA[2]]></Property>
 		<Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
 		<Property Id="PROMPTROLLBACKCOST"><![CDATA[P]]></Property>
 		
