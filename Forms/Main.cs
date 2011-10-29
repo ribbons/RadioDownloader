@@ -2209,6 +2209,7 @@ namespace RadioDld
 
             this.downloadColSizes.Clear();
             this.downloadColOrder.Clear();
+            Application.DoEvents(); // Give any queued Invoke calls a chance to be processed
             this.ListDownloads.Clear();
             this.ListDownloads.RemoveAllControls();
 
