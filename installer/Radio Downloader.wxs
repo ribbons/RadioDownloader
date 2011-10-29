@@ -8,6 +8,14 @@
 		
 		<?include UI.wxs ?>
 		
+		<?if $(sys.BUILDARCH) = "x64" ?>
+			<?define ProgramFiles = "ProgramFiles64Folder" ?>
+			<?define PlatformBin = "..\bin\win64" ?>
+		<?else ?>
+			<?define ProgramFiles = "ProgramFilesFolder" ?>
+			<?define PlatformBin = "..\bin\win32" ?>
+		<?endif ?>
+		
 		<Property Id="InstallMode"><![CDATA[Custom]]></Property>
 		<Property Id="ALLUSERS"><![CDATA[2]]></Property>
 		<Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
@@ -29,18 +37,18 @@
 		</InstallExecuteSequence>
 		
 		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="ProgramFilesFolder" Name="Program Files">
+			<Directory Id="$(var.ProgramFiles)" Name="Program Files">
 				<Directory Id="INSTALLLOCATION" Name="Radio Downloader">
 					<Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E">
-						<File Id="RadioDownloaderExe" Source="..\bin\win32\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
+						<File Id="RadioDownloaderExe" Source="$(var.PlatformBin)\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
 							<Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloader.exe" Description="Easily download radio station content and podcasts.">
 								<Icon Id="RadioDownloader.exe" SourceFile="..\Resources\icons\Icon.ico" />
 							</Shortcut>
 						</File>
-						<File Name="Radio Downloader.pdb" Source="..\bin\win32\Radio Downloader.pdb" />
+						<File Name="Radio Downloader.pdb" Source="$(var.PlatformBin)\Radio Downloader.pdb" />
 					</Component>
 					<Component Id="SQLiteDll" Guid="DC4B5709-7257-4230-824D-DBA2E103ED29">
-						<File Name="System.Data.SQLite.DLL" Source="..\bin\win32\System.Data.SQLite.DLL" />
+						<File Name="System.Data.SQLite.DLL" Source="$(var.PlatformBin)\System.Data.SQLite.DLL" />
 					</Component>
 					<Component Id="Database" Guid="D8715547-94E1-40C0-BAA3-37B364884EB5">
 						<File Name="store.db" Source="..\store.db" />
@@ -49,8 +57,8 @@
 						<File Name="GPL.txt" Source="..\GPL.txt" />
 					</Component>
 					<Component Id="PodcastProviderDll" Guid="4B6DBD87-EB57-4E5F-A87A-CF6A21BC4C02">
-						<File Name="PodcastProvider.dll" Source="..\bin\win32\PodcastProvider.dll" />
-						<File Name="PodcastProvider.pdb" Source="..\bin\win32\PodcastProvider.pdb" />
+						<File Name="PodcastProvider.dll" Source="$(var.PlatformBin)\PodcastProvider.dll" />
+						<File Name="PodcastProvider.pdb" Source="$(var.PlatformBin)\PodcastProvider.pdb" />
 					</Component>
 				</Directory>
 			</Directory>
