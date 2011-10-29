@@ -18,22 +18,14 @@
 		<Property Id="ARPPRODUCTICON" Value="RadioDownloader.exe" />
 		
 		<Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
-		<Condition Message="A newer version of [ProductName] is already installed.">NOT NEWERVERSIONDETECTED</Condition>
-		<Condition Message="This version of [ProductName] is already installed.  To remove it, use Add/Remove Programs in the Control Panel.">NOT ((Installed AND NOT (REINSTALL OR REMOVE)) OR CURRENTVERSIONALREADYINSTALLED)</Condition>
-		<Condition Message="The version of [ProductName] already installed is too old to upgrade directly.  Remove the currently installed version using Add/Remove Programs in the Control Panel first.">NOT VERSIONTOOOLDTOUPGRADE</Condition>
 		
-		<Upgrade Id="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
-			<UpgradeVersion Property="OLDERVERSIONBEINGUPGRADED" IncludeMaximum="no" Maximum="!(bind.FileVersion.RadioDownloaderExe)" OnlyDetect="no" IncludeMinimum="yes" Minimum="0.5.8" />
-			<UpgradeVersion Property="NEWERVERSIONDETECTED" OnlyDetect="yes" IncludeMinimum="no" Minimum="!(bind.FileVersion.RadioDownloaderExe)" />
-			<UpgradeVersion Property="CURRENTVERSIONALREADYINSTALLED" IncludeMaximum="yes" IncludeMinimum="yes" Maximum="!(bind.FileVersion.RadioDownloaderExe)" Minimum="!(bind.FileVersion.RadioDownloaderExe)" OnlyDetect="yes" />
-			<UpgradeVersion Property="VERSIONTOOOLDTOUPGRADE" IncludeMaximum="no" Maximum="0.5.8" OnlyDetect="yes" />
-		</Upgrade>
+		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+		              Schedule="afterInstallInitialize" AllowSameVersionUpgrades="yes" />
 		
 		<AdminExecuteSequence />
 		
 		<InstallExecuteSequence>
-			<RemoveExistingProducts After="InstallInitialize" />
-			<Custom Action="CloseBeforeUninstall" Before="InstallValidate">Installed OR OLDERVERSIONBEINGUPGRADED</Custom>
+			<Custom Action="CloseBeforeUninstall" Before="InstallValidate">Installed OR WIX_UPGRADE_DETECTED</Custom>
 		</InstallExecuteSequence>
 		
 		<Directory Id="TARGETDIR" Name="SourceDir">

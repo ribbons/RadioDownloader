@@ -11,6 +11,7 @@
 		<OutputType>Package</OutputType>
 		<WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
 		<DefineSolutionProperties>false</DefineSolutionProperties>
+		<SuppressIces>ICE61</SuppressIces>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include="Radio Downloader.wxs" />
