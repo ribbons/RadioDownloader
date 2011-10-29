@@ -38,25 +38,29 @@
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="$(var.ProgramFiles)" Name="Program Files">
 				<Directory Id="INSTALLLOCATION" Name="Radio Downloader">
-					<Component Id="RadioDownloaderExe" Guid="F960FE9C-5378-4052-8517-43F67D5A582E">
+					<Component Id="RadioDownloaderExe">
 						<File Id="RadioDownloaderExe" Source="$(var.PlatformBin)\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
 							<Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloader.exe" Description="Easily download radio station content and podcasts.">
 								<Icon Id="RadioDownloader.exe" SourceFile="..\Resources\icons\Icon.ico" />
 							</Shortcut>
 						</File>
+					</Component>
+					<Component Id="RadioDownloaderPdb">
 						<File Name="Radio Downloader.pdb" Source="$(var.PlatformBin)\Radio Downloader.pdb" />
 					</Component>
-					<Component Id="SQLiteDll" Guid="DC4B5709-7257-4230-824D-DBA2E103ED29">
+					<Component Id="SQLiteDll">
 						<File Name="System.Data.SQLite.DLL" Source="$(var.PlatformBin)\System.Data.SQLite.DLL" />
 					</Component>
-					<Component Id="Database" Guid="D8715547-94E1-40C0-BAA3-37B364884EB5">
+					<Component Id="Database">
 						<File Name="store.db" Source="..\store.db" />
 					</Component>
-					<Component Id="GplTxt" Guid="66264481-3504-4FFD-B8EC-AA10DC2250C5">
+					<Component Id="GplTxt">
 						<File Name="GPL.txt" Source="..\GPL.txt" />
 					</Component>
-					<Component Id="PodcastProviderDll" Guid="4B6DBD87-EB57-4E5F-A87A-CF6A21BC4C02">
+					<Component Id="PodcastProviderDll">
 						<File Name="PodcastProvider.dll" Source="$(var.PlatformBin)\PodcastProvider.dll" />
+					</Component>
+					<Component Id="PodcastProviderPdb">
 						<File Name="PodcastProvider.pdb" Source="$(var.PlatformBin)\PodcastProvider.pdb" />
 					</Component>
 				</Directory>
@@ -64,12 +68,15 @@
 			<Directory Id="ProgramMenuFolder" Name="Start Menu Programs" />
 		</Directory>
 		
-		<Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow" AllowAdvertise="no" Description="The Radio Downloader application.">
+		<Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow"
+		         AllowAdvertise="no" Description="The Radio Downloader application.">
 			<ComponentRef Id="RadioDownloaderExe" />
+			<ComponentRef Id="RadioDownloaderPdb" />
 			<ComponentRef Id="SQLiteDll" />
 			<ComponentRef Id="Database" />
 			<ComponentRef Id="GplTxt" />
 			<ComponentRef Id="PodcastProviderDll" />
+			<ComponentRef Id="PodcastProviderPdb" />
 		</Feature>
 		
 		<CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
