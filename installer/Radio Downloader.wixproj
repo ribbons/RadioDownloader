@@ -12,10 +12,10 @@
 		<SuppressIces>ICE61</SuppressIces>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Platform)' == 'x86' ">
-		<OutputName>Radio Downloader-win32</OutputName>
+		<OutputName>Radio_Downloader-win32</OutputName>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(Platform)' == 'x64' ">
-		<OutputName>Radio Downloader-win64</OutputName>
+		<OutputName>Radio_Downloader-win64</OutputName>
 	</PropertyGroup>
 	<ItemGroup>
 		<Compile Include="Radio Downloader.wxs" />
