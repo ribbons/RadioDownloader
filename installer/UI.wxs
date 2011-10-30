@@ -251,7 +251,7 @@
 				<Text>[DlgTitleFont]End-User License Agreement</Text>
 			</Control>
 			<Control Type="Text" Id="Version" Width="155" Height="10" X="20" Y="246" NoPrefix="yes">
-				<Text>Version !(bind.FileVersion.RadioDownloaderExe)</Text>
+				<Text>Version !(bind.FileVersion.Radio_Downloader.exe)</Text>
 			</Control>
 		</Dialog>
 		<Dialog Id="OutOfDiskDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
 	<Product Id="*" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader"
-	         Version="!(bind.FileVersion.RadioDownloaderExe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
+	         Version="!(bind.FileVersion.Radio_Downloader.exe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
 		<Package InstallScope="perMachine" Compressed="yes" Keywords="Radio Downloader,Installer,Radio,Podcasts"
 		         Comments="Radio Downloader allows you to easily download radio station content and podcasts." />
 		<Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes" />
@@ -38,29 +38,29 @@
 		<Directory Id="TARGETDIR" Name="SourceDir">
 			<Directory Id="$(var.ProgramFiles)" Name="Program Files">
 				<Directory Id="INSTALLLOCATION" Name="Radio Downloader">
-					<Component Id="RadioDownloaderExe">
-						<File Id="RadioDownloaderExe" Source="$(var.PlatformBin)\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
+					<Component>
+						<File Source="$(var.PlatformBin)\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
 							<Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloader.exe" Description="Easily download radio station content and podcasts.">
 								<Icon Id="RadioDownloader.exe" SourceFile="..\Resources\icons\Icon.ico" />
 							</Shortcut>
 						</File>
 					</Component>
-					<Component Id="RadioDownloaderPdb">
+					<Component>
 						<File Name="Radio Downloader.pdb" Source="$(var.PlatformBin)\Radio Downloader.pdb" />
 					</Component>
-					<Component Id="SQLiteDll">
+					<Component>
 						<File Name="System.Data.SQLite.DLL" Source="$(var.PlatformBin)\System.Data.SQLite.DLL" />
 					</Component>
-					<Component Id="Database">
+					<Component>
 						<File Name="store.db" Source="..\store.db" />
 					</Component>
-					<Component Id="GplTxt">
+					<Component>
 						<File Name="GPL.txt" Source="..\GPL.txt" />
 					</Component>
-					<Component Id="PodcastProviderDll">
+					<Component>
 						<File Name="PodcastProvider.dll" Source="$(var.PlatformBin)\PodcastProvider.dll" />
 					</Component>
-					<Component Id="PodcastProviderPdb">
+					<Component>
 						<File Name="PodcastProvider.pdb" Source="$(var.PlatformBin)\PodcastProvider.pdb" />
 					</Component>
 				</Directory>
@@ -70,16 +70,16 @@
 		
 		<Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow"
 		         AllowAdvertise="no" Description="The Radio Downloader application.">
-			<ComponentRef Id="RadioDownloaderExe" />
-			<ComponentRef Id="RadioDownloaderPdb" />
-			<ComponentRef Id="SQLiteDll" />
-			<ComponentRef Id="Database" />
-			<ComponentRef Id="GplTxt" />
-			<ComponentRef Id="PodcastProviderDll" />
-			<ComponentRef Id="PodcastProviderPdb" />
+			<ComponentRef Id="Radio_Downloader.exe" />
+			<ComponentRef Id="Radio_Downloader.pdb" />
+			<ComponentRef Id="System.Data.SQLite.DLL" />
+			<ComponentRef Id="store.db" />
+			<ComponentRef Id="GPL.txt" />
+			<ComponentRef Id="PodcastProvider.dll" />
+			<ComponentRef Id="PodcastProvider.pdb" />
 		</Feature>
 		
-		<CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="RadioDownloaderExe" Return="asyncNoWait" Impersonate="yes" />
-		<CustomAction ExeCommand="/exit" Id="CloseBeforeUninstall" FileKey="RadioDownloaderExe" Return="ignore" Impersonate="yes" />
+		<CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="Radio_Downloader.exe" Return="asyncNoWait" Impersonate="yes" />
+		<CustomAction ExeCommand="/exit" Id="CloseBeforeUninstall" FileKey="Radio_Downloader.exe" Return="ignore" Impersonate="yes" />
 	</Product>
 </Wix>
