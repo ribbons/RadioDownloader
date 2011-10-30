@@ -126,7 +126,7 @@
 				<Text>{\VerdanaBold13}[ProductName] [Wizard] was interrupted</Text>
 			</Control>
 			<Control Id="Description1" Type="Text" X="135" Y="70" Width="220" Height="40" Transparent="yes" NoPrefix="yes">
-				<Text>[ProductName] setup was interrupted.	Your system has not been modified.	To install this program at a later time, please run the installation again.</Text>
+				<Text>[ProductName] setup was interrupted.  Your system has not been modified.  To install this program at a later time, please run the installation again.</Text>
 			</Control>
 			<Control Id="Description2" Type="Text" X="135" Y="115" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
 				<Text>Click the Finish button to exit the [Wizard].</Text>
