@@ -25,6 +25,7 @@
 		<Property Id="ARPPRODUCTICON" Value="RadioDownloader.exe" />
 		
 		<Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
+		<Condition Message="This version of [ProductName] is already installed.  To remove it, right-click on the installer and choose 'Uninstall'.">NOT ((Installed AND NOT (REINSTALL OR REMOVE)))</Condition>
 		
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
 		              Schedule="afterInstallInitialize" AllowSameVersionUpgrades="yes" />
