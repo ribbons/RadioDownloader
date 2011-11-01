@@ -17,7 +17,7 @@
 namespace RadioDld
 {
     using System;
-    using System.ComponentModel;
+    using System.Runtime.InteropServices;
     using System.Security.Permissions;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
@@ -78,10 +78,7 @@ namespace RadioDld
                 return;
             }
 
-            if (NativeMethods.DwmExtendFrameIntoClientArea(this.Handle, ref this.glassMargins) != 0)
-            {
-                throw new Win32Exception();
-            }
+            Marshal.ThrowExceptionForHR(NativeMethods.DwmExtendFrameIntoClientArea(this.Handle, ref this.glassMargins));
         }
     }
 }

@@ -18,9 +18,9 @@ namespace RadioDld
 {
     using System;
     using System.Collections.Generic;
-    using System.ComponentModel;
     using System.Drawing;
     using System.Globalization;
+    using System.Runtime.InteropServices;
     using System.Windows.Forms;
 
     // Parts of the code in this class are based on code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
@@ -155,10 +155,7 @@ namespace RadioDld
                     {
                         // Set the theme of the control to "explorer", to give the 
                         // correct styling under Vista.  This has no effect under XP.
-                        if (NativeMethods.SetWindowTheme(this.Handle, "explorer", null) != 0)
-                        {
-                            throw new Win32Exception();
-                        }
+                        Marshal.ThrowExceptionForHR(NativeMethods.SetWindowTheme(this.Handle, "explorer", null));
                     }
 
                     // Remove the focus rectangle from the control (and as a side effect, all other controls on the

@@ -163,10 +163,10 @@ namespace RadioDld
         }
 
         // API Declarations
-        [DllImport("dwmapi.dll", SetLastError = true)]
+        [DllImport("dwmapi.dll")]
         public static extern int DwmExtendFrameIntoClientArea(IntPtr hWnd, ref MARGINS pMarInset);
 
-        [DllImport("dwmapi.dll", SetLastError = true)]
+        [DllImport("dwmapi.dll")]
         public static extern int DwmIsCompositionEnabled([MarshalAs(UnmanagedType.Bool)] ref bool pfEnabled);
 
         [DllImport("gdi32.dll", SetLastError = true)]
@@ -219,10 +219,10 @@ namespace RadioDld
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, string lParam);
 
-        [DllImport("uxtheme.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         public static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
 
-        [DllImport("uxtheme.dll", SetLastError = true)]
+        [DllImport("uxtheme.dll")]
         public static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, [MarshalAs(UnmanagedType.LPWStr)] string pszText, int iCharCount, uint dwFlags, ref RECT pRect, [In()] ref DTTOPTS pOptions);
         
         // API Structs

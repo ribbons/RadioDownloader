@@ -290,10 +290,7 @@ namespace RadioDld
             opts.crText = Convert.ToUInt32(ColorTranslator.ToWin32(e.TextColor)); // Alpha blended text of the colour specified
 
             // Paint the text
-            if (NativeMethods.DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, (uint)e.TextFormat, ref textRect, ref opts) != 0)
-            {
-                throw new Win32Exception();
-            }
+            Marshal.ThrowExceptionForHR(NativeMethods.DrawThemeTextEx(renderer.Handle, memoryHdc, 0, 0, e.Text, -1, (uint)e.TextFormat, ref textRect, ref opts));
 
             // Set up the AlphaBlend copy
             NativeMethods.BLENDFUNCTION blendFunc = default(NativeMethods.BLENDFUNCTION);

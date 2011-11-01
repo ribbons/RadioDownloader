@@ -19,6 +19,7 @@ namespace RadioDld
     using System;
     using System.ComponentModel;
     using System.Drawing;
+    using System.Runtime.InteropServices;
     using System.Text;
     using System.Windows.Forms;
     using Microsoft.Win32;
@@ -145,11 +146,7 @@ namespace RadioDld
             }
 
             bool enabled = false;
-
-            if (NativeMethods.DwmIsCompositionEnabled(ref enabled) != 0)
-            {
-                throw new Win32Exception();
-            }
+            Marshal.ThrowExceptionForHR(NativeMethods.DwmIsCompositionEnabled(ref enabled));
 
             return enabled;
         }

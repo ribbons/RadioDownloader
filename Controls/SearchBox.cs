@@ -17,8 +17,8 @@
 namespace RadioDld
 {
     using System;
-    using System.ComponentModel;
     using System.Drawing;
+    using System.Runtime.InteropServices;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
 
@@ -115,15 +115,8 @@ namespace RadioDld
             if (OsUtils.WinVistaOrLater())
             {
                 // Set the theme of this parent control and the edit control, so they are rendered correctly
-                if (NativeMethods.SetWindowTheme(this.Handle, "SearchBoxComposited", null) != 0)
-                {
-                    throw new Win32Exception();
-                }
-
-                if (NativeMethods.SetWindowTheme(this.textBox.Handle, "SearchBoxEditComposited", null) != 0)
-                {
-                    throw new Win32Exception();
-                }
+                Marshal.ThrowExceptionForHR(NativeMethods.SetWindowTheme(this.Handle, "SearchBoxComposited", null));
+                Marshal.ThrowExceptionForHR(NativeMethods.SetWindowTheme(this.textBox.Handle, "SearchBoxEditComposited", null));
             }
         }
 
