@@ -18,7 +18,7 @@ setlocal ENABLEDELAYEDEXPANSION
 call "%sdklocation%\Bin\setenv.cmd" /Release /%~1
 
 rem Build Radio Downloader and the provider
-call build.bat %1
+call build-win-common.bat %1
 if ERRORLEVEL 1 goto failed
 
 rem Sign Radio Downloader and the provider
