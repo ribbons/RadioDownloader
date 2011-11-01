@@ -8,6 +8,8 @@ if "%~1" == "x86" set platname=win32
 if "%~1" == "x64" set platname=win64
 if "%platname%" == "" goto badplatform
 
+if "%Configuration%_%TARGET_CPU%" == "%~1_Release" goto haveenv
+
 rem Check the SDK is installed
 set sdklocation=%programfiles%\Microsoft SDKs\Windows\v7.1
 if not exist "%sdklocation%" goto nosdk
@@ -16,6 +18,8 @@ rem Set up a Release build environment
 setlocal ENABLEEXTENSIONS
 setlocal ENABLEDELAYEDEXPANSION
 call "%sdklocation%\Bin\setenv.cmd" /Release /%~1
+
+:haveenv
 
 rem Build Radio Downloader and the providers
 msbuild /p:Configuration=Release /p:Platform=%platname% /t:Clean "../Radio Downloader.sln"
