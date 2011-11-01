@@ -2,6 +2,9 @@
 
 rem Batch file to build and sign and Radio Downloader and providers, and build and sign the installer
 
+rem Load any user / machine specific variable values
+if exist publish-win-vars.bat call publish-win-vars.bat
+
 rem Check the platform has been passed to this script and is known
 if "%~1" == "" goto noplatform
 if "%~1" == "x86" set platname=win32
@@ -23,8 +26,8 @@ if ERRORLEVEL 1 goto failed
 
 rem Sign Radio Downloader and the provider
 set timestampserver=http://timestamp.verisign.com/scripts/timstamp.dll
-signtool sign /t %timestampserver% "..\bin\%platname%\Radio Downloader.exe" ^
-                                   "..\bin\%platname%\PodcastProvider.dll"
+signtool sign /t %timestampserver% %signparams% "..\bin\%platname%\Radio Downloader.exe" ^
+                                                "..\bin\%platname%\PodcastProvider.dll"
 if ERRORLEVEL 1 set signfailed=1
 
 rem Unregister HKCU JScript and VBScript which cause problems with installer validation
@@ -44,7 +47,8 @@ if ERRORLEVEL 1 goto failed
 
 rem Sign the installer
 
-signtool sign /t %timestampserver% /d "Radio Downloader" "..\installer\Radio_Downloader-%platname%.msi"
+signtool sign /t %timestampserver% /d "Radio Downloader" %signparams% ^
+              "..\installer\Radio_Downloader-%platname%.msi"
 if ERRORLEVEL 1 set signfailed=1
 
 if not "%signfailed%" == "" goto signfailed
@@ -76,8 +80,9 @@ goto :EOF
 :signfailed
 
 echo.
-echo Warning: Failed to sign one or more of the binaries or installer
-echo Check that you have a code signing certificate installed and try again.
+echo Warning: Failed to sign one or more of the binaries or installer.
+echo If you have multiple code signing certificates set the variable 'signparams' to
+echo the required signtool selection switch in the file publish-win-vars.bat
 
 pause
 goto :EOF
