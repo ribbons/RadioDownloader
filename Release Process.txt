@@ -6,29 +6,30 @@ Beta & Full Releases
 
  1. Update version number in application & providers
  2. Commit version changes.
- 3. Run build/publish-win32.bat to build & sign application, providers and installer
- 4. Test installer - major upgrade
- 5. Test installer - clean install
+ 3. Run build/publish-win32.bat to build & sign 32-bit application, providers and installer
+ 4. Run build/publish-win64.bat to build & sign 64-bit application, providers and installer
+ 5. Test installers - major upgrade
+ 6. Test installers - clean install
 
 Beta Release
 ------------
 
- 6. Create tag for release number in form radio_downloader/tags/betas/x.x
- 7. Move Installer to local nerdoftheherd downloads/beta folder.
- 8. Add new version number into the Radio Downloader product in Bugzilla.
- 9. Upload to website.
-10. Post message to beta mailing list about release.
+ 7. Create tag for release number in form radio_downloader/tags/betas/x.x
+ 8. Move installers to local nerdoftheherd downloads/beta folder.
+ 9. Add new version number into the Radio Downloader product in Bugzilla.
+10. Upload to website.
+11. Post message to beta mailing list about release.
 
 Full Release
 ------------
 
- 6. Create tag for release number in form radio_downloader/tags/releases/x.x
- 7. Run zipped source creator batch file.
- 8. Move source and installer to local nerdoftheherd downloads and sourceforge folders.
- 9. Update nerdoftheherd.com properties file with latest version number.
-10. Add new version number into the Radio Downloader product in Bugzilla.
-11. Write news item.
-12. Upload source and installer to SourceForge
-13. Mark installer as Windows platform default on SourceForge
-14. Upload files and news to website.
-15. Prevent errors from being submitted against previous version in error reporting.
+ 7. Create tag for release number in form radio_downloader/tags/releases/x.x
+ 8. Run zipped source creator batch file.
+ 9. Move source and installers to local nerdoftheherd downloads and sourceforge folders.
+10. Update nerdoftheherd.com properties file with latest version number.
+11. Add new version number into the Radio Downloader product in Bugzilla.
+12. Write news item.
+13. Upload source and installers to SourceForge
+14. Mark win32 installer as Windows platform default on SourceForge
+15. Upload files and news to website.
+16. Prevent errors from being submitted against previous version in error reporting.
