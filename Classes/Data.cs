@@ -578,7 +578,7 @@ namespace RadioDld
 
                 try
                 {
-                    this.curDldProgData.FinalName = Model.Download.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, this.curDldProgData.ProgInfo,  this.curDldProgData.EpisodeInfo, FileUtils.GetSaveFolder());
+                    this.curDldProgData.FinalName = Model.Download.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, FileUtils.GetSaveFolder());
                 }
                 catch (DirectoryNotFoundException)
                 {
@@ -587,7 +587,12 @@ namespace RadioDld
                 }
                 catch (IOException ioExp)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Encountered an error generating the download file name.  The error message was '" + ioExp.Message + "'.  You may need to select a new location for saving downloaded programmes under Options -> Main Options.", null);
+                    this.DownloadError(ErrorType.LocalProblem, "Encountered an error generating the download file name.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.", null);
+                    return;
+                }
+                catch (UnauthorizedAccessException unAuthExp)
+                {
+                    this.DownloadError(ErrorType.LocalProblem, "Encountered a permissions problem generating the download file name.  " + unAuthExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.", null);
                     return;
                 }
 
