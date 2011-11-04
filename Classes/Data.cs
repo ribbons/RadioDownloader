@@ -482,7 +482,6 @@ namespace RadioDld
 
                                 if (Plugins.PluginExists(pluginId))
                                 {
-                                    this.curDldProgData = new DldProgData();
                                     Model.Programme progInfo = new Model.Programme(reader.GetInt32(reader.GetOrdinal("progid")));
                                     Model.Episode epInfo = new Model.Episode(reader.GetInt32(reader.GetOrdinal("epid")));
                                     ProgrammeInfo provProgInfo = new ProgrammeInfo();
@@ -537,6 +536,7 @@ namespace RadioDld
                                         }
                                     }
 
+                                    this.curDldProgData = new DldProgData();
                                     this.curDldProgData.PluginId = pluginId;
                                     this.curDldProgData.ProgExtId = reader.GetString(reader.GetOrdinal("progextid"));
                                     this.curDldProgData.EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
