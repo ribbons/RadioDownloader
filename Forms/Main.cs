@@ -1728,7 +1728,7 @@ namespace RadioDld
                     {
                         Process.Start(info.DownloadPath);
                     }
-                    catch(System.ComponentModel.Win32Exception playExp)
+                    catch (System.ComponentModel.Win32Exception playExp)
                     {
                         MessageBox.Show("Failed to play the download: " + playExp.Message + ".  Check your file associations for " + Path.GetExtension(info.DownloadPath) + " files and try again.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                     }
