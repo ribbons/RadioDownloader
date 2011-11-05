@@ -297,7 +297,7 @@ namespace RadioDld.Model
             // Now perform the update if required
             if (updateExtid != null)
             {
-                FetchInfo(providerId, updateExtid);
+                UpdateInfo(providerId, updateExtid);
             }
         }
     }
