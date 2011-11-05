@@ -905,6 +905,11 @@ namespace RadioDld
 
         private void FindNewPluginInst_FoundNew(string progExtId)
         {
+            ThreadPool.QueueUserWorkItem(delegate { this.FoundNewAsync(progExtId); });
+        }
+
+        private void FoundNewAsync(string progExtId)
+        {
             Guid pluginId = this.findNewPluginInst.ProviderId;
             int? progid = Model.Programme.FetchInfo(pluginId, progExtId);
 

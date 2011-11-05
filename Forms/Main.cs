@@ -1548,6 +1548,13 @@ namespace RadioDld
 
         private void ProgData_FoundNew(int progid)
         {
+            if (this.InvokeRequired)
+            {
+                // Events will sometimes be fired on a different thread to the ui
+                this.Invoke((MethodInvoker)delegate { this.ProgData_FoundNew(progid); });
+                return;
+            }
+
             this.view.SetView(ViewState.View.ProgEpisodes, progid);
         }
 
