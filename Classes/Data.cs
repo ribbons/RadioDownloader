@@ -499,8 +499,8 @@ namespace RadioDld
                                     }
 
                                     EpisodeInfo provEpInfo = new EpisodeInfo();
-                                    provEpInfo.Name = progInfo.Name;
-                                    provEpInfo.Description = progInfo.Description;
+                                    provEpInfo.Name = epInfo.Name;
+                                    provEpInfo.Description = epInfo.Description;
                                     provEpInfo.Date = epInfo.EpisodeDate;
 
                                     if (reader.IsDBNull(reader.GetOrdinal("duration")))
