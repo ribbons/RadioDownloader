@@ -11,8 +11,8 @@ rem Copy the versioned files across to the temp folder
 svn export . %tempfolder%
 if ERRORLEVEL 1 goto failed
 
-rem make sure that 7za.exe is on the PATH.
-7za a -tzip "%userprofile%\Desktop\Radio Downloader Source.zip" %tempfolder%
+rem make sure that 7z.exe is on the PATH.
+7z a -tzip "%userprofile%\Desktop\Radio Downloader Source.zip" %tempfolder%
 if ERRORLEVEL 1 goto failed
 
 rmdir /S /Q %tempfolder%
