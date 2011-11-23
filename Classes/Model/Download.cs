@@ -499,7 +499,7 @@ namespace RadioDld.Model
                     }
                 }
 
-                status.ProgressBarValue = 100;
+                status.ProgressBarValue = status.ProgressBarMax;
             }
         }
 
