@@ -576,14 +576,30 @@ namespace RadioDld
                 // Make sure that the temp folder still exists
                 Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"));
 
+                string saveLocation;
+
                 try
                 {
-                    this.curDldProgData.FinalName = Model.Download.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, FileUtils.GetSaveFolder());
+                    saveLocation = FileUtils.GetSaveFolder();
                 }
                 catch (DirectoryNotFoundException)
                 {
                     this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", null);
                     return;
+                }
+
+                const int FreeMb = 250;
+                ulong availableSpace = OsUtils.PathAvailableSpace(saveLocation);
+
+                if (availableSpace <= FreeMb * 1024 * 1024)
+                {
+                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes does not have enough free space.  Make sure that you have at least " + FreeMb.ToString(CultureInfo.CurrentCulture) + " MB free, or select a new location under Options -> Main Options.", null);
+                    return;
+                }
+
+                try
+                {
+                    this.curDldProgData.FinalName = Model.Download.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, saveLocation);
                 }
                 catch (IOException ioExp)
                 {

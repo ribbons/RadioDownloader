@@ -180,5 +180,26 @@ namespace RadioDld
 
             return false;
         }
+
+        /// <summary>
+        /// Return the number of available bytes in the specified file path.
+        /// </summary>
+        /// <remarks>
+        /// DriveInfo.AvailableFreeSpace gives this information, but only for drives.  This makes it less useful
+        /// as paths may contain NTFS junction points, symbolic links, or be UNC paths.
+        /// </remarks>
+        /// <param name="path">The standard or UNC path to retrieve available bytes for.</param>
+        /// <returns>The number of free bytes available to the current user in the specified location.</returns>
+        public static ulong PathAvailableSpace(string path)
+        {
+            ulong freeBytesAvailable, totalAvailableBytes, totalFreeBytes;
+
+            if (!NativeMethods.GetDiskFreeSpaceEx(path, out freeBytesAvailable, out totalAvailableBytes, out totalFreeBytes))
+            {
+                throw new Win32Exception();
+            }
+
+            return freeBytesAvailable;
+        }
     }
 }
