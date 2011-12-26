@@ -413,13 +413,13 @@ namespace RadioDld
             return toolbarColour;
         }
 
-        private void Form_Activated(object sender, System.EventArgs e)
+        private void Form_Activated(object sender, EventArgs e)
         {
             this.isActive = true;
             this.rendererFor.Invalidate();
         }
 
-        private void Form_Deactivated(object sender, System.EventArgs e)
+        private void Form_Deactivated(object sender, EventArgs e)
         {
             this.isActive = false;
             this.rendererFor.Invalidate();

@@ -65,7 +65,7 @@ namespace RadioDld
             this.columnNames = columnNames;
         }
 
-        private void ChooseCols_Load(object sender, System.EventArgs e)
+        private void ChooseCols_Load(object sender, EventArgs e)
         {
             if (this.columnOrder == null)
             {
@@ -102,7 +102,7 @@ namespace RadioDld
             }
         }
 
-        private void ButtonOk_Click(object sender, System.EventArgs e)
+        private void ButtonOk_Click(object sender, EventArgs e)
         {
             this.columnOrder.Clear();
 
@@ -120,7 +120,7 @@ namespace RadioDld
             this.UpdateButtonState();
         }
 
-        private void ListColumns_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void ListColumns_SelectedIndexChanged(object sender, EventArgs e)
         {
             this.UpdateButtonState();
         }
@@ -167,17 +167,17 @@ namespace RadioDld
             }
         }
 
-        private void ButtonShow_Click(object sender, System.EventArgs e)
+        private void ButtonShow_Click(object sender, EventArgs e)
         {
             this.ListColumns.SelectedItems[0].Checked = true;
         }
 
-        private void ButtonHide_Click(object sender, System.EventArgs e)
+        private void ButtonHide_Click(object sender, EventArgs e)
         {
             this.ListColumns.SelectedItems[0].Checked = false;
         }
 
-        private void ButtonMoveUp_Click(object sender, System.EventArgs e)
+        private void ButtonMoveUp_Click(object sender, EventArgs e)
         {
             ListViewItem moveItem = this.ListColumns.SelectedItems[0];
             int origIndex = this.ListColumns.SelectedItems[0].Index;
@@ -186,7 +186,7 @@ namespace RadioDld
             this.ListColumns.Items.Insert(origIndex - 1, moveItem);
         }
 
-        private void ButtonMoveDown_Click(object sender, System.EventArgs e)
+        private void ButtonMoveDown_Click(object sender, EventArgs e)
         {
             ListViewItem moveItem = this.ListColumns.SelectedItems[0];
             int origIndex = this.ListColumns.SelectedItems[0].Index;

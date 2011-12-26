@@ -55,7 +55,7 @@ namespace RadioDld
             }
         }
 
-        private void ButtonSend_Click(object sender, System.EventArgs e)
+        private void ButtonSend_Click(object sender, EventArgs e)
         {
             try
             {

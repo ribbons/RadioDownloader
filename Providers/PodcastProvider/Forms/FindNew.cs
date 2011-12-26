@@ -33,7 +33,7 @@ namespace PodcastProvider
             this.pluginInst = pluginInst;
         }
 
-        private void ButtonView_Click(object sender, System.EventArgs e)
+        private void ButtonView_Click(object sender, EventArgs e)
         {
             try
             {

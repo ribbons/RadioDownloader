@@ -175,7 +175,7 @@ namespace RadioDld
             }
         }
 
-        private void Main_Load(object eventSender, System.EventArgs eventArgs)
+        private void Main_Load(object eventSender, EventArgs eventArgs)
         {
             // If this is the first run of a new version of the application, then upgrade the settings from the old version.
             try
@@ -459,7 +459,7 @@ namespace RadioDld
             }
         }
 
-        private void ListProviders_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void ListProviders_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.ListProviders.SelectedItems.Count > 0)
             {
@@ -483,7 +483,7 @@ namespace RadioDld
             }
         }
 
-        private void ListProviders_ItemActivate(object sender, System.EventArgs e)
+        private void ListProviders_ItemActivate(object sender, EventArgs e)
         {
             // Occasionally the event gets fired when there isn't an item selected
             if (this.ListProviders.SelectedItems.Count == 0)
@@ -539,7 +539,7 @@ namespace RadioDld
             this.SetToolbarButtons(buttons.ToArray());
         }
 
-        private void ListEpisodes_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void ListEpisodes_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.ListEpisodes.SelectedItems.Count > 0)
             {
@@ -552,7 +552,7 @@ namespace RadioDld
             }
         }
 
-        private void ListFavourites_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void ListFavourites_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.ListFavourites.SelectedItems.Count > 0)
             {
@@ -587,7 +587,7 @@ namespace RadioDld
             this.SetSideBar(info.Name, info.Description, this.progData.FetchProgrammeImage(progid));
         }
 
-        private void ListSubscribed_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void ListSubscribed_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.ListSubscribed.SelectedItems.Count > 0)
             {
@@ -707,7 +707,7 @@ namespace RadioDld
             Properties.Settings.Default.DownloadColSizes = saveColSizes;
         }
 
-        private void ListDownloads_ItemActivate(object sender, System.EventArgs e)
+        private void ListDownloads_ItemActivate(object sender, EventArgs e)
         {
             // Occasionally the event gets fired when there isn't an item selected
             if (this.ListDownloads.SelectedItems.Count == 0)
@@ -718,7 +718,7 @@ namespace RadioDld
             this.ButtonPlay_Click();
         }
 
-        private void ListDownloads_SelectedIndexChanged(object sender, System.EventArgs e)
+        private void ListDownloads_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.ListDownloads.SelectedItems.Count > 0)
             {
@@ -880,7 +880,7 @@ namespace RadioDld
             }
         }
 
-        private void MenuTrayShow_Click(object sender, System.EventArgs e)
+        private void MenuTrayShow_Click(object sender, EventArgs e)
         {
             if (!this.Visible)
             {
@@ -896,7 +896,7 @@ namespace RadioDld
             this.Activate();
         }
 
-        private void MenuTrayExit_Click(object eventSender, System.EventArgs eventArgs)
+        private void MenuTrayExit_Click(object eventSender, EventArgs eventArgs)
         {
             this.Close();
             this.Dispose();
@@ -911,7 +911,7 @@ namespace RadioDld
             }
         }
 
-        private void NotifyIcon_BalloonTipClicked(object sender, System.EventArgs e)
+        private void NotifyIcon_BalloonTipClicked(object sender, EventArgs e)
         {
             Properties.Settings.Default.ShownTrayBalloon = true;
         }
@@ -921,22 +921,22 @@ namespace RadioDld
             this.MenuTrayShow_Click(sender, e);
         }
 
-        private void ButtonFindNew_Click(object sender, System.EventArgs e)
+        private void ButtonFindNew_Click(object sender, EventArgs e)
         {
             this.view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
         }
 
-        private void ButtonFavourites_Click(object sender, System.EventArgs e)
+        private void ButtonFavourites_Click(object sender, EventArgs e)
         {
             this.view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites);
         }
 
-        private void ButtonSubscriptions_Click(object sender, System.EventArgs e)
+        private void ButtonSubscriptions_Click(object sender, EventArgs e)
         {
             this.view.SetView(ViewState.MainTab.Subscriptions, ViewState.View.Subscriptions);
         }
 
-        private void ButtonDownloads_Click(object sender, System.EventArgs e)
+        private void ButtonDownloads_Click(object sender, EventArgs e)
         {
             this.view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
         }
@@ -1558,7 +1558,7 @@ namespace RadioDld
             this.view.SetView(ViewState.View.ProgEpisodes, progid);
         }
 
-        private void Main_Shown(object sender, System.EventArgs e)
+        private void Main_Shown(object sender, EventArgs e)
         {
             foreach (string commandLineArg in Environment.GetCommandLineArgs())
             {
@@ -1577,7 +1577,7 @@ namespace RadioDld
             }
         }
 
-        private void Main_Move_Resize(object sender, System.EventArgs e)
+        private void Main_Move_Resize(object sender, EventArgs e)
         {
             if (this.windowPosLoaded)
             {
@@ -1593,7 +1593,7 @@ namespace RadioDld
             }
         }
 
-        private void TimerCheckForUpdates_Tick(object sender, System.EventArgs e)
+        private void TimerCheckForUpdates_Tick(object sender, EventArgs e)
         {
             if (this.checkUpdate.IsUpdateAvailable())
             {
@@ -1838,7 +1838,7 @@ namespace RadioDld
             this.view.SetView(ViewState.View.FindNewProviderForm, viewData);
         }
 
-        private void MenuOptionsShowOpts_Click(object sender, System.EventArgs e)
+        private void MenuOptionsShowOpts_Click(object sender, EventArgs e)
         {
             using (Preferences prefs = new Preferences())
             {
@@ -1846,12 +1846,12 @@ namespace RadioDld
             }
         }
 
-        private void MenuOptionsExit_Click(object sender, System.EventArgs e)
+        private void MenuOptionsExit_Click(object sender, EventArgs e)
         {
             this.MenuTrayExit_Click(sender, e);
         }
 
-        private void MenuHelpAbout_Click(object sender, System.EventArgs e)
+        private void MenuHelpAbout_Click(object sender, EventArgs e)
         {
             using (About about = new About())
             {
@@ -1859,12 +1859,12 @@ namespace RadioDld
             }
         }
 
-        private void MenuHelpShowHelp_Click(object sender, System.EventArgs e)
+        private void MenuHelpShowHelp_Click(object sender, EventArgs e)
         {
             Process.Start("http://www.nerdoftheherd.com/tools/radiodld/help/");
         }
 
-        private void MenuHelpReportBug_Click(object sender, System.EventArgs e)
+        private void MenuHelpReportBug_Click(object sender, EventArgs e)
         {
             Process.Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php");
         }
@@ -2051,12 +2051,12 @@ namespace RadioDld
             }
         }
 
-        private void ButtonBack_Click(object sender, System.EventArgs e)
+        private void ButtonBack_Click(object sender, EventArgs e)
         {
             this.view.NavBack();
         }
 
-        private void ButtonForward_Click(object sender, System.EventArgs e)
+        private void ButtonForward_Click(object sender, EventArgs e)
         {
             this.view.NavFwd();
         }
@@ -2107,7 +2107,7 @@ namespace RadioDld
             }
         }
 
-        private void TableToolbars_Resize(object sender, System.EventArgs e)
+        private void TableToolbars_Resize(object sender, EventArgs e)
         {
             if (this.WindowState != FormWindowState.Minimized)
             {
@@ -2139,7 +2139,7 @@ namespace RadioDld
             Process.Start(e.LinkText);
         }
 
-        private void TextSidebarDescript_Resize(object sender, System.EventArgs e)
+        private void TextSidebarDescript_Resize(object sender, EventArgs e)
         {
             this.TextSidebarDescript.Refresh(); // Make sure the scrollbars update correctly
         }
@@ -2149,7 +2149,7 @@ namespace RadioDld
             e.Graphics.DrawLine(new Pen(Color.FromArgb(255, 167, 186, 197)), 0, 0, 0, this.ImageSidebarBorder.Height);
         }
 
-        private void MenuListHdrsColumns_Click(object sender, System.EventArgs e)
+        private void MenuListHdrsColumns_Click(object sender, EventArgs e)
         {
             using (ChooseCols chooser = new ChooseCols())
             {
@@ -2164,7 +2164,7 @@ namespace RadioDld
             }
         }
 
-        private void MenuListHdrsReset_Click(object sender, System.EventArgs e)
+        private void MenuListHdrsReset_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default.DownloadCols = (string)Properties.Settings.Default.Properties["DownloadCols"].DefaultValue;
             Properties.Settings.Default.DownloadColSizes = (string)Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue;
@@ -2284,7 +2284,7 @@ namespace RadioDld
             this.ListDownloads.Items.AddRange(initItems);
         }
 
-        private void TextSearch_TextChanged(object sender, System.EventArgs e)
+        private void TextSearch_TextChanged(object sender, EventArgs e)
         {
             lock (this.searchThreadLock)
             {

@@ -28,7 +28,7 @@ namespace RadioDld
             this.InitializeComponent();
         }
         
-        private void About_Load(object sender, System.EventArgs e)
+        private void About_Load(object sender, EventArgs e)
         {
             this.Font = SystemFonts.MessageBoxFont;
 
@@ -37,12 +37,12 @@ namespace RadioDld
             this.LabelCopyright.Text = new Microsoft.VisualBasic.ApplicationServices.ApplicationBase().Info.Copyright;
         }
 
-        private void ButtonOk_Click(object sender, System.EventArgs e)
+        private void ButtonOk_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void LinkHomepage_Click(object sender, System.EventArgs e)
+        private void LinkHomepage_Click(object sender, EventArgs e)
         {
             Process.Start("http://www.nerdoftheherd.com/tools/radiodld/");
         }

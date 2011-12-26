@@ -110,7 +110,7 @@ namespace RadioDld
             base.Dispose(disposing);
         }
 
-        private void SearchBox_HandleCreated(object sender, System.EventArgs e)
+        private void SearchBox_HandleCreated(object sender, EventArgs e)
         {
             if (OsUtils.WinVistaOrLater())
             {
@@ -173,7 +173,7 @@ namespace RadioDld
             }
         }
 
-        private void TextBox_MouseEnter(object sender, System.EventArgs e)
+        private void TextBox_MouseEnter(object sender, EventArgs e)
         {
             if (this.boxState == NativeMethods.SBB_NORMAL)
             {
@@ -188,7 +188,7 @@ namespace RadioDld
             }
         }
 
-        private void TextBox_MouseLeave(object sender, System.EventArgs e)
+        private void TextBox_MouseLeave(object sender, EventArgs e)
         {
             if (this.boxState == NativeMethods.SBB_HOT)
             {
@@ -203,19 +203,19 @@ namespace RadioDld
             }
         }
 
-        private void TextBox_GotFocus(object sender, System.EventArgs e)
+        private void TextBox_GotFocus(object sender, EventArgs e)
         {
             this.boxState = NativeMethods.SBB_FOCUSED;
             this.Invalidate(); // Repaint the control
         }
 
-        private void TextBox_LostFocus(object sender, System.EventArgs e)
+        private void TextBox_LostFocus(object sender, EventArgs e)
         {
             this.boxState = NativeMethods.SBB_NORMAL;
             this.Invalidate(); // Repaint the control
         }
 
-        private void Button_MouseEnter(object sender, System.EventArgs e)
+        private void Button_MouseEnter(object sender, EventArgs e)
         {
             this.buttonHover = true;
 
@@ -227,7 +227,7 @@ namespace RadioDld
             this.TextBox_MouseEnter(sender, e);
         }
 
-        private void Button_MouseLeave(object sender, System.EventArgs e)
+        private void Button_MouseLeave(object sender, EventArgs e)
         {
             this.buttonHover = false;
 
@@ -263,7 +263,7 @@ namespace RadioDld
             }
         }
 
-        private void SearchBox_Resize(object sender, System.EventArgs e)
+        private void SearchBox_Resize(object sender, EventArgs e)
         {
             if (this.Height != this.themeHeight)
             {
@@ -290,7 +290,7 @@ namespace RadioDld
             }
         }
 
-        private void SearchBox_TextChanged(object sender, System.EventArgs e)
+        private void SearchBox_TextChanged(object sender, EventArgs e)
         {
             if (this.textBox.Text != this.Text)
             {
@@ -298,7 +298,7 @@ namespace RadioDld
             }
         }
 
-        private void TextBox_TextChanged(object sender, System.EventArgs e)
+        private void TextBox_TextChanged(object sender, EventArgs e)
         {
             // Hook up changes to the child textbox through this control
             this.Text = this.textBox.Text;

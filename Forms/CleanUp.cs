@@ -28,7 +28,7 @@ namespace RadioDld
             this.InitializeComponent();
         }
 
-        private void CleanUp_Load(object sender, System.EventArgs e)
+        private void CleanUp_Load(object sender, EventArgs e)
         {
             this.Font = SystemFonts.MessageBoxFont;
             this.LabelRemove.Font = new Font(this.Font.FontFamily, (int)(this.Font.SizeInPoints * 1.34), this.Font.Style, GraphicsUnit.Point);

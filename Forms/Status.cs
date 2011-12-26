@@ -180,7 +180,7 @@ namespace RadioDld
             }
         }
 
-        private void Status_Load(object sender, System.EventArgs e)
+        private void Status_Load(object sender, EventArgs e)
         {
             this.Font = SystemFonts.MessageBoxFont;
 
@@ -190,7 +190,7 @@ namespace RadioDld
             }
         }
 
-        private void Status_Shown(object sender, System.EventArgs e)
+        private void Status_Shown(object sender, EventArgs e)
         {
             if (OsUtils.WinSevenOrLater())
             {

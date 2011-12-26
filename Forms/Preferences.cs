@@ -33,7 +33,7 @@ namespace RadioDld
             this.InitializeComponent();
         }
 
-        private void ButtonChangeFolder_Click(object eventSender, System.EventArgs eventArgs)
+        private void ButtonChangeFolder_Click(object eventSender, EventArgs eventArgs)
         {
             FolderBrowserDialog browse = new FolderBrowserDialog();
             browse.SelectedPath = this.TextSaveIn.Text;
@@ -46,7 +46,7 @@ namespace RadioDld
             }
         }
 
-        private void ButtonOk_Click(object eventSender, System.EventArgs eventArgs)
+        private void ButtonOk_Click(object eventSender, EventArgs eventArgs)
         {
             if (string.IsNullOrEmpty(this.TextFileNameFormat.Text))
             {
@@ -110,7 +110,7 @@ namespace RadioDld
             }
         }
 
-        private void Preferences_Load(object eventSender, System.EventArgs eventArgs)
+        private void Preferences_Load(object eventSender, EventArgs eventArgs)
         {
             this.Font = SystemFonts.MessageBoxFont;
 
@@ -139,7 +139,7 @@ namespace RadioDld
             this.TextRunAfter.Text = Properties.Settings.Default.RunAfterCommand;
         }
 
-        private void TextFileNameFormat_TextChanged(object sender, System.EventArgs e)
+        private void TextFileNameFormat_TextChanged(object sender, EventArgs e)
         {
             Model.Programme dummyProg = new Model.Programme();
             dummyProg.Name = "Programme Name";
@@ -151,7 +151,7 @@ namespace RadioDld
             this.LabelFilenameFormatResult.Text = "Result: " + Model.Download.CreateSaveFileName(this.TextFileNameFormat.Text, dummyProg, dummyEp) + ".mp3";
         }
 
-        private void ButtonReset_Click(object sender, System.EventArgs e)
+        private void ButtonReset_Click(object sender, EventArgs e)
         {
             if (Interaction.MsgBox("Are you sure that you would like to reset all of your settings?", MsgBoxStyle.YesNo | MsgBoxStyle.Question) == MsgBoxResult.Yes)
             {
