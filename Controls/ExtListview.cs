@@ -26,8 +26,8 @@ namespace RadioDld
     // Parts of the code in this class are based on code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
     internal class ExtListView : ListView
     {
-        // List to store the EmbeddedProgress structures
         private List<EmbeddedProgress> embeddedControls = new List<EmbeddedProgress>();
+        private bool waitingSelChange = false;
 
         // Extra events
         public event ColumnClickEventHandler ColumnRightClick;
@@ -248,6 +248,32 @@ namespace RadioDld
             base.WndProc(ref m);
         }
 
+        // Normally, the SelectedIndexChanged event gets fired once for each item that is affected
+        // by a user's action.  For instance, clicking on a different item raises two - one for the
+        // deselection of the old item, and one for the new.  Even worse, selecting multiple items
+        // with the shift key causes an event to be raised for each one.
+        // 
+        // To prevent this behavior, override OnSelectedIndexChanged, and instead set up a handler
+        // to be called when the application is just about to become idle.
+        protected override void OnSelectedIndexChanged(EventArgs e)
+        {
+            if (!this.waitingSelChange)
+            {
+                Application.Idle += this.Application_Idle;
+                this.waitingSelChange = true;
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && this.waitingSelChange)
+            {
+                Application.Idle -= this.Application_Idle;
+            }
+
+            base.Dispose(disposing);
+        }
+
         private int[] GetColumnOrder()
         {
             int[] order = new int[this.Columns.Count + 1];
@@ -318,6 +344,16 @@ namespace RadioDld
                     control.Item.Selected = true;
                 }
             }
+        }
+
+        // Called when a SelectedIndexChanged (or several) has been suppressed, and the application
+        // is just about to become idle (e.g. no more events to be raised), so raise one event.
+        private void Application_Idle(object sender, EventArgs e)
+        {
+            Application.Idle -= this.Application_Idle;
+            this.waitingSelChange = false;
+
+            base.OnSelectedIndexChanged(e);
         }
 
         private IntPtr MakeLParam(int loWord, int hiWord)
