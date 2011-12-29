@@ -564,16 +564,20 @@ namespace RadioDld
 
         private void ListFavourites_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.ListFavourites.SelectedItems.Count > 0)
+            // Event is fired when un-favouriting hidden selected item
+            if (this.view.CurrentView == ViewState.View.Favourites)
             {
-                int progid = Convert.ToInt32(this.ListFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                if (this.ListFavourites.SelectedItems.Count > 0)
+                {
+                    int progid = Convert.ToInt32(this.ListFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-                Model.Programme.UpdateInfoIfRequired(progid);
-                this.ShowFavouriteInfo(progid);
-            }
-            else
-            {
-                this.SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
+                    Model.Programme.UpdateInfoIfRequired(progid);
+                    this.ShowFavouriteInfo(progid);
+                }
+                else
+                {
+                    this.SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
+                }
             }
         }
 
@@ -599,16 +603,20 @@ namespace RadioDld
 
         private void ListSubscribed_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.ListSubscribed.SelectedItems.Count > 0)
+            // Event is fired when unsubscribing hidden selected item
+            if (this.view.CurrentView == ViewState.View.Subscriptions)
             {
-                int progid = Convert.ToInt32(this.ListSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                if (this.ListSubscribed.SelectedItems.Count > 0)
+                {
+                    int progid = Convert.ToInt32(this.ListSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
 
-                Model.Programme.UpdateInfoIfRequired(progid);
-                this.ShowSubscriptionInfo(progid);
-            }
-            else
-            {
-                this.SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
+                    Model.Programme.UpdateInfoIfRequired(progid);
+                    this.ShowSubscriptionInfo(progid);
+                }
+                else
+                {
+                    this.SetViewDefaults(); // Revert back to subscribed items view default sidebar and toolbar
+                }
             }
         }
 
