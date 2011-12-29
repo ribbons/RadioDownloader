@@ -1650,10 +1650,7 @@ namespace RadioDld
                     break;
             }
 
-            if (Interaction.MsgBox("Are you sure you would like to remove this programme from your list of favourites?", MsgBoxStyle.Question | MsgBoxStyle.YesNo) == MsgBoxResult.Yes)
-            {
-                Model.Favourite.Remove(progid);
-            }
+            Model.Favourite.Remove(progid);
         }
 
         private void ButtonSubscribe_Click()
