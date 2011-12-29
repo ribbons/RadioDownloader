@@ -51,6 +51,10 @@ namespace RadioDld.Model
             }
         }
 
+        public delegate void EpisodeEventHandler(int epid);
+
+        public static event EpisodeEventHandler Updated;
+
         public int Epid { get; private set; }
 
         public int Progid { get; set; }
@@ -65,20 +69,42 @@ namespace RadioDld.Model
 
         public bool AutoDownload { get; set; }
 
-        public static void SetAutoDownload(int epid, bool autoDownload)
+        public static void SetAutoDownload(int[] epids, bool autoDownload)
         {
-            ThreadPool.QueueUserWorkItem(delegate { SetAutoDownloadAsync(epid, autoDownload); });
+            ThreadPool.QueueUserWorkItem(delegate { SetAutoDownloadAsync(epids, autoDownload); });
         }
 
-        protected static void SetAutoDownloadAsync(int epid, bool autoDownload)
+        protected static void SetAutoDownloadAsync(int[] epids, bool autoDownload)
         {
             lock (Data.DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", Data.FetchDbConn()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                    command.Parameters.Add(new SQLiteParameter("@autodownload", autoDownload ? 1 : 0));
-                    command.ExecuteNonQuery();
+                    using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", Data.FetchDbConn()))
+                    {
+                        SQLiteParameter epidParam = new SQLiteParameter("@epid");
+                        SQLiteParameter autodownloadParam = new SQLiteParameter("@autodownload");
+
+                        command.Parameters.Add(epidParam);
+                        command.Parameters.Add(autodownloadParam);
+
+                        foreach (int epid in epids)
+                        {
+                            epidParam.Value = epid;
+                            autodownloadParam.Value = autoDownload ? 1 : 0;
+                            command.ExecuteNonQuery();
+                        }
+                    }
+
+                    transMon.Trans.Commit();
+                }
+            }
+
+            if (Updated != null)
+            {
+                foreach (int epid in epids)
+                {
+                    Updated(epid);
                 }
             }
         }

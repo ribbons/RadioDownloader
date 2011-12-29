@@ -746,7 +746,7 @@ namespace RadioDld
                                     {
                                         if (!checkRdr.Read())
                                         {
-                                            Model.Download.Add(epid);
+                                            Model.Download.Add(new int[] { epid });
                                         }
                                     }
                                 }

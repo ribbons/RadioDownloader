@@ -349,6 +349,8 @@
     <None Include="Resources\list icons\downloaded_new_16.png" />
     <None Include="Resources\list icons\downloaded_16.png" />
     <None Include="Resources\list icons\converting_16.png" />
+    <None Include="Resources\list icons\episode_auto_16.png" />
+    <None Include="Resources\list icons\episode_noauto_16.png" />
     <None Include="Resources\toolbar\unsubscribe_16.png" />
     <None Include="Resources\toolbar\subscriptions_24.png" />
     <None Include="Resources\toolbar\subscriptions_16.png" />
@@ -365,6 +367,7 @@
     <None Include="Resources\toolbar\current episodes_16.png" />
     <None Include="Resources\toolbar\clean up_16.png" />
     <None Include="Resources\toolbar\back_24.png" />
+    <None Include="Resources\toolbar\set_auto_16.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />

@@ -70,6 +70,7 @@ namespace RadioDld
             this.ButtonOptionsMenu = new System.Windows.Forms.ToolBarButton();
             this.ButtonChooseProgramme = new System.Windows.Forms.ToolBarButton();
             this.ButtonDownload = new System.Windows.Forms.ToolBarButton();
+            this.ButtonSetAuto = new System.Windows.Forms.ToolBarButton();
             this.ButtonAddFavourite = new System.Windows.Forms.ToolBarButton();
             this.ButtonRemFavourite = new System.Windows.Forms.ToolBarButton();
             this.ButtonSubscribe = new System.Windows.Forms.ToolBarButton();
@@ -440,6 +441,7 @@ namespace RadioDld
             this.ButtonOptionsMenu,
             this.ButtonChooseProgramme,
             this.ButtonDownload,
+            this.ButtonSetAuto,
             this.ButtonAddFavourite,
             this.ButtonRemFavourite,
             this.ButtonSubscribe,
@@ -483,6 +485,12 @@ namespace RadioDld
             this.ButtonDownload.ImageKey = "download";
             this.ButtonDownload.Name = "ButtonDownload";
             this.ButtonDownload.Text = "Do&wnload";
+            // 
+            // ButtonSetAuto
+            // 
+            this.ButtonSetAuto.ImageKey = "set_auto";
+            this.ButtonSetAuto.Name = "ButtonSetAuto";
+            this.ButtonSetAuto.Text = "&Set / Unset Auto";
             // 
             // ButtonAddFavourite
             // 
@@ -646,12 +654,10 @@ namespace RadioDld
             // ListEpisodes
             // 
             this.ListEpisodes.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ListEpisodes.CheckBoxes = true;
             this.ListEpisodes.FullRowSelect = true;
             this.ListEpisodes.HideSelection = false;
             this.ListEpisodes.Location = new System.Drawing.Point(197, 171);
             this.ListEpisodes.Margin = new System.Windows.Forms.Padding(0, 0, 3, 3);
-            this.ListEpisodes.MultiSelect = false;
             this.ListEpisodes.Name = "ListEpisodes";
             this.ListEpisodes.Size = new System.Drawing.Size(560, 50);
             this.ListEpisodes.TabIndex = 2;
@@ -787,6 +793,7 @@ namespace RadioDld
         private System.Windows.Forms.ToolBarButton ButtonOptionsMenu;
         private System.Windows.Forms.ToolBarButton ButtonChooseProgramme;
         private System.Windows.Forms.ToolBarButton ButtonDownload;
+        private System.Windows.Forms.ToolBarButton ButtonSetAuto;
 
         #endregion
     }

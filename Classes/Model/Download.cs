@@ -36,6 +36,11 @@ namespace RadioDld.Model
         private static DownloadCols sortBy = DownloadCols.EpisodeDate;
         private static bool sortAsc;
 
+        static Download()
+        {
+            Episode.Updated += Episode_Updated;
+        }
+
         public Download(SQLiteMonDataReader reader)
         {
             this.FetchData(reader);
@@ -59,13 +64,11 @@ namespace RadioDld.Model
             }
         }
 
-        public delegate void DownloadEventHandler(int epid);
+        public static event EpisodeEventHandler Added;
 
-        public static event DownloadEventHandler Added;
+        public static new event EpisodeEventHandler Updated;
 
-        public static event DownloadEventHandler Updated;
-
-        public static event DownloadEventHandler Removed;
+        public static event EpisodeEventHandler Removed;
 
         public enum DownloadCols
         {
@@ -202,22 +205,35 @@ namespace RadioDld.Model
             return items;
         }
 
-        public static bool Add(int epid)
+        public static bool Add(int[] epids)
         {
+            List<int> addEpids = new List<int>();
+
             using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", Data.FetchDbConn()))
             {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                SQLiteParameter epidParam = new SQLiteParameter("@epid");
+                command.Parameters.Add(epidParam);
 
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                foreach (int epid in epids)
                 {
-                    if (reader.Read())
+                    epidParam.Value = epid;
+
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                     {
-                        return false;
+                        if (!reader.Read())
+                        {
+                            addEpids.Add(epid);
+                        }
                     }
                 }
             }
 
-            ThreadPool.QueueUserWorkItem(delegate { AddAsync(epid); });
+            if (addEpids.Count == 0)
+            {
+                return false;
+            }
+
+            ThreadPool.QueueUserWorkItem(delegate { AddAsync(addEpids.ToArray()); });
 
             return true;
         }
@@ -683,35 +699,76 @@ namespace RadioDld.Model
             this.PlayCount = reader.GetInt32(reader.GetOrdinal("playcount"));
         }
 
-        private static void AddAsync(int epid)
+        private static void Episode_Updated(int epid)
         {
-            lock (Data.DbUpdateLock)
+            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", Data.FetchDbConn()))
             {
-                // Check again that the download doesn't exist, as it may have been
-                // added while this call was waiting in the thread pool
-                using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", Data.FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        lock (sortCacheLock)
                         {
-                            return;
+                            sortCache = null;
+                        }
+
+                        if (Updated != null)
+                        {
+                            Updated(epid);
                         }
                     }
                 }
+            }
+        }
 
-                using (SQLiteCommand command = new SQLiteCommand("insert into downloads (epid) values (@epid)", Data.FetchDbConn()))
+        private static void AddAsync(int[] epids)
+        {
+            List<int> added = new List<int>();
+
+            lock (Data.DbUpdateLock)
+            {
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                    command.ExecuteNonQuery();
+                    using (SQLiteCommand command = new SQLiteCommand("insert into downloads (epid) values (@epid)", Data.FetchDbConn()))
+                    {
+                        SQLiteParameter epidParam = new SQLiteParameter("@epid");
+                        command.Parameters.Add(epidParam);
+
+                        foreach (int epid in epids)
+                        {
+                            epidParam.Value = epid;
+
+                            try
+                            {
+                                command.ExecuteNonQuery();
+                            }
+                            catch (SQLiteException sqliteExp)
+                            {
+                                if (sqliteExp.ErrorCode == SQLiteErrorCode.Constraint)
+                                {
+                                    // Already added while this was waiting in the threadpool
+                                    continue;
+                                }
+
+                                throw;
+                            }
+
+                            added.Add(epid);
+                        }
+                    }
+
+                    transMon.Trans.Commit();
                 }
             }
 
             if (Added != null)
             {
-                Added(epid);
+                foreach (int epid in added)
+                {
+                    Added(epid);
+                }
             }
             
             Data.GetInstance().StartDownload();
@@ -754,7 +811,7 @@ namespace RadioDld.Model
                     if (!auto)
                     {
                         // Unset the auto download flag, so if the user is subscribed it doesn't just download again
-                        Episode.SetAutoDownloadAsync(epid, false);
+                        Episode.SetAutoDownloadAsync(new int[] { epid }, false);
                     }
 
                     transMon.Trans.Commit();

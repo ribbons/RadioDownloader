@@ -248,6 +248,24 @@ namespace RadioDld
             base.WndProc(ref m);
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.A && e.Control)
+            {
+                if (this.MultiSelect)
+                {
+                    foreach (ListViewItem item in this.Items)
+                    {
+                        item.Selected = true;
+                    }
+
+                    return;
+                }
+            }
+
+            base.OnKeyDown(e);
+        }
+
         // Normally, the SelectedIndexChanged event gets fired once for each item that is affected
         // by a user's action.  For instance, clicking on a different item raises two - one for the
         // deselection of the old item, and one for the new.  Even worse, selecting multiple items

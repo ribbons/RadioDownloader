@@ -278,6 +278,8 @@ namespace RadioDld
             this.ImagesListIcons.Images.Add("subscribed_multi", Properties.Resources.list_subscribed_multi);
             this.ImagesListIcons.Images.Add("error", Properties.Resources.list_error);
             this.ImagesListIcons.Images.Add("favourite", Properties.Resources.list_favourite);
+            this.ImagesListIcons.Images.Add("episode_auto", Properties.Resources.list_episode_auto);
+            this.ImagesListIcons.Images.Add("episode_noauto", Properties.Resources.list_episode_noauto);
 
             this.ImagesProviders.Images.Add("default", Properties.Resources.provider_default);
 
@@ -295,10 +297,12 @@ namespace RadioDld
             this.ImagesToolbar.Images.Add("unsubscribe", Properties.Resources.toolbar_unsubscribe);
             this.ImagesToolbar.Images.Add("add_favourite", Properties.Resources.toolbar_add_favourite);
             this.ImagesToolbar.Images.Add("remove_favourite", Properties.Resources.toolbar_remove_favourite);
+            this.ImagesToolbar.Images.Add("set_auto", Properties.Resources.toolbar_set_auto);
 
             this.ToolbarMain.ImageList = this.ImagesToolbar;
             this.ToolbarHelp.ImageList = this.ImagesToolbar;
             this.ListProviders.LargeImageList = this.ImagesProviders;
+            this.ListEpisodes.SmallImageList = this.ImagesListIcons;
             this.ListFavourites.SmallImageList = this.ImagesListIcons;
             this.ListSubscribed.SmallImageList = this.ImagesListIcons;
             this.ListDownloads.SmallImageList = this.ImagesListIcons;
@@ -338,6 +342,7 @@ namespace RadioDld
             Model.Subscription.Added += this.Subscription_Added;
             Model.Subscription.Updated += this.Subscription_Updated;
             Model.Subscription.Removed += this.Subscription_Removed;
+            Model.Episode.Updated += this.Episode_Updated;
 
             this.dataSearch = DataSearch.GetInstance();
             this.dataSearch.DownloadAdded += this.DataSearch_DownloadAdded;
@@ -494,31 +499,37 @@ namespace RadioDld
             this.ButtonChooseProgramme_Click();
         }
 
-        private void ListEpisodes_ItemCheck(object sender, System.Windows.Forms.ItemCheckEventArgs e)
+        private void ShowEpisodeInfo()
         {
-            Model.Episode.SetAutoDownload(Convert.ToInt32(this.ListEpisodes.Items[e.Index].Name, CultureInfo.InvariantCulture), e.NewValue == CheckState.Checked);
-        }
+            int progid = (int)this.view.CurrentViewData;
 
-        private void ShowEpisodeInfo(int epid)
-        {
-            Model.Programme progInfo = new Model.Programme((int)this.view.CurrentViewData);
-            Model.Episode epInfo = new Model.Episode(epid);
-            string infoText = string.Empty;
-
-            if (epInfo.Description != null)
+            if (this.ListEpisodes.SelectedItems.Count == 1)
             {
-                infoText += epInfo.Description + Environment.NewLine + Environment.NewLine;
+                int epid = Convert.ToInt32(this.ListEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                Model.Episode epInfo = new Model.Episode(epid);
+                string infoText = string.Empty;
+
+                if (epInfo.Description != null)
+                {
+                    infoText += epInfo.Description + Environment.NewLine + Environment.NewLine;
+                }
+
+                infoText += "Date: " + epInfo.EpisodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
+                infoText += TextUtils.DescDuration(epInfo.Duration) + Environment.NewLine;
+                infoText += "Auto download: " + (epInfo.AutoDownload ? "Yes" : "No");
+
+                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.EpisodeDate), infoText, this.progData.FetchEpisodeImage(epid));
             }
-
-            infoText += "Date: " + epInfo.EpisodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
-            infoText += TextUtils.DescDuration(epInfo.Duration);
-
-            this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.EpisodeDate), infoText, this.progData.FetchEpisodeImage(epid));
+            else
+            {
+                this.SetSideBar(Convert.ToString(this.ListEpisodes.SelectedItems.Count, CultureInfo.CurrentCulture) + " episodes selected", string.Empty, null);
+            }
 
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.Add(this.ButtonDownload);
+            buttons.Add(this.ButtonSetAuto);
 
-            if (Model.Favourite.IsFavourite(progInfo.Progid))
+            if (Model.Favourite.IsFavourite(progid))
             {
                 buttons.Add(this.ButtonRemFavourite);
             }
@@ -527,7 +538,7 @@ namespace RadioDld
                 buttons.Add(this.ButtonAddFavourite);
             }
 
-            if (Model.Subscription.IsSubscribed(progInfo.Progid))
+            if (Model.Subscription.IsSubscribed(progid))
             {
                 buttons.Add(this.ButtonUnsubscribe);
             }
@@ -543,8 +554,7 @@ namespace RadioDld
         {
             if (this.ListEpisodes.SelectedItems.Count > 0)
             {
-                int epid = Convert.ToInt32(this.ListEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-                this.ShowEpisodeInfo(epid);
+                this.ShowEpisodeInfo();
             }
             else
             {
@@ -862,6 +872,7 @@ namespace RadioDld
         {
             this.ButtonChooseProgramme.Visible = false;
             this.ButtonDownload.Visible = false;
+            this.ButtonSetAuto.Visible = false;
             this.ButtonAddFavourite.Visible = false;
             this.ButtonRemFavourite.Visible = false;
             this.ButtonSubscribe.Visible = false;
@@ -1017,9 +1028,8 @@ namespace RadioDld
                     }
                     else
                     {
-                        // Update the displayed episode information (in case the subscription status has changed)
-                        int epid = Convert.ToInt32(this.ListEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-                        this.ShowEpisodeInfo(epid);
+                        // Update the episode information (for subscription / favourite toolbar buttons etc)
+                        this.ShowEpisodeInfo();
                     }
                 }
             }
@@ -1053,12 +1063,20 @@ namespace RadioDld
             this.SetSideBar(progInfo.Name, progInfo.Description, this.progData.FetchProgrammeImage(progid));
         }
 
-        private void EpisodeListItem(int epid, Model.Episode info, ref ListViewItem item)
+        private ListViewItem EpisodeListItem(Model.Episode info, ListViewItem item)
         {
-            item.Name = epid.ToString(CultureInfo.InvariantCulture);
+            if (item == null)
+            {
+                item = new ListViewItem();
+                item.Name = info.Epid.ToString(CultureInfo.InvariantCulture);
+                item.SubItems.Add(string.Empty);
+            }
+
             item.Text = info.EpisodeDate.ToShortDateString();
             item.SubItems[1].Text = TextUtils.StripDateFromName(info.Name, info.EpisodeDate);
-            item.Checked = info.AutoDownload;
+            item.ImageKey = info.AutoDownload ? "episode_auto" : "episode_noauto";
+
+            return item;
         }
 
         private void ProgData_EpisodeAdded(int epid)
@@ -1072,14 +1090,34 @@ namespace RadioDld
 
             Model.Episode info = new Model.Episode(epid);
 
-            ListViewItem addItem = new ListViewItem();
-            addItem.SubItems.Add(string.Empty);
-
-            this.EpisodeListItem(epid, info, ref addItem);
-
-            this.ListEpisodes.ItemCheck -= this.ListEpisodes_ItemCheck;
+            ListViewItem addItem = this.EpisodeListItem(info, null);
             this.ListEpisodes.Items.Add(addItem);
-            this.ListEpisodes.ItemCheck += this.ListEpisodes_ItemCheck;
+        }
+
+        private void Episode_Updated(int epid)
+        {
+            if (this.InvokeRequired)
+            {
+                // Events will sometimes be fired on a different thread to the ui
+                this.Invoke((MethodInvoker)delegate { this.Episode_Updated(epid); });
+                return;
+            }
+
+            if (this.view.CurrentView == ViewState.View.ProgEpisodes)
+            {
+                Model.Episode info = new Model.Episode(epid);
+
+                if ((int)this.view.CurrentViewData == info.Progid)
+                {
+                    ListViewItem item = this.ListEpisodes.Items[epid.ToString(CultureInfo.InvariantCulture)];
+                    item = this.EpisodeListItem(info, item);
+
+                    if (item.Selected)
+                    {
+                        this.ShowEpisodeInfo();
+                    }
+                }
+            }
         }
 
         private void Favourite_Added(int progid)
@@ -1121,7 +1159,7 @@ namespace RadioDld
 
             if (this.view.CurrentView == ViewState.View.Favourites)
             {
-                if (this.ListFavourites.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected)
+                if (item.Selected)
                 {
                     this.ShowFavouriteInfo(progid);
                 }
@@ -1244,7 +1282,7 @@ namespace RadioDld
 
             if (this.view.CurrentView == ViewState.View.Subscriptions)
             {
-                if (this.ListSubscribed.Items[progid.ToString(CultureInfo.InvariantCulture)].Selected)
+                if (item.Selected)
                 {
                     this.ShowSubscriptionInfo(progid);
                 }
@@ -1282,15 +1320,14 @@ namespace RadioDld
             if (item == null)
             {
                 item = new ListViewItem();
-            }
+                item.Name = info.Epid.ToString(CultureInfo.InvariantCulture);
 
-            item.Name = info.Epid.ToString(CultureInfo.InvariantCulture);
-
-            if (item.SubItems.Count < this.downloadColOrder.Count)
-            {
-                for (int addCols = item.SubItems.Count; addCols <= this.downloadColOrder.Count - 1; addCols++)
+                if (item.SubItems.Count < this.downloadColOrder.Count)
                 {
-                    item.SubItems.Add(string.Empty);
+                    for (int addCols = item.SubItems.Count; addCols <= this.downloadColOrder.Count - 1; addCols++)
+                    {
+                        item.SubItems.Add(string.Empty);
+                    }
                 }
             }
 
@@ -1794,16 +1831,45 @@ namespace RadioDld
 
         private void ButtonDownload_Click()
         {
-            int epid = Convert.ToInt32(this.ListEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+            List<int> epids = new List<int>();
 
-            if (Model.Download.Add(epid))
+            foreach (ListViewItem item in this.ListEpisodes.SelectedItems)
+            {
+                epids.Add(Convert.ToInt32(item.Name, CultureInfo.InvariantCulture));
+            }
+
+            if (Model.Download.Add(epids.ToArray()))
             {
                 this.view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
             }
             else
             {
-                Interaction.MsgBox("This episode is already in the download list!", MsgBoxStyle.Exclamation);
+                string episodes;
+
+                if (epids.Count == 1)
+                {
+                    episodes = "The selected episode is";
+                }
+                else
+                {
+                    episodes = "All of the selected episodes are";
+                }
+
+                MessageBox.Show(episodes + " already in your downloads list.", Application.ProductName);
             }
+        }
+
+        private void ButtonAutoDownload_Click()
+        {
+            List<int> epids = new List<int>();
+
+            foreach (ListViewItem item in this.ListEpisodes.SelectedItems)
+            {
+                epids.Add(Convert.ToInt32(item.Name, CultureInfo.InvariantCulture));
+            }
+
+            Model.Episode info = new Model.Episode(epids[0]);
+            Model.Episode.SetAutoDownload(epids.ToArray(), !info.AutoDownload);
         }
 
         private void ButtonCurrentEps_Click()
@@ -2070,6 +2136,9 @@ namespace RadioDld
                     break;
                 case "ButtonDownload":
                     this.ButtonDownload_Click();
+                    break;
+                case "ButtonSetAuto":
+                    this.ButtonAutoDownload_Click();
                     break;
                 case "ButtonAddFavourite":
                     this.ButtonAddFavourite_Click();
