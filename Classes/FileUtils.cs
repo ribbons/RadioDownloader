@@ -18,6 +18,7 @@ namespace RadioDld
 {
     using System;
     using System.IO;
+    using System.Windows.Forms;
 
     internal class FileUtils
     {
@@ -53,7 +54,7 @@ namespace RadioDld
 
         public static string GetAppDataFolder()
         {
-            string folderPath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com"), "Radio Downloader");
+            string folderPath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.CompanyName), Application.ProductName);
             Directory.CreateDirectory(folderPath);
 
             return folderPath;

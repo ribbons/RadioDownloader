@@ -31,7 +31,7 @@ namespace RadioDld
         public UpdateDB(string specDbPath, string updateDbPath)
             : base()
         {
-            this.specConn = new SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False");
+            this.specConn = new SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False;Read Only=True");
             this.specConn.Open();
 
             this.updateConn = new SQLiteConnection("Data Source=" + updateDbPath + ";Version=3;New=False");

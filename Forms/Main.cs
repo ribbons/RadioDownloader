@@ -219,56 +219,6 @@ namespace RadioDld
                 }
             }
 
-            // Make sure that the temp and application data folders exist
-            Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"));
-            Directory.CreateDirectory(FileUtils.GetAppDataFolder());
-
-            // Make sure that the database exists.  If not, then copy across the empty database from the program's folder.
-            System.IO.FileInfo fileExits = new System.IO.FileInfo(Path.Combine(FileUtils.GetAppDataFolder(), "store.db"));
-
-            if (!fileExits.Exists)
-            {
-                try
-                {
-                    System.IO.File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db"));
-                }
-                catch (FileNotFoundException)
-                {
-                    Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
-                    this.Close();
-                    this.Dispose();
-                    return;
-                }
-            }
-            else
-            {
-                // As the database already exists, copy the specimen database across from the program folder
-                // and then make sure that the current db's structure matches it.
-                try
-                {
-                    System.IO.File.Copy(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), true);
-                }
-                catch (FileNotFoundException)
-                {
-                    Interaction.MsgBox("The Radio Downloader template database was not found at '" + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db") + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation, or uninstalling Radio Downloader and then installing the latest version from the NerdoftheHerd website.", MsgBoxStyle.Critical);
-                    this.Close();
-                    this.Dispose();
-                    return;
-                }
-                catch (UnauthorizedAccessException)
-                {
-                    Interaction.MsgBox("Access was denied when attempting to copy the Radio Downloader template database." + Environment.NewLine + Environment.NewLine + "Check that you have read access to '" + Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "store.db") + "' and write access to '" + Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db") + "'.", MsgBoxStyle.Critical);
-                    this.Close();
-                    this.Dispose();
-                    return;
-                }
-
-                using (UpdateDB doDbUpdate = new UpdateDB(Path.Combine(FileUtils.GetAppDataFolder(), "spec-store.db"), Path.Combine(FileUtils.GetAppDataFolder(), "store.db")))
-                {
-                    doDbUpdate.UpdateStructure();
-                }
-            }
-
             this.ImagesListIcons.Images.Add("downloading", Properties.Resources.list_downloading);
             this.ImagesListIcons.Images.Add("waiting", Properties.Resources.list_waiting);
             this.ImagesListIcons.Images.Add("converting", Properties.Resources.list_converting);

@@ -18,6 +18,7 @@ namespace RadioDld
 {
     using System;
     using System.Diagnostics;
+    using System.IO;
     using System.Windows.Forms;
     using Microsoft.VisualBasic.ApplicationServices;
 
@@ -97,6 +98,44 @@ namespace RadioDld
                 {
                     e.Cancel = true;
                     return;
+                }
+            }
+
+            // Make sure that the temp folder exists
+            Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RadioDownloader"));
+
+            const string DbFileName = "store.db";
+            string tmplDbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DbFileName);
+            string appDbPath = Path.Combine(FileUtils.GetAppDataFolder(), DbFileName);
+
+            // Migrate old (pre 0.24) version databases from www.nerdoftheherd.com -> NerdoftheHerd.com
+            string oldDbPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com"), Application.ProductName), DbFileName);
+
+            if (File.Exists(oldDbPath) && !File.Exists(appDbPath))
+            {
+                File.Move(oldDbPath, appDbPath);
+            }
+
+            // Ensure that the template database exists
+            if (!File.Exists(tmplDbPath))
+            {
+                MessageBox.Show("The Radio Downloader template database was not found at '" + tmplDbPath + "'." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation or installing the latest version from nerdoftheherd.com", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                e.Cancel = true;
+                return;
+            }
+
+            // Test if there is an existing application database
+            if (!File.Exists(appDbPath))
+            {
+                // Start with a copy of the template database
+                File.Copy(tmplDbPath, appDbPath);
+            }
+            else
+            {
+                // Update the current database to match the template database structure
+                using (UpdateDB doDbUpdate = new UpdateDB(tmplDbPath, appDbPath))
+                {
+                    doDbUpdate.UpdateStructure();
                 }
             }
         }
