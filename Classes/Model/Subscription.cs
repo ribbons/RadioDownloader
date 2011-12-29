@@ -77,11 +77,6 @@ namespace RadioDld.Model
 
         public static bool Add(int progid)
         {
-            if (Model.Subscription.IsSubscribed(progid))
-            {
-                return false;
-            }
-
             Model.Programme progInfo = new Model.Programme(progid);
 
             if (progInfo.SingleEpisode)
@@ -161,17 +156,24 @@ namespace RadioDld.Model
         {
             lock (Data.DbUpdateLock)
             {
-                // Check again that the subscription doesn't exist, as it may have been
-                // added while this call was waiting in the thread pool
-                if (Model.Subscription.IsSubscribed(progid))
-                {
-                    return;
-                }
-
                 using (SQLiteCommand command = new SQLiteCommand("insert into subscriptions (progid) values (@progid)", Data.FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                    command.ExecuteNonQuery();
+
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    catch (SQLiteException sqliteExp)
+                    {
+                        if (sqliteExp.ErrorCode == SQLiteErrorCode.Constraint)
+                        {
+                            // Already added while this was waiting in the threadpool
+                            return;
+                        }
+
+                        throw;
+                    }
                 }
             }
 

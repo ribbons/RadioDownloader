@@ -75,16 +75,9 @@ namespace RadioDld.Model
             }
         }
 
-        public static bool Add(int progid)
+        public static void Add(int progid)
         {
-            if (Model.Favourite.IsFavourite(progid))
-            {
-                return false;
-            }
-
             ThreadPool.QueueUserWorkItem(delegate { AddAsync(progid); });
-
-            return true;
         }
 
         public static void Remove(int progid)
@@ -142,17 +135,24 @@ namespace RadioDld.Model
         {
             lock (Data.DbUpdateLock)
             {
-                // Check again that the favourite doesn't exist, as it may have been
-                // added while this call was waiting in the thread pool
-                if (Model.Favourite.IsFavourite(progid))
-                {
-                    return;
-                }
-
                 using (SQLiteCommand command = new SQLiteCommand("insert into favourites (progid) values (@progid)", Data.FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                    command.ExecuteNonQuery();
+
+                    try
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    catch (SQLiteException sqliteExp)
+                    {
+                        if (sqliteExp.ErrorCode == SQLiteErrorCode.Constraint)
+                        {
+                            // Already added while this was waiting in the threadpool
+                            return;
+                        }
+
+                        throw;
+                    }
                 }
             }
 

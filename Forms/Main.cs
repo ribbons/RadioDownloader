@@ -1615,7 +1615,7 @@ namespace RadioDld
 
         private void ButtonAddFavourite_Click()
         {
-            int progid = 0;
+            int progid;
 
             switch (this.view.CurrentView)
             {
@@ -1625,16 +1625,12 @@ namespace RadioDld
                 case ViewState.View.Subscriptions:
                     progid = Convert.ToInt32(this.ListSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
+                default:
+                    throw new InvalidOperationException("Add favourite not valid in " + this.view.CurrentView.ToString() + " view");
             }
 
-            if (Model.Favourite.Add(progid))
-            {
-                this.view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites, null);
-            }
-            else
-            {
-                Interaction.MsgBox("You already have this programme in your list of favourites!", MsgBoxStyle.Exclamation);
-            }
+            Model.Favourite.Add(progid);
+            this.view.SetView(ViewState.MainTab.Favourites, ViewState.View.Favourites, null);
         }
 
         private void ButtonRemFavourite_Click()
@@ -1662,7 +1658,7 @@ namespace RadioDld
 
         private void ButtonSubscribe_Click()
         {
-            int progid = 0;
+            int progid;
 
             switch (this.view.CurrentView)
             {
@@ -1672,6 +1668,8 @@ namespace RadioDld
                 case ViewState.View.Favourites:
                     progid = Convert.ToInt32(this.ListFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                     break;
+                default:
+                    throw new InvalidOperationException("Subscribe not valid in " + this.view.CurrentView.ToString() + " view");
             }
 
             if (Model.Subscription.Add(progid))
@@ -1680,7 +1678,7 @@ namespace RadioDld
             }
             else
             {
-                MessageBox.Show("This programme only has one episode, which is already in the download list!", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show("This programme only has one episode, which is already in the download list.", Application.ProductName, MessageBoxButtons.OK);
             }
         }
 
