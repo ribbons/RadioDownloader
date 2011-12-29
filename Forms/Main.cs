@@ -551,6 +551,17 @@ namespace RadioDld
             this.SetSideBar(info.Name, info.Description, this.progData.FetchProgrammeImage(progid));
         }
 
+        private void ListFavourites_ItemActivate(object sender, EventArgs e)
+        {
+            // Occasionally the event gets fired when there isn't an item selected
+            if (this.ListFavourites.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            this.ButtonCurrentEps_Click();
+        }
+
         private void ListSubscribed_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Event is fired when unsubscribing hidden selected item
@@ -590,6 +601,17 @@ namespace RadioDld
             this.SetToolbarButtons(buttons.ToArray());
 
             this.SetSideBar(info.Name, info.Description, this.progData.FetchProgrammeImage(progid));
+        }
+
+        private void ListSubscribed_ItemActivate(object sender, EventArgs e)
+        {
+            // Occasionally the event gets fired when there isn't an item selected
+            if (this.ListSubscribed.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            this.ButtonCurrentEps_Click();
         }
 
         private void ListDownloads_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)

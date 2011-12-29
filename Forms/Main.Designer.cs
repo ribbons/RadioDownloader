@@ -71,17 +71,17 @@ namespace RadioDld
             this.ButtonChooseProgramme = new System.Windows.Forms.ToolBarButton();
             this.ButtonDownload = new System.Windows.Forms.ToolBarButton();
             this.ButtonSetAuto = new System.Windows.Forms.ToolBarButton();
+            this.ButtonCurrentEps = new System.Windows.Forms.ToolBarButton();
             this.ButtonAddFavourite = new System.Windows.Forms.ToolBarButton();
             this.ButtonRemFavourite = new System.Windows.Forms.ToolBarButton();
             this.ButtonSubscribe = new System.Windows.Forms.ToolBarButton();
             this.ButtonUnsubscribe = new System.Windows.Forms.ToolBarButton();
-            this.ButtonCurrentEps = new System.Windows.Forms.ToolBarButton();
-            this.ButtonCleanUp = new System.Windows.Forms.ToolBarButton();
             this.ButtonCancel = new System.Windows.Forms.ToolBarButton();
             this.ButtonPlay = new System.Windows.Forms.ToolBarButton();
             this.ButtonDelete = new System.Windows.Forms.ToolBarButton();
             this.ButtonRetry = new System.Windows.Forms.ToolBarButton();
             this.ButtonReportError = new System.Windows.Forms.ToolBarButton();
+            this.ButtonCleanUp = new System.Windows.Forms.ToolBarButton();
             this.ToolbarHelp = new RadioDld.ExtToolBar();
             this.ButtonHelpMenu = new System.Windows.Forms.ToolBarButton();
             this.ImageSidebarBorder = new System.Windows.Forms.PictureBox();
@@ -442,17 +442,17 @@ namespace RadioDld
             this.ButtonChooseProgramme,
             this.ButtonDownload,
             this.ButtonSetAuto,
+            this.ButtonCurrentEps,
             this.ButtonAddFavourite,
             this.ButtonRemFavourite,
             this.ButtonSubscribe,
             this.ButtonUnsubscribe,
-            this.ButtonCurrentEps,
-            this.ButtonCleanUp,
             this.ButtonCancel,
             this.ButtonPlay,
             this.ButtonDelete,
             this.ButtonRetry,
-            this.ButtonReportError});
+            this.ButtonReportError,
+            this.ButtonCleanUp});
             this.ToolbarMain.ButtonSize = new System.Drawing.Size(135, 22);
             this.ToolbarMain.Divider = false;
             this.ToolbarMain.DropDownArrows = true;
@@ -490,19 +490,25 @@ namespace RadioDld
             // 
             this.ButtonSetAuto.ImageKey = "set_auto";
             this.ButtonSetAuto.Name = "ButtonSetAuto";
-            this.ButtonSetAuto.Text = "&Set / Unset Auto";
+            this.ButtonSetAuto.Text = "Set / Unset &Auto";
+            // 
+            // ButtonCurrentEps
+            // 
+            this.ButtonCurrentEps.ImageKey = "current_episodes";
+            this.ButtonCurrentEps.Name = "ButtonCurrentEps";
+            this.ButtonCurrentEps.Text = "&Current Episodes";
             // 
             // ButtonAddFavourite
             // 
             this.ButtonAddFavourite.ImageKey = "add_favourite";
             this.ButtonAddFavourite.Name = "ButtonAddFavourite";
-            this.ButtonAddFavourite.Text = "Add &Favourite";
+            this.ButtonAddFavourite.Text = "&Add Favourite";
             // 
             // ButtonRemFavourite
             // 
             this.ButtonRemFavourite.ImageKey = "remove_favourite";
             this.ButtonRemFavourite.Name = "ButtonRemFavourite";
-            this.ButtonRemFavourite.Text = "Remove &Favourite";
+            this.ButtonRemFavourite.Text = "&Remove Favourite";
             // 
             // ButtonSubscribe
             // 
@@ -515,18 +521,6 @@ namespace RadioDld
             this.ButtonUnsubscribe.ImageKey = "unsubscribe";
             this.ButtonUnsubscribe.Name = "ButtonUnsubscribe";
             this.ButtonUnsubscribe.Text = "&Unsubscribe";
-            // 
-            // ButtonCurrentEps
-            // 
-            this.ButtonCurrentEps.ImageKey = "current_episodes";
-            this.ButtonCurrentEps.Name = "ButtonCurrentEps";
-            this.ButtonCurrentEps.Text = "&Current Episodes";
-            // 
-            // ButtonCleanUp
-            // 
-            this.ButtonCleanUp.ImageKey = "clean_up";
-            this.ButtonCleanUp.Name = "ButtonCleanUp";
-            this.ButtonCleanUp.Text = "Clean &Up";
             // 
             // ButtonCancel
             // 
@@ -557,6 +551,12 @@ namespace RadioDld
             this.ButtonReportError.ImageKey = "report_error";
             this.ButtonReportError.Name = "ButtonReportError";
             this.ButtonReportError.Text = "Report &Error";
+            // 
+            // ButtonCleanUp
+            // 
+            this.ButtonCleanUp.ImageKey = "clean_up";
+            this.ButtonCleanUp.Name = "ButtonCleanUp";
+            this.ButtonCleanUp.Text = "Clean &Up";
             // 
             // ToolbarHelp
             // 
@@ -649,6 +649,7 @@ namespace RadioDld
             this.ListSubscribed.TabIndex = 4;
             this.ListSubscribed.UseCompatibleStateImageBehavior = false;
             this.ListSubscribed.View = System.Windows.Forms.View.Details;
+            this.ListSubscribed.ItemActivate += new System.EventHandler(this.ListSubscribed_ItemActivate);
             this.ListSubscribed.SelectedIndexChanged += new System.EventHandler(this.ListSubscribed_SelectedIndexChanged);
             // 
             // ListEpisodes
@@ -692,6 +693,7 @@ namespace RadioDld
             this.ListFavourites.TabIndex = 3;
             this.ListFavourites.UseCompatibleStateImageBehavior = false;
             this.ListFavourites.View = System.Windows.Forms.View.Details;
+            this.ListFavourites.ItemActivate += new System.EventHandler(this.ListFavourites_ItemActivate);
             this.ListFavourites.SelectedIndexChanged += new System.EventHandler(this.ListFavourites_SelectedIndexChanged);
             // 
             // Main
