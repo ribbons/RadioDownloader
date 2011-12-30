@@ -6,7 +6,7 @@ using System.Security;
 
 [assembly: AssemblyTitle("Podcast Plugin")]
 [assembly: AssemblyDescription("Plugin to support downloading podcasts within Radio Downloader.")]
-[assembly: AssemblyCompany("NerdoftheHerd.com")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Podcast Plugin")]
 [assembly: AssemblyCopyright("Copyright © 2007-2011 Matt Robinson")]
 [assembly: AssemblyTrademark("")]

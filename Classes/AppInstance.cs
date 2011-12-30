@@ -108,14 +108,6 @@ namespace RadioDld
             string tmplDbPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, DbFileName);
             string appDbPath = Path.Combine(FileUtils.GetAppDataFolder(), DbFileName);
 
-            // Migrate old (pre 0.24) version databases from www.nerdoftheherd.com -> NerdoftheHerd.com
-            string oldDbPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com"), Application.ProductName), DbFileName);
-
-            if (File.Exists(oldDbPath) && !File.Exists(appDbPath))
-            {
-                File.Move(oldDbPath, appDbPath);
-            }
-
             // Ensure that the template database exists
             if (!File.Exists(tmplDbPath))
             {

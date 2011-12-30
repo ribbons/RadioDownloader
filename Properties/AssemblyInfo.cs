@@ -6,7 +6,7 @@ using System.Security;
 
 [assembly: AssemblyTitle("Radio Downloader")]
 [assembly: AssemblyDescription("Utility to automatically download radio programmes made available online, using a plugin framework for provider specific implementation.")]
-[assembly: AssemblyCompany("NerdoftheHerd.com")]
+[assembly: AssemblyCompany("www.nerdoftheherd.com")]
 [assembly: AssemblyProduct("Radio Downloader")]
 [assembly: AssemblyCopyright("Copyright © 2007-2011 Matt Robinson")]
 [assembly: AssemblyTrademark("")]
