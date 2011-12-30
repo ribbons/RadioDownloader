@@ -48,7 +48,7 @@ namespace RadioDld.Model
 
         public Download(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where episodes.epid=@epid and downloads.epid=episodes.epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where episodes.epid=@epid and downloads.epid=episodes.epid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -140,7 +140,7 @@ namespace RadioDld.Model
 
         public static long Count()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid", FetchDbConn()))
             {
                 return (long)command.ExecuteScalar();
             }
@@ -148,7 +148,7 @@ namespace RadioDld.Model
 
         public static long CountNew()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid and playcount=0 and status=@status", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid and playcount=0 and status=@status", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
                 return (long)command.ExecuteScalar();
@@ -157,7 +157,7 @@ namespace RadioDld.Model
 
         public static long CountErrored()
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid and status=@status", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from episodes, downloads where downloads.epid=episodes.epid and status=@status", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
                 return (long)command.ExecuteScalar();
@@ -168,7 +168,7 @@ namespace RadioDld.Model
         {
             List<Download> items = new List<Download>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -186,7 +186,7 @@ namespace RadioDld.Model
         {
             List<Download> items = new List<Download>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -209,7 +209,7 @@ namespace RadioDld.Model
         {
             List<int> addEpids = new List<int>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
             {
                 SQLiteParameter epidParam = new SQLiteParameter("@epid");
                 command.Parameters.Add(epidParam);
@@ -240,9 +240,9 @@ namespace RadioDld.Model
 
         public static void SetComplete(int epid, string fileName)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
                     command.Parameters.Add(new SQLiteParameter("@filepath", fileName));
@@ -287,9 +287,9 @@ namespace RadioDld.Model
                     break;
             }
 
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
                     command.Parameters.Add(new SQLiteParameter("@errortype", errorType));
@@ -317,11 +317,11 @@ namespace RadioDld.Model
 
         public static void ResetAsync(int epid, bool auto)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", Data.FetchDbConn(), transMon.Trans))
+                    using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", FetchDbConn(), transMon.Trans))
                     {
                         command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Waiting));
                         command.Parameters.Add(new SQLiteParameter("@epid", epid));
@@ -330,7 +330,7 @@ namespace RadioDld.Model
 
                     if (!auto)
                     {
-                        using (SQLiteCommand command = new SQLiteCommand("update downloads set errorcount=0 where epid=@epid", Data.FetchDbConn(), transMon.Trans))
+                        using (SQLiteCommand command = new SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn(), transMon.Trans))
                         {
                             command.Parameters.Add(new SQLiteParameter("@epid", epid));
                             command.ExecuteNonQuery();
@@ -455,7 +455,7 @@ namespace RadioDld.Model
 
             List<Download> downloads = new List<Download>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select episodes.epid, progid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from episodes, downloads where episodes.epid=downloads.epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select episodes.epid, progid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from episodes, downloads where episodes.epid=downloads.epid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -475,7 +475,7 @@ namespace RadioDld.Model
                 status.ProgressBarMax = downloads.Count;
                 status.ProgressBarMarquee = false;
 
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set filepath=@filepath where epid=@epid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set filepath=@filepath where epid=@epid", FetchDbConn()))
                 {
                     SQLiteParameter epidParam = new SQLiteParameter("epid");
                     SQLiteParameter filepathParam = new SQLiteParameter("filepath");
@@ -496,9 +496,9 @@ namespace RadioDld.Model
 
                             if (newDownloadPath != download.DownloadPath)
                             {
-                                lock (Data.DbUpdateLock)
+                                lock (DbUpdateLock)
                                 {
-                                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                                     {
                                         epidParam.Value = download.Epid;
                                         filepathParam.Value = newDownloadPath;
@@ -552,7 +552,7 @@ namespace RadioDld.Model
             // Fetch a list of the downloads first to prevent locking the database during cleanup
             List<Download> downloads = new List<Download>();
 
-            using (SQLiteCommand command = new SQLiteCommand(query, Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand(query, FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
 
@@ -646,7 +646,7 @@ namespace RadioDld.Model
                             throw new InvalidDataException("Invalid column: " + sortBy.ToString());
                     }
 
-                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, Data.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {
@@ -701,7 +701,7 @@ namespace RadioDld.Model
 
         private static void Episode_Updated(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -727,11 +727,11 @@ namespace RadioDld.Model
         {
             List<int> added = new List<int>();
 
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("insert into downloads (epid) values (@epid)", Data.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("insert into downloads (epid) values (@epid)", FetchDbConn()))
                     {
                         SQLiteParameter epidParam = new SQLiteParameter("@epid");
                         command.Parameters.Add(epidParam);
@@ -776,9 +776,9 @@ namespace RadioDld.Model
 
         private static void BumpPlayCountAsync(int epid)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
                     command.ExecuteNonQuery();
@@ -798,11 +798,11 @@ namespace RadioDld.Model
 
         private static void RemoveAsync(int epid, bool auto)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", Data.FetchDbConn(), transMon.Trans))
+                    using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn(), transMon.Trans))
                     {
                         command.Parameters.Add(new SQLiteParameter("@epid", epid));
                         command.ExecuteNonQuery();

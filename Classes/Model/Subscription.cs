@@ -52,7 +52,7 @@ namespace RadioDld.Model
         {
             List<Subscription> items = new List<Subscription>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from subscriptions, programmes where subscriptions.progid=programmes.progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from subscriptions, programmes where subscriptions.progid=programmes.progid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -68,7 +68,7 @@ namespace RadioDld.Model
 
         public static bool IsSubscribed(int progid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(*) from subscriptions where progid=@progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from subscriptions where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
                 return (long)command.ExecuteScalar() > 0;
@@ -81,7 +81,7 @@ namespace RadioDld.Model
 
             if (progInfo.SingleEpisode)
             {
-                using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid and progid=@progid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid and progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("progid", progid));
 
@@ -117,7 +117,7 @@ namespace RadioDld.Model
 
                     int sort = 0;
 
-                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", Data.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {
@@ -154,9 +154,9 @@ namespace RadioDld.Model
 
         private static void AddAsync(int progid)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("insert into subscriptions (progid) values (@progid)", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("insert into subscriptions (progid) values (@progid)", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -187,9 +187,9 @@ namespace RadioDld.Model
 
         private static void RemoveAsync(int progid)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
                     command.ExecuteNonQuery();

@@ -52,7 +52,7 @@ namespace RadioDld.Model
         {
             List<Favourite> items = new List<Favourite>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from favourites, programmes where favourites.progid=programmes.progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from favourites, programmes where favourites.progid=programmes.progid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -68,7 +68,7 @@ namespace RadioDld.Model
 
         public static bool IsFavourite(int progid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select count(*) from favourites where progid=@progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from favourites where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
                 return (long)command.ExecuteScalar() > 0;
@@ -96,7 +96,7 @@ namespace RadioDld.Model
 
                     int sort = 0;
 
-                    using (SQLiteCommand command = new SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by name", Data.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by name", FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {
@@ -133,9 +133,9 @@ namespace RadioDld.Model
 
         private static void AddAsync(int progid)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("insert into favourites (progid) values (@progid)", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("insert into favourites (progid) values (@progid)", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -166,9 +166,9 @@ namespace RadioDld.Model
 
         private static void RemoveAsync(int progid)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("delete from favourites where progid=@progid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("delete from favourites where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
                     command.ExecuteNonQuery();

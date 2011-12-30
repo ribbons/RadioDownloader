@@ -20,7 +20,7 @@ namespace RadioDld.Model
     using System.Data.SQLite;
     using System.Threading;
 
-    internal class Episode
+    internal class Episode : Database
     {
         internal const string Columns = "episodes.epid, progid, name, description, date, duration, autodownload";
 
@@ -35,7 +35,7 @@ namespace RadioDld.Model
 
         public Episode(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes where epid=@epid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes where epid=@epid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
@@ -74,13 +74,54 @@ namespace RadioDld.Model
             ThreadPool.QueueUserWorkItem(delegate { SetAutoDownloadAsync(epids, autoDownload); });
         }
 
+        public static System.Drawing.Bitmap GetImage(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        int imageOrdinal = reader.GetOrdinal("image");
+
+                        if (!reader.IsDBNull(imageOrdinal))
+                        {
+                            return RetrieveImage(reader.GetInt32(imageOrdinal));
+                        }
+
+                        int progidOrdinal = reader.GetOrdinal("progid");
+
+                        if (!reader.IsDBNull(progidOrdinal))
+                        {
+                            using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
+                            {
+                                progCmd.Parameters.Add(new SQLiteParameter("@progid", reader.GetInt32(progidOrdinal)));
+
+                                using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
+                                {
+                                    if (progReader.Read())
+                                    {
+                                        return RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
         protected static void SetAutoDownloadAsync(int[] epids, bool autoDownload)
         {
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", Data.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("update episodes set autodownload=@autodownload where epid=@epid", FetchDbConn()))
                     {
                         SQLiteParameter epidParam = new SQLiteParameter("@epid");
                         SQLiteParameter autodownloadParam = new SQLiteParameter("@autodownload");

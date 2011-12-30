@@ -22,7 +22,7 @@ namespace RadioDld.Model
     using System.Globalization;
     using System.Threading;
 
-    internal class Programme
+    internal class Programme : Database
     {
         internal const string Columns = "programmes.progid, programmes.name, programmes.description, singleepisode, pluginid, latestdownload";
 
@@ -37,7 +37,7 @@ namespace RadioDld.Model
 
         public Programme(int progid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from programmes where progid=@progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from programmes where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -73,7 +73,7 @@ namespace RadioDld.Model
         {
             List<Programme> items = new List<Programme>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select distinct " + Columns + " from programmes, episodes, downloads where downloads.epid=episodes.epid and episodes.progid=programmes.progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select distinct " + Columns + " from programmes, episodes, downloads where downloads.epid=episodes.epid and episodes.progid=programmes.progid", FetchDbConn()))
             {
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
@@ -106,9 +106,9 @@ namespace RadioDld.Model
 
             int? progid = null;
 
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
                     command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
@@ -144,7 +144,7 @@ namespace RadioDld.Model
 
         public static void SetLatestDownload(int progid, DateTime downloadDate)
         {
-            using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("update programmes set latestdownload=@latestdownload where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@latestdownload", downloadDate));
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
@@ -155,6 +155,40 @@ namespace RadioDld.Model
             {
                 Updated(progid);
             }
+        }
+
+        public static System.Drawing.Bitmap GetImage(int progid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        return RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
+                    }
+                    else
+                    {
+                        // Find the id of the latest episode's image
+                        using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image not null order by date desc limit 1", FetchDbConn()))
+                        {
+                            latestCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                            using (SQLiteMonDataReader latestRdr = new SQLiteMonDataReader(latestCmd.ExecuteReader()))
+                            {
+                                if (latestRdr.Read())
+                                {
+                                    return RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return null;
         }
 
         protected static void RaiseUpdated(int progid)
@@ -209,9 +243,9 @@ namespace RadioDld.Model
 
             int? progid = null;
 
-            lock (Data.DbUpdateLock)
+            lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", Data.FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
                     command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
@@ -225,28 +259,28 @@ namespace RadioDld.Model
                     }
                 }
 
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(Data.FetchDbConn().BeginTransaction()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
                     if (progid == null)
                     {
-                        using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", Data.FetchDbConn()))
+                        using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn()))
                         {
                             command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
                             command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
                             command.ExecuteNonQuery();
                         }
 
-                        using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", Data.FetchDbConn()))
+                        using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
                         {
                             progid = (int)(long)command.ExecuteScalar();
                         }
                     }
 
-                    using (SQLiteCommand command = new SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", Data.FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn()))
                     {
                         command.Parameters.Add(new SQLiteParameter("@name", progInfo.ProgrammeInfo.Name));
                         command.Parameters.Add(new SQLiteParameter("@description", progInfo.ProgrammeInfo.Description));
-                        command.Parameters.Add(new SQLiteParameter("@image", Data.GetInstance().StoreImage(progInfo.ProgrammeInfo.Image)));
+                        command.Parameters.Add(new SQLiteParameter("@image", StoreImage(progInfo.ProgrammeInfo.Image)));
                         command.Parameters.Add(new SQLiteParameter("@singleepisode", progInfo.ProgrammeInfo.SingleEpisode));
                         command.Parameters.Add(new SQLiteParameter("@lastupdate", DateTime.Now));
                         command.Parameters.Add(new SQLiteParameter("@progid", progid));
@@ -271,7 +305,7 @@ namespace RadioDld.Model
             string updateExtid = null;
 
             // Test to see if an update is required, and then free up the database
-            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", Data.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid, lastupdate from programmes where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 

@@ -28,15 +28,10 @@ namespace RadioDld
     using System.Xml.Serialization;
     using Microsoft.VisualBasic;
 
-    internal class Data
+    internal class Data : Database
     {
-        [ThreadStatic]
-        private static SQLiteConnection dbConn;
         private static Data dataInstance;
-
         private static object dataInstanceLock = new object();
-
-        private static object dbUpdateLock = new object();
 
         private DataSearch search;
         private Thread episodeListThread;
@@ -132,14 +127,6 @@ namespace RadioDld
 
         public event DownloadProgressTotalEventHandler DownloadProgressTotal;
 
-        public static object DbUpdateLock
-        {
-            get
-            {
-                return dbUpdateLock;
-            }
-        }
-
         public static Data GetInstance()
         {
             // Need to use a lock instead of declaring the instance variable as New, as otherwise
@@ -158,81 +145,6 @@ namespace RadioDld
         public void StartDownload()
         {
             ThreadPool.QueueUserWorkItem(delegate { this.StartDownloadAsync(); });
-        }
-
-        public Bitmap FetchProgrammeImage(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read())
-                    {
-                        return this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
-                    }
-                    else
-                    {
-                        // Find the id of the latest episode's image
-                        using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image not null order by date desc limit 1", FetchDbConn()))
-                        {
-                            latestCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                            using (SQLiteMonDataReader latestRdr = new SQLiteMonDataReader(latestCmd.ExecuteReader()))
-                            {
-                                if (latestRdr.Read())
-                                {
-                                    return this.RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }
-
-        public Bitmap FetchEpisodeImage(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read())
-                    {
-                        int imageOrdinal = reader.GetOrdinal("image");
-
-                        if (!reader.IsDBNull(imageOrdinal))
-                        {
-                            return this.RetrieveImage(reader.GetInt32(imageOrdinal));
-                        }
-
-                        int progidOrdinal = reader.GetOrdinal("progid");
-
-                        if (!reader.IsDBNull(progidOrdinal))
-                        {
-                            using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
-                            {
-                                progCmd.Parameters.Add(new SQLiteParameter("@progid", reader.GetInt32(progidOrdinal)));
-
-                                using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
-                                {
-                                    if (progReader.Read())
-                                    {
-                                        return this.RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
         }
 
         public void DownloadReportError(int epid)
@@ -403,61 +315,6 @@ namespace RadioDld
             }
         }
 
-        public int? StoreImage(Bitmap image)
-        {
-            if (image == null)
-            {
-                return null;
-            }
-
-            // Convert the image into a byte array
-            byte[] imageAsBytes = null;
-
-            using (MemoryStream memstream = new MemoryStream())
-            {
-                image.Save(memstream, System.Drawing.Imaging.ImageFormat.Png);
-                imageAsBytes = memstream.ToArray();
-            }
-
-            lock (Data.dbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("select imgid from images where image=@image", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@image", imageAsBytes));
-
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        if (reader.Read())
-                        {
-                            return reader.GetInt32(reader.GetOrdinal("imgid"));
-                        }
-                    }
-                }
-
-                using (SQLiteCommand command = new SQLiteCommand("insert into images (image) values (@image)", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@image", imageAsBytes));
-                    command.ExecuteNonQuery();
-                }
-
-                using (SQLiteCommand command = new SQLiteCommand("select last_insert_rowid()", FetchDbConn()))
-                {
-                    return (int)(long)command.ExecuteScalar();
-                }
-            }
-        }
-
-        internal static SQLiteConnection FetchDbConn()
-        {
-            if (dbConn == null)
-            {
-                dbConn = new SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False");
-                dbConn.Open();
-            }
-
-            return dbConn;
-        }
-
         private void StartDownloadAsync()
         {
             lock (this.findDownloadLock)
@@ -495,7 +352,7 @@ namespace RadioDld
                                     }
                                     else
                                     {
-                                        provProgInfo.Image = this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
+                                        provProgInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
                                     }
 
                                     EpisodeInfo provEpInfo = new EpisodeInfo();
@@ -518,7 +375,7 @@ namespace RadioDld
                                     }
                                     else
                                     {
-                                        provEpInfo.Image = this.RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
+                                        provEpInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
                                     }
 
                                     provEpInfo.ExtInfo = new Dictionary<string, string>();
@@ -783,7 +640,7 @@ namespace RadioDld
         {
             this.curDldProgData.FinalName += "." + fileExtension;
 
-            lock (Data.dbUpdateLock)
+            lock (DbUpdateLock)
             {
                 Model.Download.SetComplete(this.curDldProgData.EpisodeInfo.Epid, this.curDldProgData.FinalName);
                 Model.Programme.SetLatestDownload(this.curDldProgData.ProgInfo.Progid, this.curDldProgData.EpisodeInfo.EpisodeDate);
@@ -848,7 +705,7 @@ namespace RadioDld
 
         private void SetDBSetting(string propertyName, object value)
         {
-            lock (Data.dbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("insert or replace into settings (property, value) values (@property, @value)", FetchDbConn()))
                 {
@@ -882,7 +739,7 @@ namespace RadioDld
             status.StatusText = "Compacting database.  This may take several minutes...";
 
             // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-            lock (Data.dbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
                 {
@@ -941,36 +798,6 @@ namespace RadioDld
             }
         }
 
-        private Bitmap RetrieveImage(int imgid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select image from images where imgid=@imgid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@imgid", imgid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        return null;
-                    }
-
-                    // Get the size of the image data by passing nothing to getbytes
-                    int dataLength = (int)reader.GetBytes(reader.GetOrdinal("image"), 0, null, 0, 0);
-                    byte[] content = new byte[dataLength];
-
-                    reader.GetBytes(reader.GetOrdinal("image"), 0, content, 0, dataLength);
-
-                    using (MemoryStream contentStream = new MemoryStream(content))
-                    {
-                        using (Bitmap streamBitmap = new Bitmap(contentStream))
-                        {
-                            return new Bitmap(streamBitmap);
-                        }
-                    }
-                }
-            }
-        }
-
         private List<string> GetAvailableEpisodes(Guid providerId, string progExtId)
         {
             if (!Plugins.PluginExists(providerId))
@@ -1025,7 +852,7 @@ namespace RadioDld
                 episodeInfoReturn.EpisodeInfo.Date = DateTime.Now;
             }
 
-            lock (Data.dbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
@@ -1039,7 +866,7 @@ namespace RadioDld
                         addEpisodeCmd.Parameters.Add(new SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description));
                         addEpisodeCmd.Parameters.Add(new SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs));
                         addEpisodeCmd.Parameters.Add(new SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date));
-                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@image", this.StoreImage(episodeInfoReturn.EpisodeInfo.Image)));
+                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)));
                         addEpisodeCmd.ExecuteNonQuery();
                     }
 

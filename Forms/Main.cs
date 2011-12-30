@@ -468,7 +468,7 @@ namespace RadioDld
                 infoText += TextUtils.DescDuration(epInfo.Duration) + Environment.NewLine;
                 infoText += "Auto download: " + (epInfo.AutoDownload ? "Yes" : "No");
 
-                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.EpisodeDate), infoText, this.progData.FetchEpisodeImage(epid));
+                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.EpisodeDate), infoText, Model.Episode.GetImage(epid));
             }
             else
             {
@@ -548,7 +548,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(info.Name, info.Description, this.progData.FetchProgrammeImage(progid));
+            this.SetSideBar(info.Name, info.Description, Model.Programme.GetImage(progid));
         }
 
         private void ListFavourites_ItemActivate(object sender, EventArgs e)
@@ -599,8 +599,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-
-            this.SetSideBar(info.Name, info.Description, this.progData.FetchProgrammeImage(progid));
+            this.SetSideBar(info.Name, info.Description, Model.Subscription.GetImage(progid));
         }
 
         private void ListSubscribed_ItemActivate(object sender, EventArgs e)
@@ -797,7 +796,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.EpisodeDate), infoText, this.progData.FetchEpisodeImage(epid));
+            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.EpisodeDate), infoText, Model.Episode.GetImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
@@ -1040,7 +1039,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(progInfo.Name, progInfo.Description, this.progData.FetchProgrammeImage(progid));
+            this.SetSideBar(progInfo.Name, progInfo.Description, Model.Programme.GetImage(progid));
         }
 
         private ListViewItem EpisodeListItem(Model.Episode info, ListViewItem item)
