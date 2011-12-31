@@ -205,26 +205,24 @@ namespace RadioDld.Model
             return items;
         }
 
+        public static bool IsDownload(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from downloads where epid=@epid", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                return (long)command.ExecuteScalar() != 0;
+            }
+        }
+
         public static bool Add(int[] epids)
         {
             List<int> addEpids = new List<int>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
+            foreach (int epid in epids)
             {
-                SQLiteParameter epidParam = new SQLiteParameter("@epid");
-                command.Parameters.Add(epidParam);
-
-                foreach (int epid in epids)
+                if (!IsDownload(epid))
                 {
-                    epidParam.Value = epid;
-
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        if (!reader.Read())
-                        {
-                            addEpids.Add(epid);
-                        }
-                    }
+                    addEpids.Add(epid);
                 }
             }
 
@@ -701,24 +699,16 @@ namespace RadioDld.Model
 
         private static void Episode_Updated(int epid)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
+            if (IsDownload(epid))
             {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                lock (sortCacheLock)
                 {
-                    if (reader.Read())
-                    {
-                        lock (sortCacheLock)
-                        {
-                            sortCache = null;
-                        }
+                    sortCache = null;
+                }
 
-                        if (Updated != null)
-                        {
-                            Updated(epid);
-                        }
-                    }
+                if (Updated != null)
+                {
+                    Updated(epid);
                 }
             }
         }
