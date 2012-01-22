@@ -60,7 +60,7 @@ namespace RadioDld
             try
             {
                 this.Visible = false;
-                this.report.SendReport(Properties.Settings.Default.ErrorReportURL);
+                this.report.SendReport();
             }
             catch
             {

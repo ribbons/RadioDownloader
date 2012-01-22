@@ -49,20 +49,8 @@ namespace RadioDld
         private Data()
             : base()
         {
-            // Vacuum the database every few months - vacuums are spaced like this as they take ages to run
-            bool runVacuum = false;
-            object lastVacuum = this.GetDBSetting("lastvacuum");
-
-            if (lastVacuum == null)
-            {
-                runVacuum = true;
-            }
-            else
-            {
-                runVacuum = DateTime.ParseExact((string)lastVacuum, "O", CultureInfo.InvariantCulture).AddMonths(3) < DateTime.Now;
-            }
-
-            if (runVacuum)
+            // Vacuum the database every few months - they are spaced like this as they take ages to run
+            if (Settings.LastVacuum.AddMonths(3) < DateTime.Now)
             {
                 using (Status status = new Status())
                 {
@@ -73,24 +61,16 @@ namespace RadioDld
                 }
             }
 
-            const int CurrentVer = 4;
-            int dbVersion = CurrentVer;
-
-            // Fetch the version of the database
-            if (this.GetDBSetting("databaseversion") != null)
+            // Upgrade the database if required
+            switch (Settings.DatabaseVersion)
             {
-                dbVersion = Convert.ToInt32(this.GetDBSetting("databaseversion"), CultureInfo.InvariantCulture);
-            }
-
-            switch (dbVersion)
-            {
-                case 4:
+                case Database.CurrentDbVersion:
                     // Nothing to do, this is the current version.
                     break;
             }
 
-            // Set the current database version.
-            this.SetDBSetting("databaseversion", CurrentVer);
+            // Set the current database version
+            Settings.DatabaseVersion = Database.CurrentDbVersion;
 
             this.search = DataSearch.GetInstance();
 
@@ -228,7 +208,7 @@ namespace RadioDld
             }
 
             ErrorReporting report = new ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails);
-            report.SendReport(Properties.Settings.Default.ErrorReportURL);
+            report.SendReport();
         }
 
         public Panel GetFindNewPanel(Guid pluginID, object view)
@@ -456,7 +436,7 @@ namespace RadioDld
 
                 try
                 {
-                    this.curDldProgData.FinalName = Model.Download.FindFreeSaveFileName(Properties.Settings.Default.FileNameFormat, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, saveLocation);
+                    this.curDldProgData.FinalName = Model.Download.FindFreeSaveFileName(Settings.FileNameFormat, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, saveLocation);
                 }
                 catch (IOException ioExp)
                 {
@@ -660,12 +640,12 @@ namespace RadioDld
                 }
             }
 
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.RunAfterCommand))
+            if (!string.IsNullOrEmpty(Settings.RunAfterCommand))
             {
                 try
                 {
                     // Environ("comspec") will give the path to cmd.exe or command.com
-                    Interaction.Shell("\"" + Interaction.Environ("comspec") + "\" /c " + Properties.Settings.Default.RunAfterCommand.Replace("%file%", this.curDldProgData.FinalName), AppWinStyle.NormalNoFocus);
+                    Interaction.Shell("\"" + Interaction.Environ("comspec") + "\" /c " + Settings.RunAfterCommand.Replace("%file%", this.curDldProgData.FinalName), AppWinStyle.NormalNoFocus);
                 }
                 catch
                 {
@@ -703,37 +683,6 @@ namespace RadioDld
             }
         }
 
-        private void SetDBSetting(string propertyName, object value)
-        {
-            lock (DbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("insert or replace into settings (property, value) values (@property, @value)", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@property", propertyName));
-                    command.Parameters.Add(new SQLiteParameter("@value", value));
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
-        private object GetDBSetting(string propertyName)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select value from settings where property=@property", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@property", propertyName));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        return null;
-                    }
-
-                    return reader.GetValue(reader.GetOrdinal("value"));
-                }
-            }
-        }
-
         private void VacuumDatabase(Status status)
         {
             status.StatusText = "Compacting database.  This may take several minutes...";
@@ -746,7 +695,7 @@ namespace RadioDld
                     command.ExecuteNonQuery();
                 }
 
-                this.SetDBSetting("lastvacuum", DateTime.Now.ToString("O", CultureInfo.InvariantCulture));
+                Settings.LastVacuum = DateTime.Now;
             }
         }
 
@@ -764,7 +713,7 @@ namespace RadioDld
             else
             {
                 ErrorReporting reportException = new ErrorReporting("Find New Error", exception);
-                reportException.SendReport(Properties.Settings.Default.ErrorReportURL);
+                reportException.SendReport();
             }
         }
 

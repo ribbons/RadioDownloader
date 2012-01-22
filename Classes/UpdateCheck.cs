@@ -31,7 +31,7 @@ namespace RadioDld
 
         public bool IsUpdateAvailable()
         {
-            if (Properties.Settings.Default.LastCheckForUpdates.AddDays(1) > DateTime.Now)
+            if (Settings.LastCheckForUpdates.AddDays(1) > DateTime.Now)
             {
                 return false;
             }
@@ -51,8 +51,7 @@ namespace RadioDld
                 return false;
             }
 
-            Properties.Settings.Default.LastCheckForUpdates = DateTime.Now;
-            Properties.Settings.Default.Save(); // Save the last check time in case of unexpected termination
+            Settings.LastCheckForUpdates = DateTime.Now;
 
             if (!string.IsNullOrEmpty(versionInfo))
             {

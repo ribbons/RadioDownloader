@@ -21,14 +21,16 @@ namespace RadioDld
     using System.Drawing;
     using System.IO;
 
-    internal abstract class Database
+    public abstract class Database
     {
+        protected internal const int CurrentDbVersion = 4;
+
         [ThreadStatic]
         private static SQLiteConnection dbConn;
 
         private static object dbUpdateLock = new object();
 
-        protected static object DbUpdateLock
+        protected internal static object DbUpdateLock
         {
             get
             {
@@ -36,7 +38,7 @@ namespace RadioDld
             }
         }
 
-        protected static SQLiteConnection FetchDbConn()
+        protected internal static SQLiteConnection FetchDbConn()
         {
             if (dbConn == null)
             {
@@ -47,7 +49,7 @@ namespace RadioDld
             return dbConn;
         }
 
-        protected static Bitmap RetrieveImage(int imgid)
+        protected internal static Bitmap RetrieveImage(int imgid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select image from images where imgid=@imgid", FetchDbConn()))
             {
@@ -77,7 +79,7 @@ namespace RadioDld
             }
         }
 
-        protected static int? StoreImage(Bitmap image)
+        protected internal static int? StoreImage(Bitmap image)
         {
             if (image == null)
             {

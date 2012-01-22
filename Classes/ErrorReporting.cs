@@ -31,6 +31,7 @@ namespace RadioDld
 
     internal class ErrorReporting
     {
+        private const string SendReportUrl = "http://www.nerdoftheherd.com/tools/radiodld/error_report.php";
         private Dictionary<string, string> fields = new Dictionary<string, string>();
 
         public ErrorReporting(string errorText, string errorDetails)
@@ -234,7 +235,7 @@ namespace RadioDld
             return stringValue;
         }
 
-        public void SendReport(string sendUrl)
+        public void SendReport()
         {
             try
             {
@@ -250,7 +251,7 @@ namespace RadioDld
 
                 postData = postData.Substring(1);
 
-                byte[] result = sendClient.UploadData(sendUrl, "POST", System.Text.Encoding.ASCII.GetBytes(postData));
+                byte[] result = sendClient.UploadData(SendReportUrl, "POST", System.Text.Encoding.ASCII.GetBytes(postData));
                 string[] returnLines = System.Text.Encoding.ASCII.GetString(result).Split('\n');
 
                 if (returnLines[0] == "success")

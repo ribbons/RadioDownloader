@@ -155,7 +155,7 @@ namespace RadioDld
         {
             RegistryKey runKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-            if (Properties.Settings.Default.RunOnStartup)
+            if (Settings.RunOnStartup)
             {
                 runKey.SetValue(Application.ProductName, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
             }

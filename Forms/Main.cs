@@ -285,6 +285,81 @@ namespace RadioDld
             this.progData.FindNewViewChange += this.ProgData_FindNewViewChange;
             this.progData.FoundNew += this.ProgData_FoundNew;
 
+            // Temporary code to migrate the .net settings to database settings
+            if (Properties.Settings.Default.SaveFolder != (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue)
+            {
+                Settings.SaveFolder = Properties.Settings.Default.SaveFolder;
+                Properties.Settings.Default.SaveFolder = (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue;
+            }
+
+            if (Properties.Settings.Default.FileNameFormat != (string)Properties.Settings.Default.Properties["FileNameFormat"].DefaultValue)
+            {
+                Settings.FileNameFormat = Properties.Settings.Default.FileNameFormat;
+                Properties.Settings.Default.FileNameFormat = (string)Properties.Settings.Default.Properties["FileNameFormat"].DefaultValue;
+            }
+
+            if (Properties.Settings.Default.RunAfterCommand != (string)Properties.Settings.Default.Properties["RunAfterCommand"].DefaultValue)
+            {
+                Settings.RunAfterCommand = Properties.Settings.Default.RunAfterCommand;
+                Properties.Settings.Default.RunAfterCommand = (string)Properties.Settings.Default.Properties["RunAfterCommand"].DefaultValue;
+            }
+
+            if (Properties.Settings.Default.ShownTrayBalloon != false)
+            {
+                Settings.ShownTrayBalloon = Properties.Settings.Default.ShownTrayBalloon;
+                Properties.Settings.Default.ShownTrayBalloon = false;
+            }
+
+            if (Properties.Settings.Default.DownloadCols != (string)Properties.Settings.Default.Properties["DownloadCols"].DefaultValue)
+            {
+                Settings.DownloadCols = Properties.Settings.Default.DownloadCols;
+                Properties.Settings.Default.DownloadCols = (string)Properties.Settings.Default.Properties["DownloadCols"].DefaultValue;
+            }
+
+            if (Properties.Settings.Default.DownloadColSizes != (string)Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue)
+            {
+                Settings.DownloadColSizes = Properties.Settings.Default.DownloadColSizes;
+                Properties.Settings.Default.DownloadColSizes = (string)Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue;
+            }
+
+            if (Properties.Settings.Default.DownloadColSortBy != 1)
+            {
+                Settings.DownloadColSortBy = (Model.Download.DownloadCols)Properties.Settings.Default.DownloadColSortBy;
+                Properties.Settings.Default.DownloadColSortBy = 1;
+            }
+
+            if (Properties.Settings.Default.DownloadColSortAsc != false)
+            {
+                Settings.DownloadColSortAsc = Properties.Settings.Default.DownloadColSortAsc;
+                Properties.Settings.Default.DownloadColSortAsc = false;
+            }
+
+            if (Properties.Settings.Default.RunOnStartup != true)
+            {
+                Settings.RunOnStartup = Properties.Settings.Default.RunOnStartup;
+                Properties.Settings.Default.RunOnStartup = true;
+            }
+
+            if (Properties.Settings.Default.CloseToSystray != false)
+            {
+                Settings.CloseToSystray = Properties.Settings.Default.CloseToSystray;
+                Properties.Settings.Default.CloseToSystray = false;
+            }
+
+            if (Properties.Settings.Default.MainFormPos != Rectangle.Empty)
+            {
+                Settings.MainFormPos = Properties.Settings.Default.MainFormPos;
+                Properties.Settings.Default.MainFormPos = Rectangle.Empty;
+            }
+
+            if (Properties.Settings.Default.MainFormState != FormWindowState.Normal)
+            {
+                Settings.MainFormState = Properties.Settings.Default.MainFormState;
+                Properties.Settings.Default.MainFormState = FormWindowState.Normal;
+            }
+
+            Properties.Settings.Default.Save();
+
             Model.Programme.Updated += this.Programme_Updated;
             Model.Favourite.Added += this.Favourite_Added;
             Model.Favourite.Updated += this.Favourite_Updated;
@@ -314,7 +389,7 @@ namespace RadioDld
                 this.tbarNotif = new TaskbarNotify();
             }
 
-            if (!OsUtils.WinSevenOrLater() || Properties.Settings.Default.CloseToSystray)
+            if (!OsUtils.WinSevenOrLater() || Settings.CloseToSystray)
             {
                 // Show a system tray icon
                 this.NotifyIcon.Visible = true;
@@ -343,19 +418,19 @@ namespace RadioDld
                 this.ImageSidebar.MaximumSize = new Size((int)(this.ImageSidebar.MaximumSize.Width * (graphicsForDpi.DpiX / 96)), (int)(this.ImageSidebar.MaximumSize.Height * (graphicsForDpi.DpiY / 96)));
             }
 
-            if (Properties.Settings.Default.MainFormPos != Rectangle.Empty)
+            if (Settings.MainFormPos != Rectangle.Empty)
             {
-                if (OsUtils.VisibleOnScreen(Properties.Settings.Default.MainFormPos))
+                if (OsUtils.VisibleOnScreen(Settings.MainFormPos))
                 {
                     this.StartPosition = FormStartPosition.Manual;
-                    this.DesktopBounds = Properties.Settings.Default.MainFormPos;
+                    this.DesktopBounds = Settings.MainFormPos;
                 }
                 else
                 {
-                    this.Size = Properties.Settings.Default.MainFormPos.Size;
+                    this.Size = Settings.MainFormPos.Size;
                 }
 
-                this.WindowState = Properties.Settings.Default.MainFormState;
+                this.WindowState = Settings.MainFormState;
             }
 
             this.windowPosLoaded = true;
@@ -403,7 +478,7 @@ namespace RadioDld
                     this.Visible = false;
                     eventArgs.Cancel = true;
 
-                    if (!Properties.Settings.Default.ShownTrayBalloon)
+                    if (!Settings.ShownTrayBalloon)
                     {
                         this.NotifyIcon.BalloonTipIcon = ToolTipIcon.Info;
                         this.NotifyIcon.BalloonTipText = "Radio Downloader will continue to run in the background, so that it can download your subscriptions as soon as they become available." + Environment.NewLine + "Click here to hide this message in future.";
@@ -636,8 +711,8 @@ namespace RadioDld
             this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(Model.Download.SortByColumn), Model.Download.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Save the current sort
-            Properties.Settings.Default.DownloadColSortBy = (int)Model.Download.SortByColumn;
-            Properties.Settings.Default.DownloadColSortAsc = Model.Download.SortAscending;
+            Settings.DownloadColSortBy = Model.Download.SortByColumn;
+            Settings.DownloadColSortAsc = Model.Download.SortAscending;
 
             this.ListDownloads.Sort();
         }
@@ -660,7 +735,7 @@ namespace RadioDld
             newOrder.Insert(e.NewDisplayIndex, moveCol);
 
             // Save the new column order to the preference
-            Properties.Settings.Default.DownloadCols = string.Join(",", newOrder.ToArray());
+            Settings.DownloadCols = string.Join(",", newOrder.ToArray());
 
             if (e.OldDisplayIndex == 0 || e.NewDisplayIndex == 0)
             {
@@ -693,7 +768,7 @@ namespace RadioDld
                 saveColSizes += colSize.Key.ToString(CultureInfo.InvariantCulture) + "," + (colSize.Value / this.CurrentAutoScaleDimensions.Width).ToString(CultureInfo.InvariantCulture);
             }
 
-            Properties.Settings.Default.DownloadColSizes = saveColSizes;
+            Settings.DownloadColSizes = saveColSizes;
         }
 
         private void ListDownloads_ItemActivate(object sender, EventArgs e)
@@ -903,7 +978,7 @@ namespace RadioDld
 
         private void NotifyIcon_BalloonTipClicked(object sender, EventArgs e)
         {
-            Properties.Settings.Default.ShownTrayBalloon = true;
+            Settings.ShownTrayBalloon = true;
         }
 
         private void NotifyIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -1580,7 +1655,7 @@ namespace RadioDld
             {
                 if (commandLineArg.ToUpperInvariant() == "/HIDEMAINWINDOW")
                 {
-                    if (OsUtils.WinSevenOrLater() && !Properties.Settings.Default.CloseToSystray)
+                    if (OsUtils.WinSevenOrLater() && !Settings.CloseToSystray)
                     {
                         this.WindowState = FormWindowState.Minimized;
                     }
@@ -1599,12 +1674,12 @@ namespace RadioDld
             {
                 if (this.WindowState == FormWindowState.Normal)
                 {
-                    Properties.Settings.Default.MainFormPos = this.DesktopBounds;
+                    Settings.MainFormPos = this.DesktopBounds;
                 }
 
                 if (this.WindowState != FormWindowState.Minimized)
                 {
-                    Properties.Settings.Default.MainFormState = this.WindowState;
+                    Settings.MainFormState = this.WindowState;
                 }
             }
         }
@@ -1613,10 +1688,9 @@ namespace RadioDld
         {
             if (this.checkUpdate.IsUpdateAvailable())
             {
-                if (Properties.Settings.Default.LastUpdatePrompt.AddDays(7) < DateTime.Now)
+                if (Settings.LastUpdatePrompt.AddDays(7) < DateTime.Now)
                 {
-                    Properties.Settings.Default.LastUpdatePrompt = DateTime.Now;
-                    Properties.Settings.Default.Save(); // Save the last prompt time in case of unexpected termination
+                    Settings.LastUpdatePrompt = DateTime.Now;
 
                     using (UpdateNotify showUpdate = new UpdateNotify())
                     {
@@ -2196,12 +2270,12 @@ namespace RadioDld
         {
             using (ChooseCols chooser = new ChooseCols())
             {
-                chooser.Columns = Properties.Settings.Default.DownloadCols;
+                chooser.Columns = Settings.DownloadCols;
                 chooser.StoreNameList(this.downloadColNames);
 
                 if (chooser.ShowDialog(this) == DialogResult.OK)
                 {
-                    Properties.Settings.Default.DownloadCols = chooser.Columns;
+                    Settings.DownloadCols = chooser.Columns;
                     this.InitDownloadList();
                 }
             }
@@ -2209,11 +2283,7 @@ namespace RadioDld
 
         private void MenuListHdrsReset_Click(object sender, EventArgs e)
         {
-            Properties.Settings.Default.DownloadCols = (string)Properties.Settings.Default.Properties["DownloadCols"].DefaultValue;
-            Properties.Settings.Default.DownloadColSizes = (string)Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue;
-            Properties.Settings.Default.DownloadColSortBy = Convert.ToInt32(Properties.Settings.Default.Properties["DownloadColSortBy"].DefaultValue, CultureInfo.InvariantCulture);
-            Properties.Settings.Default.DownloadColSortAsc = Convert.ToBoolean(Properties.Settings.Default.Properties["DownloadColSortAsc"].DefaultValue, CultureInfo.InvariantCulture);
-
+            Settings.ResetDownloadCols();
             this.InitDownloadList();
         }
 
@@ -2270,25 +2340,34 @@ namespace RadioDld
             this.ListDownloads.Clear();
             this.ListDownloads.RemoveAllControls();
 
-            string newItems = string.Empty;
+            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6";
 
-            // Find any columns without widths defined in the current setting
-            foreach (string sizePair in Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue.ToString().Split('|'))
+            if (string.IsNullOrEmpty(Settings.DownloadColSizes))
             {
-                if (!("|" + Properties.Settings.Default.DownloadColSizes).Contains("|" + sizePair.Split(',')[0] + ","))
+                Settings.DownloadColSizes = DefaultColSizes;
+            }
+            else
+            {
+                string newItems = string.Empty;
+
+                // Find any columns without widths defined in the current setting
+                foreach (string sizePair in DefaultColSizes.Split('|'))
                 {
-                    newItems += "|" + sizePair;
+                    if (!("|" + Settings.DownloadColSizes).Contains("|" + sizePair.Split(',')[0] + ","))
+                    {
+                        newItems += "|" + sizePair;
+                    }
+                }
+
+                // Append the new column sizes to the end of the setting
+                if (!string.IsNullOrEmpty(newItems))
+                {
+                    Settings.DownloadColSizes += newItems;
                 }
             }
 
-            // Append the new column sizes to the end of the setting
-            if (!string.IsNullOrEmpty(newItems))
-            {
-                Properties.Settings.Default.DownloadColSizes += newItems;
-            }
-
             // Fetch the column sizes into downloadColSizes for ease of access
-            foreach (string sizePair in Properties.Settings.Default.DownloadColSizes.Split('|'))
+            foreach (string sizePair in Settings.DownloadColSizes.Split('|'))
             {
                 string[] splitPair = sizePair.Split(',');
                 int pixelSize = (int)(float.Parse(splitPair[1], CultureInfo.InvariantCulture) * this.CurrentAutoScaleDimensions.Width);
@@ -2297,9 +2376,9 @@ namespace RadioDld
             }
 
             // Set up the columns specified in the DownloadCols setting
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.DownloadCols))
+            if (!string.IsNullOrEmpty(Settings.DownloadCols))
             {
-                string[] columns = Properties.Settings.Default.DownloadCols.Split(',');
+                string[] columns = Settings.DownloadCols.Split(',');
 
                 foreach (string column in columns)
                 {
@@ -2310,8 +2389,8 @@ namespace RadioDld
             }
 
             // Apply the sort from the current settings
-            Model.Download.SortByColumn = (Model.Download.DownloadCols)Properties.Settings.Default.DownloadColSortBy;
-            Model.Download.SortAscending = Properties.Settings.Default.DownloadColSortAsc;
+            Model.Download.SortByColumn = Settings.DownloadColSortBy;
+            Model.Download.SortAscending = Settings.DownloadColSortAsc;
             this.ListDownloads.ShowSortOnHeader(this.downloadColOrder.IndexOf(Model.Download.SortByColumn), Model.Download.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Convert the list of Download items to an array of ListItems

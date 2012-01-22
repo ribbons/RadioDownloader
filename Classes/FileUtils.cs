@@ -28,14 +28,14 @@ namespace RadioDld
 
             string saveFolder;
 
-            if (!string.IsNullOrEmpty(Properties.Settings.Default.SaveFolder))
+            if (!string.IsNullOrEmpty(Settings.SaveFolder))
             {
-                if (!new DirectoryInfo(Properties.Settings.Default.SaveFolder).Exists)
+                if (!new DirectoryInfo(Settings.SaveFolder).Exists)
                 {
                     throw new DirectoryNotFoundException();
                 }
 
-                return Properties.Settings.Default.SaveFolder;
+                return Settings.SaveFolder;
             }
 
             try
