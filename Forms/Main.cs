@@ -965,15 +965,6 @@ namespace RadioDld
         {
             this.Close();
             this.Dispose();
-
-            try
-            {
-                Directory.Delete(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"), true);
-            }
-            catch (IOException)
-            {
-                // Ignore an IOException - this just means that a file in the temp folder is still in use.
-            }
         }
 
         private void NotifyIcon_BalloonTipClicked(object sender, EventArgs e)
