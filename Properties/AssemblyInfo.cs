@@ -8,7 +8,7 @@ using System.Security;
 [assembly: AssemblyDescription("Utility to automatically download radio programmes made available online, using a plugin framework for provider specific implementation.")]
 [assembly: AssemblyCompany("www.nerdoftheherd.com")]
 [assembly: AssemblyProduct("Radio Downloader")]
-[assembly: AssemblyCopyright("Copyright © 2007-2011 Matt Robinson")]
+[assembly: AssemblyCopyright("Copyright © 2007-2012 Matt Robinson")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
