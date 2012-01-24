@@ -38,6 +38,32 @@ namespace RadioDld
             }
         }
 
+        internal static void RunHousekeeping()
+        {
+            // Vacuum the database every few months - they are spaced like this as they take ages to run
+            if (Settings.LastVacuum.AddMonths(3) < DateTime.Now)
+            {
+                using (Status status = new Status())
+                {
+                    status.ShowDialog(delegate
+                    {
+                        Vacuum(status);
+                    });
+                }
+            }
+
+            // Upgrade the database if required
+            switch (Settings.DatabaseVersion)
+            {
+                case Database.CurrentDbVersion:
+                    // Nothing to do, this is the current version.
+                    break;
+            }
+
+            // Set the current database version
+            Settings.DatabaseVersion = Database.CurrentDbVersion;
+        }
+
         protected internal static SQLiteConnection FetchDbConn()
         {
             if (dbConn == null)
@@ -120,6 +146,22 @@ namespace RadioDld
                 {
                     return (int)(long)command.ExecuteScalar();
                 }
+            }
+        }
+
+        private static void Vacuum(Status status)
+        {
+            status.StatusText = "Compacting database.  This may take several minutes...";
+
+            // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
+            lock (DbUpdateLock)
+            {
+                using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                Settings.LastVacuum = DateTime.Now;
             }
         }
     }

@@ -130,6 +130,9 @@ namespace RadioDld
                     doDbUpdate.UpdateStructure();
                 }
             }
+
+            // Perform any other database updates and scheduled cleanup
+            Database.RunHousekeeping();
         }
 
         private void App_Shutdown(object sender, EventArgs e)

@@ -49,29 +49,6 @@ namespace RadioDld
         private Data()
             : base()
         {
-            // Vacuum the database every few months - they are spaced like this as they take ages to run
-            if (Settings.LastVacuum.AddMonths(3) < DateTime.Now)
-            {
-                using (Status status = new Status())
-                {
-                    status.ShowDialog(delegate
-                    {
-                        this.VacuumDatabase(status);
-                    });
-                }
-            }
-
-            // Upgrade the database if required
-            switch (Settings.DatabaseVersion)
-            {
-                case Database.CurrentDbVersion:
-                    // Nothing to do, this is the current version.
-                    break;
-            }
-
-            // Set the current database version
-            Settings.DatabaseVersion = Database.CurrentDbVersion;
-
             this.search = DataSearch.GetInstance();
 
             // Start regularly checking for new subscriptions in the background
@@ -680,22 +657,6 @@ namespace RadioDld
             if (this.DownloadProgressTotal != null)
             {
                 this.DownloadProgressTotal(true, percent);
-            }
-        }
-
-        private void VacuumDatabase(Status status)
-        {
-            status.StatusText = "Compacting database.  This may take several minutes...";
-
-            // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-            lock (DbUpdateLock)
-            {
-                using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
-                {
-                    command.ExecuteNonQuery();
-                }
-
-                Settings.LastVacuum = DateTime.Now;
             }
         }
 
