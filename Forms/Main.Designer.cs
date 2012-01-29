@@ -723,9 +723,8 @@ namespace RadioDld
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.Main_Load);
             this.Shown += new System.EventHandler(this.Main_Shown);
+            this.ResizeEnd += new System.EventHandler(this.Main_ResizeEnd);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Main_KeyDown);
-            this.Move += new System.EventHandler(this.Main_Move_Resize);
-            this.Resize += new System.EventHandler(this.Main_Move_Resize);
             TableSidebar.ResumeLayout(false);
             TableSidebar.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ImageSidebar)).EndInit();

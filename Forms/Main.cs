@@ -43,8 +43,6 @@ namespace RadioDld
         private Dictionary<int, int> downloadColSizes = new Dictionary<int, int>();
         private List<Model.Download.DownloadCols> downloadColOrder = new List<Model.Download.DownloadCols>();
 
-        private bool windowPosLoaded;
-
         public Main()
         {
             this.InitializeComponent();
@@ -432,8 +430,6 @@ namespace RadioDld
 
                 this.WindowState = Settings.MainFormState;
             }
-
-            this.windowPosLoaded = true;
 
             this.TableToolbars.Height = this.ToolbarMain.Height;
             this.ToolbarMain.SetWholeDropDown(this.ButtonOptionsMenu);
@@ -1659,19 +1655,16 @@ namespace RadioDld
             }
         }
 
-        private void Main_Move_Resize(object sender, EventArgs e)
+        private void Main_ResizeEnd(object sender, EventArgs e)
         {
-            if (this.windowPosLoaded)
+            if (this.WindowState == FormWindowState.Normal)
             {
-                if (this.WindowState == FormWindowState.Normal)
-                {
-                    Settings.MainFormPos = this.DesktopBounds;
-                }
+                Settings.MainFormPos = this.DesktopBounds;
+            }
 
-                if (this.WindowState != FormWindowState.Minimized)
-                {
-                    Settings.MainFormState = this.WindowState;
-                }
+            if (this.WindowState != FormWindowState.Minimized)
+            {
+                Settings.MainFormState = this.WindowState;
             }
         }
 
