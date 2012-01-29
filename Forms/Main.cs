@@ -280,8 +280,6 @@ namespace RadioDld
             this.progData = Data.GetInstance();
             this.progData.ProviderAdded += this.ProgData_ProviderAdded;
             this.progData.EpisodeAdded += this.ProgData_EpisodeAdded;
-            this.progData.DownloadProgress += this.ProgData_DownloadProgress;
-            this.progData.DownloadProgressTotal += this.ProgData_DownloadProgressTotal;
             this.progData.FindNewViewChange += this.ProgData_FindNewViewChange;
             this.progData.FoundNew += this.ProgData_FoundNew;
 
@@ -368,11 +366,13 @@ namespace RadioDld
             Model.Subscription.Updated += this.Subscription_Updated;
             Model.Subscription.Removed += this.Subscription_Removed;
             Model.Episode.Updated += this.Episode_Updated;
+            DownloadManager.ProgressTotal += this.DownloadManager_ProgressTotal;
 
             this.dataSearch = DataSearch.GetInstance();
             this.dataSearch.DownloadAdded += this.DataSearch_DownloadAdded;
             this.dataSearch.DownloadUpdated += this.DataSearch_DownloadUpdated;
             this.dataSearch.DownloadRemoved += this.DataSearch_DownloadRemoved;
+            this.dataSearch.DownloadProgress += this.DataSearch_DownloadProgress;
 
             this.progData.InitProviderList();
             this.InitFavouriteList();
@@ -456,7 +456,7 @@ namespace RadioDld
 
             OsUtils.ApplyRunOnStartup();
 
-            this.progData.StartDownload();
+            DownloadManager.StartNextDownload();
             this.TimerCheckForUpdates.Enabled = true;
         }
 
@@ -1481,12 +1481,12 @@ namespace RadioDld
             }
         }
 
-        private void ProgData_DownloadProgress(int epid, int percent, string statusText, ProgressIcon icon)
+        private void DataSearch_DownloadProgress(int epid, int percent, string statusText, ProgressIcon icon)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.Invoke((MethodInvoker)delegate { this.ProgData_DownloadProgress(epid, percent, statusText, icon); });
+                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadProgress(epid, percent, statusText, icon); });
                 return;
             }
 
@@ -1593,12 +1593,12 @@ namespace RadioDld
             }
         }
 
-        private void ProgData_DownloadProgressTotal(bool downloading, int percent)
+        private void DownloadManager_ProgressTotal(bool downloading, int percent)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.Invoke((MethodInvoker)delegate { this.ProgData_DownloadProgressTotal(downloading, percent); });
+                this.Invoke((MethodInvoker)delegate { this.DownloadManager_ProgressTotal(downloading, percent); });
                 return;
             }
 

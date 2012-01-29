@@ -176,6 +176,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AppInstance.cs" />
+    <Compile Include="Classes\DownloadManager.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Database.cs" />
     <Compile Include="Classes\ComboNameValue.cs" />
@@ -198,7 +199,7 @@
     <Compile Include="Classes\TextUtils.cs" />
     <Compile Include="Classes\UpdateCheck.cs" />
     <Compile Include="Classes\CachedWebClient.cs" />
-    <Compile Include="Classes\DldProgData.cs" />
+    <Compile Include="Classes\DownloadHandler.cs" />
     <Compile Include="Classes\ErrorReporting.cs" />
     <Compile Include="Classes\Plugins.cs" />
     <Compile Include="Classes\DatabaseInit.cs" />

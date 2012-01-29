@@ -351,7 +351,7 @@ namespace RadioDld.Model
 
             if (!auto)
             {
-                Data.GetInstance().StartDownload();
+                DownloadManager.StartNextDownload();
             }
         }
 
@@ -761,7 +761,7 @@ namespace RadioDld.Model
                 }
             }
             
-            Data.GetInstance().StartDownload();
+            DownloadManager.StartNextDownload();
         }
 
         private static void BumpPlayCountAsync(int epid)
@@ -788,6 +788,11 @@ namespace RadioDld.Model
 
         private static void RemoveAsync(int epid, bool auto)
         {
+            if (!auto)
+            {
+                DownloadManager.CancelDownload(epid);
+            }
+
             lock (DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
@@ -821,8 +826,6 @@ namespace RadioDld.Model
             {
                 Removed(epid);
             }
-
-            Data.GetInstance().DownloadCancel(epid, auto);
         }
     }
 }

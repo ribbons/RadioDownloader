@@ -77,15 +77,16 @@ namespace RadioDld
             Model.Download.Added += this.Download_Added;
             Model.Download.Updated += this.Download_Updated;
             Model.Download.Removed += this.Download_Removed;
+            DownloadManager.Progress += this.Download_Progress;
         }
 
-        public delegate void DownloadEventHandler(int epid);
+        public event Model.Episode.EpisodeEventHandler DownloadAdded;
 
-        public event DownloadEventHandler DownloadAdded;
+        public event Model.Episode.EpisodeEventHandler DownloadUpdated;
 
-        public event DownloadEventHandler DownloadUpdated;
+        public event Model.Episode.EpisodeEventHandler DownloadRemoved;
 
-        public event DownloadEventHandler DownloadRemoved;
+        public event DownloadManager.ProgressEventHandler DownloadProgress;
 
         public string DownloadQuery
         {
@@ -291,6 +292,14 @@ namespace RadioDld
             }
 
             // No need to clear the visibility cache, as having an extra entry won't cause an issue
+        }
+
+        private void Download_Progress(int epid, int percent, string statusText, ProgressIcon icon)
+        {
+            if (this.DownloadProgress != null && this.DownloadIsVisible(epid))
+            {
+                this.DownloadProgress(epid, percent, statusText, icon);
+            }
         }
 
         private void AddDownload(int epid)

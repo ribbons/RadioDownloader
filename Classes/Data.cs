@@ -33,24 +33,14 @@ namespace RadioDld
         private static Data dataInstance;
         private static object dataInstanceLock = new object();
 
-        private DataSearch search;
         private Thread episodeListThread;
 
         private object episodeListThreadLock = new object();
-        private DldProgData curDldProgData;
-        private Thread downloadThread;
-
-        private IRadioProvider downloadPluginInst;
         private IRadioProvider findNewPluginInst;
-
-        private object findDownloadLock = new object();
-        private int lastProgressVal = -1;
 
         private Data()
             : base()
         {
-            this.search = DataSearch.GetInstance();
-
             // Start regularly checking for new subscriptions in the background
             ThreadPool.QueueUserWorkItem(delegate
             {
@@ -68,10 +58,6 @@ namespace RadioDld
 
         public delegate void EpisodeAddedEventHandler(int epid);
 
-        public delegate void DownloadProgressEventHandler(int epid, int percent, string statusText, ProgressIcon icon);
-
-        public delegate void DownloadProgressTotalEventHandler(bool downloading, int percent);
-
         public event ProviderAddedEventHandler ProviderAdded;
 
         public event FindNewViewChangeEventHandler FindNewViewChange;
@@ -79,10 +65,6 @@ namespace RadioDld
         public event FoundNewEventHandler FoundNew;
 
         public event EpisodeAddedEventHandler EpisodeAdded;
-
-        public event DownloadProgressEventHandler DownloadProgress;
-
-        public event DownloadProgressTotalEventHandler DownloadProgressTotal;
 
         public static Data GetInstance()
         {
@@ -97,11 +79,6 @@ namespace RadioDld
 
                 return dataInstance;
             }
-        }
-
-        public void StartDownload()
-        {
-            ThreadPool.QueueUserWorkItem(delegate { this.StartDownloadAsync(); });
         }
 
         public void DownloadReportError(int epid)
@@ -249,214 +226,6 @@ namespace RadioDld
             return info;
         }
 
-        public void DownloadCancel(int epid, bool auto)
-        {
-            if (this.curDldProgData != null)
-            {
-                if (this.curDldProgData.EpisodeInfo.Epid == epid)
-                {
-                    // This episode is currently being downloaded
-                    if (this.downloadThread != null)
-                    {
-                        if (!auto)
-                        {
-                            // This is called by the download thread if it is an automatic removal
-                            this.downloadThread.Abort();
-                        }
-
-                        this.downloadThread = null;
-                    }
-                }
-
-                this.StartDownload();
-            }
-        }
-
-        private void StartDownloadAsync()
-        {
-            lock (this.findDownloadLock)
-            {
-                if (this.downloadThread == null)
-                {
-                    using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.image as progimg, ep.duration, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn()))
-                    {
-                        command.Parameters.Add(new SQLiteParameter("@statuswait", Model.Download.DownloadStatus.Waiting));
-                        command.Parameters.Add(new SQLiteParameter("@statuserr", Model.Download.DownloadStatus.Errored));
-
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            while (this.downloadThread == null)
-                            {
-                                if (!reader.Read())
-                                {
-                                    return;
-                                }
-
-                                Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-
-                                if (Plugins.PluginExists(pluginId))
-                                {
-                                    Model.Programme progInfo = new Model.Programme(reader.GetInt32(reader.GetOrdinal("progid")));
-                                    Model.Episode epInfo = new Model.Episode(reader.GetInt32(reader.GetOrdinal("epid")));
-                                    ProgrammeInfo provProgInfo = new ProgrammeInfo();
-
-                                    provProgInfo.Name = progInfo.Name;
-                                    provProgInfo.Description = progInfo.Description;
-
-                                    if (reader.IsDBNull(reader.GetOrdinal("progimg")))
-                                    {
-                                        provProgInfo.Image = null;
-                                    }
-                                    else
-                                    {
-                                        provProgInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
-                                    }
-
-                                    EpisodeInfo provEpInfo = new EpisodeInfo();
-                                    provEpInfo.Name = epInfo.Name;
-                                    provEpInfo.Description = epInfo.Description;
-                                    provEpInfo.Date = epInfo.EpisodeDate;
-
-                                    if (reader.IsDBNull(reader.GetOrdinal("duration")))
-                                    {
-                                        provEpInfo.DurationSecs = null;
-                                    }
-                                    else
-                                    {
-                                        provEpInfo.DurationSecs = reader.GetInt32(reader.GetOrdinal("duration"));
-                                    }
-
-                                    if (reader.IsDBNull(reader.GetOrdinal("epimg")))
-                                    {
-                                        provEpInfo.Image = null;
-                                    }
-                                    else
-                                    {
-                                        provEpInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
-                                    }
-
-                                    provEpInfo.ExtInfo = new Dictionary<string, string>();
-
-                                    using (SQLiteCommand extCommand = new SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn()))
-                                    {
-                                        extCommand.Parameters.Add(new SQLiteParameter("@epid", reader.GetInt32(reader.GetOrdinal("epid"))));
-
-                                        using (SQLiteMonDataReader extReader = new SQLiteMonDataReader(extCommand.ExecuteReader()))
-                                        {
-                                            while (extReader.Read())
-                                            {
-                                                provEpInfo.ExtInfo.Add(extReader.GetString(extReader.GetOrdinal("name")), extReader.GetString(extReader.GetOrdinal("value")));
-                                            }
-                                        }
-                                    }
-
-                                    this.curDldProgData = new DldProgData();
-                                    this.curDldProgData.PluginId = pluginId;
-                                    this.curDldProgData.ProgExtId = reader.GetString(reader.GetOrdinal("progextid"));
-                                    this.curDldProgData.EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
-                                    this.curDldProgData.ProgInfo = progInfo;
-                                    this.curDldProgData.ProviderProgInfo = provProgInfo;
-                                    this.curDldProgData.EpisodeInfo = epInfo;
-                                    this.curDldProgData.ProviderEpisodeInfo = provEpInfo;
-
-                                    if ((Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == Model.Download.DownloadStatus.Errored)
-                                    {
-                                        Model.Download.ResetAsync(epInfo.Epid, true);
-                                    }
-
-                                    this.downloadThread = new Thread(this.DownloadProgThread);
-                                    this.downloadThread.IsBackground = true;
-                                    this.downloadThread.Start();
-
-                                    return;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void DownloadProgThread()
-        {
-            this.lastProgressVal = -1;
-
-            this.downloadPluginInst = Plugins.GetPluginInstance(this.curDldProgData.PluginId);
-            this.downloadPluginInst.Finished += this.DownloadPluginInst_Finished;
-            this.downloadPluginInst.Progress += this.DownloadPluginInst_Progress;
-
-            try
-            {
-                // Make sure that the temp folder still exists
-                Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"));
-
-                string saveLocation;
-
-                try
-                {
-                    saveLocation = FileUtils.GetSaveFolder();
-                }
-                catch (DirectoryNotFoundException)
-                {
-                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", null);
-                    return;
-                }
-
-                const int FreeMb = 250;
-                ulong availableSpace = OsUtils.PathAvailableSpace(saveLocation);
-
-                if (availableSpace <= FreeMb * 1024 * 1024)
-                {
-                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes does not have enough free space.  Make sure that you have at least " + FreeMb.ToString(CultureInfo.CurrentCulture) + " MB free, or select a new location under Options -> Main Options.", null);
-                    return;
-                }
-
-                try
-                {
-                    this.curDldProgData.FinalName = Model.Download.FindFreeSaveFileName(Settings.FileNameFormat, this.curDldProgData.ProgInfo, this.curDldProgData.EpisodeInfo, saveLocation);
-                }
-                catch (IOException ioExp)
-                {
-                    this.DownloadError(ErrorType.LocalProblem, "Encountered an error generating the download file name.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.", null);
-                    return;
-                }
-                catch (UnauthorizedAccessException unAuthExp)
-                {
-                    this.DownloadError(ErrorType.LocalProblem, "Encountered a permissions problem generating the download file name.  " + unAuthExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.", null);
-                    return;
-                }
-
-                this.downloadPluginInst.DownloadProgramme(this.curDldProgData.ProgExtId, this.curDldProgData.EpisodeExtId, this.curDldProgData.ProviderProgInfo, this.curDldProgData.ProviderEpisodeInfo, this.curDldProgData.FinalName);
-            }
-            catch (ThreadAbortException)
-            {
-                // The download has been aborted, so ignore the exception
-            }
-            catch (DownloadException downloadExp)
-            {
-                this.DownloadError(downloadExp.TypeOfError, downloadExp.Message, downloadExp.ErrorExtraDetails);
-            }
-            catch (Exception unknownExp)
-            {
-                List<DldErrorDataItem> extraDetails = new List<DldErrorDataItem>();
-                extraDetails.Add(new DldErrorDataItem("error", unknownExp.GetType().ToString() + ": " + unknownExp.Message));
-                extraDetails.Add(new DldErrorDataItem("exceptiontostring", unknownExp.ToString()));
-
-                if (unknownExp.Data != null)
-                {
-                    foreach (DictionaryEntry dataEntry in unknownExp.Data)
-                    {
-                        if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) && object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
-                        {
-                            extraDetails.Add(new DldErrorDataItem("expdata:Data:" + (string)dataEntry.Key, (string)dataEntry.Value));
-                        }
-                    }
-                }
-
-                this.DownloadError(ErrorType.UnknownError, unknownExp.GetType().ToString() + Environment.NewLine + unknownExp.StackTrace, extraDetails);
-            }
-        }
-
         private void CheckSubscriptions()
         {
             // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
@@ -576,88 +345,6 @@ namespace RadioDld
             // Queue the next subscription check.  This is used instead of a loop
             // as it frees up a slot in the thread pool other actions are waiting.
             ThreadPool.QueueUserWorkItem(delegate { this.CheckSubscriptions(); });
-        }
-
-        private void DownloadError(ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
-        {
-            Model.Download.SetErrorred(this.curDldProgData.EpisodeInfo.Epid, errorType, errorDetails, furtherDetails);
-
-            if (this.DownloadProgressTotal != null)
-            {
-                this.DownloadProgressTotal(false, 0);
-            }
-
-            this.downloadThread = null;
-            this.curDldProgData = null;
-
-            this.StartDownloadAsync();
-        }
-
-        private void DownloadPluginInst_Finished(string fileExtension)
-        {
-            this.curDldProgData.FinalName += "." + fileExtension;
-
-            lock (DbUpdateLock)
-            {
-                Model.Download.SetComplete(this.curDldProgData.EpisodeInfo.Epid, this.curDldProgData.FinalName);
-                Model.Programme.SetLatestDownload(this.curDldProgData.ProgInfo.Progid, this.curDldProgData.EpisodeInfo.EpisodeDate);
-            }
-
-            if (this.DownloadProgressTotal != null)
-            {
-                this.DownloadProgressTotal(false, 100);
-            }
-
-            // Remove single episode subscriptions
-            if (Model.Subscription.IsSubscribed(this.curDldProgData.ProgInfo.Progid))
-            {
-                if (this.curDldProgData.ProgInfo.SingleEpisode)
-                {
-                    Model.Subscription.Remove(this.curDldProgData.ProgInfo.Progid);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(Settings.RunAfterCommand))
-            {
-                try
-                {
-                    // Environ("comspec") will give the path to cmd.exe or command.com
-                    Interaction.Shell("\"" + Interaction.Environ("comspec") + "\" /c " + Settings.RunAfterCommand.Replace("%file%", this.curDldProgData.FinalName), AppWinStyle.NormalNoFocus);
-                }
-                catch
-                {
-                    // Just ignore the error, as it just means that something has gone wrong with the run after command.
-                }
-            }
-
-            this.downloadThread = null;
-            this.curDldProgData = null;
-
-            this.StartDownloadAsync();
-        }
-
-        private void DownloadPluginInst_Progress(int percent, string statusText, ProgressIcon icon)
-        {
-            // Don't raise the progress event if the value is the same as last time, or is outside the range
-            if (percent == this.lastProgressVal || percent < 0 || percent > 100)
-            {
-                return;
-            }
-
-            this.lastProgressVal = percent;
-
-            if (this.search.DownloadIsVisible(this.curDldProgData.EpisodeInfo.Epid))
-            {
-                if (this.DownloadProgress != null)
-                {
-                    this.DownloadProgress(this.curDldProgData.EpisodeInfo.Epid, percent, statusText, icon);
-                }
-            }
-
-            if (this.DownloadProgressTotal != null)
-            {
-                this.DownloadProgressTotal(true, percent);
-            }
         }
 
         private void FindNewPluginInst_FindNewException(Exception exception, bool unhandled)
