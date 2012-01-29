@@ -56,7 +56,7 @@ namespace RadioDld
         {
             lock (findDownloadLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.image as progimg, ep.duration, ep.image as epimg, pr.extid as progextid, ep.extid as epextid, dl.status, ep.epid from downloads as dl, episodes as ep, programmes as pr where dl.epid=ep.epid and ep.progid=pr.progid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select dl.status, ep.epid from downloads as dl, episodes as ep where dl.epid=ep.epid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@statuswait", Model.Download.DownloadStatus.Waiting));
                     command.Parameters.Add(new SQLiteParameter("@statuserr", Model.Download.DownloadStatus.Errored));
@@ -65,85 +65,24 @@ namespace RadioDld
                     {
                         while (reader.Read() && downloads.Count < MaxDownloads)
                         {
-                            Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
                             int epid = reader.GetInt32(reader.GetOrdinal("epid"));
 
-                            if (!downloads.ContainsKey(epid) && Plugins.PluginExists(pluginId))
+                            if (!downloads.ContainsKey(epid))
                             {
-                                Model.Programme progInfo = new Model.Programme(reader.GetInt32(reader.GetOrdinal("progid")));
-                                Model.Episode epInfo = new Model.Episode(epid);
-
-                                ProgrammeInfo provProgInfo = new ProgrammeInfo();
-                                provProgInfo.Name = progInfo.Name;
-                                provProgInfo.Description = progInfo.Description;
-
-                                if (reader.IsDBNull(reader.GetOrdinal("progimg")))
-                                {
-                                    provProgInfo.Image = null;
-                                }
-                                else
-                                {
-                                    provProgInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
-                                }
-
-                                EpisodeInfo provEpInfo = new EpisodeInfo();
-                                provEpInfo.Name = epInfo.Name;
-                                provEpInfo.Description = epInfo.Description;
-                                provEpInfo.Date = epInfo.EpisodeDate;
-
-                                if (reader.IsDBNull(reader.GetOrdinal("duration")))
-                                {
-                                    provEpInfo.DurationSecs = null;
-                                }
-                                else
-                                {
-                                    provEpInfo.DurationSecs = reader.GetInt32(reader.GetOrdinal("duration"));
-                                }
-
-                                if (reader.IsDBNull(reader.GetOrdinal("epimg")))
-                                {
-                                    provEpInfo.Image = null;
-                                }
-                                else
-                                {
-                                    provEpInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
-                                }
-
-                                provEpInfo.ExtInfo = new Dictionary<string, string>();
-
-                                using (SQLiteCommand extCommand = new SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn()))
-                                {
-                                    extCommand.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                                    using (SQLiteMonDataReader extReader = new SQLiteMonDataReader(extCommand.ExecuteReader()))
-                                    {
-                                        while (extReader.Read())
-                                        {
-                                            provEpInfo.ExtInfo.Add(extReader.GetString(extReader.GetOrdinal("name")), extReader.GetString(extReader.GetOrdinal("value")));
-                                        }
-                                    }
-                                }
-
                                 if ((Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == Model.Download.DownloadStatus.Errored)
                                 {
-                                    Model.Download.ResetAsync(epInfo.Epid, true);
+                                    Model.Download.ResetAsync(epid, true);
                                 }
 
-                                DownloadHandler download = new DownloadHandler();
-                                download.PluginId = pluginId;
-                                download.ProgExtId = reader.GetString(reader.GetOrdinal("progextid"));
-                                download.EpisodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
-                                download.ProgInfo = progInfo;
-                                download.ProviderProgInfo = provProgInfo;
-                                download.EpisodeInfo = epInfo;
-                                download.ProviderEpisodeInfo = provEpInfo;
-
-                                download.Progress += DownloadHandler_Progress;
-                                download.Finished += DownloadHandler_Finished;
+                                DownloadHandler download = new DownloadHandler(epid);
 
                                 lock (downloads)
                                 {
                                     downloads.Add(epid, download);
+
+                                    download.Progress += DownloadHandler_Progress;
+                                    download.Finished += DownloadHandler_Finished;
+
                                     download.Start();
                                 }
                             }

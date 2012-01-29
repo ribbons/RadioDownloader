@@ -19,36 +19,105 @@ namespace RadioDld
     using System;
     using System.Collections;
     using System.Collections.Generic;
+    using System.Data.SQLite;
     using System.Globalization;
     using System.IO;
     using System.Threading;
 
     internal class DownloadHandler : Database
     {
+        private Guid pluginId;
+        private string progExtId;
+        private string episodeExtId;
+        private Model.Programme progInfo;
+        private Model.Episode episodeInfo;
+        private ProgrammeInfo providerProgInfo;
+        private EpisodeInfo providerEpisodeInfo;
+
         private IRadioProvider downloadPluginInst;
         private Thread downloadThread;
 
         private string finalName;
+
+        public DownloadHandler(int epid)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.image as progimg, ep.duration, ep.image as epimg, pr.extid as progextid, ep.extid as epextid from episodes as ep, programmes as pr where ep.epid=@epid and ep.progid=pr.progid", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (!reader.Read())
+                    {
+                        throw new DataNotFoundException(epid, "Episode does not exist");
+                    }
+
+                    this.pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
+                    this.progExtId = reader.GetString(reader.GetOrdinal("progextid"));
+                    this.episodeExtId = reader.GetString(reader.GetOrdinal("epextid"));
+
+                    this.progInfo = new Model.Programme(reader.GetInt32(reader.GetOrdinal("progid")));
+                    this.episodeInfo = new Model.Episode(epid);
+
+                    this.providerProgInfo = new ProgrammeInfo();
+                    this.providerProgInfo.Name = this.progInfo.Name;
+                    this.providerProgInfo.Description = this.progInfo.Description;
+
+                    if (reader.IsDBNull(reader.GetOrdinal("progimg")))
+                    {
+                        this.providerProgInfo.Image = null;
+                    }
+                    else
+                    {
+                        this.providerProgInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
+                    }
+
+                    this.providerEpisodeInfo = new EpisodeInfo();
+                    this.providerEpisodeInfo.Name = this.episodeInfo.Name;
+                    this.providerEpisodeInfo.Description = this.episodeInfo.Description;
+                    this.providerEpisodeInfo.Date = this.episodeInfo.EpisodeDate;
+
+                    if (reader.IsDBNull(reader.GetOrdinal("duration")))
+                    {
+                        this.providerEpisodeInfo.DurationSecs = null;
+                    }
+                    else
+                    {
+                        this.providerEpisodeInfo.DurationSecs = reader.GetInt32(reader.GetOrdinal("duration"));
+                    }
+
+                    if (reader.IsDBNull(reader.GetOrdinal("epimg")))
+                    {
+                        this.providerEpisodeInfo.Image = null;
+                    }
+                    else
+                    {
+                        this.providerEpisodeInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
+                    }
+
+                    this.providerEpisodeInfo.ExtInfo = new Dictionary<string, string>();
+
+                    using (SQLiteCommand extCommand = new SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn()))
+                    {
+                        extCommand.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                        using (SQLiteMonDataReader extReader = new SQLiteMonDataReader(extCommand.ExecuteReader()))
+                        {
+                            while (extReader.Read())
+                            {
+                                this.providerEpisodeInfo.ExtInfo.Add(extReader.GetString(extReader.GetOrdinal("name")), extReader.GetString(extReader.GetOrdinal("value")));
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         public delegate void FinishedEventHandler(int epid);
 
         public event DownloadManager.ProgressEventHandler Progress;
 
         public event FinishedEventHandler Finished;
-
-        public Guid PluginId { get; set; }
-
-        public string ProgExtId { get; set; }
-
-        public string EpisodeExtId { get; set; }
-
-        public Model.Programme ProgInfo { get; set; }
-
-        public Model.Episode EpisodeInfo { get; set; }
-
-        public ProgrammeInfo ProviderProgInfo { get; set; }
-
-        public EpisodeInfo ProviderEpisodeInfo { get; set; }
 
         public int ProgressValue { get; set; }
 
@@ -71,7 +140,13 @@ namespace RadioDld
 
         private void DownloadProgThread()
         {
-            this.downloadPluginInst = Plugins.GetPluginInstance(this.PluginId);
+            if (!Plugins.PluginExists(this.pluginId))
+            {
+                this.DownloadError(ErrorType.LocalProblem, "The plugin provider required to download this episode is not currently available.  Please try updating Radio Downloader and providers and retrying the download.", null);
+                return;
+            }
+
+            this.downloadPluginInst = Plugins.GetPluginInstance(this.pluginId);
             this.downloadPluginInst.Finished += this.DownloadPluginInst_Finished;
             this.downloadPluginInst.Progress += this.DownloadPluginInst_Progress;
 
@@ -103,7 +178,7 @@ namespace RadioDld
 
                 try
                 {
-                    this.finalName = Model.Download.FindFreeSaveFileName(Settings.FileNameFormat, this.ProgInfo, this.EpisodeInfo, saveLocation);
+                    this.finalName = Model.Download.FindFreeSaveFileName(Settings.FileNameFormat, this.progInfo, this.episodeInfo, saveLocation);
                 }
                 catch (IOException ioExp)
                 {
@@ -116,7 +191,7 @@ namespace RadioDld
                     return;
                 }
 
-                this.downloadPluginInst.DownloadProgramme(this.ProgExtId, this.EpisodeExtId, this.ProviderProgInfo, this.ProviderEpisodeInfo, this.finalName);
+                this.downloadPluginInst.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, this.finalName);
             }
             catch (ThreadAbortException)
             {
@@ -159,7 +234,7 @@ namespace RadioDld
 
             if (this.Progress != null)
             {
-                this.Progress(this.EpisodeInfo.Epid, percent, statusText, icon);
+                this.Progress(this.episodeInfo.Epid, percent, statusText, icon);
             }
         }
 
@@ -169,16 +244,16 @@ namespace RadioDld
 
             lock (DbUpdateLock)
             {
-                Model.Download.SetComplete(this.EpisodeInfo.Epid, this.finalName);
-                Model.Programme.SetLatestDownload(this.ProgInfo.Progid, this.EpisodeInfo.EpisodeDate);
+                Model.Download.SetComplete(this.episodeInfo.Epid, this.finalName);
+                Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.EpisodeDate);
             }
 
             // Remove single episode subscriptions
-            if (Model.Subscription.IsSubscribed(this.ProgInfo.Progid))
+            if (Model.Subscription.IsSubscribed(this.progInfo.Progid))
             {
-                if (this.ProgInfo.SingleEpisode)
+                if (this.progInfo.SingleEpisode)
                 {
-                    Model.Subscription.Remove(this.ProgInfo.Progid);
+                    Model.Subscription.Remove(this.progInfo.Progid);
                 }
             }
 
@@ -201,7 +276,7 @@ namespace RadioDld
 
         private void DownloadError(ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
         {
-            Model.Download.SetErrorred(this.EpisodeInfo.Epid, errorType, errorDetails, furtherDetails);
+            Model.Download.SetErrorred(this.episodeInfo.Epid, errorType, errorDetails, furtherDetails);
             this.DownloadFinished();
         }
 
@@ -212,7 +287,7 @@ namespace RadioDld
 
             if (this.Finished != null)
             {
-                this.Finished(this.EpisodeInfo.Epid);
+                this.Finished(this.episodeInfo.Epid);
             }
         }
     }
