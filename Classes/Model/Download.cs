@@ -349,10 +349,7 @@ namespace RadioDld.Model
                 Updated(epid);
             }
 
-            if (!auto)
-            {
-                DownloadManager.StartNextDownload();
-            }
+            DownloadManager.AddDownloads(new int[] { epid });
         }
 
         public static void BumpPlayCount(int epid)
@@ -761,7 +758,7 @@ namespace RadioDld.Model
                 }
             }
             
-            DownloadManager.StartNextDownload();
+            DownloadManager.AddDownloads(epids);
         }
 
         private static void BumpPlayCountAsync(int epid)

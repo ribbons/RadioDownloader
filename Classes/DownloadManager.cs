@@ -25,8 +25,9 @@ namespace RadioDld
     {
         private const int MaxDownloads = 1;
 
-        private static object findDownloadLock = new object();
+        private static Queue<int> downloadQueue = new Queue<int>();
         private static Dictionary<int, DownloadHandler> downloads = new Dictionary<int, DownloadHandler>();
+        private static List<int> startedDownloads = new List<int>();
 
         public delegate void ProgressEventHandler(int epid, int percent, string statusText, ProgressIcon icon);
 
@@ -36,9 +37,31 @@ namespace RadioDld
 
         public static event ProgressTotalEventHandler ProgressTotal;
 
-        public static void StartNextDownload()
+        public static void ResumeDownloads()
         {
-            ThreadPool.QueueUserWorkItem(delegate { StartNextDownloadAsync(); });
+            ThreadPool.QueueUserWorkItem(delegate { ResumeDownloadsAsync(); });
+        }
+
+        public static void AddDownloads(int[] epids)
+        {
+            lock (downloads)
+            {
+                foreach (int epid in epids)
+                {
+                    if (!downloads.ContainsKey(epid))
+                    {
+                        DownloadHandler download = new DownloadHandler(epid);
+
+                        downloads.Add(epid, download);
+                        downloadQueue.Enqueue(epid);
+
+                        download.Progress += DownloadHandler_Progress;
+                        download.Finished += DownloadHandler_Finished;
+                    }
+                }
+            }
+
+            StartNextDownload();
         }
 
         public static void CancelDownload(int epid)
@@ -52,41 +75,81 @@ namespace RadioDld
             }
         }
 
-        private static void StartNextDownloadAsync()
+        private static void ResumeDownloadsAsync()
         {
-            lock (findDownloadLock)
+            List<int> epids = new List<int>();
+
+            lock (downloads)
             {
-                using (SQLiteCommand command = new SQLiteCommand("select dl.status, ep.epid from downloads as dl, episodes as ep where dl.epid=ep.epid and (dl.status=@statuswait or (dl.status=@statuserr and dl.errortime < datetime('now', '-' || power(2, dl.errorcount) || ' hours'))) order by ep.date", FetchDbConn()))
+                using (SQLiteCommand command = new SQLiteCommand("select episodes.epid from downloads, episodes where downloads.epid=episodes.epid and status=@statuswait order by date", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@statuswait", Model.Download.DownloadStatus.Waiting));
-                    command.Parameters.Add(new SQLiteParameter("@statuserr", Model.Download.DownloadStatus.Errored));
 
                     using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                     {
-                        while (reader.Read() && downloads.Count < MaxDownloads)
+                        int epidOrdinal = reader.GetOrdinal("epid");
+
+                        while (reader.Read())
                         {
-                            int epid = reader.GetInt32(reader.GetOrdinal("epid"));
-
-                            if (!downloads.ContainsKey(epid))
-                            {
-                                if ((Model.Download.DownloadStatus)reader.GetInt32(reader.GetOrdinal("status")) == Model.Download.DownloadStatus.Errored)
-                                {
-                                    Model.Download.ResetAsync(epid, true);
-                                }
-
-                                DownloadHandler download = new DownloadHandler(epid);
-
-                                lock (downloads)
-                                {
-                                    downloads.Add(epid, download);
-
-                                    download.Progress += DownloadHandler_Progress;
-                                    download.Finished += DownloadHandler_Finished;
-
-                                    download.Start();
-                                }
-                            }
+                            epids.Add(reader.GetInt32(epidOrdinal));
                         }
+                    }
+                }
+
+                if (epids.Count > 0)
+                {
+                    AddDownloads(epids.ToArray());
+                }
+            }
+
+            RetryErrored();
+        }
+
+        private static void RetryErrored()
+        {
+            List<int> epids = new List<int>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where status=@statuserr and errortime < datetime('now', '-' || power(2, errorcount) || ' hours')", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@statuserr", Model.Download.DownloadStatus.Errored));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    int epidOrdinal = reader.GetOrdinal("epid");
+
+                    while (reader.Read())
+                    {
+                        epids.Add(reader.GetInt32(epidOrdinal));
+                    }
+                }
+            }
+
+            foreach (int epid in epids)
+            {
+                Model.Download.ResetAsync(epid, true);
+            }
+
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                // Wait for 30 minutes, and check again
+                Thread.Sleep(1800000);
+                RetryErrored();
+            });
+        }
+
+        private static void StartNextDownload()
+        {
+            lock (downloads)
+            {
+                while (downloadQueue.Count > 0 && startedDownloads.Count < MaxDownloads)
+                {
+                    int epid = downloadQueue.Dequeue();
+
+                    // If the download hasn't been cancelled while waiting, start it
+                    if (downloads.ContainsKey(epid))
+                    {
+                        downloads[epid].Start();
+                        startedDownloads.Add(epid);
                     }
                 }
             }
@@ -107,6 +170,7 @@ namespace RadioDld
             lock (downloads)
             {
                 downloads.Remove(epid);
+                startedDownloads.Remove(epid);
             }
 
             UpdateTotalProgress();
@@ -124,9 +188,9 @@ namespace RadioDld
                 {
                     downloading = true;
 
-                    foreach (DownloadHandler download in downloads.Values)
+                    foreach (int epid in startedDownloads)
                     {
-                        totalProgress += download.ProgressValue;
+                        totalProgress += downloads[epid].ProgressValue;
                     }
 
                     totalProgress = totalProgress / downloads.Count;

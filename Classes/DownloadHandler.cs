@@ -34,8 +34,11 @@ namespace RadioDld
         private ProgrammeInfo providerProgInfo;
         private EpisodeInfo providerEpisodeInfo;
 
-        private IRadioProvider downloadPluginInst;
+        private IRadioProvider pluginInstance;
+        private object pluginInstanceLock = new object();
+
         private Thread downloadThread;
+        private object downloadThreadLock = new object();
 
         private string finalName;
 
@@ -123,16 +126,22 @@ namespace RadioDld
 
         public void Start()
         {
-            this.downloadThread = new Thread(this.DownloadProgThread);
-            this.downloadThread.IsBackground = true;
-            this.downloadThread.Start();
+            lock (this.downloadThreadLock)
+            {
+                this.downloadThread = new Thread(this.DownloadProgThread);
+                this.downloadThread.IsBackground = true;
+                this.downloadThread.Start();
+            }
         }
 
         public void Cancel()
         {
-            if (this.downloadThread != null && this.downloadThread.IsAlive)
+            lock (this.downloadThreadLock)
             {
-                this.downloadThread.Abort();
+                if (this.downloadThread != null && this.downloadThread.IsAlive)
+                {
+                    this.downloadThread.Abort();
+                }
             }
 
             this.DownloadFinished();
@@ -146,9 +155,12 @@ namespace RadioDld
                 return;
             }
 
-            this.downloadPluginInst = Plugins.GetPluginInstance(this.pluginId);
-            this.downloadPluginInst.Finished += this.DownloadPluginInst_Finished;
-            this.downloadPluginInst.Progress += this.DownloadPluginInst_Progress;
+            lock (this.pluginInstanceLock)
+            {
+                this.pluginInstance = Plugins.GetPluginInstance(this.pluginId);
+                this.pluginInstance.Finished += this.DownloadPluginInst_Finished;
+                this.pluginInstance.Progress += this.DownloadPluginInst_Progress;
+            }
 
             try
             {
@@ -191,7 +203,7 @@ namespace RadioDld
                     return;
                 }
 
-                this.downloadPluginInst.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, this.finalName);
+                this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, this.finalName);
             }
             catch (ThreadAbortException)
             {
@@ -282,8 +294,14 @@ namespace RadioDld
 
         private void DownloadFinished()
         {
-            this.downloadPluginInst.Finished -= this.DownloadPluginInst_Finished;
-            this.downloadPluginInst.Progress -= this.DownloadPluginInst_Progress;
+            lock (this.pluginInstanceLock)
+            {
+                if (this.pluginInstance != null)
+                {
+                    this.pluginInstance.Finished -= this.DownloadPluginInst_Finished;
+                    this.pluginInstance.Progress -= this.DownloadPluginInst_Progress;
+                }
+            }
 
             if (this.Finished != null)
             {

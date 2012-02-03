@@ -452,7 +452,7 @@ namespace RadioDld
 
             OsUtils.ApplyRunOnStartup();
 
-            DownloadManager.StartNextDownload();
+            DownloadManager.ResumeDownloads();
             this.TimerCheckForUpdates.Enabled = true;
         }
 
@@ -1869,6 +1869,9 @@ namespace RadioDld
             {
                 epids.Add(Convert.ToInt32(item.Name, CultureInfo.InvariantCulture));
             }
+
+            // Add the items in date order, oldest first
+            epids.Reverse();
 
             if (Model.Download.Add(epids.ToArray()))
             {
