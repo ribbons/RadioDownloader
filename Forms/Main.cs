@@ -219,7 +219,7 @@ namespace RadioDld
 
             this.ImagesListIcons.Images.Add("downloading", Properties.Resources.list_downloading);
             this.ImagesListIcons.Images.Add("waiting", Properties.Resources.list_waiting);
-            this.ImagesListIcons.Images.Add("converting", Properties.Resources.list_converting);
+            this.ImagesListIcons.Images.Add("processing", Properties.Resources.list_processing);
             this.ImagesListIcons.Images.Add("downloaded_new", Properties.Resources.list_downloaded_new);
             this.ImagesListIcons.Images.Add("downloaded", Properties.Resources.list_downloaded);
             this.ImagesListIcons.Images.Add("subscribed", Properties.Resources.list_subscribed);
@@ -1477,12 +1477,12 @@ namespace RadioDld
             }
         }
 
-        private void DataSearch_DownloadProgress(int epid, int percent, string statusText, ProgressIcon icon)
+        private void DataSearch_DownloadProgress(int epid, int percent, ProgressType type)
         {
             if (this.InvokeRequired)
             {
                 // Events will sometimes be fired on a different thread to the ui
-                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadProgress(epid, percent, statusText, icon); });
+                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadProgress(epid, percent, type); });
                 return;
             }
 
@@ -1495,6 +1495,13 @@ namespace RadioDld
 
             if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Status))
             {
+                string statusText = "Downloading...";
+
+                if (type == ProgressType.Processing)
+                {
+                    statusText = "Processing...";
+                }
+
                 item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Status)].Text = statusText;
             }
 
@@ -1508,13 +1515,13 @@ namespace RadioDld
                 }
             }
 
-            switch (icon)
+            switch (type)
             {
-                case ProgressIcon.Downloading:
+                case ProgressType.Downloading:
                     item.ImageKey = "downloading";
                     break;
-                case ProgressIcon.Converting:
-                    item.ImageKey = "converting";
+                case ProgressType.Processing:
+                    item.ImageKey = "processing";
                     break;
             }
         }

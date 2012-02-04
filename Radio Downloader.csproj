@@ -351,7 +351,7 @@
     <None Include="Resources\list icons\downloading_16.png" />
     <None Include="Resources\list icons\downloaded_new_16.png" />
     <None Include="Resources\list icons\downloaded_16.png" />
-    <None Include="Resources\list icons\converting_16.png" />
+    <None Include="Resources\list icons\processing_16.png" />
     <None Include="Resources\list icons\episode_auto_16.png" />
     <None Include="Resources\list icons\episode_noauto_16.png" />
     <None Include="Resources\toolbar\unsubscribe_16.png" />

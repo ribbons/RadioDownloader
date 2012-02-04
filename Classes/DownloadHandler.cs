@@ -149,6 +149,12 @@ namespace RadioDld
 
         private void DownloadProgThread()
         {
+            if (this.Progress != null)
+            {
+                // Raise a progress event to give the user some feedback
+                this.Progress(this.episodeInfo.Epid, 0, ProgressType.Downloading);
+            }
+
             if (!Plugins.PluginExists(this.pluginId))
             {
                 this.DownloadError(ErrorType.LocalProblem, "The plugin provider required to download this episode is not currently available.  Please try updating Radio Downloader and providers and retrying the download.", null);
@@ -234,19 +240,26 @@ namespace RadioDld
             }
         }
 
-        private void DownloadPluginInst_Progress(int percent, string statusText, ProgressIcon icon)
+        private void DownloadPluginInst_Progress(int percent, ProgressType type)
         {
-            // Don't raise the progress event if the value is the same as last time, or is outside the range
-            if (percent == this.ProgressValue || percent < 0 || percent > 100)
+            // Don't raise the progress event if the value is the same as last time
+            if (percent == this.ProgressValue)
             {
                 return;
+            }
+
+            if (percent < 0 || percent > 100)
+            {
+                ArgumentException argExp = new ArgumentException("Progress percentage must be between 0 and 100!", "percent");
+                argExp.Data.Add("percentValue", percent.ToString(CultureInfo.InvariantCulture));
+                throw argExp;
             }
 
             this.ProgressValue = percent;
 
             if (this.Progress != null)
             {
-                this.Progress(this.episodeInfo.Epid, percent, statusText, icon);
+                this.Progress(this.episodeInfo.Epid, percent, type);
             }
         }
 

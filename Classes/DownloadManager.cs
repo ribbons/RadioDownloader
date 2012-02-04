@@ -29,7 +29,7 @@ namespace RadioDld
         private static Dictionary<int, DownloadHandler> downloads = new Dictionary<int, DownloadHandler>();
         private static List<int> startedDownloads = new List<int>();
 
-        public delegate void ProgressEventHandler(int epid, int percent, string statusText, ProgressIcon icon);
+        public delegate void ProgressEventHandler(int epid, int percent, ProgressType type);
 
         public delegate void ProgressTotalEventHandler(bool downloading, int percent);
 
@@ -152,11 +152,11 @@ namespace RadioDld
             }
         }
 
-        private static void DownloadHandler_Progress(int epid, int percent, string statusText, ProgressIcon icon)
+        private static void DownloadHandler_Progress(int epid, int percent, ProgressType type)
         {
             if (Progress != null)
             {
-                Progress(epid, percent, statusText, icon);
+                Progress(epid, percent, type);
             }
 
             UpdateTotalProgress();

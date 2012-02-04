@@ -95,13 +95,6 @@ namespace RadioDld.Properties {
             }
         }
         
-        internal static System.Drawing.Bitmap list_converting {
-            get {
-                object obj = ResourceManager.GetObject("list_converting", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
         internal static System.Drawing.Bitmap list_downloaded {
             get {
                 object obj = ResourceManager.GetObject("list_downloaded", resourceCulture);
@@ -147,6 +140,13 @@ namespace RadioDld.Properties {
         internal static System.Drawing.Bitmap list_favourite {
             get {
                 object obj = ResourceManager.GetObject("list_favourite", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap list_processing {
+            get {
+                object obj = ResourceManager.GetObject("list_processing", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

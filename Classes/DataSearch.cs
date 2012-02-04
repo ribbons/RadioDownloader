@@ -294,11 +294,11 @@ namespace RadioDld
             // No need to clear the visibility cache, as having an extra entry won't cause an issue
         }
 
-        private void Download_Progress(int epid, int percent, string statusText, ProgressIcon icon)
+        private void Download_Progress(int epid, int percent, ProgressType type)
         {
             if (this.DownloadProgress != null && this.DownloadIsVisible(epid))
             {
-                this.DownloadProgress(epid, percent, statusText, icon);
+                this.DownloadProgress(epid, percent, type);
             }
         }
 

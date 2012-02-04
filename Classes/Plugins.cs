@@ -29,14 +29,14 @@ namespace RadioDld
 
     public delegate void FoundNewEventHandler(string progExtId);
 
-    public delegate void ProgressEventHandler(int percent, string statusText, ProgressIcon icon);
+    public delegate void ProgressEventHandler(int percent, ProgressType type);
 
     public delegate void FinishedEventHandler(string fileExtension);
 
-    public enum ProgressIcon
+    public enum ProgressType
     {
         Downloading,
-        Converting
+        Processing
     }
 
     public interface IRadioProvider

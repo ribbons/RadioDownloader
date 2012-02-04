@@ -476,7 +476,7 @@ namespace PodcastProvider
 
             if (this.Progress != null)
             {
-                this.Progress(100, "Downloading...", ProgressIcon.Downloading);
+                this.Progress(100, ProgressType.Processing);
             }
 
             File.Move(downloadFileName, finalName);
@@ -656,7 +656,7 @@ namespace PodcastProvider
 
             if (this.Progress != null)
             {
-                this.Progress(percent, "Downloading...", ProgressIcon.Downloading);
+                this.Progress(percent, ProgressType.Downloading);
             }
         }
     }
