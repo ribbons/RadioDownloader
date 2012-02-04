@@ -1507,12 +1507,7 @@ namespace RadioDld
 
             if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Progress))
             {
-                this.ProgressDownload.Value = percent;
-
-                if (this.ListDownloads.Controls.Count == 0)
-                {
-                    this.ListDownloads.AddProgressBar(ref this.ProgressDownload, item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress));
-                }
+                this.ListDownloads.ShowProgress(item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress), percent);
             }
 
             switch (type)
@@ -1539,10 +1534,7 @@ namespace RadioDld
 
             if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Progress))
             {
-                if (this.ListDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress)) != null)
-                {
-                    this.ListDownloads.RemoveProgressBar(ref this.ProgressDownload);
-                }
+                this.ListDownloads.HideProgress(item);
             }
 
             item.Remove();
@@ -1573,10 +1565,7 @@ namespace RadioDld
 
             if (this.downloadColOrder.Contains(Model.Download.DownloadCols.Progress))
             {
-                if (this.ListDownloads.GetProgressBar(item, this.downloadColOrder.IndexOf(Model.Download.DownloadCols.Progress)) != null)
-                {
-                    this.ListDownloads.RemoveProgressBar(ref this.ProgressDownload);
-                }
+                this.ListDownloads.HideProgress(item);
             }
 
             // Update the downloads list sorting, as the order may now have changed
@@ -2332,7 +2321,7 @@ namespace RadioDld
             this.downloadColOrder.Clear();
             Application.DoEvents(); // Give any queued Invoke calls a chance to be processed
             this.ListDownloads.Clear();
-            this.ListDownloads.RemoveAllControls();
+            this.ListDownloads.HideAllProgress();
 
             const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6";
 

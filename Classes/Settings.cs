@@ -234,6 +234,19 @@ namespace RadioDld
             }
         }
 
+        internal static int ParallelDownloads
+        {
+            get
+            {
+                return GetValue("ParallelDownloads", Environment.ProcessorCount > 1 ? Environment.ProcessorCount - 1 : 1);
+            }
+
+            set
+            {
+                SetValue("ParallelDownloads", value);
+            }
+        }
+
         internal static void ResetUserSettings()
         {
             SetValue("RunOnStartup", null);
@@ -241,6 +254,7 @@ namespace RadioDld
             SetValue("SaveFolder", null);
             SetValue("FileNameFormat", null);
             SetValue("RunAfterCommand", null);
+            SetValue("ParallelDownloads", null);
         }
 
         internal static void ResetDownloadCols()

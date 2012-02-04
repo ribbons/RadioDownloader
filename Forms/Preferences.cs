@@ -90,6 +90,7 @@ namespace RadioDld
 
             Settings.RunOnStartup = this.CheckRunOnStartup.Checked;
             Settings.RunAfterCommand = this.TextRunAfter.Text;
+            Settings.ParallelDownloads = (int)this.NumberParallel.Value;
 
             if (OsUtils.WinSevenOrLater())
             {
@@ -124,6 +125,9 @@ namespace RadioDld
                 this.CheckCloseToSystray.Checked = true;
                 this.CheckCloseToSystray.Enabled = false;
             }
+
+            this.NumberParallel.Value = Settings.ParallelDownloads;
+            this.NumberParallel.Maximum = Math.Max(this.NumberParallel.Value, Environment.ProcessorCount * 2);
 
             try
             {

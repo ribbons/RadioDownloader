@@ -23,8 +23,6 @@ namespace RadioDld
 
     internal class DownloadManager : Database
     {
-        private const int MaxDownloads = 1;
-
         private static Queue<int> downloadQueue = new Queue<int>();
         private static Dictionary<int, DownloadHandler> downloads = new Dictionary<int, DownloadHandler>();
         private static List<int> startedDownloads = new List<int>();
@@ -138,7 +136,7 @@ namespace RadioDld
         {
             lock (downloads)
             {
-                while (downloadQueue.Count > 0 && startedDownloads.Count < MaxDownloads)
+                while (downloadQueue.Count > 0 && startedDownloads.Count < Settings.ParallelDownloads)
                 {
                     int epid = downloadQueue.Dequeue();
 

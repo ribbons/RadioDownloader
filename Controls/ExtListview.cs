@@ -23,93 +23,67 @@ namespace RadioDld
     using System.Runtime.InteropServices;
     using System.Windows.Forms;
 
-    // Parts of the code in this class are based on code from http://www.codeproject.com/cs/miscctrl/ListViewEmbeddedControls.asp
     internal class ExtListView : ListView
     {
-        private List<EmbeddedProgress> embeddedControls = new List<EmbeddedProgress>();
+        private Dictionary<ListViewItem, EmbeddedProgress> embeddedInfo = new Dictionary<ListViewItem, EmbeddedProgress>();
         private bool waitingSelChange = false;
 
         // Extra events
         public event ColumnClickEventHandler ColumnRightClick;
 
-        public void AddProgressBar(ref ProgressBar progress, ListViewItem parentItem, int column)
+        public void ShowProgress(ListViewItem item, int column, int percent)
         {
-            this.AddProgressBar(ref progress, parentItem, column, DockStyle.Fill);
-        }
-
-        public void AddProgressBar(ref ProgressBar progress, ListViewItem parentItem, int column, DockStyle dstDock)
-        {
-            if (progress == null)
+            if (item == null)
             {
-                throw new ArgumentNullException("progress");
+                throw new ArgumentNullException("item");
             }
 
             if (column >= Columns.Count)
             {
-                throw new ArgumentOutOfRangeException("column");
+                throw new ArgumentOutOfRangeException("column", column, "Value of column must be less than the current number of columns!");
             }
 
-            EmbeddedProgress control = default(EmbeddedProgress);
+            if (this.embeddedInfo.ContainsKey(item))
+            {
+                this.embeddedInfo[item].Progress.Value = percent;
+            }
+            else
+            {
+                EmbeddedProgress embedded = default(EmbeddedProgress);
+                embedded.Progress = new ProgressBar();
+                embedded.Progress.Value = percent;
+                embedded.Column = column;
 
-            control.Progress = progress;
-            control.Column = column;
-            control.Dock = dstDock;
-            control.Item = parentItem;
+                // Add an event handler to select the ListView row when the progress bar is clicked
+                embedded.Progress.Click += this.EmbeddedControl_Click;
 
-            this.embeddedControls.Add(control);
-
-            // Add a Click event handler to select the ListView row when an embedded control is clicked
-            progress.Click += this.EmbeddedControl_Click;
-
-            this.Controls.Add(progress);
+                this.embeddedInfo.Add(item, embedded);
+                this.Controls.Add(embedded.Progress);
+            }
         }
 
-        public void RemoveProgressBar(ref ProgressBar progressBar)
+        public void HideProgress(ListViewItem item)
         {
-            if (progressBar == null)
+            if (item == null)
             {
-                throw new ArgumentNullException("progressBar");
+                throw new ArgumentNullException("item");
             }
 
-            for (int process = 0; process <= this.embeddedControls.Count - 1; process++)
+            if (this.embeddedInfo.ContainsKey(item))
             {
-                if (this.embeddedControls[process].Progress.Equals(progressBar))
-                {
-                    progressBar.Click -= this.EmbeddedControl_Click;
-                    this.Controls.Remove(progressBar);
-                    this.embeddedControls.RemoveAt(process);
-                    return;
-                }
+                this.Controls.Remove(this.embeddedInfo[item].Progress);
+                this.embeddedInfo.Remove(item);
             }
-
-            throw new ArgumentException("Progress bar not found!");
         }
 
-        public ProgressBar GetProgressBar(ListViewItem parentItem, int column)
+        public void HideAllProgress()
         {
-            foreach (EmbeddedProgress control in this.embeddedControls)
+            foreach (EmbeddedProgress embedded in this.embeddedInfo.Values)
             {
-                if (control.Item.Equals(parentItem) && control.Column == column)
-                {
-                    return control.Progress;
-                }
+                this.Controls.Remove(embedded.Progress);
             }
 
-            return null;
-        }
-
-        public void RemoveAllControls()
-        {
-            for (int process = 0; process <= this.embeddedControls.Count - 1; process++)
-            {
-                EmbeddedProgress control = this.embeddedControls[process];
-
-                control.Progress.Visible = false;
-                control.Progress.Click -= this.EmbeddedControl_Click;
-                this.Controls.Remove(control.Progress);
-            }
-
-            this.embeddedControls.Clear();
+            this.embeddedInfo.Clear();
         }
 
         public void ShowSortOnHeader(int column, SortOrder order)
@@ -200,46 +174,23 @@ namespace RadioDld
                     }
 
                     // Calculate the position of all embedded controls
-                    foreach (EmbeddedProgress emcControl in this.embeddedControls)
+                    foreach (KeyValuePair<ListViewItem, EmbeddedProgress> embedded in this.embeddedInfo)
                     {
-                        Rectangle rect = this.GetSubItemBounds(emcControl.Item, emcControl.Column);
+                        Rectangle rect = this.GetSubItemBounds(embedded.Key, embedded.Value.Column);
 
                         if (((this.HeaderStyle != ColumnHeaderStyle.None) && (rect.Top < this.Font.Height)) || (rect.Top + rect.Height) <= 0 || (rect.Top > this.ClientRectangle.Height))
                         {
                             // Control overlaps ColumnHeader, is off the top, or is off the bottom of the listview
-                            emcControl.Progress.Visible = false;
+                            embedded.Value.Progress.Visible = false;
                             continue;
                         }
                         else
                         {
-                            emcControl.Progress.Visible = true;
-                        }
-
-                        switch (emcControl.Dock)
-                        {
-                            case DockStyle.Fill:
-                                break;
-                            case DockStyle.Top:
-                                rect.Height = emcControl.Progress.Height;
-                                break;
-                            case DockStyle.Left:
-                                rect.Width = emcControl.Progress.Width;
-                                break;
-                            case DockStyle.Bottom:
-                                rect.Offset(0, rect.Height - emcControl.Progress.Height);
-                                rect.Height = emcControl.Progress.Height;
-                                break;
-                            case DockStyle.Right:
-                                rect.Offset(rect.Width - emcControl.Progress.Width, 0);
-                                rect.Width = emcControl.Progress.Width;
-                                break;
-                            case DockStyle.None:
-                                rect.Size = emcControl.Progress.Size;
-                                break;
+                            embedded.Value.Progress.Visible = true;
                         }
 
                         // Set embedded control's bounds
-                        emcControl.Progress.Bounds = rect;
+                        embedded.Value.Progress.Bounds = rect;
                     }
 
                     break;
@@ -304,13 +255,13 @@ namespace RadioDld
             return order;
         }
 
-        private Rectangle GetSubItemBounds(ListViewItem listItem, int subItem)
+        private Rectangle GetSubItemBounds(ListViewItem item, int subItem)
         {
             Rectangle subItemRect = Rectangle.Empty;
 
-            if (listItem == null)
+            if (item == null)
             {
-                throw new ArgumentNullException("listItem");
+                throw new ArgumentNullException("item");
             }
 
             int[] order = this.GetColumnOrder();
@@ -327,7 +278,7 @@ namespace RadioDld
             }
 
             // Retrieve the bounds of the entire ListViewItem (all subitems)
-            Rectangle bounds = listItem.GetBounds(ItemBoundsPortion.Entire);
+            Rectangle bounds = item.GetBounds(ItemBoundsPortion.Entire);
 
             int subItemX = bounds.Left;
             ColumnHeader header = null;
@@ -354,12 +305,12 @@ namespace RadioDld
         private void EmbeddedControl_Click(object sender, EventArgs e)
         {
             // When a progress bar is clicked the ListViewItem holding it is selected
-            foreach (EmbeddedProgress control in this.embeddedControls)
+            foreach (KeyValuePair<ListViewItem, EmbeddedProgress> control in this.embeddedInfo)
             {
-                if (control.Progress.Equals((ProgressBar)sender))
+                if (control.Value.Progress.Equals((ProgressBar)sender))
                 {
                     this.SelectedItems.Clear();
-                    control.Item.Selected = true;
+                    control.Key.Selected = true;
                 }
             }
         }
@@ -382,13 +333,10 @@ namespace RadioDld
             return (IntPtr)(hiWordPart.ToInt32() | loWordPart.ToInt32());
         }
 
-        // Data structure to store information about the controls
         private struct EmbeddedProgress
         {
             public ProgressBar Progress;
             public int Column;
-            public DockStyle Dock;
-            public ListViewItem Item;
         }
     }
 }

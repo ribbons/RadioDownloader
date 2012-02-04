@@ -52,7 +52,6 @@ namespace RadioDld
             this.MenuTrayExit = new System.Windows.Forms.MenuItem();
             this.ImagesListIcons = new System.Windows.Forms.ImageList(this.components);
             this.ImagesProviders = new System.Windows.Forms.ImageList(this.components);
-            this.ProgressDownload = new System.Windows.Forms.ProgressBar();
             this.TimerCheckForUpdates = new System.Windows.Forms.Timer(this.components);
             this.MenuOptions = new System.Windows.Forms.ContextMenu();
             this.MenuOptionsShowOpts = new System.Windows.Forms.MenuItem();
@@ -328,14 +327,6 @@ namespace RadioDld
             this.ImagesProviders.ColorDepth = System.Windows.Forms.ColorDepth.Depth32Bit;
             this.ImagesProviders.ImageSize = new System.Drawing.Size(64, 64);
             this.ImagesProviders.TransparentColor = System.Drawing.Color.Transparent;
-            // 
-            // ProgressDownload
-            // 
-            this.ProgressDownload.Location = new System.Drawing.Point(438, 356);
-            this.ProgressDownload.Name = "ProgressDownload";
-            this.ProgressDownload.Size = new System.Drawing.Size(100, 23);
-            this.ProgressDownload.TabIndex = 6;
-            this.ProgressDownload.Visible = false;
             // 
             // TimerCheckForUpdates
             // 
@@ -708,7 +699,6 @@ namespace RadioDld
             this.Controls.Add(this.PanelPluginSpace);
             this.Controls.Add(this.ListProviders);
             this.Controls.Add(this.ImageSidebarBorder);
-            this.Controls.Add(this.ProgressDownload);
             this.Controls.Add(TableSidebar);
             this.Controls.Add(this.TableToolbars);
             this.Controls.Add(this.ToolbarView);
@@ -744,7 +734,6 @@ namespace RadioDld
         private ToolStripSearchBox TextSearch;
         private ExtListView ListProviders;
         private ExtListView ListSubscribed;
-        private System.Windows.Forms.ProgressBar ProgressDownload;
         private ExtListView ListDownloads;
         private ExtToolBar ToolbarMain;
         private System.Windows.Forms.PictureBox ImageSidebar;
