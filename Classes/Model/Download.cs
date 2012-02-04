@@ -317,25 +317,24 @@ namespace RadioDld.Model
         {
             lock (DbUpdateLock)
             {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
+                string errorCount = string.Empty;
+
+                if (!auto)
                 {
-                    using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortype=null, errortime=null, errordetails=null where epid=@epid", FetchDbConn(), transMon.Trans))
-                    {
-                        command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Waiting));
-                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                        command.ExecuteNonQuery();
-                    }
+                    errorCount = ", errorcount=0";
+                }
 
-                    if (!auto)
-                    {
-                        using (SQLiteCommand command = new SQLiteCommand("update downloads set errorcount=0 where epid=@epid", FetchDbConn(), transMon.Trans))
-                        {
-                            command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                            command.ExecuteNonQuery();
-                        }
-                    }
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@newstatus, errortype=null, errortime=null, errordetails=null" + errorCount + " where epid=@epid and status=@oldstatus", FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@oldstatus", DownloadStatus.Errored));
+                    command.Parameters.Add(new SQLiteParameter("@newstatus", DownloadStatus.Waiting));
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
-                    transMon.Trans.Commit();
+                    if (command.ExecuteNonQuery() == 0)
+                    {
+                        // Download has already been reset, or is missing
+                        return;
+                    }
                 }
             }
 
@@ -797,7 +796,13 @@ namespace RadioDld.Model
                     using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn(), transMon.Trans))
                     {
                         command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                        command.ExecuteNonQuery();
+
+                        if (command.ExecuteNonQuery() == 0)
+                        {
+                            // Download has already been removed
+                            transMon.Trans.Rollback();
+                            return;
+                        }
                     }
 
                     if (!auto)

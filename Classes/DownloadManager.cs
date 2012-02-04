@@ -48,16 +48,13 @@ namespace RadioDld
             {
                 foreach (int epid in epids)
                 {
-                    if (!downloads.ContainsKey(epid))
-                    {
-                        DownloadHandler download = new DownloadHandler(epid);
+                    DownloadHandler download = new DownloadHandler(epid);
 
-                        downloads.Add(epid, download);
-                        downloadQueue.Enqueue(epid);
+                    downloads.Add(epid, download);
+                    downloadQueue.Enqueue(epid);
 
-                        download.Progress += DownloadHandler_Progress;
-                        download.Finished += DownloadHandler_Finished;
-                    }
+                    download.Progress += DownloadHandler_Progress;
+                    download.Finished += DownloadHandler_Finished;
                 }
             }
 

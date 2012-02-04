@@ -171,7 +171,12 @@ namespace RadioDld.Model
                 using (SQLiteCommand command = new SQLiteCommand("delete from favourites where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                    command.ExecuteNonQuery();
+
+                    if (command.ExecuteNonQuery() == 0)
+                    {
+                        // Favourite has already been removed
+                        return;
+                    }
                 }
             }
 

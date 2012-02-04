@@ -192,7 +192,12 @@ namespace RadioDld.Model
                 using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn()))
                 {
                     command.Parameters.Add(new SQLiteParameter("@progid", progid));
-                    command.ExecuteNonQuery();
+
+                    if (command.ExecuteNonQuery() == 0)
+                    {
+                        // Subscription has already been removed
+                        return;
+                    }
                 }
             }
 
