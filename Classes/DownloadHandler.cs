@@ -141,8 +141,6 @@ namespace RadioDld
                     this.downloadThread.Abort();
                 }
             }
-
-            this.DownloadFinished();
         }
 
         private void DownloadProgThread()
@@ -212,7 +210,8 @@ namespace RadioDld
             }
             catch (ThreadAbortException)
             {
-                // The download has been aborted, so ignore the exception
+                // The download has been aborted
+                this.DownloadFinished();
                 return;
             }
             catch (DownloadException downloadExp)
