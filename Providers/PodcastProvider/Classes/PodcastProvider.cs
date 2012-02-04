@@ -49,8 +49,6 @@ namespace PodcastProvider
 
         public event ProgressEventHandler Progress;
 
-        public event FinishedEventHandler Finished;
-
         public Guid ProviderId
         {
             get { return new Guid("3cfbe63e-95b8-4f80-8570-4ace909e0921"); }
@@ -425,7 +423,7 @@ namespace PodcastProvider
             return episodeInfoReturn;
         }
 
-        public void DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
+        public string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
         {
             Uri downloadUrl = new Uri(epInfo.ExtInfo["EnclosureURL"]);
 
@@ -480,11 +478,7 @@ namespace PodcastProvider
             }
 
             File.Move(downloadFileName, finalName);
-
-            if (this.Finished != null)
-            {
-                this.Finished(extension);
-            }
+            return extension;
         }
 
         internal void RaiseFindNewException(Exception exception)

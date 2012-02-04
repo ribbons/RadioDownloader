@@ -31,8 +31,6 @@ namespace RadioDld
 
     public delegate void ProgressEventHandler(int percent, ProgressType type);
 
-    public delegate void FinishedEventHandler(string fileExtension);
-
     public enum ProgressType
     {
         Downloading,
@@ -48,8 +46,6 @@ namespace RadioDld
         event FoundNewEventHandler FoundNew;
 
         event ProgressEventHandler Progress;
-
-        event FinishedEventHandler Finished;
 
         Guid ProviderId { get; }
 
@@ -71,7 +67,17 @@ namespace RadioDld
 
         GetEpisodeInfoReturn GetEpisodeInfo(string progExtId, string episodeExtId);
 
-        void DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
+        /// <summary>
+        /// Perform a download of the specified episode.
+        /// </summary>
+        /// <param name="progExtId">The external id specifying the programme that the episode belongs to.</param>
+        /// <param name="episodeExtId">The external id of the episode to download.</param>
+        /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme.</param>
+        /// <param name="epInfo">Data from the last call to GetEpisodeInfo for this episode.</param>
+        /// <param name="finalName">The path and filename (minus file extension) to save this download as.</param>
+        /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
+        /// <returns>The file extension of a successful download.</returns>
+        string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
     }
 
     public struct ProgrammeInfo

@@ -40,8 +40,6 @@ namespace RadioDld
         private Thread downloadThread;
         private object downloadThreadLock = new object();
 
-        private string finalName;
-
         public DownloadHandler(int epid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select pr.progid, pluginid, pr.image as progimg, ep.duration, ep.image as epimg, pr.extid as progextid, ep.extid as epextid from episodes as ep, programmes as pr where ep.epid=@epid and ep.progid=pr.progid", FetchDbConn()))
@@ -164,9 +162,10 @@ namespace RadioDld
             lock (this.pluginInstanceLock)
             {
                 this.pluginInstance = Plugins.GetPluginInstance(this.pluginId);
-                this.pluginInstance.Finished += this.DownloadPluginInst_Finished;
                 this.pluginInstance.Progress += this.DownloadPluginInst_Progress;
             }
+
+            string finalName, fileExtension;
 
             try
             {
@@ -196,7 +195,7 @@ namespace RadioDld
 
                 try
                 {
-                    this.finalName = Model.Download.FindFreeSaveFileName(Settings.FileNameFormat, this.progInfo, this.episodeInfo, saveLocation);
+                    finalName = Model.Download.FindFreeSaveFileName(Settings.FileNameFormat, this.progInfo, this.episodeInfo, saveLocation);
                 }
                 catch (IOException ioExp)
                 {
@@ -209,15 +208,17 @@ namespace RadioDld
                     return;
                 }
 
-                this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, this.finalName);
+                fileExtension = this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, finalName);
             }
             catch (ThreadAbortException)
             {
                 // The download has been aborted, so ignore the exception
+                return;
             }
             catch (DownloadException downloadExp)
             {
                 this.DownloadError(downloadExp.TypeOfError, downloadExp.Message, downloadExp.ErrorExtraDetails);
+                return;
             }
             catch (Exception unknownExp)
             {
@@ -237,7 +238,41 @@ namespace RadioDld
                 }
 
                 this.DownloadError(ErrorType.UnknownError, unknownExp.GetType().ToString() + Environment.NewLine + unknownExp.StackTrace, extraDetails);
+                return;
             }
+
+            finalName += "." + fileExtension;
+
+            lock (DbUpdateLock)
+            {
+                Model.Download.SetComplete(this.episodeInfo.Epid, finalName);
+                Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.EpisodeDate);
+            }
+
+            // Remove single episode subscriptions
+            if (Model.Subscription.IsSubscribed(this.progInfo.Progid))
+            {
+                if (this.progInfo.SingleEpisode)
+                {
+                    Model.Subscription.Remove(this.progInfo.Progid);
+                }
+            }
+
+            if (!string.IsNullOrEmpty(Settings.RunAfterCommand))
+            {
+                try
+                {
+                    // Use VB Interaction.Shell as Process.Start doesn't give the option of a non-focused window
+                    // The "comspec" environment variable gives the path to cmd.exe
+                    Microsoft.VisualBasic.Interaction.Shell("\"" + Environment.GetEnvironmentVariable("comspec") + "\" /c " + Settings.RunAfterCommand.Replace("%file%", finalName), Microsoft.VisualBasic.AppWinStyle.NormalNoFocus);
+                }
+                catch
+                {
+                    // Just ignore the error, as it just means that something has gone wrong with the run after command.
+                }
+            }
+
+            this.DownloadFinished();
         }
 
         private void DownloadPluginInst_Progress(int percent, ProgressType type)
@@ -263,42 +298,6 @@ namespace RadioDld
             }
         }
 
-        private void DownloadPluginInst_Finished(string fileExtension)
-        {
-            this.finalName += "." + fileExtension;
-
-            lock (DbUpdateLock)
-            {
-                Model.Download.SetComplete(this.episodeInfo.Epid, this.finalName);
-                Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.EpisodeDate);
-            }
-
-            // Remove single episode subscriptions
-            if (Model.Subscription.IsSubscribed(this.progInfo.Progid))
-            {
-                if (this.progInfo.SingleEpisode)
-                {
-                    Model.Subscription.Remove(this.progInfo.Progid);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(Settings.RunAfterCommand))
-            {
-                try
-                {
-                    // Use VB Interaction.Shell as Process.Start doesn't give the option of a non-focused window
-                    // The "comspec" environment variable gives the path to cmd.exe
-                    Microsoft.VisualBasic.Interaction.Shell("\"" + Environment.GetEnvironmentVariable("comspec") + "\" /c " + Settings.RunAfterCommand.Replace("%file%", this.finalName), Microsoft.VisualBasic.AppWinStyle.NormalNoFocus);
-                }
-                catch
-                {
-                    // Just ignore the error, as it just means that something has gone wrong with the run after command.
-                }
-            }
-
-            this.DownloadFinished();
-        }
-
         private void DownloadError(ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
         {
             Model.Download.SetErrorred(this.episodeInfo.Epid, errorType, errorDetails, furtherDetails);
@@ -311,7 +310,6 @@ namespace RadioDld
             {
                 if (this.pluginInstance != null)
                 {
-                    this.pluginInstance.Finished -= this.DownloadPluginInst_Finished;
                     this.pluginInstance.Progress -= this.DownloadPluginInst_Progress;
                 }
             }
