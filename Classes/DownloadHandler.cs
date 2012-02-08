@@ -284,9 +284,7 @@ namespace RadioDld
 
             if (percent < 0 || percent > 100)
             {
-                ArgumentException argExp = new ArgumentException("Progress percentage must be between 0 and 100!", "percent");
-                argExp.Data.Add("percentValue", percent.ToString(CultureInfo.InvariantCulture));
-                throw argExp;
+                throw new ArgumentOutOfRangeException("percent", percent, "Progress percentage must be between 0 and 100!");
             }
 
             this.ProgressValue = percent;
