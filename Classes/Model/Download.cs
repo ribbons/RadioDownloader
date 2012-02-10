@@ -573,19 +573,22 @@ namespace RadioDld.Model
             status.StatusText = "Cleaning up downloads...";
             status.ProgressBarMarquee = false;
 
+            List<string> ignoreRoots = new List<string>();
+
             foreach (Download download in downloads)
             {
-                List<string> ignoreRoots = new List<string>();
+                bool exists = File.Exists(download.DownloadPath);
 
-                if (!orphans || !File.Exists(download.DownloadPath))
+                if (!orphans || !exists)
                 {
-                    if (orphans)
+                    if (orphans || !noDeleteAudio)
                     {
+                        // Test that the drive or share that the file is on still exists, and ask the user if not
                         string pathRoot = Path.GetPathRoot(download.DownloadPath);
 
                         if (!Directory.Exists(pathRoot) && !ignoreRoots.Contains(pathRoot))
                         {
-                            if (MessageBox.Show("\"" + pathRoot + "\" does not currently appear to be available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                            if (MessageBox.Show("\"" + pathRoot + "\" is not currently available." + Environment.NewLine + Environment.NewLine + "Continue cleaning up anyway?", Application.ProductName, MessageBoxButtons.YesNo) == DialogResult.No)
                             {
                                 break;
                             }
@@ -598,7 +601,7 @@ namespace RadioDld.Model
                     RemoveAsync(download.Epid, false);
 
                     // Delete the audio file too (if it exists, and the user wants to remove it)
-                    if (!orphans && !noDeleteAudio)
+                    if (exists && !noDeleteAudio)
                     {
                         File.Delete(download.DownloadPath);
                     }
