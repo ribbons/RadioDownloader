@@ -760,7 +760,7 @@ namespace RadioDld.Model
                 }
             }
             
-            DownloadManager.AddDownloads(epids);
+            DownloadManager.AddDownloads(added.ToArray());
         }
 
         private static void BumpPlayCountAsync(int epid)
