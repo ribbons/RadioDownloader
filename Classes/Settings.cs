@@ -247,6 +247,22 @@ namespace RadioDld
             }
         }
 
+        internal static string UniqueUserId
+        {
+            get
+            {
+                string uniqueId = GetValue("UniqueUserId");
+
+                if (uniqueId == null)
+                {
+                    uniqueId = Guid.NewGuid().ToString();
+                    SetValue("UniqueUserId", uniqueId);
+                }
+
+                return uniqueId;
+            }
+        }
+
         internal static void ResetUserSettings()
         {
             SetValue("RunOnStartup", null);

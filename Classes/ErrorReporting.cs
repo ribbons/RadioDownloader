@@ -27,7 +27,6 @@ namespace RadioDld
     using System.Web;
     using System.Windows.Forms;
     using System.Xml.Serialization;
-    using Microsoft.VisualBasic;
 
     internal class ErrorReporting
     {
@@ -41,21 +40,27 @@ namespace RadioDld
                 this.fields.Add("version", Application.ProductVersion);
                 this.fields.Add("errortext", errorText);
                 this.fields.Add("errordetails", errorDetails);
+                this.fields.Add("operatingsystem", System.Environment.OSVersion.VersionString);
+                this.fields.Add("architecture", IntPtr.Size == 8 ? "x64" : "x86");
+                this.fields.Add("applicationuptime", (DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds.ToString("0"));
 
-                string loadedAssemblies = string.Empty;
+                List<string> loadedAssemblies = new List<string>();
 
-                foreach (Assembly loadedAssembly in AppDomain.CurrentDomain.GetAssemblies())
+                foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
                 {
-                    loadedAssemblies += loadedAssembly.GetName().Name + "\r\n";
-                    loadedAssemblies += "Assembly Version: " + loadedAssembly.GetName().Version.ToString() + "\r\n";
-                    loadedAssemblies += "CodeBase: " + loadedAssembly.CodeBase + "\r\n\r\n";
+                    AssemblyName name = assembly.GetName();
+                    loadedAssemblies.Add(name.Name + " " + name.Version.ToString() + (assembly.GlobalAssemblyCache ? " (GAC)" : string.Empty));
                 }
 
-                this.fields.Add("loadedassemblies", loadedAssemblies);
+                loadedAssemblies.Sort();
+                this.fields.Add("Loaded Assemblies", string.Join("\r\n", loadedAssemblies.ToArray()));
+
+                // Fetch this value last as it accesses the database and is most likely to fail
+                this.fields.Add("userid", Settings.UniqueUserId);
             }
             catch
             {
-                // No way of reporting errors that have happened here, so just give up
+                // No way of reporting errors that have happened here, so try to continue
             }
         }
 
@@ -100,7 +105,7 @@ namespace RadioDld
                     uncaughtException = SQLiteMonTransaction.AddTransactionsInfo(uncaughtException);
                 }
 
-                this.fields.Add("exceptiontostring", uncaughtException.ToString());
+                this.fields.Add("Exception.ToString()", uncaughtException.ToString());
 
                 // Set up a list of types which do not need to be serialized
                 List<Type> notSerialize = new List<Type>();
@@ -150,7 +155,7 @@ namespace RadioDld
 
                     if (extraProperty)
                     {
-                        string fieldName = "expdata:" + thisExpProperty.Name;
+                        string fieldName = "Exception." + thisExpProperty.Name;
                         object propertyValue = thisExpProperty.GetValue(uncaughtException, null);
 
                         if (overloadedProp)
@@ -205,7 +210,7 @@ namespace RadioDld
                     {
                         if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) && object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
                         {
-                            this.fields.Add("expdata:Data:" + (string)dataEntry.Key, (string)dataEntry.Value);
+                            this.fields.Add("Exception.Data." + (string)dataEntry.Key, (string)dataEntry.Value);
                         }
                     }
                 }
@@ -268,7 +273,7 @@ namespace RadioDld
                         }
                     }
 
-                    Interaction.MsgBox(successMessage, MsgBoxStyle.Information);
+                    MessageBox.Show(successMessage, Application.ProductName);
 
                     if (returnLines[1].StartsWith("http://", StringComparison.Ordinal) || returnLines[1].StartsWith("https://", StringComparison.Ordinal))
                     {
