@@ -18,6 +18,7 @@ namespace RadioDld.Model
 {
     using System;
     using System.Data.SQLite;
+    using System.Globalization;
     using System.Threading;
 
     internal class Episode : Database
@@ -113,6 +114,24 @@ namespace RadioDld.Model
             }
 
             return null;
+        }
+
+        public override string ToString()
+        {
+            string infoString = this.Name +
+                "\r\nDate: " + this.EpisodeDate.ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture);
+
+            if (this.Description != null)
+            {
+                infoString += "\r\nDescription: " + this.Description;
+            }
+
+            if (this.Duration != 0)
+            {
+                infoString += "\r\nDuration: " + this.Duration.ToString(CultureInfo.InvariantCulture) + "s";
+            }
+
+            return infoString;
         }
 
         protected static void SetAutoDownloadAsync(int[] epids, bool autoDownload)

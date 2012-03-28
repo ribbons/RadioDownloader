@@ -191,6 +191,18 @@ namespace RadioDld.Model
             return null;
         }
 
+        public override string ToString()
+        {
+            string infoString = this.Name;
+
+            if (this.Description != null)
+            {
+                infoString += "\r\nDescription: " + this.Description;
+            }
+
+            return infoString;
+        }
+
         protected static void RaiseUpdated(int progid)
         {
             if (Updated != null)

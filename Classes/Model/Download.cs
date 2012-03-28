@@ -361,6 +361,91 @@ namespace RadioDld.Model
             ThreadPool.QueueUserWorkItem(delegate { RemoveAsync(epid, false); });
         }
 
+        public static void ReportError(int epid)
+        {
+            ErrorType errorType = default(ErrorType);
+            string errorText = null;
+            string extraDetailsString = null;
+            Dictionary<string, string> errorExtraDetails = new Dictionary<string, string>();
+
+            XmlSerializer detailsSerializer = new XmlSerializer(typeof(List<DldErrorDataItem>));
+
+            using (SQLiteCommand command = new SQLiteCommand("select errortype, errordetails, ep.extid as epextid, pr.extid as progextid, pluginid from downloads as dld, episodes as ep, programmes as pr where dld.epid=@epid and ep.epid=@epid and ep.progid=pr.progid", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@epid", epid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (!reader.Read())
+                    {
+                        throw new ArgumentException("Episode " + epid.ToString(CultureInfo.InvariantCulture) + " does not exist, or is not in the download list!", "epid");
+                    }
+
+                    errorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
+                    extraDetailsString = reader.GetString(reader.GetOrdinal("errordetails"));
+
+                    Model.Episode epInfo = new Model.Episode(epid);
+                    string epDetails = epInfo.ToString() + 
+                        "\r\nExtID: " + reader.GetString(reader.GetOrdinal("epextid"));
+
+                    string progDetails = new Model.Programme(epInfo.Progid).ToString() +
+                        "\r\nExtID: " + reader.GetString(reader.GetOrdinal("progextid"));
+
+                    Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
+                    IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
+
+                    string provDetails = providerInst.ProviderName +
+                        "\r\nDescription: " + providerInst.ProviderDescription +
+                        "\r\nID: " + pluginId.ToString();
+
+                    errorExtraDetails.Add("Episode", epDetails);
+                    errorExtraDetails.Add("Programme", progDetails);
+                    errorExtraDetails.Add("Provider", provDetails);
+                }
+            }
+
+            if (extraDetailsString != null)
+            {
+                try
+                {
+                    List<DldErrorDataItem> extraDetails = null;
+                    extraDetails = (List<DldErrorDataItem>)detailsSerializer.Deserialize(new StringReader(extraDetailsString));
+
+                    foreach (DldErrorDataItem detailItem in extraDetails)
+                    {
+                        switch (detailItem.Name)
+                        {
+                            case "error":
+                                errorText = detailItem.Data;
+                                break;
+                            case "details":
+                                extraDetailsString = detailItem.Data;
+                                break;
+                            default:
+                                errorExtraDetails.Add(detailItem.Name, detailItem.Data);
+                                break;
+                        }
+                    }
+                }
+                catch (InvalidOperationException)
+                {
+                    // Do nothing, and fall back to reporting all the details as one string
+                }
+                catch (InvalidCastException)
+                {
+                    // Do nothing, and fall back to reporting all the details as one string
+                }
+            }
+
+            if (string.IsNullOrEmpty(errorText))
+            {
+                errorText = errorType.ToString();
+            }
+
+            ErrorReporting report = new ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails);
+            report.SendReport();
+        }
+
         public static string FindFreeSaveFileName(string formatString, Model.Programme progInfo, Model.Episode epInfo, string baseSavePath)
         {
             string rootName = Path.Combine(baseSavePath, CreateSaveFileName(formatString, progInfo, epInfo));

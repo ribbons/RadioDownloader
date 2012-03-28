@@ -1922,8 +1922,8 @@ namespace RadioDld
 
         private void ButtonReportError_Click()
         {
-            int episodeID = Convert.ToInt32(this.ListDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
-            this.progData.DownloadReportError(episodeID);
+            int epid = Convert.ToInt32(this.ListDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+            Model.Download.ReportError(epid);
         }
 
         private void ButtonChooseProgramme_Click()
