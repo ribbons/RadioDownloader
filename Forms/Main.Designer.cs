@@ -481,7 +481,7 @@ namespace RadioDld
             // 
             this.ButtonSetAuto.ImageKey = "set_auto";
             this.ButtonSetAuto.Name = "ButtonSetAuto";
-            this.ButtonSetAuto.Text = "Set / Unset &Auto";
+            this.ButtonSetAuto.Text = "S&et / Unset Auto";
             // 
             // ButtonCurrentEps
             // 
