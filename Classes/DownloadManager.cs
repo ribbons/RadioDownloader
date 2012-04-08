@@ -61,12 +61,24 @@ namespace RadioDld
 
         public static void CancelDownload(int epid)
         {
+            bool cancelled = false;
+
             lock (downloads)
             {
                 if (downloads.ContainsKey(epid))
                 {
                     downloads[epid].Cancel();
+                    cancelled = true;
+
+                    downloads.Remove(epid);
+                    startedDownloads.Remove(epid);
                 }
+            }
+
+            if (cancelled)
+            {
+                UpdateTotalProgress();
+                StartNextDownload();
             }
         }
 

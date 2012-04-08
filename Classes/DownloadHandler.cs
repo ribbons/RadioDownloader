@@ -210,8 +210,7 @@ namespace RadioDld
             }
             catch (ThreadAbortException)
             {
-                // The download has been aborted
-                this.DownloadFinished();
+                // The download has been cancelled
                 return;
             }
             catch (DownloadException downloadExp)
