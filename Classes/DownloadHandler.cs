@@ -167,9 +167,6 @@ namespace RadioDld
 
             try
             {
-                // Make sure that the temp folder still exists
-                Directory.CreateDirectory(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"));
-
                 string saveLocation;
 
                 try

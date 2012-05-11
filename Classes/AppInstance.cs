@@ -31,7 +31,6 @@ namespace RadioDld
             this.ShutdownStyle = ShutdownMode.AfterMainFormCloses;
 
             Startup += this.App_Startup;
-            Shutdown += this.App_Shutdown;
             UnhandledException += this.App_UnhandledException;
         }
 
@@ -106,21 +105,6 @@ namespace RadioDld
             {
                 e.Cancel = true;
                 return;
-            }
-
-            // Make sure that the temp folder exists
-            Directory.CreateDirectory(Path.Combine(Path.GetTempPath(), "RadioDownloader"));
-        }
-
-        private void App_Shutdown(object sender, EventArgs e)
-        {
-            try
-            {
-                Directory.Delete(Path.Combine(System.IO.Path.GetTempPath(), "RadioDownloader"), true);
-            }
-            catch (IOException)
-            {
-                // Ignore an IOException - this just means that a file in the temp folder is still in use.
             }
         }
 

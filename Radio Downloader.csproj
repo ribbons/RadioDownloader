@@ -196,6 +196,7 @@
     <Compile Include="Classes\SQLiteMonDataReader.cs" />
     <Compile Include="Classes\SQLiteMonTransaction.cs" />
     <Compile Include="Classes\TaskbarNotify.cs" />
+    <Compile Include="Classes\TempFile.cs" />
     <Compile Include="Classes\TextUtils.cs" />
     <Compile Include="Classes\UpdateCheck.cs" />
     <Compile Include="Classes\CachedWebClient.cs" />

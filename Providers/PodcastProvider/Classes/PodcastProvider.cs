@@ -436,48 +436,51 @@ namespace PodcastProvider
                 extension = downloadUrl.AbsolutePath.Substring(extensionPos + 1);
             }
 
-            string downloadFileName = Path.Combine(System.IO.Path.GetTempPath(), Path.Combine("RadioDownloader", finalName.Substring(fileNamePos + 1) + "." + extension));
-            finalName += "." + extension;
-
-            this.doDownload = new DownloadWrapper(downloadUrl, downloadFileName);
-            this.doDownload.DownloadProgress += this.DoDownload_DownloadProgress;
-            this.doDownload.Download();
-
-            while ((!this.doDownload.Complete) && this.doDownload.Error == null)
+            using (TempFile downloadFile = new TempFile(extension))
             {
-                Thread.Sleep(500);
-            }
+                finalName += "." + extension;
 
-            if (this.doDownload.Error != null)
-            {
-                if (this.doDownload.Error is WebException)
+                this.doDownload = new DownloadWrapper(downloadUrl, downloadFile.FilePath);
+                this.doDownload.DownloadProgress += this.DoDownload_DownloadProgress;
+                this.doDownload.Download();
+
+                while ((!this.doDownload.Complete) && this.doDownload.Error == null)
                 {
-                    WebException webExp = (WebException)this.doDownload.Error;
-
-                    if (webExp.Status == WebExceptionStatus.NameResolutionFailure)
-                    {
-                        throw new DownloadException(ErrorType.NetworkProblem, "Unable to resolve the domain to download this episode from.  Check your internet connection, or try again later.");
-                    }
-                    else if (webExp.Response is HttpWebResponse)
-                    {
-                        HttpWebResponse webErrorResponse = (HttpWebResponse)webExp.Response;
-
-                        if (webErrorResponse.StatusCode == HttpStatusCode.NotFound)
-                        {
-                            throw new DownloadException(ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.");
-                        }
-                    }
+                    Thread.Sleep(500);
                 }
 
-                throw this.doDownload.Error;
+                if (this.doDownload.Error != null)
+                {
+                    if (this.doDownload.Error is WebException)
+                    {
+                        WebException webExp = (WebException)this.doDownload.Error;
+
+                        if (webExp.Status == WebExceptionStatus.NameResolutionFailure)
+                        {
+                            throw new DownloadException(ErrorType.NetworkProblem, "Unable to resolve the domain to download this episode from.  Check your internet connection, or try again later.");
+                        }
+                        else if (webExp.Response is HttpWebResponse)
+                        {
+                            HttpWebResponse webErrorResponse = (HttpWebResponse)webExp.Response;
+
+                            if (webErrorResponse.StatusCode == HttpStatusCode.NotFound)
+                            {
+                                throw new DownloadException(ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.");
+                            }
+                        }
+                    }
+
+                    throw this.doDownload.Error;
+                }
+
+                if (this.Progress != null)
+                {
+                    this.Progress(100, ProgressType.Processing);
+                }
+
+                File.Move(downloadFile.FilePath, finalName);
             }
 
-            if (this.Progress != null)
-            {
-                this.Progress(100, ProgressType.Processing);
-            }
-
-            File.Move(downloadFileName, finalName);
             return extension;
         }
 
