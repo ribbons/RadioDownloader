@@ -79,7 +79,7 @@ namespace RadioDld
             }
         }
 
-        protected internal static int? StoreImage(Bitmap image)
+        protected internal static int? StoreImage(Image image)
         {
             if (image == null)
             {
