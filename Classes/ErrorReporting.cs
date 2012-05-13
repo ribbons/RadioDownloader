@@ -42,7 +42,7 @@ namespace RadioDld
                 this.fields.Add("errordetails", errorDetails);
                 this.fields.Add("operatingsystem", System.Environment.OSVersion.VersionString);
                 this.fields.Add("architecture", IntPtr.Size == 8 ? "x64" : "x86");
-                this.fields.Add("applicationuptime", (DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds.ToString("0"));
+                this.fields.Add("applicationuptime", (DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds.ToString("0", CultureInfo.InvariantCulture));
 
                 List<string> loadedAssemblies = new List<string>();
 
