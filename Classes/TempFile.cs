@@ -144,7 +144,7 @@ namespace RadioDld
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!this.isDisposed)
+            if (!this.isDisposed && this.FilePath != null)
             {
                 lock (notInUse)
                 {
