@@ -106,7 +106,7 @@ namespace RadioDld.Model
 
             int? progid = null;
 
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
                 {
@@ -167,7 +167,7 @@ namespace RadioDld.Model
                 {
                     if (reader.Read())
                     {
-                        return RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
+                        return Database.RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
                     }
                     else
                     {
@@ -180,7 +180,7 @@ namespace RadioDld.Model
                             {
                                 if (latestRdr.Read())
                                 {
-                                    return RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
+                                    return Database.RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
                                 }
                             }
                         }
@@ -255,7 +255,7 @@ namespace RadioDld.Model
 
             int? progid = null;
 
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
                 {

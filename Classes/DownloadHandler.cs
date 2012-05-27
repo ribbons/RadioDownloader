@@ -70,7 +70,7 @@ namespace RadioDld
                     }
                     else
                     {
-                        this.providerProgInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
+                        this.providerProgInfo.Image = Database.RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
                     }
 
                     this.providerEpisodeInfo = new EpisodeInfo();
@@ -93,7 +93,7 @@ namespace RadioDld
                     }
                     else
                     {
-                        this.providerEpisodeInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
+                        this.providerEpisodeInfo.Image = Database.RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
                     }
 
                     this.providerEpisodeInfo.ExtInfo = new Dictionary<string, string>();
@@ -238,7 +238,7 @@ namespace RadioDld
 
             finalName += "." + fileExtension;
 
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 Model.Download.SetComplete(this.episodeInfo.Epid, finalName);
                 Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.EpisodeDate);

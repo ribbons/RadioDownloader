@@ -30,8 +30,8 @@ namespace RadioDld
             this.EnableVisualStyles = true;
             this.ShutdownStyle = ShutdownMode.AfterMainFormCloses;
 
-            Startup += this.App_Startup;
-            UnhandledException += this.App_UnhandledException;
+            this.Startup += this.App_Startup;
+            this.UnhandledException += this.App_UnhandledException;
         }
 
         [STAThread]
@@ -57,7 +57,7 @@ namespace RadioDld
         protected override void OnCreateMainForm()
         {
             this.MainForm = new Main();
-            StartupNextInstance += ((Main)this.MainForm).App_StartupNextInstance;
+            this.StartupNextInstance += ((Main)this.MainForm).App_StartupNextInstance;
         }
 
         private static void ReportException(Exception exp)

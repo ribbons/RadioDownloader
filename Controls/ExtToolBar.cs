@@ -82,7 +82,7 @@ namespace RadioDld
         {
             foreach (ToolBarButton checkButton in this.Buttons)
             {
-                if (checkButton.Visible && IsMnemonic(inputChar, checkButton.Text))
+                if (checkButton.Visible && Control.IsMnemonic(inputChar, checkButton.Text))
                 {
                     if (this.wholeDropDownButtons.Contains(checkButton))
                     {

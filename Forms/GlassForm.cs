@@ -53,7 +53,7 @@ namespace RadioDld
 
                     break;
                 case NativeMethods.WM_NCHITTEST:
-                    DefWndProc(ref m);
+                    this.DefWndProc(ref m);
 
                     if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported && this.glassSet)
                     {

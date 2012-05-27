@@ -238,7 +238,7 @@ namespace RadioDld.Model
 
         public static void SetComplete(int epid, string fileName)
         {
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn()))
                 {
@@ -285,7 +285,7 @@ namespace RadioDld.Model
                     break;
             }
 
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn()))
                 {
@@ -315,7 +315,7 @@ namespace RadioDld.Model
 
         public static void ResetAsync(int epid, bool auto)
         {
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 string errorCount = string.Empty;
 
@@ -575,7 +575,7 @@ namespace RadioDld.Model
 
                             if (newDownloadPath != download.DownloadPath)
                             {
-                                lock (DbUpdateLock)
+                                lock (Database.DbUpdateLock)
                                 {
                                     using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                                     {
@@ -801,7 +801,7 @@ namespace RadioDld.Model
         {
             List<int> added = new List<int>();
 
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
@@ -850,7 +850,7 @@ namespace RadioDld.Model
 
         private static void BumpPlayCountAsync(int epid)
         {
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn()))
                 {
@@ -877,7 +877,7 @@ namespace RadioDld.Model
                 DownloadManager.CancelDownload(epid);
             }
 
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {

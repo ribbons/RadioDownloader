@@ -363,7 +363,7 @@ namespace RadioDld
                 throw new ArgumentException("Property name for value must be specified", "propertyName");
             }
 
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 if (string.IsNullOrEmpty(value))
                 {

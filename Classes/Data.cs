@@ -365,7 +365,7 @@ namespace RadioDld
                 episodeInfoReturn.EpisodeInfo.Date = DateTime.Now;
             }
 
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {

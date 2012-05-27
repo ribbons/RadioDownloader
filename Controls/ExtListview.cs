@@ -168,7 +168,7 @@ namespace RadioDld
 
                     break;
                 case NativeMethods.WM_PAINT:
-                    if (View != View.Details)
+                    if (this.View != View.Details)
                     {
                         break;
                     }

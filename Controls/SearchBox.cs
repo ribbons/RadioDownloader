@@ -37,12 +37,12 @@ namespace RadioDld
         public SearchBox()
             : base()
         {
-            TextChanged += this.SearchBox_TextChanged;
-            Resize += this.SearchBox_Resize;
-            Paint += this.SearchBox_Paint;
-            HandleCreated += this.SearchBox_HandleCreated;
+            this.TextChanged += this.SearchBox_TextChanged;
+            this.Resize += this.SearchBox_Resize;
+            this.Paint += this.SearchBox_Paint;
+            this.HandleCreated += this.SearchBox_HandleCreated;
 
-            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            this.SetStyle(ControlStyles.SupportsTransparentBackColor, true);
 
             // Create the child textbox control for the user to type in, without a border
             this.textBox = new TextBox();

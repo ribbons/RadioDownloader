@@ -65,7 +65,7 @@ namespace RadioDld
                         using (SQLiteConnection specConn = new SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False;Read Only=True"))
                         {
                             specConn.Open();
-                            UpdateStructure(specConn, FetchDbConn());
+                            UpdateStructure(specConn, Database.FetchDbConn());
                         }
 
                         // Perform any updates required which were not handled by UpdateStructure
@@ -245,7 +245,7 @@ namespace RadioDld
             status.StatusText = "Compacting database.  This may take several minutes...";
 
             // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
                 {

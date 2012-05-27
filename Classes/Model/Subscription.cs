@@ -154,7 +154,7 @@ namespace RadioDld.Model
 
         private static void AddAsync(int progid)
         {
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("insert into subscriptions (progid) values (@progid)", FetchDbConn()))
                 {
@@ -187,7 +187,7 @@ namespace RadioDld.Model
 
         private static void RemoveAsync(int progid)
         {
-            lock (DbUpdateLock)
+            lock (Database.DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn()))
                 {
