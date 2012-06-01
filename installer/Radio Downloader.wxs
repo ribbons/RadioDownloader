@@ -41,29 +41,32 @@
 			<Directory Id="$(var.ProgramFiles)" Name="Program Files">
 				<Directory Id="INSTALLLOCATION" Name="Radio Downloader">
 					<Component>
-						<File Source="$(var.PlatformBin)\Radio Downloader.exe" Name="Radio Downloader.exe" KeyPath="yes">
+						<File Source="$(var.PlatformBin)\Radio Downloader.exe" KeyPath="yes">
 							<Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloader.exe" Description="Easily download radio station content and podcasts.">
 								<Icon Id="RadioDownloader.exe" SourceFile="..\Resources\icons\Icon.ico" />
 							</Shortcut>
 						</File>
 					</Component>
 					<Component>
-						<File Name="Radio Downloader.pdb" Source="$(var.PlatformBin)\Radio Downloader.pdb" />
+						<File Source="$(var.PlatformBin)\Radio Downloader.exe.config" />
 					</Component>
 					<Component>
-						<File Name="System.Data.SQLite.DLL" Source="$(var.PlatformBin)\System.Data.SQLite.DLL" />
+						<File Source="$(var.PlatformBin)\Radio Downloader.pdb" />
 					</Component>
 					<Component>
-						<File Name="store.db" Source="..\store.db" />
+						<File Source="$(var.PlatformBin)\System.Data.SQLite.DLL" />
 					</Component>
 					<Component>
-						<File Name="GPL.txt" Source="..\GPL.txt" />
+						<File Source="..\store.db" />
 					</Component>
 					<Component>
-						<File Name="PodcastProvider.dll" Source="$(var.PlatformBin)\PodcastProvider.dll" />
+						<File Source="..\GPL.txt" />
 					</Component>
 					<Component>
-						<File Name="PodcastProvider.pdb" Source="$(var.PlatformBin)\PodcastProvider.pdb" />
+						<File Source="$(var.PlatformBin)\PodcastProvider.dll" />
+					</Component>
+					<Component>
+						<File Source="$(var.PlatformBin)\PodcastProvider.pdb" />
 					</Component>
 				</Directory>
 			</Directory>
@@ -73,6 +76,7 @@
 		<Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow"
 		         AllowAdvertise="no" Description="The Radio Downloader application.">
 			<ComponentRef Id="Radio_Downloader.exe" />
+			<ComponentRef Id="Radio_Downloader.exe.config" />
 			<ComponentRef Id="Radio_Downloader.pdb" />
 			<ComponentRef Id="System.Data.SQLite.DLL" />
 			<ComponentRef Id="store.db" />
