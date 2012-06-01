@@ -34,7 +34,6 @@
 		<Dialog Id="ExitDialog" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
 			<Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[ButtonText_Finish]">
 				<Publish Event="EndDialog" Value="Return"><![CDATA[1]]></Publish>
-				<Publish Value="RunAfterInstall" Event="DoAction">InstallMode = "Custom"</Publish>
 			</Control>
 			<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[ButtonText_Cancel]" />
 			<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" TabSkip="no" Text="[DialogBitmap]" />
@@ -42,11 +41,6 @@
 			<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
 			<Control Id="DescriptionAdmin" Type="Text" X="135" Y="70" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
 				<Text>Press Finish to exit the [Wizard].</Text>
-				<Condition Action="hide">InstallMode &lt;&gt; "Server Image"</Condition>
-			</Control>
-			<Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
-				<Text>Press Finish to exit the [Wizard] and start [ProductName].</Text>
-				<Condition Action="hide">InstallMode = "Server Image"</Condition>
 			</Control>
 			<Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
 				<Text>{\VerdanaBold13}[ProductName] setup is complete.</Text>
@@ -339,14 +333,14 @@
 			<Show Dialog="FatalError" OnExit="error" />
 			<Show Dialog="UserExit" OnExit="cancel" />
 			<Show Dialog="ExitDialog" OnExit="success" />
-			<Show Dialog="PrepareDlg" Before="CostInitialize"><![CDATA[]]></Show>
+			<Show Dialog="PrepareDlg" Before="CostInitialize" />
 			<Show Dialog="AdminInstallPointDlg" After="CostFinalize" />
 			<Show Dialog="ProgressDlg" After="AdminInstallPointDlg" />
 		</AdminUISequence>
 		<InstallUISequence>
 			<Show Dialog="FatalError" OnExit="error" />
 			<Show Dialog="UserExit" OnExit="cancel" />
-			<Show Dialog="ExitDialog" OnExit="success" />
+			<Show Dialog="ExitDialog" OnExit="success">FALSE</Show>
 			<Show Dialog="PrepareDlg" After="LaunchConditions" />
 			<Show Dialog="LicenseAgreementDlg" After="MigrateFeatureStates"><![CDATA[NOT Installed]]></Show>
 			<Show Dialog="ResumeDlg" After="LicenseAgreementDlg"><![CDATA[Installed AND (RESUME OR Preselected)]]></Show>

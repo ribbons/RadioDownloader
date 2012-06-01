@@ -34,6 +34,7 @@
 		
 		<InstallExecuteSequence>
 			<Custom Action="CloseBeforeUninstall" Before="InstallValidate">Installed OR WIX_UPGRADE_DETECTED</Custom>
+			<Custom Action="RunAfterInstall" After="InstallFinalize">NOT Installed</Custom>
 		</InstallExecuteSequence>
 		
 		<Directory Id="TARGETDIR" Name="SourceDir">
