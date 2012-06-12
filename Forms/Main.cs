@@ -1681,7 +1681,7 @@ namespace RadioDld
 
                         if (showUpdate.ShowDialog(this) == DialogResult.Yes)
                         {
-                            Process.Start("http://www.nerdoftheherd.com/tools/radiodld/update.php?prevver=" + Application.ProductVersion);
+                            OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/"), "Download Update");
                         }
                     }
                 }

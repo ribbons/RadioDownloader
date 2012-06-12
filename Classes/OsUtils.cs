@@ -18,9 +18,11 @@ namespace RadioDld
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Drawing;
     using System.Runtime.InteropServices;
     using System.Text;
+    using System.Web;
     using System.Windows.Forms;
     using Microsoft.Win32;
 
@@ -200,6 +202,29 @@ namespace RadioDld
             }
 
             return freeBytesAvailable;
+        }
+
+        /// <summary>
+        /// Add tracking parameters to the specified URL and launch it in the user's browser.
+        /// </summary>
+        /// <param name="url">The URL to open.</param>
+        /// <param name="action">The action which caused the URL to be launched, which will be set as the 'campaign'.</param>
+        public static void LaunchUrl(Uri url, string action)
+        {
+            UriBuilder launchUri = new UriBuilder(url);
+            string analyticsVals = "utm_source=" + HttpUtility.UrlEncode(Application.ProductName + " " + Application.ProductVersion) + "&utm_medium=desktop&utm_campaign=" + HttpUtility.UrlEncode(action);
+
+            // UriBuilder.Query always adds a ? to the start of a passed query
+            if (launchUri.Query != null && launchUri.Query.Length > 1)
+            {
+                launchUri.Query = url.Query.Substring(1) + "&" + analyticsVals;
+            }
+            else
+            {
+                launchUri.Query = analyticsVals;
+            }
+
+            Process.Start(launchUri.Uri.ToString());
         }
     }
 }

@@ -126,9 +126,11 @@
   <data name="LabelMessage.Text" xml:space="preserve">
     <value>A new version of Radio Downloader has been released.
 
-Keeping Radio Downloader up to date makes sure you get the latest bug fixes, and often gives you new features too.
+Keeping Radio Downloader updated makes sure you get the latest features, improvements and bug fixes.
 
-Would you like to visit the website to update now?</value>
+To update, just download the latest installer and run it.  This will close and upgrade Radio Downloader, without losing any of your data.
+
+Would you like to visit the website to download the latest installer now?</value>
   </data>
   <metadata name="ButtonYes.GenerateMember" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>False</value>
