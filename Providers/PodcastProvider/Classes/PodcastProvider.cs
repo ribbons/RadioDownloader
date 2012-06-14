@@ -107,14 +107,7 @@ namespace PodcastProvider
                 return getProgInfo;
             }
 
-            try
-            {
-                namespaceMgr = this.CreateNamespaceMgr(rss);
-            }
-            catch
-            {
-                namespaceMgr = null;
-            }
+            namespaceMgr = this.CreateNamespaceMgr(rss);
 
             XmlNode titleNode = rss.SelectSingleNode("./rss/channel/title");
 
@@ -211,14 +204,7 @@ namespace PodcastProvider
                 return episodeInfoReturn;
             }
 
-            try
-            {
-                namespaceMgr = this.CreateNamespaceMgr(rss);
-            }
-            catch
-            {
-                namespaceMgr = null;
-            }
+            namespaceMgr = this.CreateNamespaceMgr(rss);
 
             XmlNodeList itemNodes = null;
             itemNodes = rss.SelectNodes("./rss/channel/item");
