@@ -94,44 +94,31 @@ namespace RadioDld.Model
                 return null;
             }
 
-            IRadioProvider pluginInstance = Plugins.GetPluginInstance(pluginId);
-            GetProgrammeInfoReturn progInfo = default(GetProgrammeInfoReturn);
-
-            progInfo = pluginInstance.GetProgrammeInfo(progExtId);
-
-            if (!progInfo.Success)
-            {
-                return null;
-            }
-
             int? progid = null;
 
-            lock (Database.DbUpdateLock)
+            using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
             {
-                using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
-                {
-                    command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
-                    command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
+                command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
+                command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
 
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
                     {
-                        if (reader.Read())
-                        {
-                            progid = reader.GetInt32(reader.GetOrdinal("progid"));
-                        }
+                        progid = reader.GetInt32(reader.GetOrdinal("progid"));
                     }
                 }
+            }
 
-                if (progid == null)
-                {
-                    // Need to fetch the data synchronously as the progid is currently unknown
-                    progid = UpdateInfo(pluginId, progExtId);
-                }
-                else
-                {
-                    // Kick off an update in the background if required
-                    UpdateInfoIfRequired(progid.Value);
-                }
+            if (progid == null)
+            {
+                // Need to fetch the data synchronously as the progid is currently unknown
+                progid = UpdateInfo(pluginId, progExtId);
+            }
+            else
+            {
+                // Kick off an update in the background if required
+                UpdateInfoIfRequired(progid.Value);
             }
 
             return progid;
