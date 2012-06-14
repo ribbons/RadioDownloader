@@ -72,19 +72,18 @@ namespace PodcastProvider
                 }
                 catch (XmlException)
                 {
-                    this.LabelResult.Text = "The data returned from the specified URL was not a valid RSS feed.";
+                    this.LabelResult.Text = "The data returned from the specified URL was malformed.";
                     this.LabelResult.ForeColor = System.Drawing.Color.Red;
                     this.ButtonView.Enabled = true;
                     return;
                 }
 
-                // Finally, make sure that the required elements that we need (title and description) exist
+                // Finally, make sure that the required element that we need (e.g. title) exists
                 XmlNode checkTitle = rss.SelectSingleNode("./rss/channel/title");
-                XmlNode checkDescription = rss.SelectSingleNode("./rss/channel/description");
 
-                if (checkTitle == null || checkDescription == null)
+                if (checkTitle == null || string.IsNullOrEmpty(checkTitle.InnerText))
                 {
-                    this.LabelResult.Text = "The RSS feed returned from the specified URL was not valid.";
+                    this.LabelResult.Text = "The RSS feed returned from the specified URL is missing a title.";
                     this.LabelResult.ForeColor = System.Drawing.Color.Red;
                     this.ButtonView.Enabled = true;
                     return;

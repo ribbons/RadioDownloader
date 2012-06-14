@@ -117,21 +117,32 @@ namespace PodcastProvider
             }
 
             XmlNode titleNode = rss.SelectSingleNode("./rss/channel/title");
-            XmlNode descriptionNode = rss.SelectSingleNode("./rss/channel/description");
 
-            if (titleNode == null || descriptionNode == null)
+            if (titleNode == null || string.IsNullOrEmpty(titleNode.InnerText))
             {
                 return getProgInfo;
             }
 
             getProgInfo.ProgrammeInfo.Name = titleNode.InnerText;
 
-            if (string.IsNullOrEmpty(getProgInfo.ProgrammeInfo.Name))
+            // If the channel has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
+            XmlNode descriptionNode = rss.SelectSingleNode("./rss/channel/itunes:summary", namespaceMgr);
+
+            if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
             {
-                return getProgInfo;
+                getProgInfo.ProgrammeInfo.Description = descriptionNode.InnerText;
+            }
+            else
+            {
+                // Fall back to the standard description tag, but strip the HTML
+                descriptionNode = rss.SelectSingleNode("./rss/channel/description");
+
+                if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
+                {
+                    getProgInfo.ProgrammeInfo.Description = this.HtmlToText(descriptionNode.InnerText);
+                }
             }
 
-            getProgInfo.ProgrammeInfo.Description = descriptionNode.InnerText;
             getProgInfo.ProgrammeInfo.Image = this.RSSNodeImage(rss.SelectSingleNode("./rss/channel"), namespaceMgr);
 
             getProgInfo.Success = true;
@@ -226,7 +237,6 @@ namespace PodcastProvider
                 if (itemId == episodeExtId)
                 {
                     XmlNode titleNode = itemNode.SelectSingleNode("./title");
-                    XmlNode descriptionNode = itemNode.SelectSingleNode("./description");
                     XmlNode pubDateNode = itemNode.SelectSingleNode("./pubDate");
                     XmlNode enclosureNode = itemNode.SelectSingleNode("./enclosure");
 
@@ -255,31 +265,29 @@ namespace PodcastProvider
                     Dictionary<string, string> extInfo = new Dictionary<string, string>();
                     extInfo.Add("EnclosureURL", urlAttrib.Value);
 
-                    if (titleNode != null)
-                    {
-                        episodeInfoReturn.EpisodeInfo.Name = titleNode.InnerText;
-                    }
-
-                    if (string.IsNullOrEmpty(episodeInfoReturn.EpisodeInfo.Name))
+                    if (titleNode == null || string.IsNullOrEmpty(titleNode.InnerText))
                     {
                         return episodeInfoReturn;
                     }
 
-                    if (descriptionNode != null)
+                    episodeInfoReturn.EpisodeInfo.Name = titleNode.InnerText;
+
+                    // If the item has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
+                    XmlNode descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
+
+                    if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                     {
-                        string description = descriptionNode.InnerText;
+                        episodeInfoReturn.EpisodeInfo.Description = descriptionNode.InnerText;
+                    }
+                    else
+                    {
+                        // Fall back to the standard description tag, but strip the HTML
+                        descriptionNode = itemNode.SelectSingleNode("./description");
 
-                        // Replace common block level tags with newlines
-                        description = description.Replace("<br", "\r\n<br");
-                        description = description.Replace("<p", "\r\n<p");
-                        description = description.Replace("<div", "\r\n<div");
-
-                        // Replace HTML entities with their character counterparts
-                        description = HttpUtility.HtmlDecode(description);
-
-                        // Strip out any HTML tags
-                        Regex stripTags = new Regex("<(.|\\n)+?>");
-                        episodeInfoReturn.EpisodeInfo.Description = stripTags.Replace(description, string.Empty);
+                        if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
+                        {
+                            episodeInfoReturn.EpisodeInfo.Description = this.HtmlToText(descriptionNode.InnerText);
+                        }
                     }
 
                     try
@@ -655,6 +663,21 @@ namespace PodcastProvider
             {
                 this.Progress(percent, ProgressType.Downloading);
             }
+        }
+
+        private string HtmlToText(string html)
+        {
+            // Add line breaks before common block level tags
+            html = html.Replace("<br", "\r\n<br");
+            html = html.Replace("<p", "\r\n<p");
+            html = html.Replace("<div", "\r\n<div");
+
+            // Replace HTML entities with their character counterparts
+            html = HttpUtility.HtmlDecode(html);
+
+            // Strip out the HTML tags
+            Regex stripTags = new Regex("<[^>]+>");
+            return stripTags.Replace(html, string.Empty);
         }
     }
 }
