@@ -42,9 +42,9 @@ namespace RadioDld
             this.Close();
         }
 
-        private void LinkHomepage_Click(object sender, EventArgs e)
+        private void LinkHomepage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("http://www.nerdoftheherd.com/tools/radiodld/");
+            OsUtils.LaunchUrl(new Uri(LinkHomepage.Text), "About Dialog Link");
         }
     }
 }

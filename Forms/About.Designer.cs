@@ -103,7 +103,7 @@ namespace RadioDld
             this.LinkHomepage.TabIndex = 3;
             this.LinkHomepage.TabStop = true;
             this.LinkHomepage.Text = "http://www.nerdoftheherd.com/tools/radiodld/";
-            this.LinkHomepage.Click += new System.EventHandler(this.LinkHomepage_Click);
+            this.LinkHomepage.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkHomepage_LinkClicked);
             // 
             // ButtonOk
             // 
