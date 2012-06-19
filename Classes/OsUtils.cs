@@ -26,9 +26,32 @@ namespace RadioDld
     using System.Windows.Forms;
     using Microsoft.Win32;
 
-    internal class OsUtils
+    public class OsUtils
     {
-        public static bool WinSevenOrLater()
+        /// <summary>
+        /// Add tracking parameters to the specified URL and launch it in the user's browser.
+        /// </summary>
+        /// <param name="url">The URL to open.</param>
+        /// <param name="action">The action which caused the URL to be launched, which will be set as the 'campaign'.</param>
+        public static void LaunchUrl(Uri url, string action)
+        {
+            UriBuilder launchUri = new UriBuilder(url);
+            string analyticsVals = "utm_source=" + HttpUtility.UrlEncode(Application.ProductName + " " + Application.ProductVersion) + "&utm_medium=desktop&utm_campaign=" + HttpUtility.UrlEncode(action);
+
+            // UriBuilder.Query always adds a ? to the start of a passed query
+            if (launchUri.Query != null && launchUri.Query.Length > 1)
+            {
+                launchUri.Query = url.Query.Substring(1) + "&" + analyticsVals;
+            }
+            else
+            {
+                launchUri.Query = analyticsVals;
+            }
+
+            Process.Start(launchUri.Uri.ToString());
+        }
+
+        internal static bool WinSevenOrLater()
         {
             OperatingSystem curOs = System.Environment.OSVersion;
 
@@ -42,7 +65,7 @@ namespace RadioDld
             }
         }
 
-        public static bool WinVistaOrLater()
+        internal static bool WinVistaOrLater()
         {
             OperatingSystem curOs = System.Environment.OSVersion;
 
@@ -56,7 +79,7 @@ namespace RadioDld
             }
         }
 
-        public static bool WinXpOrLater()
+        internal static bool WinXpOrLater()
         {
             OperatingSystem curOs = System.Environment.OSVersion;
 
@@ -70,7 +93,7 @@ namespace RadioDld
             }
         }
 
-        public static void TrayAnimate(Form form, bool down)
+        internal static void TrayAnimate(Form form, bool down)
         {
             StringBuilder className = new StringBuilder(255);
             IntPtr taskbarHwnd = default(IntPtr);
@@ -140,7 +163,7 @@ namespace RadioDld
             }
         }
 
-        public static bool CompositionEnabled()
+        internal static bool CompositionEnabled()
         {
             if (!WinVistaOrLater())
             {
@@ -153,7 +176,7 @@ namespace RadioDld
             return enabled;
         }
 
-        public static void ApplyRunOnStartup()
+        internal static void ApplyRunOnStartup()
         {
             RegistryKey runKey = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
@@ -170,7 +193,7 @@ namespace RadioDld
             }
         }
 
-        public static bool VisibleOnScreen(Rectangle location)
+        internal static bool VisibleOnScreen(Rectangle location)
         {
             foreach (Screen thisScreen in Screen.AllScreens)
             {
@@ -192,7 +215,7 @@ namespace RadioDld
         /// </remarks>
         /// <param name="path">The standard or UNC path to retrieve available bytes for.</param>
         /// <returns>The number of free bytes available to the current user in the specified location.</returns>
-        public static ulong PathAvailableSpace(string path)
+        internal static ulong PathAvailableSpace(string path)
         {
             ulong freeBytesAvailable, totalAvailableBytes, totalFreeBytes;
 
@@ -202,29 +225,6 @@ namespace RadioDld
             }
 
             return freeBytesAvailable;
-        }
-
-        /// <summary>
-        /// Add tracking parameters to the specified URL and launch it in the user's browser.
-        /// </summary>
-        /// <param name="url">The URL to open.</param>
-        /// <param name="action">The action which caused the URL to be launched, which will be set as the 'campaign'.</param>
-        public static void LaunchUrl(Uri url, string action)
-        {
-            UriBuilder launchUri = new UriBuilder(url);
-            string analyticsVals = "utm_source=" + HttpUtility.UrlEncode(Application.ProductName + " " + Application.ProductVersion) + "&utm_medium=desktop&utm_campaign=" + HttpUtility.UrlEncode(action);
-
-            // UriBuilder.Query always adds a ? to the start of a passed query
-            if (launchUri.Query != null && launchUri.Query.Length > 1)
-            {
-                launchUri.Query = url.Query.Substring(1) + "&" + analyticsVals;
-            }
-            else
-            {
-                launchUri.Query = analyticsVals;
-            }
-
-            Process.Start(launchUri.Uri.ToString());
         }
     }
 }

@@ -282,6 +282,8 @@ namespace RadioDld
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.HelpButton = true;
+            this.KeyPreview = true;
             this.Location = new System.Drawing.Point(3, 29);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -291,8 +293,10 @@ namespace RadioDld
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Main Options";
+            this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.Preferences_HelpButtonClicked);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Preferences_FormClosing);
             this.Load += new System.EventHandler(this.Preferences_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Preferences_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.NumberParallel)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();

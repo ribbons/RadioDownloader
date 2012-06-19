@@ -142,6 +142,26 @@ namespace RadioDld
             this.TextRunAfter.Text = Settings.RunAfterCommand;
         }
 
+        private void Preferences_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.ShowHelp();
+            e.Cancel = true;
+        }
+
+        private void Preferences_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)
+            {
+                e.Handled = true;
+                this.ShowHelp();
+            }
+        }
+
+        private void ShowHelp()
+        {
+            OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/dialogs.options/"), "Context Help");
+        }
+
         private void TextFileNameFormat_TextChanged(object sender, EventArgs e)
         {
             Model.Programme dummyProg = new Model.Programme();

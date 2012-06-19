@@ -117,7 +117,7 @@ namespace RadioDld
             {
                 case Keys.F1:
                     e.Handled = true;
-                    this.MenuHelpShowHelp_Click(sender, e);
+                    this.MenuHelpContext_Click(sender, e);
                     break;
                 case Keys.Delete:
                     if (this.ButtonDelete.Visible)
@@ -1956,14 +1956,43 @@ namespace RadioDld
             }
         }
 
-        private void MenuHelpShowHelp_Click(object sender, EventArgs e)
+        private void MenuHelpContext_Click(object sender, EventArgs e)
         {
-            Process.Start("http://www.nerdoftheherd.com/tools/radiodld/help/");
+            Uri helpUri;
+
+            switch (this.view.CurrentView)
+            {
+                case ViewState.View.FindNewChooseProvider:
+                case ViewState.View.FindNewProviderForm:
+                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.find-programme");
+                    break;
+                case ViewState.View.ProgEpisodes:
+                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.available-episodes/");
+                    break;
+                case ViewState.View.Favourites:
+                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.favourites/");
+                    break;
+                case ViewState.View.Subscriptions:
+                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.subscriptions/");
+                    break;
+                case ViewState.View.Downloads:
+                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.downloads/");
+                    break;
+                default:
+                    throw new InvalidOperationException("Context sensitive help is not defined for the \"" + this.view.CurrentView.ToString() + "\" view.");
+            }
+
+            OsUtils.LaunchUrl(helpUri, "Context Help");
+        }
+
+        private void MenuHelpContents_Click(object sender, EventArgs e)
+        {
+            OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/"), "Help Menu");
         }
 
         private void MenuHelpReportBug_Click(object sender, EventArgs e)
         {
-            Process.Start("http://www.nerdoftheherd.com/tools/radiodld/bug_report.php");
+            OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/report-a-bug/"), "Help Menu");
         }
 
         private void ButtonCleanUp_Click()

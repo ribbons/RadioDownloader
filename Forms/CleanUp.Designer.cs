@@ -204,7 +204,9 @@ namespace RadioDld
             this.Cursor = System.Windows.Forms.Cursors.Default;
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.HelpButton = true;
             this.Icon = global::RadioDld.Properties.Resources.icon_main;
+            this.KeyPreview = true;
             this.Location = new System.Drawing.Point(3, 29);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
@@ -213,7 +215,9 @@ namespace RadioDld
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Clean Up";
+            this.HelpButtonClicked += new System.ComponentModel.CancelEventHandler(this.CleanUp_HelpButtonClicked);
             this.Load += new System.EventHandler(this.CleanUp_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.CleanUp_KeyDown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -50,6 +50,26 @@ namespace RadioDld
             }
         }
 
+        private void CleanUp_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.ShowHelp();
+            e.Cancel = true;
+        }
+
+        private void CleanUp_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.F1)
+            {
+                e.Handled = true;
+                this.ShowHelp();
+            }
+        }
+
+        private void ShowHelp()
+        {
+            OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/dialogs.clean-up-downloads/"), "Context Help");
+        }
+
         private void SetOkEnabled()
         {
             this.ButtonOk.Enabled = this.CheckByDate.Checked || this.CheckByProgramme.Checked ||

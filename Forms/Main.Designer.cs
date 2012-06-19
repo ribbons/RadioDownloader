@@ -59,7 +59,8 @@ namespace RadioDld
             this.MenuOptionsProviderOptsNoProvs = new System.Windows.Forms.MenuItem();
             this.MenuOptionsExit = new System.Windows.Forms.MenuItem();
             this.MenuHelp = new System.Windows.Forms.ContextMenu();
-            this.MenuHelpShowHelp = new System.Windows.Forms.MenuItem();
+            this.MenuHelpContext = new System.Windows.Forms.MenuItem();
+            this.MenuHelpContents = new System.Windows.Forms.MenuItem();
             this.MenuHelpReportBug = new System.Windows.Forms.MenuItem();
             this.MenuHelpAbout = new System.Windows.Forms.MenuItem();
             this.ImagesToolbar = new System.Windows.Forms.ImageList(this.components);
@@ -182,7 +183,7 @@ namespace RadioDld
             // 
             // MenuHelpSep
             // 
-            MenuHelpSep.Index = 2;
+            MenuHelpSep.Index = 3;
             MenuHelpSep.Text = "-";
             // 
             // MenuListHdrsSep
@@ -369,27 +370,34 @@ namespace RadioDld
             // MenuHelp
             // 
             this.MenuHelp.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
-            this.MenuHelpShowHelp,
+            this.MenuHelpContext,
+            this.MenuHelpContents,
             this.MenuHelpReportBug,
             MenuHelpSep,
             this.MenuHelpAbout});
             // 
-            // MenuHelpShowHelp
+            // MenuHelpContext
             // 
-            this.MenuHelpShowHelp.Index = 0;
-            this.MenuHelpShowHelp.Shortcut = System.Windows.Forms.Shortcut.F1;
-            this.MenuHelpShowHelp.Text = "&Help Contents";
-            this.MenuHelpShowHelp.Click += new System.EventHandler(this.MenuHelpShowHelp_Click);
+            this.MenuHelpContext.Index = 0;
+            this.MenuHelpContext.Shortcut = System.Windows.Forms.Shortcut.F1;
+            this.MenuHelpContext.Text = "&Help";
+            this.MenuHelpContext.Click += new System.EventHandler(this.MenuHelpContext_Click);
+            // 
+            // MenuHelpContents
+            // 
+            this.MenuHelpContents.Index = 1;
+            this.MenuHelpContents.Text = "Help &Contents";
+            this.MenuHelpContents.Click += new System.EventHandler(this.MenuHelpContents_Click);
             // 
             // MenuHelpReportBug
             // 
-            this.MenuHelpReportBug.Index = 1;
+            this.MenuHelpReportBug.Index = 2;
             this.MenuHelpReportBug.Text = "Report a &Bug";
             this.MenuHelpReportBug.Click += new System.EventHandler(this.MenuHelpReportBug_Click);
             // 
             // MenuHelpAbout
             // 
-            this.MenuHelpAbout.Index = 3;
+            this.MenuHelpAbout.Index = 4;
             this.MenuHelpAbout.Text = "&About";
             this.MenuHelpAbout.Click += new System.EventHandler(this.MenuHelpAbout_Click);
             // 
@@ -769,7 +777,7 @@ namespace RadioDld
         private System.Windows.Forms.Timer TimerCheckForUpdates;
         private System.Windows.Forms.MenuItem MenuOptionsShowOpts;
         private System.Windows.Forms.MenuItem MenuOptionsExit;
-        private System.Windows.Forms.MenuItem MenuHelpShowHelp;
+        private System.Windows.Forms.MenuItem MenuHelpContents;
         private System.Windows.Forms.MenuItem MenuHelpAbout;
         private System.Windows.Forms.MenuItem MenuHelpReportBug;
         private System.Windows.Forms.ImageList ImagesToolbar;
@@ -784,7 +792,7 @@ namespace RadioDld
         private System.Windows.Forms.ToolBarButton ButtonChooseProgramme;
         private System.Windows.Forms.ToolBarButton ButtonDownload;
         private System.Windows.Forms.ToolBarButton ButtonSetAuto;
-
+        private System.Windows.Forms.MenuItem MenuHelpContext;
         #endregion
     }
 }
