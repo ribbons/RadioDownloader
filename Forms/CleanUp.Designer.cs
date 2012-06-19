@@ -152,9 +152,9 @@ namespace RadioDld
             this.CheckPlayed.Location = new System.Drawing.Point(12, 173);
             this.CheckPlayed.Margin = new System.Windows.Forms.Padding(3, 3, 3, 30);
             this.CheckPlayed.Name = "CheckPlayed";
-            this.CheckPlayed.Size = new System.Drawing.Size(213, 20);
+            this.CheckPlayed.Size = new System.Drawing.Size(126, 20);
             this.CheckPlayed.TabIndex = 9;
-            this.CheckPlayed.Text = "Have been played more than once";
+            this.CheckPlayed.Text = "Have been played";
             this.CheckPlayed.UseVisualStyleBackColor = true;
             this.CheckPlayed.CheckedChanged += new System.EventHandler(this.CheckPlayed_CheckedChanged);
             // 
