@@ -16,4 +16,4 @@ using System.Security;
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguageAttribute("en-GB")]
-[assembly: SecurityTransparentAttribute()]
+[assembly: SecurityTransparentAttribute]

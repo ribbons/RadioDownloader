@@ -44,7 +44,7 @@ namespace RadioDld
 
         private void LinkHomepage_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            OsUtils.LaunchUrl(new Uri(LinkHomepage.Text), "About Dialog Link");
+            OsUtils.LaunchUrl(new Uri(this.LinkHomepage.Text), "About Dialog Link");
         }
     }
 }
