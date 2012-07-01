@@ -17,8 +17,8 @@
 namespace RadioDld
 {
     using System;
+    using System.Drawing;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic;
 
     internal partial class ReportError : Form
     {
@@ -72,13 +72,26 @@ namespace RadioDld
 
         private void LinkWhatData_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
         {
-            Interaction.MsgBox(this.report.ToString());
+            MessageBox.Show(this.report.ToString(), Application.ProductName);
         }
 
         private void Error_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
         {
             // As there has been an error, blow away the rest of the app reasonably tidily
             System.Environment.Exit(1);
+        }
+
+        private void ReportError_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                this.Font = SystemFonts.MessageBoxFont;
+                this.ImageIcon.Image = SystemIcons.Error.ToBitmap();
+            }
+            catch
+            {
+                // Just show the dialog with the default font & without an icon
+            }
         }
     }
 }
