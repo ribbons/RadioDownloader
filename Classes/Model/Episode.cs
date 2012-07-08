@@ -94,20 +94,15 @@ namespace RadioDld.Model
                             return Database.RetrieveImage(reader.GetInt32(imageOrdinal));
                         }
 
-                        int progidOrdinal = reader.GetOrdinal("progid");
-
-                        if (!reader.IsDBNull(progidOrdinal))
+                        using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
                         {
-                            using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
-                            {
-                                progCmd.Parameters.Add(new SQLiteParameter("@progid", reader.GetInt32(progidOrdinal)));
+                            progCmd.Parameters.Add(new SQLiteParameter("@progid", reader.GetInt32(reader.GetOrdinal("progid"))));
 
-                                using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
+                            using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
+                            {
+                                if (progReader.Read())
                                 {
-                                    if (progReader.Read())
-                                    {
-                                        return Database.RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
-                                    }
+                                    return Database.RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
                                 }
                             }
                         }
