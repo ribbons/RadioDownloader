@@ -17,15 +17,11 @@
 namespace RadioDld
 {
     using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Data.SQLite;
     using System.Drawing;
-    using System.Globalization;
-    using System.IO;
     using System.Threading;
     using System.Windows.Forms;
-    using System.Xml.Serialization;
     using Microsoft.VisualBasic;
 
     internal class Data : Database
@@ -151,104 +147,72 @@ namespace RadioDld
             // Work through the list of subscriptions and check for new episodes
             using (SQLiteCommand progInfCmd = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
             {
-                using (SQLiteCommand checkCmd = new SQLiteCommand("select epid from downloads where epid=@epid", FetchDbConn()))
+                SQLiteParameter progidParam = new SQLiteParameter("@progid");
+                progInfCmd.Parameters.Add(progidParam);
+
+                foreach (Model.Subscription subscription in subscriptions)
                 {
-                    using (SQLiteCommand findCmd = new SQLiteCommand("select epid, autodownload from episodes where progid=@progid and extid=@extid", FetchDbConn()))
+                    Guid providerId;
+                    string progExtId = null;
+
+                    progidParam.Value = subscription.Progid;
+
+                    using (SQLiteMonDataReader progInfReader = new SQLiteMonDataReader(progInfCmd.ExecuteReader()))
                     {
-                        SQLiteParameter epidParam = new SQLiteParameter("@epid");
-                        SQLiteParameter progidParam = new SQLiteParameter("@progid");
-                        SQLiteParameter extidParam = new SQLiteParameter("@extid");
-
-                        progInfCmd.Parameters.Add(progidParam);
-                        findCmd.Parameters.Add(progidParam);
-                        findCmd.Parameters.Add(extidParam);
-                        checkCmd.Parameters.Add(epidParam);
-
-                        foreach (Model.Subscription subscription in subscriptions)
+                        if (!progInfReader.Read())
                         {
-                            Guid providerId = default(Guid);
-                            string progExtId = null;
+                            continue;
+                        }
 
-                            progidParam.Value = subscription.Progid;
+                        providerId = new Guid(progInfReader.GetString(progInfReader.GetOrdinal("pluginid")));
+                        progExtId = progInfReader.GetString(progInfReader.GetOrdinal("extid"));
+                    }
 
-                            using (SQLiteMonDataReader progInfReader = new SQLiteMonDataReader(progInfCmd.ExecuteReader()))
-                            {
-                                if (!progInfReader.Read())
-                                {
-                                    continue;
-                                }
+                    List<string> episodeExtIds = null;
 
-                                providerId = new Guid(progInfReader.GetString(progInfReader.GetOrdinal("pluginid")));
-                                progExtId = progInfReader.GetString(progInfReader.GetOrdinal("extid"));
-                            }
+                    try
+                    {
+                        episodeExtIds = this.GetAvailableEpisodes(providerId, progExtId);
+                    }
+                    catch (Exception)
+                    {
+                        // Catch any unhandled provider exceptions
+                        continue;
+                    }
 
-                            List<string> episodeExtIds = null;
+                    if (episodeExtIds != null)
+                    {
+                        foreach (string episodeExtId in episodeExtIds)
+                        {
+                            int? epid = null;
 
                             try
                             {
-                                episodeExtIds = this.GetAvailableEpisodes(providerId, progExtId);
+                                epid = Model.Episode.FetchInfo(providerId, subscription.Progid, progExtId, episodeExtId);
                             }
-                            catch (Exception)
+                            catch
                             {
                                 // Catch any unhandled provider exceptions
                                 continue;
                             }
 
-                            if (episodeExtIds != null)
+                            if (epid == null)
                             {
-                                foreach (string episodeExtId in episodeExtIds)
+                                continue;
+                            }
+
+                            if (!subscription.SingleEpisode)
+                            {
+                                if (!new Model.Episode(epid.Value).AutoDownload)
                                 {
-                                    extidParam.Value = episodeExtId;
-
-                                    bool needEpInfo = true;
-                                    int epid = 0;
-
-                                    using (SQLiteMonDataReader findReader = new SQLiteMonDataReader(findCmd.ExecuteReader()))
-                                    {
-                                        if (findReader.Read())
-                                        {
-                                            needEpInfo = false;
-                                            epid = findReader.GetInt32(findReader.GetOrdinal("epid"));
-
-                                            if (!subscription.SingleEpisode)
-                                            {
-                                                if (findReader.GetInt32(findReader.GetOrdinal("autodownload")) != 1)
-                                                {
-                                                    // Don't download the episode automatically, skip to the next one
-                                                    continue;
-                                                }
-                                            }
-                                        }
-                                    }
-
-                                    if (needEpInfo)
-                                    {
-                                        try
-                                        {
-                                            epid = this.StoreEpisodeInfo(providerId, subscription.Progid, progExtId, episodeExtId);
-                                        }
-                                        catch
-                                        {
-                                            // Catch any unhandled provider exceptions
-                                            continue;
-                                        }
-
-                                        if (epid < 0)
-                                        {
-                                            continue;
-                                        }
-                                    }
-
-                                    epidParam.Value = epid;
-
-                                    using (SQLiteMonDataReader checkRdr = new SQLiteMonDataReader(checkCmd.ExecuteReader()))
-                                    {
-                                        if (!checkRdr.Read())
-                                        {
-                                            Model.Download.Add(new int[] { epid });
-                                        }
-                                    }
+                                    // Don't download the episode automatically, skip to the next one
+                                    continue;
                                 }
+                            }
+
+                            if (!Model.Download.IsDownload(epid.Value))
+                            {
+                                Model.Download.Add(new int[] { epid.Value });
                             }
                         }
                     }
@@ -342,75 +306,9 @@ namespace RadioDld
             return extIdsUnique;
         }
 
-        private int StoreEpisodeInfo(Guid pluginId, int progid, string progExtId, string episodeExtId)
-        {
-            IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
-            GetEpisodeInfoReturn episodeInfoReturn = default(GetEpisodeInfoReturn);
-
-            episodeInfoReturn = providerInst.GetEpisodeInfo(progExtId, episodeExtId);
-
-            if (!episodeInfoReturn.Success)
-            {
-                return -1;
-            }
-
-            if (string.IsNullOrEmpty(episodeInfoReturn.EpisodeInfo.Name))
-            {
-                throw new InvalidDataException("Episode name cannot be null or an empty string");
-            }
-
-            if (episodeInfoReturn.EpisodeInfo.Date == null)
-            {
-                // The date of the episode isn't known, so use the current date
-                episodeInfoReturn.EpisodeInfo.Date = DateTime.Now;
-            }
-
-            lock (Database.DbUpdateLock)
-            {
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
-                {
-                    int epid = 0;
-
-                    using (SQLiteCommand addEpisodeCmd = new SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn(), transMon.Trans))
-                    {
-                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
-                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@extid", episodeExtId));
-                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@name", episodeInfoReturn.EpisodeInfo.Name));
-                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@description", episodeInfoReturn.EpisodeInfo.Description));
-                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@duration", episodeInfoReturn.EpisodeInfo.DurationSecs));
-                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@date", episodeInfoReturn.EpisodeInfo.Date));
-                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@image", StoreImage(episodeInfoReturn.EpisodeInfo.Image)));
-                        addEpisodeCmd.ExecuteNonQuery();
-                    }
-
-                    using (SQLiteCommand getRowIDCmd = new SQLiteCommand("select last_insert_rowid()", FetchDbConn(), transMon.Trans))
-                    {
-                        epid = (int)(long)getRowIDCmd.ExecuteScalar();
-                    }
-
-                    if (episodeInfoReturn.EpisodeInfo.ExtInfo != null)
-                    {
-                        using (SQLiteCommand addExtInfoCmd = new SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn(), transMon.Trans))
-                        {
-                            foreach (KeyValuePair<string, string> extItem in episodeInfoReturn.EpisodeInfo.ExtInfo)
-                            {
-                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@epid", epid));
-                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@name", extItem.Key));
-                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@value", extItem.Value));
-                                addExtInfoCmd.ExecuteNonQuery();
-                            }
-                        }
-                    }
-
-                    transMon.Trans.Commit();
-                    return epid;
-                }
-            }
-        }
-
         private void InitEpisodeListThread(int progid)
         {
-            Guid providerId = default(Guid);
+            Guid providerId;
             string progExtId = null;
 
             using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
@@ -433,52 +331,27 @@ namespace RadioDld
 
             if (episodeExtIDs != null)
             {
-                using (SQLiteCommand findCmd = new SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", FetchDbConn()))
+                foreach (string episodeExtId in episodeExtIDs)
                 {
-                    SQLiteParameter progidParam = new SQLiteParameter("@progid");
-                    SQLiteParameter extidParam = new SQLiteParameter("@extid");
+                    int? epid = null;
 
-                    findCmd.Parameters.Add(progidParam);
-                    findCmd.Parameters.Add(extidParam);
+                    epid = Model.Episode.FetchInfo(providerId, progid, progExtId, episodeExtId);
 
-                    foreach (string episodeExtId in episodeExtIDs)
+                    if (epid == null)
                     {
-                        progidParam.Value = progid;
-                        extidParam.Value = episodeExtId;
+                        continue;
+                    }
 
-                        bool needEpInfo = true;
-                        int epid = 0;
-
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(findCmd.ExecuteReader()))
+                    lock (this.episodeListThreadLock)
+                    {
+                        if (!object.ReferenceEquals(Thread.CurrentThread, this.episodeListThread))
                         {
-                            if (reader.Read())
-                            {
-                                needEpInfo = false;
-                                epid = reader.GetInt32(reader.GetOrdinal("epid"));
-                            }
+                            return;
                         }
 
-                        if (needEpInfo)
+                        if (this.EpisodeAdded != null)
                         {
-                            epid = this.StoreEpisodeInfo(providerId, progid, progExtId, episodeExtId);
-
-                            if (epid < 0)
-                            {
-                                continue;
-                            }
-                        }
-
-                        lock (this.episodeListThreadLock)
-                        {
-                            if (!object.ReferenceEquals(Thread.CurrentThread, this.episodeListThread))
-                            {
-                                return;
-                            }
-
-                            if (this.EpisodeAdded != null)
-                            {
-                                this.EpisodeAdded(epid);
-                            }
+                            this.EpisodeAdded(epid.Value);
                         }
                     }
                 }

@@ -17,8 +17,10 @@
 namespace RadioDld.Model
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.SQLite;
     using System.Globalization;
+    using System.IO;
     using System.Threading;
 
     internal class Episode : Database
@@ -116,6 +118,38 @@ namespace RadioDld.Model
             return null;
         }
 
+        public static int? FetchInfo(Guid pluginId, int progid, string progExtId, string episodeExtId)
+        {
+            if (!Plugins.PluginExists(pluginId))
+            {
+                return null;
+            }
+
+            int? epid = null;
+
+            using (SQLiteCommand command = new SQLiteCommand("select epid from episodes where progid=@progid and extid=@extid", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+                command.Parameters.Add(new SQLiteParameter("@extid", episodeExtId));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (reader.Read())
+                    {
+                        epid = reader.GetInt32(reader.GetOrdinal("epid"));
+                    }
+                }
+            }
+
+            if (epid == null)
+            {
+                // Need to fetch the data synchronously as the epid is currently unknown
+                epid = UpdateInfo(pluginId, progid, progExtId, episodeExtId);
+            }
+
+            return epid;
+        }
+
         public override string ToString()
         {
             string infoString = this.Name +
@@ -190,6 +224,72 @@ namespace RadioDld.Model
             }
 
             this.AutoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
+        }
+
+        private static int? UpdateInfo(Guid pluginId, int progid, string progExtId, string episodeExtId)
+        {
+            IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
+            GetEpisodeInfoReturn episodeInfo = default(GetEpisodeInfoReturn);
+
+            episodeInfo = providerInst.GetEpisodeInfo(progExtId, episodeExtId);
+
+            if (!episodeInfo.Success)
+            {
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(episodeInfo.EpisodeInfo.Name))
+            {
+                throw new InvalidDataException("Episode name cannot be null or an empty string");
+            }
+
+            if (episodeInfo.EpisodeInfo.Date == null)
+            {
+                // The date of the episode isn't known, so use the current date
+                episodeInfo.EpisodeInfo.Date = DateTime.Now;
+            }
+
+            lock (Database.DbUpdateLock)
+            {
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
+                {
+                    int epid = 0;
+
+                    using (SQLiteCommand addEpisodeCmd = new SQLiteCommand("insert into episodes (progid, extid, name, description, duration, date, image) values (@progid, @extid, @name, @description, @duration, @date, @image)", FetchDbConn(), transMon.Trans))
+                    {
+                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
+                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@extid", episodeExtId));
+                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@name", episodeInfo.EpisodeInfo.Name));
+                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@description", episodeInfo.EpisodeInfo.Description));
+                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@duration", episodeInfo.EpisodeInfo.DurationSecs));
+                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@date", episodeInfo.EpisodeInfo.Date));
+                        addEpisodeCmd.Parameters.Add(new SQLiteParameter("@image", StoreImage(episodeInfo.EpisodeInfo.Image)));
+                        addEpisodeCmd.ExecuteNonQuery();
+                    }
+
+                    using (SQLiteCommand getRowIDCmd = new SQLiteCommand("select last_insert_rowid()", FetchDbConn(), transMon.Trans))
+                    {
+                        epid = (int)(long)getRowIDCmd.ExecuteScalar();
+                    }
+
+                    if (episodeInfo.EpisodeInfo.ExtInfo != null)
+                    {
+                        using (SQLiteCommand addExtInfoCmd = new SQLiteCommand("insert into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn(), transMon.Trans))
+                        {
+                            foreach (KeyValuePair<string, string> extItem in episodeInfo.EpisodeInfo.ExtInfo)
+                            {
+                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@epid", epid));
+                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@name", extItem.Key));
+                                addExtInfoCmd.Parameters.Add(new SQLiteParameter("@value", extItem.Value));
+                                addExtInfoCmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+
+                    transMon.Trans.Commit();
+                    return epid;
+                }
+            }
         }
     }
 }
