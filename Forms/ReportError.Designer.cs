@@ -65,8 +65,7 @@ namespace RadioDld
             this.ButtonSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.ButtonSend.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ButtonSend.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonSend.Location = new System.Drawing.Point(266, 133);
-            this.ButtonSend.Margin = new System.Windows.Forms.Padding(4);
+            this.ButtonSend.Location = new System.Drawing.Point(267, 134);
             this.ButtonSend.Name = "ButtonSend";
             this.ButtonSend.Size = new System.Drawing.Size(123, 23);
             this.ButtonSend.TabIndex = 0;
