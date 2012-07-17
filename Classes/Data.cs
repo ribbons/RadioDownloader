@@ -34,18 +34,6 @@ namespace RadioDld
         private object episodeListThreadLock = new object();
         private IRadioProvider findNewPluginInst;
 
-        private Data()
-            : base()
-        {
-            // Start regularly checking for new subscriptions in the background
-            ThreadPool.QueueUserWorkItem(delegate
-            {
-                // Wait for 2 minutes while the application starts
-                Thread.Sleep(120000);
-                this.CheckSubscriptions();
-            });
-        }
-
         public delegate void ProviderAddedEventHandler(Guid providerId);
 
         public delegate void FindNewViewChangeEventHandler(object viewData);
@@ -138,95 +126,6 @@ namespace RadioDld
             return info;
         }
 
-        private void CheckSubscriptions()
-        {
-            // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
-            // checking all of the subscriptions, as this blocks writes to the database from other threads
-            List<Model.Subscription> subscriptions = Model.Subscription.FetchAll();
-
-            // Work through the list of subscriptions and check for new episodes
-            using (SQLiteCommand progInfCmd = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
-            {
-                SQLiteParameter progidParam = new SQLiteParameter("@progid");
-                progInfCmd.Parameters.Add(progidParam);
-
-                foreach (Model.Subscription subscription in subscriptions)
-                {
-                    Guid providerId;
-                    string progExtId = null;
-
-                    progidParam.Value = subscription.Progid;
-
-                    using (SQLiteMonDataReader progInfReader = new SQLiteMonDataReader(progInfCmd.ExecuteReader()))
-                    {
-                        if (!progInfReader.Read())
-                        {
-                            continue;
-                        }
-
-                        providerId = new Guid(progInfReader.GetString(progInfReader.GetOrdinal("pluginid")));
-                        progExtId = progInfReader.GetString(progInfReader.GetOrdinal("extid"));
-                    }
-
-                    List<string> episodeExtIds = null;
-
-                    try
-                    {
-                        episodeExtIds = this.GetAvailableEpisodes(providerId, progExtId);
-                    }
-                    catch (Exception)
-                    {
-                        // Catch any unhandled provider exceptions
-                        continue;
-                    }
-
-                    if (episodeExtIds != null)
-                    {
-                        foreach (string episodeExtId in episodeExtIds)
-                        {
-                            int? epid = null;
-
-                            try
-                            {
-                                epid = Model.Episode.FetchInfo(providerId, subscription.Progid, progExtId, episodeExtId);
-                            }
-                            catch
-                            {
-                                // Catch any unhandled provider exceptions
-                                continue;
-                            }
-
-                            if (epid == null)
-                            {
-                                continue;
-                            }
-
-                            if (!subscription.SingleEpisode)
-                            {
-                                if (!new Model.Episode(epid.Value).AutoDownload)
-                                {
-                                    // Don't download the episode automatically, skip to the next one
-                                    continue;
-                                }
-                            }
-
-                            if (!Model.Download.IsDownload(epid.Value))
-                            {
-                                Model.Download.Add(new int[] { epid.Value });
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Wait for 10 minutes to give a pause between each check for new episodes
-            Thread.Sleep(600000);
-
-            // Queue the next subscription check.  This is used instead of a loop
-            // as it frees up a slot in the thread pool other actions are waiting.
-            ThreadPool.QueueUserWorkItem(delegate { this.CheckSubscriptions(); });
-        }
-
         private void FindNewPluginInst_FindNewException(Exception exception, bool unhandled)
         {
             if (unhandled)
@@ -275,59 +174,9 @@ namespace RadioDld
             }
         }
 
-        private List<string> GetAvailableEpisodes(Guid providerId, string progExtId)
-        {
-            if (!Plugins.PluginExists(providerId))
-            {
-                return null;
-            }
-
-            string[] extIds = null;
-            IRadioProvider providerInst = Plugins.GetPluginInstance(providerId);
-
-            extIds = providerInst.GetAvailableEpisodeIds(progExtId);
-
-            if (extIds == null)
-            {
-                return null;
-            }
-
-            // Remove any duplicates from the list of episodes
-            List<string> extIdsUnique = new List<string>();
-
-            foreach (string removeDups in extIds)
-            {
-                if (!extIdsUnique.Contains(removeDups))
-                {
-                    extIdsUnique.Add(removeDups);
-                }
-            }
-
-            return extIdsUnique;
-        }
-
         private void InitEpisodeListThread(int progid)
         {
-            Guid providerId;
-            string progExtId = null;
-
-            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (!reader.Read())
-                    {
-                        return;
-                    }
-
-                    providerId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-                    progExtId = reader.GetString(reader.GetOrdinal("extid"));
-                }
-            }
-
-            List<string> episodeExtIDs = this.GetAvailableEpisodes(providerId, progExtId);
+            List<string> episodeExtIDs = Model.Programme.GetAvailableEpisodes(progid);
 
             if (episodeExtIDs != null)
             {
@@ -335,12 +184,14 @@ namespace RadioDld
                 {
                     int? epid = null;
 
-                    epid = Model.Episode.FetchInfo(providerId, progid, progExtId, episodeExtId);
+                    epid = Model.Episode.FetchInfo(progid, episodeExtId);
 
                     if (epid == null)
                     {
                         continue;
                     }
+
+                    Model.Episode.UpdateInfoIfRequired(epid.Value);
 
                     lock (this.episodeListThreadLock)
                     {

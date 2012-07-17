@@ -178,6 +178,103 @@ namespace RadioDld.Model
             return null;
         }
 
+        public static List<string> GetAvailableEpisodes(int progid)
+        {
+            Guid providerId;
+            string progExtId;
+
+            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    if (!reader.Read())
+                    {
+                        throw new DataNotFoundException(progid, "Programme does not exist");
+                    }
+
+                    providerId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
+                    progExtId = reader.GetString(reader.GetOrdinal("extid"));
+                }
+            }
+
+            if (!Plugins.PluginExists(providerId))
+            {
+                return null;
+            }
+
+            IRadioProvider providerInst = Plugins.GetPluginInstance(providerId);
+            string[] epExtIds = providerInst.GetAvailableEpisodeIds(progExtId);
+
+            if (epExtIds == null)
+            {
+                return null;
+            }
+
+            // Remove any duplicates from the list of episodes
+            List<string> epExtIdsUnique = new List<string>();
+
+            foreach (string epExtId in epExtIds)
+            {
+                if (!epExtIdsUnique.Contains(epExtId))
+                {
+                    epExtIdsUnique.Add(epExtId);
+                }
+            }
+
+            // Fetch a list of previously available episodes for the programme
+            List<string> previousAvailable = new List<string>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select extid from episodes where progid=@progid and available=1", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@progid", progid));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    int epidOrdinal = reader.GetOrdinal("extid");
+
+                    while (reader.Read())
+                    {
+                        previousAvailable.Add(reader.GetString(epidOrdinal));
+                    }
+                }
+            }
+
+            // Remove the still available episodes from the previously available list
+            foreach (string epExtId in epExtIdsUnique)
+            {
+                previousAvailable.Remove(epExtId);
+            }
+
+            // Unflag any no-longer available episodes in the database
+            if (previousAvailable.Count > 0)
+            {
+                lock (Database.DbUpdateLock)
+                {
+                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
+                    {
+                        using (SQLiteCommand command = new SQLiteCommand("update episodes set available=0 where progid=@progid and extid=@extid", FetchDbConn(), transMon.Trans))
+                        {
+                            SQLiteParameter extidParam = new SQLiteParameter("@extid");
+                            command.Parameters.Add(new SQLiteParameter("@progid", progid));
+                            command.Parameters.Add(extidParam);
+
+                            foreach (string epExtId in previousAvailable)
+                            {
+                                extidParam.Value = epExtId;
+                                command.ExecuteNonQuery();
+                            }
+                        }
+
+                        transMon.Trans.Commit();
+                    }
+                }
+            }
+
+            return epExtIdsUnique;
+        }
+
         public override string ToString()
         {
             string infoString = this.Name;

@@ -30,6 +30,14 @@ namespace RadioDld.Model
         static Subscription()
         {
             Programme.Updated += Programme_Updated;
+
+            // Start regularly checking for new subscriptions in the background
+            ThreadPool.QueueUserWorkItem(delegate
+            {
+                // Wait for 2 minutes while the application starts
+                Thread.Sleep(120000);
+                CheckSubscriptions();
+            });
         }
 
         public Subscription(SQLiteMonDataReader reader)
@@ -207,6 +215,83 @@ namespace RadioDld.Model
             {
                 Removed(progid);
             }
+        }
+
+        private static void CheckSubscriptions()
+        {
+            // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
+            // checking all of the subscriptions, as this blocks writes to the database from other threads
+            List<Subscription> subscriptions = Subscription.FetchAll();
+
+            // Work through the list of subscriptions and check for new episodes
+            foreach (Subscription subscription in subscriptions)
+            {
+                List<string> episodeExtIds = null;
+
+                try
+                {
+                    episodeExtIds = Programme.GetAvailableEpisodes(subscription.Progid);
+                }
+                catch (Exception)
+                {
+                    // Catch any unhandled provider exceptions
+                    continue;
+                }
+
+                if (episodeExtIds != null)
+                {
+                    foreach (string episodeExtId in episodeExtIds)
+                    {
+                        int? epid = null;
+
+                        try
+                        {
+                            epid = Episode.FetchInfo(subscription.Progid, episodeExtId);
+                        }
+                        catch
+                        {
+                            // Catch any unhandled provider exceptions
+                            continue;
+                        }
+
+                        if (epid == null)
+                        {
+                            continue;
+                        }
+
+                        if (!subscription.SingleEpisode)
+                        {
+                            if (!new Episode(epid.Value).AutoDownload)
+                            {
+                                // Don't download the episode automatically, skip to the next one
+                                continue;
+                            }
+                        }
+
+                        if (!Download.IsDownload(epid.Value))
+                        {
+                            try
+                            {
+                                Episode.UpdateInfoIfRequired(epid.Value);
+                            }
+                            catch
+                            {
+                                // Catch any unhandled provider exceptions
+                                continue;
+                            }
+
+                            Download.Add(new int[] { epid.Value });
+                        }
+                    }
+                }
+            }
+
+            // Wait for 10 minutes to give a pause between each check for new episodes
+            Thread.Sleep(600000);
+
+            // Queue the next subscription check.  This is used instead of a loop
+            // as it frees up a slot in the thread pool other actions are waiting.
+            ThreadPool.QueueUserWorkItem(delegate { CheckSubscriptions(); });
         }
     }
 }
