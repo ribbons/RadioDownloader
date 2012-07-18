@@ -30,7 +30,6 @@ namespace RadioDld
 
     internal partial class Main : GlassForm
     {
-        private Data progData;
         private DataSearch dataSearch;
         private ViewState view;
         private UpdateCheck checkUpdate;
@@ -275,11 +274,10 @@ namespace RadioDld
             this.view.ViewChanged += this.View_ViewChanged;
             this.view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
 
-            this.progData = Data.GetInstance();
-            this.progData.ProviderAdded += this.ProgData_ProviderAdded;
-            this.progData.EpisodeAdded += this.ProgData_EpisodeAdded;
-            this.progData.FindNewViewChange += this.ProgData_FindNewViewChange;
-            this.progData.FoundNew += this.ProgData_FoundNew;
+            Data.ProviderAdded += this.ProgData_ProviderAdded;
+            Data.EpisodeAdded += this.ProgData_EpisodeAdded;
+            Data.FindNewViewChange += this.ProgData_FindNewViewChange;
+            Data.FoundNew += this.ProgData_FoundNew;
 
             // Temporary code to migrate the .net settings to database settings
             if (Properties.Settings.Default.SaveFolder != (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue)
@@ -372,7 +370,7 @@ namespace RadioDld
             this.dataSearch.DownloadRemoved += this.DataSearch_DownloadRemoved;
             this.dataSearch.DownloadProgress += this.DataSearch_DownloadProgress;
 
-            this.progData.InitProviderList();
+            Data.InitProviderList();
             this.InitFavouriteList();
             this.InitSubscriptionList();
             this.InitDownloadList();
@@ -500,7 +498,7 @@ namespace RadioDld
 
         private void ShowProviderInfo(Guid providerId)
         {
-            Data.ProviderData info = this.progData.FetchProviderData(providerId);
+            Data.ProviderData info = Data.FetchProviderData(providerId);
             this.SetSideBar(info.Name, info.Description, null);
 
             if (this.view.CurrentView == ViewState.View.FindNewChooseProvider)
@@ -1002,7 +1000,7 @@ namespace RadioDld
                 return;
             }
 
-            Data.ProviderData info = this.progData.FetchProviderData(providerId);
+            Data.ProviderData info = Data.FetchProviderData(providerId);
 
             ListViewItem addItem = new ListViewItem();
             addItem.Name = providerId.ToString();
@@ -2067,17 +2065,17 @@ namespace RadioDld
                     }
 
                     this.PanelPluginSpace.Visible = true;
-                    this.PanelPluginSpace.Controls.Add(this.progData.GetFindNewPanel(findViewData.ProviderID, findViewData.View));
+                    this.PanelPluginSpace.Controls.Add(Data.GetFindNewPanel(findViewData.ProviderID, findViewData.View));
                     this.PanelPluginSpace.Controls[0].Dock = DockStyle.Fill;
                     this.PanelPluginSpace.Controls[0].Focus();
                     break;
                 case ViewState.View.ProgEpisodes:
                     this.ListEpisodes.Visible = true;
-                    this.progData.CancelEpisodeListing();
+                    Data.CancelEpisodeListing();
                     this.ListEpisodes.Items.Clear(); // Clear before DoEvents so that old items don't flash up on screen
                     Application.DoEvents(); // Give any queued Invoke calls a chance to be processed
                     this.ListEpisodes.Items.Clear();
-                    this.progData.InitEpisodeList((int)data);
+                    Data.InitEpisodeList((int)data);
                     break;
                 case ViewState.View.Favourites:
                     this.ListFavourites.Visible = true;
