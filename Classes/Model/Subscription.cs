@@ -261,7 +261,9 @@ namespace RadioDld.Model
 
                         if (!subscription.SingleEpisode)
                         {
-                            if (!new Episode(epid.Value).AutoDownload)
+                            Model.Episode info = new Episode(epid.Value);
+
+                            if (!info.AutoDownload || info.EpisodeDate.AddDays(14) < DateTime.Now)
                             {
                                 // Don't download the episode automatically, skip to the next one
                                 continue;
