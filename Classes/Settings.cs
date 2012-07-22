@@ -263,6 +263,19 @@ namespace RadioDld
             }
         }
 
+        internal static DateTime LastPrune
+        {
+            get
+            {
+                return GetValue("LastPrune", DateTime.MinValue);
+            }
+
+            set
+            {
+                SetValue("LastPrune", value);
+            }
+        }
+
         internal static void ResetUserSettings()
         {
             SetValue("RunOnStartup", null);

@@ -89,7 +89,19 @@ namespace RadioDld
                 }
             }
 
-            // Vacuum the database every few months - they are spaced like this as they take ages to run
+            // Prune the database once a week
+            if (Settings.LastPrune.AddDays(7) < DateTime.Now)
+            {
+                using (Status status = new Status())
+                {
+                    status.ShowDialog(delegate
+                    {
+                        Prune(status);
+                    });
+                }
+            }
+
+            // Vacuum the database every three months
             if (Settings.LastVacuum.AddMonths(3) < DateTime.Now)
             {
                 using (Status status = new Status())
@@ -253,6 +265,37 @@ namespace RadioDld
                 }
 
                 Settings.LastVacuum = DateTime.Now;
+            }
+        }
+
+        private static void Prune(Status status)
+        {
+            lock (Database.DbUpdateLock)
+            {
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
+                {
+                    status.StatusText = "Pruning episode images...";
+
+                    // Set image to null for unavailable episodes, except:
+                    // - episodes in the downloads list
+                    // - the most recent episode for subscriptions or favourites (as this may be used as the programme image)
+                    using (SQLiteCommand command = new SQLiteCommand("update episodes set image=null where epid in (select e1.epid from episodes as e1 left outer join downloads on e1.epid=downloads.epid where available=0 and image is not null and downloads.epid is null and ((not (exists(select 1 from subscriptions where subscriptions.progid=e1.progid) or exists(select 1 from favourites where favourites.progid=e1.progid))) or exists(select 1 from episodes as e2 where e1.progid=e2.progid and image is not null and e2.date > e1.date)))", FetchDbConn()))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
+                    status.StatusText = "Cleaning up unused images...";
+
+                    // Remove images which are now no-longer referenced by a programme or episode
+                    using (SQLiteCommand command = new SQLiteCommand("delete from images where imgid in (select imgid from images left outer join programmes on imgid=programmes.image left outer join episodes on imgid=episodes.image where programmes.image is null and episodes.image is null)", FetchDbConn()))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
+                    transMon.Trans.Commit();
+                }
+
+                Settings.LastPrune = DateTime.Now;
             }
         }
     }
