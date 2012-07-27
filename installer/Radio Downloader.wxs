@@ -27,6 +27,10 @@
 		<Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
 		<Condition Message="This version of [ProductName] is already installed.  To remove it, right-click on the installer and choose 'Uninstall'.">NOT ((Installed AND NOT (REINSTALL OR REMOVE)))</Condition>
 		
+		<?if $(sys.BUILDARCH) = "x86" ?>
+			<Condition Message="This is the 32-bit Radio Downloader installer, but you are running 64-bit Windows.  Please download the 64-bit installer from http://nerdoftheherd.com/tools/radiodld/">NOT Msix64</Condition>
+		<?endif ?>
+		
 		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
 		              Schedule="afterInstallInitialize" AllowSameVersionUpgrades="yes" />
 		
