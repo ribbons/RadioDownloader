@@ -18,117 +18,23 @@ namespace RadioDld
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.IO;
     using System.Reflection;
-    using System.Windows.Forms;
 
-    public delegate void FindNewViewChangeEventHandler(object view);
-
-    public delegate void FindNewExceptionEventHandler(Exception findExp, bool unhandled);
-
-    public delegate void FoundNewEventHandler(string progExtId);
-
-    public delegate void ProgressEventHandler(int percent, ProgressType type);
-
-    public enum ProgressType
-    {
-        Downloading,
-        Processing
-    }
-
-    public interface IRadioProvider
-    {
-        event FindNewViewChangeEventHandler FindNewViewChange;
-
-        event FindNewExceptionEventHandler FindNewException;
-
-        event FoundNewEventHandler FoundNew;
-
-        event ProgressEventHandler Progress;
-
-        Guid ProviderId { get; }
-
-        string ProviderName { get; }
-
-        Bitmap ProviderIcon { get; }
-
-        string ProviderDescription { get; }
-
-        int ProgInfoUpdateFreqDays { get; }
-
-        EventHandler GetShowOptionsHandler();
-
-        Panel GetFindNewPanel(object view);
-
-        GetProgrammeInfoReturn GetProgrammeInfo(string progExtId);
-
-        string[] GetAvailableEpisodeIds(string progExtId);
-
-        GetEpisodeInfoReturn GetEpisodeInfo(string progExtId, string episodeExtId);
-
-        /// <summary>
-        /// Perform a download of the specified episode.
-        /// </summary>
-        /// <param name="progExtId">The external id specifying the programme that the episode belongs to.</param>
-        /// <param name="episodeExtId">The external id of the episode to download.</param>
-        /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme.</param>
-        /// <param name="epInfo">Data from the last call to GetEpisodeInfo for this episode.</param>
-        /// <param name="finalName">The path and filename (minus file extension) to save this download as.</param>
-        /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
-        /// <returns>The file extension of a successful download.</returns>
-        string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
-    }
-
-    public struct ProgrammeInfo
-    {
-        public string Name;
-        public string Description;
-        public Bitmap Image;
-        public bool SingleEpisode;
-    }
-
-    public struct GetProgrammeInfoReturn
-    {
-        public ProgrammeInfo ProgrammeInfo;
-        public bool Success;
-        public Exception Exception;
-    }
-
-    public struct EpisodeInfo
-    {
-        public string Name;
-        public string Description;
-        public int? DurationSecs;
-        public DateTime? Date;
-        public Bitmap Image;
-        public Dictionary<string, string> ExtInfo;
-    }
-
-    public struct GetEpisodeInfoReturn
-    {
-        public EpisodeInfo EpisodeInfo;
-        public bool Success;
-    }
-
-    // Parts of this class are based on VB.net code from http://www.developerfusion.co.uk/show/4371/3/
     internal static class Plugins
     {
-        private static string interfaceName = typeof(IRadioProvider).Name;
         private static Dictionary<Guid, AvailablePlugin> availablePlugins = new Dictionary<Guid, AvailablePlugin>();
 
         static Plugins()
         {
             // Get an array of all of the dlls ending with the text Provider in the application folder
-            string pluginPath = AppDomain.CurrentDomain.BaseDirectory;
-            string[] dlls = Directory.GetFileSystemEntries(pluginPath, "*Provider.dll");
+            string[] dlls = Directory.GetFileSystemEntries(AppDomain.CurrentDomain.BaseDirectory, "*Provider.dll");
             
             foreach (string dll in dlls)
             {
                 try
                 {
-                    Assembly thisDll = Assembly.LoadFrom(dll);
-                    Plugins.ExamineAssembly(thisDll);
+                    Plugins.ExamineAssembly(Assembly.LoadFrom(dll));
                 }
                 catch
                 {
@@ -164,9 +70,6 @@ namespace RadioDld
 
         private static void ExamineAssembly(Assembly dll)
         {
-            Type implInterface = null;
-            AvailablePlugin pluginInfo = default(AvailablePlugin);
-
             // Loop through each type in the assembly
             foreach (Type thisType in dll.GetTypes())
             {
@@ -177,18 +80,17 @@ namespace RadioDld
                     if (!((thisType.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract))
                     {
                         // See if this type implements our interface
-                        implInterface = thisType.GetInterface(interfaceName, true);
+                        Type implInterface = thisType.GetInterface(typeof(IRadioProvider).Name, true);
 
                         if (implInterface != null)
                         {
-                            pluginInfo = new AvailablePlugin();
+                            AvailablePlugin pluginInfo = new AvailablePlugin();
                             pluginInfo.AssemblyPath = dll.Location;
                             pluginInfo.ClassName = thisType.FullName;
 
                             try
                             {
-                                IRadioProvider pluginInst = null;
-                                pluginInst = CreateInstance(pluginInfo);
+                                IRadioProvider pluginInst = CreateInstance(pluginInfo);
                                 availablePlugins.Add(pluginInst.ProviderId, pluginInfo);
                             }
                             catch
@@ -209,10 +111,7 @@ namespace RadioDld
                 Assembly dll = Assembly.LoadFrom(plugin.AssemblyPath);
 
                 // Create and return class instance
-                object pluginInst = dll.CreateInstance(plugin.ClassName);
-
-                // Cast to an IRadioProvider and return
-                return (IRadioProvider)pluginInst;
+                return (IRadioProvider)dll.CreateInstance(plugin.ClassName);
             }
             catch
             {
