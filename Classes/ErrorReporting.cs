@@ -210,7 +210,7 @@ namespace RadioDld
                     {
                         if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) && object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
                         {
-                            this.fields.Add("Exception.Data." + (string)dataEntry.Key, (string)dataEntry.Value);
+                            this.fields.Add((string)dataEntry.Key, (string)dataEntry.Value);
                         }
                     }
                 }
