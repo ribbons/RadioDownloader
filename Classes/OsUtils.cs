@@ -26,7 +26,7 @@ namespace RadioDld
     using System.Windows.Forms;
     using Microsoft.Win32;
 
-    public class OsUtils
+    public static class OsUtils
     {
         /// <summary>
         /// Add tracking parameters to the specified URL and launch it in the user's browser.

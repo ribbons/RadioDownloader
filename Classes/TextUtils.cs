@@ -20,7 +20,7 @@ namespace RadioDld
     using System.Globalization;
     using System.Text.RegularExpressions;
 
-    internal class TextUtils
+    internal static class TextUtils
     {
         public static string StripDateFromName(string name, System.DateTime stripDate)
         {

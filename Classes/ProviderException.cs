@@ -18,11 +18,13 @@ namespace RadioDld
 {
     using System;
     using System.Collections;
+    using System.Runtime.Serialization;
 
     /// <summary>
     /// Exception class used to wrap unhandled provider exceptions, so that they can
     /// easily be separated from exceptions within the application.
     /// </summary>
+    [Serializable]
     internal class ProviderException : Exception
     {
         /// <summary>
@@ -37,6 +39,16 @@ namespace RadioDld
             : base(message, innerException)
         {
             this.PluginId = pluginId;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProviderException" /> class with serialized data
+        /// </summary>
+        /// <param name="info">The <see cref="SerializationInfo"/> that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The <see cref="StreamingContext"/> that contains contextual information about the source or destination. </param>
+        protected ProviderException(SerializationInfo info, StreamingContext context)
+            : base(info, context)
+        {
         }
 
         /// <summary>

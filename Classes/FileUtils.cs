@@ -20,7 +20,7 @@ namespace RadioDld
     using System.IO;
     using System.Windows.Forms;
 
-    internal class FileUtils
+    internal static class FileUtils
     {
         public static string GetSaveFolder()
         {
