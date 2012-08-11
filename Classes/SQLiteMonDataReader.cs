@@ -21,7 +21,7 @@ namespace RadioDld
     using System.Data.SQLite;
     using System.Diagnostics;
 
-    public class SQLiteMonDataReader : IDisposable
+    internal class SQLiteMonDataReader : IDisposable
     {
         private static Dictionary<SQLiteDataReader, string> readerInfo = new Dictionary<SQLiteDataReader, string>();
         private static object readerInfoLock = new object();

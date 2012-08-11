@@ -22,7 +22,7 @@ namespace RadioDld
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
 
-    public class SearchBox : Control
+    internal class SearchBox : Control
     {
         private int boxState = NativeMethods.SBB_NORMAL;
         private int themeHeight;

@@ -22,7 +22,7 @@ namespace RadioDld
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
 
-    public class GlassForm : Form
+    internal class GlassForm : Form
     {
         private bool glassSet;
         private NativeMethods.MARGINS glassMargins;

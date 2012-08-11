@@ -21,13 +21,8 @@ namespace RadioDld
     using System.Security.Permissions;
     using System.Windows.Forms;
 
-    public class ExtToolStrip : ToolStrip
+    internal class ExtToolStrip : ToolStrip
     {
-        public ExtToolStrip()
-            : base()
-        {
-        }
-
         [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         protected override void WndProc(ref Message m)
         {
