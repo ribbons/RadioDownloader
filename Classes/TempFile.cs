@@ -31,9 +31,9 @@ namespace RadioDld
         private bool isDisposed;
 
         /// <summary>
-        /// Static constructor to cleanin up any left-over files from previous sessions.
-        /// Any file names still listed in the database are added to the notInUse list and
-        /// are attempted to be deleted.
+        /// Initializes static members of the <see cref="TempFile"/> class and cleans up
+        /// any left-over files from previous sessions.  Any file names still listed in
+        /// the database are added to the notInUse list and are attempted to be deleted.
         /// </summary>
         static TempFile()
         {
@@ -57,8 +57,8 @@ namespace RadioDld
         }
 
         /// <summary>
-        /// Create a new instance of the TempFile class and generate a temporary file name with
-        /// a random extension.
+        /// Initializes a new instance of the <see cref="TempFile"/> class and generates a temporary
+        /// file name with a random extension.
         /// </summary>
         public TempFile()
             : this(null)
@@ -66,8 +66,8 @@ namespace RadioDld
         }
 
         /// <summary>
-        /// Create a new instance of the TempFile class and generate a temporary file name with
-        /// the specified extension.
+        /// Initializes a new instance of the <see cref="TempFile"/> class and generates a temporary
+        /// file name with the specified extension.
         /// </summary>
         /// <param name="fileExtension">The extension of the file, not including a leading dot.</param>
         public TempFile(string fileExtension)
@@ -127,8 +127,8 @@ namespace RadioDld
         }
 
         /// <summary>
-        /// The generated temporary file path.  This file is guaranteed to not exist when the class
-        /// is created.
+        /// Gets the generated temporary file path.  This file did not exist when the class
+        /// was created.
         /// </summary>
         public string FilePath { get; private set; }
 

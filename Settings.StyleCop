@@ -1,9 +1,9 @@
-<StyleCopSettings Version="4.3">
+<StyleCopSettings Version="105">
   <GlobalSettings>
     <StringProperty Name="MergeSettingsFiles">NoMerge</StringProperty>
   </GlobalSettings>
   <Parsers>
-    <Parser ParserId="Microsoft.StyleCop.CSharp.CsParser">
+    <Parser ParserId="StyleCop.CSharp.CsParser">
       <ParserSettings>
         <CollectionProperty Name="GeneratedFileFilters">
           <Value>\.g\.cs$</Value>
@@ -14,7 +14,7 @@
     </Parser>
   </Parsers>
   <Analyzers>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.NamingRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.NamingRules">
       <Rules>
         <Rule Name="FieldNamesMustNotUseHungarianNotation">
           <RuleSettings>
@@ -22,8 +22,9 @@
           </RuleSettings>
         </Rule>
       </Rules>
+      <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.DocumentationRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.DocumentationRules">
       <Rules>
         <Rule Name="ElementsMustBeDocumented">
           <RuleSettings>
@@ -40,16 +41,6 @@
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
         </Rule>
-        <Rule Name="ElementDocumentationMustHaveSummary">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="PartialElementDocumentationMustHaveSummary">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="GenericTypeParametersMustBeDocumented">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
@@ -60,57 +51,7 @@
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
         </Rule>
-        <Rule Name="GenericTypeParameterDocumentationMustMatchTypeParameters">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="GenericTypeParameterDocumentationMustDeclareParameterName">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="GenericTypeParameterDocumentationMustHaveText">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="PropertySummaryDocumentationMustMatchAccessors">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="PropertySummaryDocumentationMustOmitSetAccessorWithRestrictedAccess">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="ElementDocumentationMustNotBeCopiedAndPasted">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="DocumentationMustMeetCharacterPercentage">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="DocumentationTextMustMeetMinimumCharacterLength">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="ConstructorSummaryDocumentationMustBeginWithStandardText">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="DestructorSummaryDocumentationMustBeginWithStandardText">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="DocumentationHeadersMustNotContainBlankLines">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
@@ -130,16 +71,6 @@
             <BooleanProperty Name="Enabled">False</BooleanProperty>
           </RuleSettings>
         </Rule>
-        <Rule Name="FileHeaderMustContainFileName">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
-        <Rule Name="FileHeaderFileNameDocumentationMustMatchFileName">
-          <RuleSettings>
-            <BooleanProperty Name="Enabled">False</BooleanProperty>
-          </RuleSettings>
-        </Rule>
         <Rule Name="FileHeaderMustHaveValidCompanyText">
           <RuleSettings>
             <BooleanProperty Name="Enabled">False</BooleanProperty>
@@ -148,7 +79,7 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.MaintainabilityRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.MaintainabilityRules">
       <Rules>
         <Rule Name="FileMayOnlyContainASingleClass">
           <RuleSettings>
@@ -158,12 +89,12 @@
       </Rules>
       <AnalyzerSettings />
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.OrderingRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.OrderingRules">
       <AnalyzerSettings>
         <BooleanProperty Name="GeneratedCodeElementOrder">False</BooleanProperty>
       </AnalyzerSettings>
     </Analyzer>
-    <Analyzer AnalyzerId="Microsoft.StyleCop.CSharp.ReadabilityRules">
+    <Analyzer AnalyzerId="StyleCop.CSharp.ReadabilityRules">
       <Rules>
         <Rule Name="DoNotUseRegions">
           <RuleSettings>
