@@ -392,15 +392,10 @@ namespace RadioDld.Model
                         "\r\nExtID: " + reader.GetString(reader.GetOrdinal("progextid"));
 
                     Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-                    IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
-
-                    string provDetails = providerInst.ProviderName +
-                        "\r\nDescription: " + providerInst.ProviderDescription +
-                        "\r\nID: " + pluginId.ToString();
 
                     errorExtraDetails.Add("Episode", epDetails);
                     errorExtraDetails.Add("Programme", progDetails);
-                    errorExtraDetails.Add("Provider", provDetails);
+                    errorExtraDetails.Add("Provider", Plugins.PluginInfo(pluginId));
                 }
             }
 

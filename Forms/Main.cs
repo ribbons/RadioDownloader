@@ -277,6 +277,7 @@ namespace RadioDld
             Data.ProviderAdded += this.ProgData_ProviderAdded;
             Data.EpisodeAdded += this.ProgData_EpisodeAdded;
             Data.FindNewViewChange += this.ProgData_FindNewViewChange;
+            Data.FindNewFailed += this.ProgData_FindNewFailed;
             Data.FoundNew += this.ProgData_FoundNew;
 
             // Temporary code to migrate the .net settings to database settings
@@ -1616,6 +1617,19 @@ namespace RadioDld
             findViewData.View = viewData;
 
             this.view.StoreView(findViewData);
+        }
+
+        private void ProgData_FindNewFailed()
+        {
+            if (this.InvokeRequired)
+            {
+                // Events will sometimes be fired on a different thread to the ui
+                this.Invoke((MethodInvoker)delegate { this.ProgData_FindNewFailed(); });
+                return;
+            }
+
+            // Re-load the last good provider find new page
+            this.View_ViewChanged(this.view.CurrentView, ViewState.MainTab.FindProgramme, this.view.CurrentViewData);
         }
 
         private void ProgData_FoundNew(int progid)

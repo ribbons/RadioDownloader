@@ -21,7 +21,6 @@ namespace RadioDld
     using System.Drawing;
     using System.Threading;
     using System.Windows.Forms;
-    using Microsoft.VisualBasic;
 
     internal static class Data
     {
@@ -34,6 +33,8 @@ namespace RadioDld
 
         public delegate void FindNewViewChangeEventHandler(object viewData);
 
+        public delegate void FindNewFailedEventHandler();
+
         public delegate void FoundNewEventHandler(int progid);
 
         public delegate void EpisodeAddedEventHandler(int epid);
@@ -41,6 +42,8 @@ namespace RadioDld
         public static event ProviderAddedEventHandler ProviderAdded;
 
         public static event FindNewViewChangeEventHandler FindNewViewChange;
+
+        public static event FindNewFailedEventHandler FindNewFailed;
 
         public static event FoundNewEventHandler FoundNew;
 
@@ -141,11 +144,38 @@ namespace RadioDld
         private static void FoundNewAsync(string progExtId)
         {
             Guid pluginId = findNewPluginInst.ProviderId;
-            int? progid = Model.Programme.FetchInfo(pluginId, progExtId);
+            int? progid;
+
+            try
+            {
+                progid = Model.Programme.FetchInfo(pluginId, progExtId);
+            }
+            catch (ProviderException provExp)
+            {
+                if (FindNewFailed != null)
+                {
+                    FindNewFailed();
+                }
+
+                IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
+
+                if (MessageBox.Show("There was an unknown error encountered retrieving information about this programme." + Environment.NewLine + Environment.NewLine + "Would you like to send an error report to NerdoftheHerd.com to help improve the " + providerInst.ProviderName + " provider?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                {
+                    ErrorReporting report = provExp.BuildReport();
+                    report.SendReport();
+                }
+
+                return;
+            }
 
             if (progid == null)
             {
-                Interaction.MsgBox("There was a problem retrieving information about this programme.  You might like to try again later.", MsgBoxStyle.Exclamation);
+                if (FindNewFailed != null)
+                {
+                    FindNewFailed();
+                }
+
+                MessageBox.Show("There was a temporary problem retrieving information about this programme.  Please try again later.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 

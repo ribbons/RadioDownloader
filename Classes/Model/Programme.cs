@@ -328,11 +328,19 @@ namespace RadioDld.Model
             }
 
             IRadioProvider pluginInstance = Plugins.GetPluginInstance(pluginId);
-            GetProgrammeInfoReturn progInfo = default(GetProgrammeInfoReturn);
+            ProgrammeInfo progInfo;
 
-            progInfo = pluginInstance.GetProgrammeInfo(progExtId);
+            try
+            {
+                progInfo = pluginInstance.GetProgrammeInfo(progExtId);
+            }
+            catch (Exception provExp)
+            {
+                provExp.Data.Add("Programme ExtID", progExtId);
+                throw new ProviderException("Call to GetProgrammeInfo failed", provExp, pluginId);
+            }
 
-            if (!progInfo.Success)
+            if (progInfo == null)
             {
                 return null;
             }
@@ -374,10 +382,10 @@ namespace RadioDld.Model
 
                     using (SQLiteCommand command = new SQLiteCommand("update programmes set name=@name, description=@description, image=@image, singleepisode=@singleepisode, lastupdate=@lastupdate where progid=@progid", FetchDbConn()))
                     {
-                        command.Parameters.Add(new SQLiteParameter("@name", progInfo.ProgrammeInfo.Name));
-                        command.Parameters.Add(new SQLiteParameter("@description", progInfo.ProgrammeInfo.Description));
-                        command.Parameters.Add(new SQLiteParameter("@image", StoreImage(progInfo.ProgrammeInfo.Image)));
-                        command.Parameters.Add(new SQLiteParameter("@singleepisode", progInfo.ProgrammeInfo.SingleEpisode));
+                        command.Parameters.Add(new SQLiteParameter("@name", progInfo.Name));
+                        command.Parameters.Add(new SQLiteParameter("@description", progInfo.Description));
+                        command.Parameters.Add(new SQLiteParameter("@image", StoreImage(progInfo.Image)));
+                        command.Parameters.Add(new SQLiteParameter("@singleepisode", progInfo.SingleEpisode));
                         command.Parameters.Add(new SQLiteParameter("@lastupdate", DateTime.Now));
                         command.Parameters.Add(new SQLiteParameter("@progid", progid));
                         command.ExecuteNonQuery();
@@ -427,7 +435,14 @@ namespace RadioDld.Model
             // Now perform the update if required
             if (updateExtid != null)
             {
-                UpdateInfo(providerId, updateExtid);
+                try
+                {
+                    UpdateInfo(providerId, updateExtid);
+                }
+                catch (ProviderException)
+                {
+                    // Suppress any provider exceptions, as the user isn't waiting for this action
+                }
             }
         }
     }

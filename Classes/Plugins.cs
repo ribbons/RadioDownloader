@@ -68,6 +68,15 @@ namespace RadioDld
             return pluginIDs;
         }
 
+        public static string PluginInfo(Guid pluginId)
+        {
+            IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
+
+            return providerInst.ProviderName +
+                "\r\nDescription: " + providerInst.ProviderDescription +
+                "\r\nID: " + pluginId.ToString();
+        }
+
         private static void ExamineAssembly(Assembly dll)
         {
             // Loop through each type in the assembly

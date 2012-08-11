@@ -86,44 +86,27 @@ namespace PodcastProvider
             return findNewInst.PanelFindNew;
         }
 
-        public GetProgrammeInfoReturn GetProgrammeInfo(string progExtId)
+        public ProgrammeInfo GetProgrammeInfo(string progExtId)
         {
-            GetProgrammeInfoReturn getProgInfo = new GetProgrammeInfoReturn();
-            getProgInfo.Success = false;
-
-            XmlDocument rss = null;
-            XmlNamespaceManager namespaceMgr = null;
-
-            try
-            {
-                rss = this.LoadFeedXml(new Uri(progExtId));
-            }
-            catch (WebException)
-            {
-                return getProgInfo;
-            }
-            catch (XmlException)
-            {
-                return getProgInfo;
-            }
-
-            namespaceMgr = this.CreateNamespaceMgr(rss);
+            XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
+            XmlNamespaceManager namespaceMgr = this.CreateNamespaceMgr(rss);
 
             XmlNode titleNode = rss.SelectSingleNode("./rss/channel/title");
 
             if (titleNode == null || string.IsNullOrEmpty(titleNode.InnerText))
             {
-                return getProgInfo;
+                throw new InvalidDataException("Channel title node is missing or empty");
             }
 
-            getProgInfo.ProgrammeInfo.Name = titleNode.InnerText;
+            ProgrammeInfo progInfo = new ProgrammeInfo();
+            progInfo.Name = titleNode.InnerText;
 
             // If the channel has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
             XmlNode descriptionNode = rss.SelectSingleNode("./rss/channel/itunes:summary", namespaceMgr);
 
             if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
             {
-                getProgInfo.ProgrammeInfo.Description = descriptionNode.InnerText;
+                progInfo.Description = descriptionNode.InnerText;
             }
             else
             {
@@ -132,14 +115,13 @@ namespace PodcastProvider
 
                 if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                 {
-                    getProgInfo.ProgrammeInfo.Description = this.HtmlToText(descriptionNode.InnerText);
+                    progInfo.Description = this.HtmlToText(descriptionNode.InnerText);
                 }
             }
 
-            getProgInfo.ProgrammeInfo.Image = this.RSSNodeImage(rss.SelectSingleNode("./rss/channel"), namespaceMgr);
+            progInfo.Image = this.RSSNodeImage(rss.SelectSingleNode("./rss/channel"), namespaceMgr);
 
-            getProgInfo.Success = true;
-            return getProgInfo;
+            return progInfo;
         }
 
         public string[] GetAvailableEpisodeIds(string progExtId)

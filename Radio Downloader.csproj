@@ -177,6 +177,8 @@
   <ItemGroup>
     <Compile Include="Classes\AppInstance.cs" />
     <Compile Include="Classes\DownloadManager.cs" />
+    <Compile Include="Classes\ProgrammeInfo.cs" />
+    <Compile Include="Classes\ProviderException.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Database.cs" />
     <Compile Include="Classes\ComboNameValue.cs" />

@@ -60,9 +60,7 @@ namespace RadioDld
                     this.progInfo = new Model.Programme(reader.GetInt32(reader.GetOrdinal("progid")));
                     this.episodeInfo = new Model.Episode(epid);
 
-                    this.providerProgInfo = new ProgrammeInfo();
-                    this.providerProgInfo.Name = this.progInfo.Name;
-                    this.providerProgInfo.Description = this.progInfo.Description;
+                    this.providerProgInfo = new ProgrammeInfo(this.progInfo);
 
                     if (reader.IsDBNull(reader.GetOrdinal("progimg")))
                     {

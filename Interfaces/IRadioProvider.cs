@@ -59,7 +59,7 @@ namespace RadioDld
 
         Panel GetFindNewPanel(object view);
 
-        GetProgrammeInfoReturn GetProgrammeInfo(string progExtId);
+        ProgrammeInfo GetProgrammeInfo(string progExtId);
 
         string[] GetAvailableEpisodeIds(string progExtId);
 
@@ -76,21 +76,6 @@ namespace RadioDld
         /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
         /// <returns>The file extension of a successful download.</returns>
         string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
-    }
-
-    public struct ProgrammeInfo
-    {
-        public string Name;
-        public string Description;
-        public Bitmap Image;
-        public bool SingleEpisode;
-    }
-
-    public struct GetProgrammeInfoReturn
-    {
-        public ProgrammeInfo ProgrammeInfo;
-        public bool Success;
-        public Exception Exception;
     }
 
     public struct EpisodeInfo
