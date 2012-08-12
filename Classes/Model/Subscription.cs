@@ -232,9 +232,9 @@ namespace RadioDld.Model
                 {
                     episodeExtIds = Programme.GetAvailableEpisodes(subscription.Progid);
                 }
-                catch (Exception)
+                catch (ProviderException)
                 {
-                    // Catch any unhandled provider exceptions
+                    // Ignore any unhandled provider exceptions
                     continue;
                 }
 
@@ -248,9 +248,9 @@ namespace RadioDld.Model
                         {
                             epid = Episode.FetchInfo(subscription.Progid, episodeExtId);
                         }
-                        catch
+                        catch (ProviderException)
                         {
-                            // Catch any unhandled provider exceptions
+                            // Ignore any unhandled provider exceptions
                             continue;
                         }
 
@@ -276,9 +276,9 @@ namespace RadioDld.Model
                             {
                                 Episode.UpdateInfoIfRequired(epid.Value);
                             }
-                            catch
+                            catch (ProviderException)
                             {
-                                // Catch any unhandled provider exceptions
+                                // Ignore any unhandled provider exceptions
                                 continue;
                             }
 

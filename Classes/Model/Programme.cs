@@ -205,7 +205,17 @@ namespace RadioDld.Model
             }
 
             IRadioProvider providerInst = Plugins.GetPluginInstance(providerId);
-            string[] epExtIds = providerInst.GetAvailableEpisodeIds(progExtId);
+            string[] epExtIds;
+
+            try
+            {
+                epExtIds = providerInst.GetAvailableEpisodeIds(progExtId);
+            }
+            catch (Exception provExp)
+            {
+                provExp.Data.Add("Programme ExtID", progExtId);
+                throw new ProviderException("Call to GetAvailableEpisodeIds failed", provExp, providerId);
+            }
 
             if (epExtIds == null)
             {

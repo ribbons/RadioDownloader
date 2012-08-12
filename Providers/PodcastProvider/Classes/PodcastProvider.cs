@@ -126,35 +126,21 @@ namespace PodcastProvider
 
         public string[] GetAvailableEpisodeIds(string progExtId)
         {
-            List<string> episodeIDs = new List<string>();
-            XmlDocument rss = null;
-
-            try
-            {
-                rss = this.LoadFeedXml(new Uri(progExtId));
-            }
-            catch (WebException)
-            {
-                return episodeIDs.ToArray();
-            }
-            catch (XmlException)
-            {
-                return episodeIDs.ToArray();
-            }
+            XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
 
             XmlNodeList itemNodes = null;
             itemNodes = rss.SelectNodes("./rss/channel/item");
 
             if (itemNodes == null)
             {
-                return episodeIDs.ToArray();
+                return null;
             }
 
-            string itemId = null;
+            List<string> episodeIDs = new List<string>();
 
             foreach (XmlNode itemNode in itemNodes)
             {
-                itemId = this.ItemNodeToEpisodeID(itemNode);
+                string itemId = this.ItemNodeToEpisodeID(itemNode);
 
                 if (!string.IsNullOrEmpty(itemId))
                 {
