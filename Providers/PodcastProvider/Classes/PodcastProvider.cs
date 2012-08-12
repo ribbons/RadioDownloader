@@ -124,7 +124,7 @@ namespace PodcastProvider
             return progInfo;
         }
 
-        public string[] GetAvailableEpisodeIds(string progExtId)
+        public string[] GetAvailableEpisodeIds(string progExtId, ProgrammeInfo progInfo)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
 
@@ -151,7 +151,7 @@ namespace PodcastProvider
             return episodeIDs.ToArray();
         }
 
-        public EpisodeInfo GetEpisodeInfo(string progExtId, string episodeExtId)
+        public EpisodeInfo GetEpisodeInfo(string progExtId, ProgrammeInfo progInfo, string episodeExtId)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
 

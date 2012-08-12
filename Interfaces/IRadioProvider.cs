@@ -60,14 +60,27 @@ namespace RadioDld
 
         ProgrammeInfo GetProgrammeInfo(string progExtId);
 
-        string[] GetAvailableEpisodeIds(string progExtId);
+        /// <summary>
+        /// Fetch a list of IDs for currently available episodes.
+        /// </summary>
+        /// <param name="progExtId">The external id of the programme to list episodes for.</param>
+        /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme (without image data).</param>
+        /// <returns>A list of currently available episode IDs, or null.</returns>
+        string[] GetAvailableEpisodeIds(string progExtId, ProgrammeInfo progInfo);
 
-        EpisodeInfo GetEpisodeInfo(string progExtId, string episodeExtId);
+        /// <summary>
+        /// Fetch information about the specified episode.
+        /// </summary>
+        /// <param name="progExtId">The external id of the programme that the episode belongs to.</param>
+        /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme (without image data).</param>
+        /// <param name="episodeExtId">The external id of the episode to fetch information about.</param>
+        /// <returns>An <see cref="EpisodeInfo"/> class populated with information about the episode, or null.</returns>
+        EpisodeInfo GetEpisodeInfo(string progExtId, ProgrammeInfo progInfo, string episodeExtId);
 
         /// <summary>
         /// Perform a download of the specified episode.
         /// </summary>
-        /// <param name="progExtId">The external id specifying the programme that the episode belongs to.</param>
+        /// <param name="progExtId">The external id of the programme that the episode belongs to.</param>
         /// <param name="episodeExtId">The external id of the episode to download.</param>
         /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme.</param>
         /// <param name="epInfo">Data from the last call to GetEpisodeInfo for this episode.</param>

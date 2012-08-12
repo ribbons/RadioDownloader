@@ -182,8 +182,9 @@ namespace RadioDld.Model
         {
             Guid providerId;
             string progExtId;
+            ProgrammeInfo progInfo;
 
-            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid from programmes where progid=@progid", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid, name, description, singleepisode from programmes where progid=@progid", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -196,6 +197,17 @@ namespace RadioDld.Model
 
                     providerId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
                     progExtId = reader.GetString(reader.GetOrdinal("extid"));
+
+                    progInfo = new ProgrammeInfo();
+                    progInfo.Name = reader.GetString(reader.GetOrdinal("name"));
+                    int descriptionOrdinal = reader.GetOrdinal("description");
+
+                    if (!reader.IsDBNull(descriptionOrdinal))
+                    {
+                        progInfo.Description = reader.GetString(descriptionOrdinal);
+                    }
+
+                    progInfo.SingleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
                 }
             }
 
@@ -209,7 +221,7 @@ namespace RadioDld.Model
 
             try
             {
-                epExtIds = providerInst.GetAvailableEpisodeIds(progExtId);
+                epExtIds = providerInst.GetAvailableEpisodeIds(progExtId, progInfo);
             }
             catch (Exception provExp)
             {
