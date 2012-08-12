@@ -17,7 +17,6 @@
 namespace RadioDld
 {
     using System;
-    using System.Collections.Generic;
     using System.Drawing;
     using System.Windows.Forms;
 
@@ -63,7 +62,7 @@ namespace RadioDld
 
         string[] GetAvailableEpisodeIds(string progExtId);
 
-        GetEpisodeInfoReturn GetEpisodeInfo(string progExtId, string episodeExtId);
+        EpisodeInfo GetEpisodeInfo(string progExtId, string episodeExtId);
 
         /// <summary>
         /// Perform a download of the specified episode.
@@ -76,21 +75,5 @@ namespace RadioDld
         /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
         /// <returns>The file extension of a successful download.</returns>
         string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
-    }
-
-    public struct EpisodeInfo
-    {
-        public string Name;
-        public string Description;
-        public int? DurationSecs;
-        public DateTime? Date;
-        public Bitmap Image;
-        public Dictionary<string, string> ExtInfo;
-    }
-
-    public struct GetEpisodeInfoReturn
-    {
-        public EpisodeInfo EpisodeInfo;
-        public bool Success;
     }
 }

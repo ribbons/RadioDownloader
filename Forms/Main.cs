@@ -534,11 +534,11 @@ namespace RadioDld
                     infoText += epInfo.Description + Environment.NewLine + Environment.NewLine;
                 }
 
-                infoText += "Date: " + epInfo.EpisodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
+                infoText += "Date: " + epInfo.Date.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
                 infoText += TextUtils.DescDuration(epInfo.Duration) + Environment.NewLine;
                 infoText += "Auto download: " + (epInfo.AutoDownload ? "Yes" : "No");
 
-                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.EpisodeDate), infoText, Model.Episode.GetImage(epid));
+                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.Date), infoText, Model.Episode.GetImage(epid));
             }
             else
             {
@@ -803,7 +803,7 @@ namespace RadioDld
                 infoText += info.Description + Environment.NewLine + Environment.NewLine;
             }
 
-            infoText += "Date: " + info.EpisodeDate.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
+            infoText += "Date: " + info.Date.ToString("ddd dd/MMM/yy HH:mm", CultureInfo.CurrentCulture);
             infoText += TextUtils.DescDuration(info.Duration);
 
             switch (info.Status)
@@ -866,7 +866,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.EpisodeDate), infoText, Model.Episode.GetImage(epid));
+            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
@@ -1112,8 +1112,8 @@ namespace RadioDld
                 item.SubItems.Add(string.Empty);
             }
 
-            item.Text = info.EpisodeDate.ToShortDateString();
-            item.SubItems[1].Text = TextUtils.StripDateFromName(info.Name, info.EpisodeDate);
+            item.Text = info.Date.ToShortDateString();
+            item.SubItems[1].Text = TextUtils.StripDateFromName(info.Name, info.Date);
             item.ImageKey = info.AutoDownload ? "episode_auto" : "episode_noauto";
 
             return item;
@@ -1376,10 +1376,10 @@ namespace RadioDld
                 switch (this.downloadColOrder[column])
                 {
                     case Model.Download.DownloadCols.EpisodeName:
-                        item.SubItems[column].Text = TextUtils.StripDateFromName(info.Name, info.EpisodeDate);
+                        item.SubItems[column].Text = TextUtils.StripDateFromName(info.Name, info.Date);
                         break;
                     case Model.Download.DownloadCols.EpisodeDate:
-                        item.SubItems[column].Text = info.EpisodeDate.ToShortDateString();
+                        item.SubItems[column].Text = info.Date.ToShortDateString();
                         break;
                     case Model.Download.DownloadCols.Status:
                         switch (info.Status)

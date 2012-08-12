@@ -32,7 +32,7 @@ namespace RadioDld
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProgrammeInfo" /> class with the values
-        /// specified in the specified Programme object.
+        /// contained in the specified Programme object.
         /// </summary>
         /// <param name="progInfo">Programme object specifying initial values.</param>
         internal ProgrammeInfo(Model.Programme progInfo)

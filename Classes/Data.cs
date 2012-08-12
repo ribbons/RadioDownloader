@@ -157,9 +157,7 @@ namespace RadioDld
                     FindNewFailed();
                 }
 
-                IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
-
-                if (MessageBox.Show("There was an unknown error encountered retrieving information about this programme." + Environment.NewLine + Environment.NewLine + "Would you like to send an error report to NerdoftheHerd.com to help improve the " + providerInst.ProviderName + " provider?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                if (MessageBox.Show("There was an unknown error encountered retrieving information about this programme." + Environment.NewLine + Environment.NewLine + "Would you like to send an error report to NerdoftheHerd.com to help improve the " + provExp.ProviderName + " provider?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
                 {
                     ErrorReporting report = provExp.BuildReport();
                     report.SendReport();
@@ -187,36 +185,49 @@ namespace RadioDld
 
         private static void InitEpisodeListThread(int progid)
         {
-            List<string> episodeExtIDs = Model.Programme.GetAvailableEpisodes(progid);
-
-            if (episodeExtIDs != null)
+            try
             {
-                foreach (string episodeExtId in episodeExtIDs)
+                List<string> episodeExtIDs = Model.Programme.GetAvailableEpisodes(progid);
+
+                if (episodeExtIDs != null)
                 {
-                    int? epid = null;
-
-                    epid = Model.Episode.FetchInfo(progid, episodeExtId);
-
-                    if (epid == null)
+                    foreach (string episodeExtId in episodeExtIDs)
                     {
-                        continue;
-                    }
+                        int? epid = null;
 
-                    Model.Episode.UpdateInfoIfRequired(epid.Value);
+                        epid = Model.Episode.FetchInfo(progid, episodeExtId);
 
-                    lock (episodeListThreadLock)
-                    {
-                        if (!object.ReferenceEquals(Thread.CurrentThread, episodeListThread))
+                        if (epid == null)
                         {
-                            return;
+                            continue;
                         }
 
-                        if (EpisodeAdded != null)
+                        Model.Episode.UpdateInfoIfRequired(epid.Value);
+
+                        lock (episodeListThreadLock)
                         {
-                            EpisodeAdded(epid.Value);
+                            if (!object.ReferenceEquals(Thread.CurrentThread, episodeListThread))
+                            {
+                                return;
+                            }
+
+                            if (EpisodeAdded != null)
+                            {
+                                EpisodeAdded(epid.Value);
+                            }
                         }
                     }
                 }
+            }
+            catch (ProviderException provExp)
+            {
+                if (MessageBox.Show("There was an unknown error encountered fetching the list of available episodes." + Environment.NewLine + Environment.NewLine + "Would you like to send an error report to NerdoftheHerd.com to help improve the " + provExp.ProviderName + " provider?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
+                {
+                    ErrorReporting report = provExp.BuildReport();
+                    report.SendReport();
+                }
+
+                return;
             }
         }
 

@@ -71,18 +71,15 @@ namespace RadioDld
                         this.providerProgInfo.Image = Database.RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
                     }
 
-                    this.providerEpisodeInfo = new EpisodeInfo();
-                    this.providerEpisodeInfo.Name = this.episodeInfo.Name;
-                    this.providerEpisodeInfo.Description = this.episodeInfo.Description;
-                    this.providerEpisodeInfo.Date = this.episodeInfo.EpisodeDate;
+                    this.providerEpisodeInfo = new EpisodeInfo(this.episodeInfo);
 
                     if (reader.IsDBNull(reader.GetOrdinal("duration")))
                     {
-                        this.providerEpisodeInfo.DurationSecs = null;
+                        this.providerEpisodeInfo.Duration = null;
                     }
                     else
                     {
-                        this.providerEpisodeInfo.DurationSecs = reader.GetInt32(reader.GetOrdinal("duration"));
+                        this.providerEpisodeInfo.Duration = reader.GetInt32(reader.GetOrdinal("duration"));
                     }
 
                     if (reader.IsDBNull(reader.GetOrdinal("epimg")))
@@ -239,7 +236,7 @@ namespace RadioDld
             lock (Database.DbUpdateLock)
             {
                 Model.Download.SetComplete(this.episodeInfo.Epid, finalName);
-                Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.EpisodeDate);
+                Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.Date);
             }
 
             // Remove single episode subscriptions

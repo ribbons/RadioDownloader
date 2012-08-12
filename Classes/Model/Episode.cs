@@ -66,7 +66,7 @@ namespace RadioDld.Model
 
         public string Description { get; set; }
 
-        public DateTime EpisodeDate { get; set; }
+        public DateTime Date { get; set; }
 
         public int Duration { get; set; }
 
@@ -170,7 +170,7 @@ namespace RadioDld.Model
         public override string ToString()
         {
             string infoString = this.Name +
-                "\r\nDate: " + this.EpisodeDate.ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture);
+                "\r\nDate: " + this.Date.ToString("yyyy-MM-dd hh:mm", CultureInfo.InvariantCulture);
 
             if (this.Description != null)
             {
@@ -227,7 +227,7 @@ namespace RadioDld.Model
 
             this.Epid = reader.GetInt32(reader.GetOrdinal("epid"));
             this.Progid = reader.GetInt32(reader.GetOrdinal("progid"));
-            this.EpisodeDate = reader.GetDateTime(reader.GetOrdinal("date"));
+            this.Date = reader.GetDateTime(reader.GetOrdinal("date"));
             this.Name = reader.GetString(reader.GetOrdinal("name"));
 
             if (!reader.IsDBNull(descriptionOrdinal))
@@ -265,24 +265,33 @@ namespace RadioDld.Model
             }
 
             IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
-            GetEpisodeInfoReturn episodeInfo = default(GetEpisodeInfoReturn);
+            EpisodeInfo episodeInfo;
 
-            episodeInfo = providerInst.GetEpisodeInfo(progExtId, episodeExtId);
-
-            if (!episodeInfo.Success)
+            try
             {
-                return null;
+                episodeInfo = providerInst.GetEpisodeInfo(progExtId, episodeExtId);
+
+                if (episodeInfo == null)
+                {
+                    return null;
+                }
+
+                if (string.IsNullOrEmpty(episodeInfo.Name))
+                {
+                    throw new InvalidDataException("Episode name cannot be null or an empty string");
+                }
+            }
+            catch (Exception provExp)
+            {
+                provExp.Data.Add("Programme ExtID", progExtId);
+                provExp.Data.Add("Episode ExtID", episodeExtId);
+                throw new ProviderException("Call to GetEpisodeInfo failed", provExp, pluginId);
             }
 
-            if (string.IsNullOrEmpty(episodeInfo.EpisodeInfo.Name))
-            {
-                throw new InvalidDataException("Episode name cannot be null or an empty string");
-            }
-
-            if (episodeInfo.EpisodeInfo.Date == null)
+            if (episodeInfo.Date == null)
             {
                 // The date of the episode isn't known, so use the current date
-                episodeInfo.EpisodeInfo.Date = DateTime.Now;
+                episodeInfo.Date = DateTime.Now;
             }
 
             lock (Database.DbUpdateLock)
@@ -311,7 +320,7 @@ namespace RadioDld.Model
                         {
                             command.Parameters.Add(new SQLiteParameter("@progid", progid));
                             command.Parameters.Add(new SQLiteParameter("@extid", episodeExtId));
-                            command.Parameters.Add(new SQLiteParameter("@date", episodeInfo.EpisodeInfo.Date));
+                            command.Parameters.Add(new SQLiteParameter("@date", episodeInfo.Date));
                             command.ExecuteNonQuery();
                         }
 
@@ -323,20 +332,20 @@ namespace RadioDld.Model
 
                     using (SQLiteCommand command = new SQLiteCommand("update episodes set name=@name, description=@description, duration=@duration, date=@date, image=@image, available=1 where epid=@epid", FetchDbConn(), transMon.Trans))
                     {
-                        command.Parameters.Add(new SQLiteParameter("@name", episodeInfo.EpisodeInfo.Name));
-                        command.Parameters.Add(new SQLiteParameter("@description", episodeInfo.EpisodeInfo.Description));
-                        command.Parameters.Add(new SQLiteParameter("@duration", episodeInfo.EpisodeInfo.DurationSecs));
-                        command.Parameters.Add(new SQLiteParameter("@date", episodeInfo.EpisodeInfo.Date));
-                        command.Parameters.Add(new SQLiteParameter("@image", StoreImage(episodeInfo.EpisodeInfo.Image)));
+                        command.Parameters.Add(new SQLiteParameter("@name", episodeInfo.Name));
+                        command.Parameters.Add(new SQLiteParameter("@description", episodeInfo.Description));
+                        command.Parameters.Add(new SQLiteParameter("@duration", episodeInfo.Duration));
+                        command.Parameters.Add(new SQLiteParameter("@date", episodeInfo.Date));
+                        command.Parameters.Add(new SQLiteParameter("@image", StoreImage(episodeInfo.Image)));
                         command.Parameters.Add(new SQLiteParameter("@epid", epid));
                         command.ExecuteNonQuery();
                     }
 
-                    if (episodeInfo.EpisodeInfo.ExtInfo != null)
+                    if (episodeInfo.ExtInfo != null)
                     {
                         using (SQLiteCommand command = new SQLiteCommand("insert or replace into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn(), transMon.Trans))
                         {
-                            foreach (KeyValuePair<string, string> extItem in episodeInfo.EpisodeInfo.ExtInfo)
+                            foreach (KeyValuePair<string, string> extItem in episodeInfo.ExtInfo)
                             {
                                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
                                 command.Parameters.Add(new SQLiteParameter("@name", extItem.Key));

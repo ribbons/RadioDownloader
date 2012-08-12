@@ -38,7 +38,8 @@ namespace RadioDld
         public ProviderException(string message, Exception innerException, Guid pluginId)
             : base(message, innerException)
         {
-            this.PluginId = pluginId;
+            this.ProviderId = pluginId;
+            this.ProviderName = Plugins.PluginName(pluginId);
         }
 
         /// <summary>
@@ -54,7 +55,12 @@ namespace RadioDld
         /// <summary>
         /// Gets the ID of the provider that caused the current exception.
         /// </summary>
-        public Guid PluginId { get; private set; }
+        public Guid ProviderId { get; private set; }
+
+        /// <summary>
+        /// Gets the display name of the provider that caused the current exception.
+        /// </summary>
+        public string ProviderName { get; private set; }
 
         /// <summary>
         /// Build an ErrorReporting object from the data in this exception ready to send to the server.
@@ -63,10 +69,9 @@ namespace RadioDld
         public ErrorReporting BuildReport()
         {
             Exception provExp = this.InnerException;
-            provExp.Data.Add("Provider", Plugins.PluginInfo(this.PluginId));
-            string className = Plugins.GetPluginInstance(this.PluginId).GetType().Name;
+            provExp.Data.Add("Provider", Plugins.PluginInfo(this.ProviderId));
 
-            ErrorReporting report = new ErrorReporting(className, provExp);
+            ErrorReporting report = new ErrorReporting(Plugins.PluginClass(this.ProviderId), provExp);
             return report;
         }
     }

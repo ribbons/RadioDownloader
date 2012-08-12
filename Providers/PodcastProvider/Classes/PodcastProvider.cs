@@ -165,42 +165,22 @@ namespace PodcastProvider
             return episodeIDs.ToArray();
         }
 
-        public GetEpisodeInfoReturn GetEpisodeInfo(string progExtId, string episodeExtId)
+        public EpisodeInfo GetEpisodeInfo(string progExtId, string episodeExtId)
         {
-            GetEpisodeInfoReturn episodeInfoReturn = new GetEpisodeInfoReturn();
-            episodeInfoReturn.Success = false;
+            XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
 
-            XmlDocument rss = null;
-            XmlNamespaceManager namespaceMgr = null;
+            XmlNamespaceManager namespaceMgr = this.CreateNamespaceMgr(rss);
 
-            try
-            {
-                rss = this.LoadFeedXml(new Uri(progExtId));
-            }
-            catch (WebException)
-            {
-                return episodeInfoReturn;
-            }
-            catch (XmlException)
-            {
-                return episodeInfoReturn;
-            }
-
-            namespaceMgr = this.CreateNamespaceMgr(rss);
-
-            XmlNodeList itemNodes = null;
-            itemNodes = rss.SelectNodes("./rss/channel/item");
+            XmlNodeList itemNodes = rss.SelectNodes("./rss/channel/item");
 
             if (itemNodes == null)
             {
-                return episodeInfoReturn;
+                return null;
             }
-
-            string itemId = null;
 
             foreach (XmlNode itemNode in itemNodes)
             {
-                itemId = this.ItemNodeToEpisodeID(itemNode);
+                string itemId = this.ItemNodeToEpisodeID(itemNode);
 
                 if (itemId == episodeExtId)
                 {
@@ -210,14 +190,14 @@ namespace PodcastProvider
 
                     if (enclosureNode == null)
                     {
-                        return episodeInfoReturn;
+                        return null;
                     }
 
                     XmlAttribute urlAttrib = enclosureNode.Attributes["url"];
 
                     if (urlAttrib == null)
                     {
-                        return episodeInfoReturn;
+                        return null;
                     }
 
                     try
@@ -226,8 +206,8 @@ namespace PodcastProvider
                     }
                     catch (UriFormatException)
                     {
-                        // The enclosure url is empty or malformed, so return false for success
-                        return episodeInfoReturn;
+                        // The enclosure url is empty or malformed
+                        return null;
                     }
 
                     Dictionary<string, string> extInfo = new Dictionary<string, string>();
@@ -235,17 +215,18 @@ namespace PodcastProvider
 
                     if (titleNode == null || string.IsNullOrEmpty(titleNode.InnerText))
                     {
-                        return episodeInfoReturn;
+                        return null;
                     }
 
-                    episodeInfoReturn.EpisodeInfo.Name = titleNode.InnerText;
+                    EpisodeInfo episodeInfo = new EpisodeInfo();
+                    episodeInfo.Name = titleNode.InnerText;
 
                     // If the item has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
                     XmlNode descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
 
                     if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                     {
-                        episodeInfoReturn.EpisodeInfo.Description = descriptionNode.InnerText;
+                        episodeInfo.Description = descriptionNode.InnerText;
                     }
                     else
                     {
@@ -254,7 +235,7 @@ namespace PodcastProvider
 
                         if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                         {
-                            episodeInfoReturn.EpisodeInfo.Description = this.HtmlToText(descriptionNode.InnerText);
+                            episodeInfo.Description = this.HtmlToText(descriptionNode.InnerText);
                         }
                     }
 
@@ -268,25 +249,25 @@ namespace PodcastProvider
 
                             if (splitDuration.GetUpperBound(0) == 0)
                             {
-                                episodeInfoReturn.EpisodeInfo.DurationSecs = Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture);
+                                episodeInfo.Duration = Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture);
                             }
                             else if (splitDuration.GetUpperBound(0) == 1)
                             {
-                                episodeInfoReturn.EpisodeInfo.DurationSecs = (Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture);
+                                episodeInfo.Duration = (Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture);
                             }
                             else
                             {
-                                episodeInfoReturn.EpisodeInfo.DurationSecs = (((Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture)) * 60) + Convert.ToInt32(splitDuration[2], CultureInfo.InvariantCulture);
+                                episodeInfo.Duration = (((Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture)) * 60) + Convert.ToInt32(splitDuration[2], CultureInfo.InvariantCulture);
                             }
                         }
                         else
                         {
-                            episodeInfoReturn.EpisodeInfo.DurationSecs = null;
+                            episodeInfo.Duration = null;
                         }
                     }
                     catch
                     {
-                        episodeInfoReturn.EpisodeInfo.DurationSecs = null;
+                        episodeInfo.Duration = null;
                     }
 
                     if (pubDateNode != null)
@@ -375,28 +356,27 @@ namespace PodcastProvider
 
                         try
                         {
-                            episodeInfoReturn.EpisodeInfo.Date = DateTime.Parse(pubDate, null, DateTimeStyles.AssumeUniversal);
-                            episodeInfoReturn.EpisodeInfo.Date = episodeInfoReturn.EpisodeInfo.Date.Value.Subtract(offset);
+                            episodeInfo.Date = DateTime.Parse(pubDate, null, DateTimeStyles.AssumeUniversal);
+                            episodeInfo.Date = episodeInfo.Date.Value.Subtract(offset);
                         }
                         catch (FormatException)
                         {
-                            episodeInfoReturn.EpisodeInfo.Date = null;
+                            episodeInfo.Date = null;
                         }
                     }
                     else
                     {
-                        episodeInfoReturn.EpisodeInfo.Date = null;
+                        episodeInfo.Date = null;
                     }
 
-                    episodeInfoReturn.EpisodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);
-                    episodeInfoReturn.EpisodeInfo.ExtInfo = extInfo;
-                    episodeInfoReturn.Success = true;
+                    episodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);
+                    episodeInfo.ExtInfo = extInfo;
 
-                    return episodeInfoReturn;
+                    return episodeInfo;
                 }
             }
 
-            return episodeInfoReturn;
+            return null;
         }
 
         public string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)

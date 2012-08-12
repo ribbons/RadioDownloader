@@ -498,14 +498,14 @@ namespace RadioDld.Model
             // Make variable substitutions
             fileName = fileName.Replace("%progname%", progInfo.Name);
             fileName = fileName.Replace("%epname%", epInfo.Name);
-            fileName = fileName.Replace("%hour%", epInfo.EpisodeDate.ToString("HH", CultureInfo.CurrentCulture));
-            fileName = fileName.Replace("%minute%", epInfo.EpisodeDate.ToString("mm", CultureInfo.CurrentCulture));
-            fileName = fileName.Replace("%day%", epInfo.EpisodeDate.ToString("dd", CultureInfo.CurrentCulture));
-            fileName = fileName.Replace("%month%", epInfo.EpisodeDate.ToString("MM", CultureInfo.CurrentCulture));
-            fileName = fileName.Replace("%shortmonthname%", epInfo.EpisodeDate.ToString("MMM", CultureInfo.CurrentCulture));
-            fileName = fileName.Replace("%monthname%", epInfo.EpisodeDate.ToString("MMMM", CultureInfo.CurrentCulture));
-            fileName = fileName.Replace("%year%", epInfo.EpisodeDate.ToString("yy", CultureInfo.CurrentCulture));
-            fileName = fileName.Replace("%longyear%", epInfo.EpisodeDate.ToString("yyyy", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%hour%", epInfo.Date.ToString("HH", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%minute%", epInfo.Date.ToString("mm", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%day%", epInfo.Date.ToString("dd", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%month%", epInfo.Date.ToString("MM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%shortmonthname%", epInfo.Date.ToString("MMM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%monthname%", epInfo.Date.ToString("MMMM", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%year%", epInfo.Date.ToString("yy", CultureInfo.CurrentCulture));
+            fileName = fileName.Replace("%longyear%", epInfo.Date.ToString("yyyy", CultureInfo.CurrentCulture));
 
             // Replace invalid file name characters with spaces (except for directory separators
             // as this then allows the flexibility of storing the downloads in subdirectories)

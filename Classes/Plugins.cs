@@ -60,6 +60,30 @@ namespace RadioDld
             }
         }
 
+        public static string PluginClass(Guid pluginId)
+        {
+            if (PluginExists(pluginId))
+            {
+                return availablePlugins[pluginId].ClassName;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        public static string PluginName(Guid pluginId)
+        {
+            if (PluginExists(pluginId))
+            {
+                return availablePlugins[pluginId].DisplayName;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public static Guid[] GetPluginIdList()
         {
             Guid[] pluginIDs = new Guid[availablePlugins.Keys.Count];
@@ -100,6 +124,7 @@ namespace RadioDld
                             try
                             {
                                 IRadioProvider pluginInst = CreateInstance(pluginInfo);
+                                pluginInfo.DisplayName = pluginInst.ProviderName;
                                 availablePlugins.Add(pluginInst.ProviderId, pluginInfo);
                             }
                             catch
@@ -132,6 +157,7 @@ namespace RadioDld
         {
             public string AssemblyPath;
             public string ClassName;
+            public string DisplayName;
         }
     }
 }
