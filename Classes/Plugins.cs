@@ -119,7 +119,8 @@ namespace RadioDld
                         {
                             AvailablePlugin pluginInfo = new AvailablePlugin();
                             pluginInfo.AssemblyPath = dll.Location;
-                            pluginInfo.ClassName = thisType.FullName;
+                            pluginInfo.FullClassName = thisType.FullName;
+                            pluginInfo.ClassName = thisType.Name;
 
                             try
                             {
@@ -145,7 +146,7 @@ namespace RadioDld
                 Assembly dll = Assembly.LoadFrom(plugin.AssemblyPath);
 
                 // Create and return class instance
-                return (IRadioProvider)dll.CreateInstance(plugin.ClassName);
+                return (IRadioProvider)dll.CreateInstance(plugin.FullClassName);
             }
             catch
             {
@@ -156,6 +157,7 @@ namespace RadioDld
         private struct AvailablePlugin
         {
             public string AssemblyPath;
+            public string FullClassName;
             public string ClassName;
             public string DisplayName;
         }
