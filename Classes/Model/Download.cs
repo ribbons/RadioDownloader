@@ -876,9 +876,11 @@ namespace RadioDld.Model
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
+                    SQLiteParameter epidParam = new SQLiteParameter("@epid", epid);
+
                     using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn(), transMon.Trans))
                     {
-                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                        command.Parameters.Add(epidParam);
 
                         if (command.ExecuteNonQuery() == 0)
                         {
@@ -886,6 +888,13 @@ namespace RadioDld.Model
                             transMon.Trans.Rollback();
                             return;
                         }
+                    }
+
+                    // Mark the download's episode as unavailable so it gets updated when next available
+                    using (SQLiteCommand command = new SQLiteCommand("update episodes set available=0 where epid=@epid", FetchDbConn(), transMon.Trans))
+                    {
+                        command.Parameters.Add(epidParam);
+                        command.ExecuteNonQuery();
                     }
 
                     if (!auto)

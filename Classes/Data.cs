@@ -187,7 +187,7 @@ namespace RadioDld
         {
             try
             {
-                List<string> episodeExtIDs = Model.Programme.GetAvailableEpisodes(progid);
+                List<string> episodeExtIDs = Model.Programme.GetAvailableEpisodes(progid, true);
 
                 if (episodeExtIDs != null)
                 {

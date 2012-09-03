@@ -178,7 +178,7 @@ namespace RadioDld.Model
             return null;
         }
 
-        public static List<string> GetAvailableEpisodes(int progid)
+        public static List<string> GetAvailableEpisodes(int progid, bool fetchAll)
         {
             Guid providerId;
             string progExtId;
@@ -216,39 +216,10 @@ namespace RadioDld.Model
                 return null;
             }
 
-            IRadioProvider providerInst = Plugins.GetPluginInstance(providerId);
-            string[] epExtIds;
-
-            try
-            {
-                epExtIds = providerInst.GetAvailableEpisodeIds(progExtId, progInfo);
-            }
-            catch (Exception provExp)
-            {
-                provExp.Data.Add("Programme ExtID", progExtId);
-                throw new ProviderException("Call to GetAvailableEpisodeIds failed", provExp, providerId);
-            }
-
-            if (epExtIds == null)
-            {
-                return null;
-            }
-
-            // Remove any duplicates from the list of episodes
-            List<string> epExtIdsUnique = new List<string>();
-
-            foreach (string epExtId in epExtIds)
-            {
-                if (!epExtIdsUnique.Contains(epExtId))
-                {
-                    epExtIdsUnique.Add(epExtId);
-                }
-            }
-
             // Fetch a list of previously available episodes for the programme
             List<string> previousAvailable = new List<string>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select extid from episodes where progid=@progid and available=1", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select extid from episodes where progid=@progid and available=1 order by date desc", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@progid", progid));
 
@@ -263,8 +234,73 @@ namespace RadioDld.Model
                 }
             }
 
+            List<string> allEpExtIds = new List<string>();
+            int page = 1;
+
+            IRadioProvider providerInst = Plugins.GetPluginInstance(providerId);
+            AvailableEpisodes available;
+
+            do
+            {
+                try
+                {
+                    available = providerInst.GetAvailableEpisodes(progExtId, progInfo, page);
+                }
+                catch (Exception provExp)
+                {
+                    provExp.Data.Add("Programme ExtID", progExtId);
+                    throw new ProviderException("Call to GetAvailableEpisodeIds failed", provExp, providerId);
+                }
+
+                if (available.EpisodeIds == null || available.EpisodeIds.Length == 0)
+                {
+                    break;
+                }
+
+                int trackOverlap = -1;
+
+                foreach (string epExtId in available.EpisodeIds)
+                {
+                    // Append the returned IDs to the list of all episodes (minus duplicates)
+                    if (!allEpExtIds.Contains(epExtId))
+                    {
+                        allEpExtIds.Add(epExtId);
+                    }
+
+                    if (previousAvailable.Contains(epExtId))
+                    {
+                        // Store where the available & previously available ID lists overlap
+                        trackOverlap = previousAvailable.IndexOf(epExtId);
+                    }
+                    else if (trackOverlap >= 0)
+                    {
+                        // Bump up the overlap index to show there are more after the overlap
+                        trackOverlap++;
+                    }
+                }
+
+                if (available.MoreAvailable && !fetchAll)
+                {
+                    if (trackOverlap >= 0)
+                    {
+                        // Remove previously available programmes before this page from the list so that they
+                        // are not incorrectly un-flagged as available in the database
+                        if (trackOverlap < previousAvailable.Count - 1)
+                        {
+                            previousAvailable.RemoveRange(trackOverlap + 1, previousAvailable.Count - (trackOverlap + 1));
+                        }
+
+                        // Stop fetching available episode pages
+                        break;
+                    }
+                }
+
+                page++;
+            }
+            while (available.MoreAvailable);
+
             // Remove the still available episodes from the previously available list
-            foreach (string epExtId in epExtIdsUnique)
+            foreach (string epExtId in allEpExtIds)
             {
                 previousAvailable.Remove(epExtId);
             }
@@ -294,7 +330,7 @@ namespace RadioDld.Model
                 }
             }
 
-            return epExtIdsUnique;
+            return allEpExtIds;
         }
 
         public override string ToString()

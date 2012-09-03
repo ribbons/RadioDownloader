@@ -160,10 +160,22 @@ namespace RadioDld.Model
                 }
             }
 
-            // Perform an update if the episode was marked as unavailable and isn't in the downloads list
-            if (updateExtid != null && !Download.IsDownload(epid))
+            // Perform an update if the episode was marked as unavailable
+            if (updateExtid != null)
             {
-                UpdateInfo(progid, updateExtid);
+                if (Download.IsDownload(epid))
+                {
+                    // The episode is in the downloads list, so just mark as available
+                    using (SQLiteCommand command = new SQLiteCommand("update episodes set available=1 where epid=@epid", FetchDbConn()))
+                    {
+                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                        command.ExecuteNonQuery();
+                    }
+                }
+                else
+                {
+                    UpdateInfo(progid, updateExtid);
+                }
             }
         }
 

@@ -124,8 +124,9 @@ namespace PodcastProvider
             return progInfo;
         }
 
-        public string[] GetAvailableEpisodeIds(string progExtId, ProgrammeInfo progInfo)
+        public AvailableEpisodes GetAvailableEpisodes(string progExtId, ProgrammeInfo progInfo, int page)
         {
+            AvailableEpisodes available = new AvailableEpisodes();
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
 
             XmlNodeList itemNodes = null;
@@ -133,7 +134,7 @@ namespace PodcastProvider
 
             if (itemNodes == null)
             {
-                return null;
+                return available;
             }
 
             List<string> episodeIDs = new List<string>();
@@ -148,7 +149,8 @@ namespace PodcastProvider
                 }
             }
 
-            return episodeIDs.ToArray();
+            available.EpisodeIds = episodeIDs.ToArray();
+            return available;
         }
 
         public EpisodeInfo GetEpisodeInfo(string progExtId, ProgrammeInfo progInfo, string episodeExtId)

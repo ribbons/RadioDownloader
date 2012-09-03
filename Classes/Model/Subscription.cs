@@ -230,7 +230,7 @@ namespace RadioDld.Model
 
                 try
                 {
-                    episodeExtIds = Programme.GetAvailableEpisodes(subscription.Progid);
+                    episodeExtIds = Programme.GetAvailableEpisodes(subscription.Progid, false);
                 }
                 catch (ProviderException)
                 {
@@ -259,29 +259,35 @@ namespace RadioDld.Model
                             continue;
                         }
 
+                        try
+                        {
+                            Episode.UpdateInfoIfRequired(epid.Value);
+                        }
+                        catch (ProviderException)
+                        {
+                            // Ignore any unhandled provider exceptions
+                            continue;
+                        }
+
                         if (!subscription.SingleEpisode)
                         {
-                            Model.Episode info = new Episode(epid.Value);
+                            Episode info = new Episode(epid.Value);
 
-                            if (!info.AutoDownload || info.Date.AddDays(14) < DateTime.Now)
+                            if (!info.AutoDownload)
                             {
                                 // Don't download the episode automatically, skip to the next one
                                 continue;
+                            }
+                            else if (info.Date.AddDays(14) < DateTime.Now)
+                            {
+                                // Stop checking the episodes for this subscription, this and the rest
+                                // are past the automatic download threshold
+                                break;
                             }
                         }
 
                         if (!Download.IsDownload(epid.Value))
                         {
-                            try
-                            {
-                                Episode.UpdateInfoIfRequired(epid.Value);
-                            }
-                            catch (ProviderException)
-                            {
-                                // Ignore any unhandled provider exceptions
-                                continue;
-                            }
-
                             Download.Add(new int[] { epid.Value });
                         }
                     }
@@ -291,8 +297,8 @@ namespace RadioDld.Model
             // Wait for 10 minutes to give a pause between each check for new episodes
             Thread.Sleep(600000);
 
-            // Queue the next subscription check.  This is used instead of a loop
-            // as it frees up a slot in the thread pool other actions are waiting.
+            // Queue the next subscription check.  This is used instead of a loop as
+            // it frees up a slot in the thread pool in case other actions are waiting.
             ThreadPool.QueueUserWorkItem(delegate { CheckSubscriptions(); });
         }
     }

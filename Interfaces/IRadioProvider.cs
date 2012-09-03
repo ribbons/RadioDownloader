@@ -65,8 +65,9 @@ namespace RadioDld
         /// </summary>
         /// <param name="progExtId">The external id of the programme to list episodes for.</param>
         /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme (without image data).</param>
-        /// <returns>A list of currently available episode IDs, or null.</returns>
-        string[] GetAvailableEpisodeIds(string progExtId, ProgrammeInfo progInfo);
+        /// <param name="page">The one-based page number to return results for.</param>
+        /// <returns>An <see cref="AvailableEpisodes"/> structure containing available episode data.</returns>
+        AvailableEpisodes GetAvailableEpisodes(string progExtId, ProgrammeInfo progInfo, int page);
 
         /// <summary>
         /// Fetch information about the specified episode.
@@ -88,5 +89,22 @@ namespace RadioDld
         /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
         /// <returns>The file extension of a successful download.</returns>
         string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
+    }
+
+    /// <summary>
+    /// Structure returned from providers when requesting a list of available episodes.
+    /// </summary>
+    public struct AvailableEpisodes
+    {
+        /// <summary>
+        /// A list of currently available episode IDs, can be null if there are none.
+        /// The list must be populated in reverse date order.
+        /// </summary>
+        public string[] EpisodeIds;
+
+        /// <summary>
+        /// A flag to indicate that there are further pages of IDs available.
+        /// </summary>
+        public bool MoreAvailable;
     }
 }
