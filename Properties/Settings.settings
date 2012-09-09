@@ -1,51 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="RadioDld.Properties" GeneratedClassName="Settings">
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)">
   <Profiles />
-  <Settings>
-    <Setting Name="SaveFolder" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="FileNameFormat" Type="System.String" Scope="User">
-      <Value Profile="(Default)">%epname% %day%-%month%-%year%</Value>
-    </Setting>
-    <Setting Name="RunAfterCommand" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="UpgradeSettings" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="LastUpdatePrompt" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)">2000-01-01</Value>
-    </Setting>
-    <Setting Name="LastCheckForUpdates" Type="System.DateTime" Scope="User">
-      <Value Profile="(Default)">2000-01-01</Value>
-    </Setting>
-    <Setting Name="ShownTrayBalloon" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="DownloadCols" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0,1,2,3</Value>
-    </Setting>
-    <Setting Name="DownloadColSizes" Type="System.String" Scope="User">
-      <Value Profile="(Default)">0,2.49|1,0.81|2,1.28|3,1.04|4,0.6</Value>
-    </Setting>
-    <Setting Name="DownloadColSortBy" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">1</Value>
-    </Setting>
-    <Setting Name="DownloadColSortAsc" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="RunOnStartup" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="CloseToSystray" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="MainFormPos" Type="System.Drawing.Rectangle" Scope="User">
-      <Value Profile="(Default)">0, 0, 0, 0</Value>
-    </Setting>
-    <Setting Name="MainFormState" Type="System.Windows.Forms.FormWindowState" Scope="User">
-      <Value Profile="(Default)">Normal</Value>
-    </Setting>
-  </Settings>
+  <Settings />
 </SettingsFile>

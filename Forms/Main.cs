@@ -174,48 +174,6 @@ namespace RadioDld
 
         private void Main_Load(object eventSender, EventArgs eventArgs)
         {
-            // If this is the first run of a new version of the application, then upgrade the settings from the old version.
-            try
-            {
-                if (Properties.Settings.Default.UpgradeSettings)
-                {
-                    Properties.Settings.Default.Upgrade();
-                    Properties.Settings.Default.UpgradeSettings = false;
-                    Properties.Settings.Default.Save();
-                }
-            }
-            catch (ConfigurationErrorsException configErrorExp)
-            {
-                string fileName = null;
-
-                if (configErrorExp.Filename != null)
-                {
-                    fileName = configErrorExp.Filename;
-                }
-                else if (configErrorExp.InnerException != null && configErrorExp.InnerException is ConfigurationErrorsException)
-                {
-                    ConfigurationErrorsException innerExp = (ConfigurationErrorsException)configErrorExp.InnerException;
-
-                    if (innerExp.Filename != null)
-                    {
-                        fileName = innerExp.Filename;
-                    }
-                }
-
-                if (fileName != null)
-                {
-                    File.Delete(fileName);
-                    Interaction.MsgBox("Your Radio Downloader configuration file has been reset as it was corrupt.  This only affects your settings and columns, not your subscriptions or downloads." + Environment.NewLine + Environment.NewLine + "You will need to start Radio Downloader again after closing this message.", MsgBoxStyle.Information);
-                    this.Close();
-                    this.Dispose();
-                    return;
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
             this.ImagesListIcons.Images.Add("downloading", Properties.Resources.list_downloading);
             this.ImagesListIcons.Images.Add("waiting", Properties.Resources.list_waiting);
             this.ImagesListIcons.Images.Add("processing", Properties.Resources.list_processing);
@@ -279,81 +237,6 @@ namespace RadioDld
             Data.FindNewViewChange += this.ProgData_FindNewViewChange;
             Data.FindNewFailed += this.ProgData_FindNewFailed;
             Data.FoundNew += this.ProgData_FoundNew;
-
-            // Temporary code to migrate the .net settings to database settings
-            if (Properties.Settings.Default.SaveFolder != (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue)
-            {
-                Settings.SaveFolder = Properties.Settings.Default.SaveFolder;
-                Properties.Settings.Default.SaveFolder = (string)Properties.Settings.Default.Properties["SaveFolder"].DefaultValue;
-            }
-
-            if (Properties.Settings.Default.FileNameFormat != (string)Properties.Settings.Default.Properties["FileNameFormat"].DefaultValue)
-            {
-                Settings.FileNameFormat = Properties.Settings.Default.FileNameFormat;
-                Properties.Settings.Default.FileNameFormat = (string)Properties.Settings.Default.Properties["FileNameFormat"].DefaultValue;
-            }
-
-            if (Properties.Settings.Default.RunAfterCommand != (string)Properties.Settings.Default.Properties["RunAfterCommand"].DefaultValue)
-            {
-                Settings.RunAfterCommand = Properties.Settings.Default.RunAfterCommand;
-                Properties.Settings.Default.RunAfterCommand = (string)Properties.Settings.Default.Properties["RunAfterCommand"].DefaultValue;
-            }
-
-            if (Properties.Settings.Default.ShownTrayBalloon != false)
-            {
-                Settings.ShownTrayBalloon = Properties.Settings.Default.ShownTrayBalloon;
-                Properties.Settings.Default.ShownTrayBalloon = false;
-            }
-
-            if (Properties.Settings.Default.DownloadCols != (string)Properties.Settings.Default.Properties["DownloadCols"].DefaultValue)
-            {
-                Settings.DownloadCols = Properties.Settings.Default.DownloadCols;
-                Properties.Settings.Default.DownloadCols = (string)Properties.Settings.Default.Properties["DownloadCols"].DefaultValue;
-            }
-
-            if (Properties.Settings.Default.DownloadColSizes != (string)Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue)
-            {
-                Settings.DownloadColSizes = Properties.Settings.Default.DownloadColSizes;
-                Properties.Settings.Default.DownloadColSizes = (string)Properties.Settings.Default.Properties["DownloadColSizes"].DefaultValue;
-            }
-
-            if (Properties.Settings.Default.DownloadColSortBy != 1)
-            {
-                Settings.DownloadColSortBy = (Model.Download.DownloadCols)Properties.Settings.Default.DownloadColSortBy;
-                Properties.Settings.Default.DownloadColSortBy = 1;
-            }
-
-            if (Properties.Settings.Default.DownloadColSortAsc != false)
-            {
-                Settings.DownloadColSortAsc = Properties.Settings.Default.DownloadColSortAsc;
-                Properties.Settings.Default.DownloadColSortAsc = false;
-            }
-
-            if (Properties.Settings.Default.RunOnStartup != true)
-            {
-                Settings.RunOnStartup = Properties.Settings.Default.RunOnStartup;
-                Properties.Settings.Default.RunOnStartup = true;
-            }
-
-            if (Properties.Settings.Default.CloseToSystray != false)
-            {
-                Settings.CloseToSystray = Properties.Settings.Default.CloseToSystray;
-                Properties.Settings.Default.CloseToSystray = false;
-            }
-
-            if (Properties.Settings.Default.MainFormPos != Rectangle.Empty)
-            {
-                Settings.MainFormPos = Properties.Settings.Default.MainFormPos;
-                Properties.Settings.Default.MainFormPos = Rectangle.Empty;
-            }
-
-            if (Properties.Settings.Default.MainFormState != FormWindowState.Normal)
-            {
-                Settings.MainFormState = Properties.Settings.Default.MainFormState;
-                Properties.Settings.Default.MainFormState = FormWindowState.Normal;
-            }
-
-            Properties.Settings.Default.Save();
 
             Model.Programme.Updated += this.Programme_Updated;
             Model.Favourite.Added += this.Favourite_Added;
