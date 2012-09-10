@@ -80,7 +80,7 @@ namespace RadioDld
         }
 
         public ErrorReporting(Exception uncaughtException)
-            : this(uncaughtException.GetType().ToString() + ": " + InvariantMessage(uncaughtException), InvariantStackTrace(uncaughtException))
+            : this(InvariantMessage(uncaughtException), InvariantStackTrace(uncaughtException))
         {
             try
             {
@@ -204,12 +204,6 @@ namespace RadioDld
                             this.fields[(string)dataEntry.Key] = (string)dataEntry.Value;
                         }
                     }
-                }
-
-                if (object.ReferenceEquals(uncaughtException.GetType(), typeof(DownloadException)))
-                {
-                    // Do not prefix the exception message with the type for download exceptions
-                    this.fields["errortext"] = uncaughtException.Message;
                 }
             }
             catch
