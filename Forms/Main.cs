@@ -465,6 +465,17 @@ namespace RadioDld
             }
         }
 
+        private void ListEpisodes_ItemActivate(object sender, EventArgs e)
+        {
+            // Occasionally the event gets fired when there isn't an item selected
+            if (this.ListEpisodes.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            this.ButtonDownload_Click();
+        }
+
         private void ListFavourites_SelectedIndexChanged(object sender, EventArgs e)
         {
             // Event is fired when un-favouriting hidden selected item

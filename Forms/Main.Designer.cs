@@ -663,6 +663,7 @@ namespace RadioDld
             this.ListEpisodes.TabIndex = 2;
             this.ListEpisodes.UseCompatibleStateImageBehavior = false;
             this.ListEpisodes.View = System.Windows.Forms.View.Details;
+            this.ListEpisodes.ItemActivate += new System.EventHandler(this.ListEpisodes_ItemActivate);
             this.ListEpisodes.SelectedIndexChanged += new System.EventHandler(this.ListEpisodes_SelectedIndexChanged);
             // 
             // ListProviders
