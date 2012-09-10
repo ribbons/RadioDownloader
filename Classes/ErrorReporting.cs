@@ -24,6 +24,7 @@ namespace RadioDld
     using System.IO;
     using System.Net;
     using System.Reflection;
+    using System.Threading;
     using System.Web;
     using System.Windows.Forms;
     using System.Xml.Serialization;
@@ -79,7 +80,7 @@ namespace RadioDld
         }
 
         public ErrorReporting(Exception uncaughtException)
-            : this(uncaughtException.GetType().ToString() + ": " + uncaughtException.Message, uncaughtException.GetType().ToString() + "\r\n" + uncaughtException.StackTrace)
+            : this(uncaughtException.GetType().ToString() + ": " + InvariantMessage(uncaughtException), InvariantStackTrace(uncaughtException))
         {
             try
             {
@@ -285,6 +286,55 @@ namespace RadioDld
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Fetch the message for the specified exception, but in the invariant culture (if it is
+        /// localised when the property is accessed rather than when the exception was created).
+        /// </summary>
+        /// <param name="exp">The exception to fetch the message for.</param>
+        /// <returns>The exception message.</returns>
+        private static string InvariantMessage(Exception exp)
+        {
+            // Store the current UI culture
+            CultureInfo culture = Thread.CurrentThread.CurrentUICulture;
+
+            try
+            {
+                // Switch to the invariant culture and return the message
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+                return exp.Message;
+            }
+            finally
+            {
+                // Switch back to the correct UI culture
+                Thread.CurrentThread.CurrentUICulture = culture;
+            }
+        }
+
+        /// <summary>
+        /// Fetch a stack trace for the specified exception, but in the invariant culture.
+        /// </summary>
+        /// <param name="exp">The exception to generate a stack trace for.</param>
+        /// <returns>The generated stack trace.</returns>
+        private static string InvariantStackTrace(Exception exp)
+        {
+            // Store the current UI culture
+            CultureInfo culture = Thread.CurrentThread.CurrentUICulture;
+
+            try
+            {
+                // Switch to the invariant culture and return the stack trace
+                Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
+                return exp.GetType().ToString() + "\r\n"
+                       + new StackTrace(exp, true).ToString();
+            }
+            finally
+            {
+                // Switch back to the correct UI culture
+                Thread.CurrentThread.CurrentUICulture = culture;
+            }
         }
     }
 }
