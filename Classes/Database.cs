@@ -23,7 +23,7 @@ namespace RadioDld
 
     public abstract class Database
     {
-        protected internal const int CurrentDbVersion = 4;
+        protected internal const int CurrentDbVersion = 5;
 
         [ThreadStatic]
         private static SQLiteConnection dbConn;

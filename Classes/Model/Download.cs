@@ -21,10 +21,10 @@ namespace RadioDld.Model
     using System.Data.SQLite;
     using System.Globalization;
     using System.IO;
+    using System.Runtime.Serialization.Formatters.Binary;
     using System.Text.RegularExpressions;
     using System.Threading;
     using System.Windows.Forms;
-    using System.Xml.Serialization;
 
     internal class Download : Episode
     {
@@ -260,7 +260,7 @@ namespace RadioDld.Model
             }
         }
 
-        public static void SetErrorred(int epid, ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
+        public static void SetErrorred(int epid, ErrorType errorType, object details)
         {
             switch (errorType)
             {
@@ -268,20 +268,13 @@ namespace RadioDld.Model
                     RemoveAsync(epid, true);
                     return;
                 case ErrorType.UnknownError:
-                    if (furtherDetails == null)
+                    using (MemoryStream stream = new MemoryStream())
                     {
-                        furtherDetails = new List<DldErrorDataItem>();
+                        BinaryFormatter formatter = new BinaryFormatter();
+                        formatter.Serialize(stream, details);
+                        details = stream.ToArray();
                     }
 
-                    if (errorDetails != null)
-                    {
-                        furtherDetails.Add(new DldErrorDataItem("details", errorDetails));
-                    }
-
-                    StringWriter detailsStringWriter = new StringWriter(CultureInfo.InvariantCulture);
-                    XmlSerializer detailsSerializer = new XmlSerializer(typeof(List<DldErrorDataItem>));
-                    detailsSerializer.Serialize(detailsStringWriter, furtherDetails);
-                    errorDetails = detailsStringWriter.ToString();
                     break;
             }
 
@@ -291,7 +284,7 @@ namespace RadioDld.Model
                 {
                     command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Errored));
                     command.Parameters.Add(new SQLiteParameter("@errortype", errorType));
-                    command.Parameters.Add(new SQLiteParameter("@errordetails", errorDetails));
+                    command.Parameters.Add(new SQLiteParameter("@errordetails", details));
                     command.Parameters.Add(new SQLiteParameter("@epid", epid));
                     command.ExecuteNonQuery();
                 }
@@ -363,82 +356,47 @@ namespace RadioDld.Model
 
         public static void ReportError(int epid)
         {
-            ErrorType errorType = default(ErrorType);
-            string errorText = null;
-            string extraDetailsString = null;
-            Dictionary<string, string> errorExtraDetails = new Dictionary<string, string>();
+            ErrorReporting report = null;
 
-            XmlSerializer detailsSerializer = new XmlSerializer(typeof(List<DldErrorDataItem>));
-
-            using (SQLiteCommand command = new SQLiteCommand("select errortype, errordetails, ep.extid as epextid, pr.extid as progextid, pluginid from downloads as dld, episodes as ep, programmes as pr where dld.epid=@epid and ep.epid=@epid and ep.progid=pr.progid", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select errordetails from downloads where epid=@epid and errordetails is not null", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@epid", epid));
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    if (!reader.Read())
+                    if (reader.Read())
                     {
-                        throw new ArgumentException("Episode " + epid.ToString(CultureInfo.InvariantCulture) + " does not exist, or is not in the download list!", "epid");
-                    }
+                        int errordetailsOrdinal = reader.GetOrdinal("errordetails");
 
-                    errorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
-                    extraDetailsString = reader.GetString(reader.GetOrdinal("errordetails"));
+                        // Get the length of the content by passing null to getbytes
+                        int contentLength = (int)reader.GetBytes(errordetailsOrdinal, 0, null, 0, 0);
 
-                    Model.Episode epInfo = new Model.Episode(epid);
-                    string epDetails = epInfo.ToString() + 
-                        "\r\nExtID: " + reader.GetString(reader.GetOrdinal("epextid"));
+                        byte[] content = new byte[contentLength];
+                        reader.GetBytes(errordetailsOrdinal, 0, content, 0, contentLength);
 
-                    string progDetails = new Model.Programme(epInfo.Progid).ToString() +
-                        "\r\nExtID: " + reader.GetString(reader.GetOrdinal("progextid"));
-
-                    Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-
-                    errorExtraDetails.Add("Episode", epDetails);
-                    errorExtraDetails.Add("Programme", progDetails);
-                    errorExtraDetails.Add("Provider", Plugins.PluginInfo(pluginId));
-                }
-            }
-
-            if (extraDetailsString != null)
-            {
-                try
-                {
-                    List<DldErrorDataItem> extraDetails = null;
-                    extraDetails = (List<DldErrorDataItem>)detailsSerializer.Deserialize(new StringReader(extraDetailsString));
-
-                    foreach (DldErrorDataItem detailItem in extraDetails)
-                    {
-                        switch (detailItem.Name)
+                        using (MemoryStream stream = new MemoryStream(content))
                         {
-                            case "error":
-                                errorText = detailItem.Data;
-                                break;
-                            case "details":
-                                extraDetailsString = detailItem.Data;
-                                break;
-                            default:
-                                errorExtraDetails.Add(detailItem.Name, detailItem.Data);
-                                break;
+                            BinaryFormatter formatter = new BinaryFormatter();
+                            report = (ErrorReporting)formatter.Deserialize(stream);
                         }
                     }
                 }
-                catch (InvalidOperationException)
-                {
-                    // Do nothing, and fall back to reporting all the details as one string
-                }
-                catch (InvalidCastException)
-                {
-                    // Do nothing, and fall back to reporting all the details as one string
-                }
             }
 
-            if (string.IsNullOrEmpty(errorText))
+            if (report == null)
             {
-                errorText = errorType.ToString();
+                MessageBox.Show("Please retry this download before reporting the error again.", Application.ProductName);
+                return;
             }
 
-            ErrorReporting report = new ErrorReporting("Download Error: " + errorText, extraDetailsString, errorExtraDetails);
-            report.SendReport();
+            if (report.SendReport())
+            {
+                using (SQLiteCommand command = new SQLiteCommand("update downloads set errordetails=null where epid=@epid", FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                    command.ExecuteNonQuery();
+                }
+            }
         }
 
         public static string FindFreeSaveFileName(string formatString, Model.Programme progInfo, Model.Episode epInfo, string baseSavePath)

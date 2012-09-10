@@ -71,6 +71,15 @@ namespace RadioDld
                         // Perform any updates required which were not handled by UpdateStructure
                         switch (Settings.DatabaseVersion)
                         {
+                            case 4:
+                                // Clear error details previously serialised as XML
+                                using (SQLiteCommand command = new SQLiteCommand("update downloads set errordetails=null where errortype=@errortype", FetchDbConn()))
+                                {
+                                    command.Parameters.Add(new SQLiteParameter("errortype", ErrorType.UnknownError));
+                                    command.ExecuteNonQuery();
+                                }
+
+                                break;
                             case Database.CurrentDbVersion:
                                 // Nothing to do, this is the current version.
                                 break;

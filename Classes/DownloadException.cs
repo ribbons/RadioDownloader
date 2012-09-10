@@ -17,7 +17,6 @@
 namespace RadioDld
 {
     using System;
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
     using System.Security.Permissions;
 
@@ -34,90 +33,63 @@ namespace RadioDld
     }
 
     [Serializable]
-    public class DldErrorDataItem
+    public sealed class DownloadException : Exception
     {
-        public DldErrorDataItem(string name, string data)
-        {
-            this.Name = name;
-            this.Data = data;
-        }
-
-        protected DldErrorDataItem()
-        {
-            // Do nothing, just needed for deserialisation
-        }
-
-        public string Name { get; set; }
-
-        public string Data { get; set; }
-    }
-
-    [Serializable]
-    public class DownloadException : Exception
-    {
-        private readonly ErrorType type;
-        private readonly List<DldErrorDataItem> extraDetails;
-
         public DownloadException()
             : base()
         {
-            this.type = ErrorType.UnknownError;
+            this.ErrorType = ErrorType.UnknownError;
         }
 
         public DownloadException(string message)
             : base(message)
         {
-            this.type = ErrorType.UnknownError;
+            this.ErrorType = ErrorType.UnknownError;
         }
 
         public DownloadException(string message, Exception innerException)
             : base(message, innerException)
         {
-            this.type = ErrorType.UnknownError;
+            this.ErrorType = ErrorType.UnknownError;
         }
 
         public DownloadException(ErrorType type)
         {
-            this.type = type;
+            this.ErrorType = type;
         }
 
         public DownloadException(ErrorType type, string message)
             : base(message)
         {
-            this.type = type;
+            this.ErrorType = type;
         }
 
-        public DownloadException(ErrorType type, string message, List<DldErrorDataItem> extraDetails)
+        public DownloadException(string message, string details)
             : base(message)
         {
-            this.type = type;
-            this.extraDetails = extraDetails;
+            this.ErrorType = ErrorType.UnknownError;
+
+            if (!string.IsNullOrEmpty(details))
+            {
+                // Replace the exception stack trace with the supplied details
+                this.Data.Add("errordetails", details);
+            }
         }
 
-        protected DownloadException(SerializationInfo info, StreamingContext context)
+        private DownloadException(SerializationInfo info, StreamingContext context)
             : base(info, context)
         {
-            this.type = (ErrorType)info.GetValue("type", typeof(ErrorType));
-            this.extraDetails = (List<DldErrorDataItem>)info.GetValue("extraDetails", typeof(List<DldErrorDataItem>));
+            this.ErrorType = (ErrorType)info.GetValue("ErrorType", typeof(ErrorType));
         }
 
-        public ErrorType TypeOfError
-        {
-            get { return this.type; }
-        }
-
-        public List<DldErrorDataItem> ErrorExtraDetails
-        {
-            get { return this.extraDetails; }
-        }
+        public ErrorType ErrorType { get; private set; }
 
         [SecurityPermission(SecurityAction.Demand, SerializationFormatter = true)]
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
 
-            info.AddValue("type", this.type);
-            info.AddValue("extraDetails", this.extraDetails);
+            info.AddValue("ErrorType", this.ErrorType);
         }
     }
 }

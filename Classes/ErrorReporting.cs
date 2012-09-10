@@ -28,6 +28,7 @@ namespace RadioDld
     using System.Windows.Forms;
     using System.Xml.Serialization;
 
+    [Serializable]
     internal class ErrorReporting
     {
         private const string SendReportUrl = "http://www.nerdoftheherd.com/tools/radiodld/error_report.php";
@@ -64,22 +65,6 @@ namespace RadioDld
             }
         }
 
-        public ErrorReporting(string errorText, string errorDetails, Dictionary<string, string> extraFields)
-            : this(errorText, errorDetails)
-        {
-            try
-            {
-                foreach (KeyValuePair<string, string> extraItem in extraFields)
-                {
-                    this.fields.Add(extraItem.Key, extraItem.Value);
-                }
-            }
-            catch
-            {
-                // No way of reporting errors that have happened here, so just give up
-            }
-        }
-
         public ErrorReporting(string errorPrefix, Exception uncaughtException)
             : this(uncaughtException)
         {
@@ -89,7 +74,7 @@ namespace RadioDld
             }
             catch
             {
-                // No way of reporting errors that have happened here, so just give up
+                // No way of reporting errors that have happened here, so try to continue
             }
         }
 
@@ -108,8 +93,7 @@ namespace RadioDld
                 this.fields.Add("Exception.ToString()", uncaughtException.ToString());
 
                 // Set up a list of types which do not need to be serialized
-                List<Type> notSerialize = new List<Type>();
-                notSerialize.AddRange(new Type[]
+                List<Type> notSerialize = new List<Type>(new Type[]
                 {
                     typeof(string),
                     typeof(int),
@@ -173,6 +157,12 @@ namespace RadioDld
 
                         if (propertyValue != null && !string.IsNullOrEmpty(propertyValue.ToString()))
                         {
+                            if (propertyValue.GetType() == typeof(ErrorType))
+                            {
+                                // ErrorType is always set to UnknownError on DownloadExceptions
+                                continue;
+                            }
+
                             if (!notSerialize.Contains(propertyValue.GetType()))
                             {
                                 if (propertyValue.GetType().IsSerializable)
@@ -210,14 +200,20 @@ namespace RadioDld
                     {
                         if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) && object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
                         {
-                            this.fields.Add((string)dataEntry.Key, (string)dataEntry.Value);
+                            this.fields[(string)dataEntry.Key] = (string)dataEntry.Value;
                         }
                     }
+                }
+
+                if (object.ReferenceEquals(uncaughtException.GetType(), typeof(DownloadException)))
+                {
+                    // Do not prefix the exception message with the type for download exceptions
+                    this.fields["errortext"] = uncaughtException.Message;
                 }
             }
             catch
             {
-                // No way of reporting errors that have happened here, so just give up
+                // No way of reporting errors that have happened here, so try to continue
             }
         }
 
@@ -234,13 +230,13 @@ namespace RadioDld
             }
             catch
             {
-                // No way of reporting errors that have happened here, so just give up
+                // No way of reporting errors that have happened here, so try to continue
             }
 
             return stringValue;
         }
 
-        public void SendReport()
+        public bool SendReport()
         {
             try
             {
@@ -279,12 +275,16 @@ namespace RadioDld
                     {
                         Process.Start(returnLines[1]);
                     }
+
+                    return true;
                 }
             }
             catch
             {
                 // No way of reporting errors that have happened here, so just give up
             }
+
+            return false;
         }
     }
 }

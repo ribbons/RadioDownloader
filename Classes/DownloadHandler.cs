@@ -148,7 +148,7 @@ namespace RadioDld
 
             if (!Plugins.PluginExists(this.pluginId))
             {
-                this.DownloadError(ErrorType.LocalProblem, "The plugin provider required to download this episode is not currently available.  Please try updating Radio Downloader and providers and retrying the download.", null);
+                this.DownloadError(ErrorType.LocalProblem, "The plugin provider required to download this episode is not currently available.  Please try updating Radio Downloader and providers and retrying the download.");
                 return;
             }
 
@@ -170,7 +170,7 @@ namespace RadioDld
                 }
                 catch (DirectoryNotFoundException)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.", null);
+                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.");
                     return;
                 }
 
@@ -179,7 +179,7 @@ namespace RadioDld
 
                 if (availableSpace <= FreeMb * 1024 * 1024)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes does not have enough free space.  Make sure that you have at least " + FreeMb.ToString(CultureInfo.CurrentCulture) + " MB free, or select a new location under Options -> Main Options.", null);
+                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes does not have enough free space.  Make sure that you have at least " + FreeMb.ToString(CultureInfo.CurrentCulture) + " MB free, or select a new location under Options -> Main Options.");
                     return;
                 }
 
@@ -189,12 +189,12 @@ namespace RadioDld
                 }
                 catch (IOException ioExp)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Encountered an error generating the download file name.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.", null);
+                    this.DownloadError(ErrorType.LocalProblem, "Encountered an error generating the download file name.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
                     return;
                 }
                 catch (UnauthorizedAccessException unAuthExp)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Encountered a permissions problem generating the download file name.  " + unAuthExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.", null);
+                    this.DownloadError(ErrorType.LocalProblem, "Encountered a permissions problem generating the download file name.  " + unAuthExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
                     return;
                 }
 
@@ -207,27 +207,20 @@ namespace RadioDld
             }
             catch (DownloadException downloadExp)
             {
-                this.DownloadError(downloadExp.TypeOfError, downloadExp.Message, downloadExp.ErrorExtraDetails);
+                if (downloadExp.ErrorType == ErrorType.UnknownError)
+                {
+                    this.DownloadError(downloadExp);
+                }
+                else
+                {
+                    this.DownloadError(downloadExp.ErrorType, downloadExp.Message);
+                }
+                
                 return;
             }
             catch (Exception unknownExp)
             {
-                List<DldErrorDataItem> extraDetails = new List<DldErrorDataItem>();
-                extraDetails.Add(new DldErrorDataItem("error", unknownExp.GetType().ToString() + ": " + unknownExp.Message));
-                extraDetails.Add(new DldErrorDataItem("exceptiontostring", unknownExp.ToString()));
-
-                if (unknownExp.Data != null)
-                {
-                    foreach (DictionaryEntry dataEntry in unknownExp.Data)
-                    {
-                        if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) && object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
-                        {
-                            extraDetails.Add(new DldErrorDataItem("expdata:Data:" + (string)dataEntry.Key, (string)dataEntry.Value));
-                        }
-                    }
-                }
-
-                this.DownloadError(ErrorType.UnknownError, unknownExp.GetType().ToString() + Environment.NewLine + unknownExp.StackTrace, extraDetails);
+                this.DownloadError(unknownExp);
                 return;
             }
 
@@ -286,9 +279,25 @@ namespace RadioDld
             }
         }
 
-        private void DownloadError(ErrorType errorType, string errorDetails, List<DldErrorDataItem> furtherDetails)
+        private void DownloadError(ErrorType errorType, string errorDetails)
         {
-            Model.Download.SetErrorred(this.episodeInfo.Epid, errorType, errorDetails, furtherDetails);
+            Model.Download.SetErrorred(this.episodeInfo.Epid, errorType, errorDetails);
+            this.DownloadFinished();
+        }
+
+        private void DownloadError(Exception unhandled)
+        {
+            string epDetails = this.episodeInfo.ToString() +
+                "\r\nExtID: " + this.episodeExtId;
+
+            string progDetails = this.progInfo.ToString() +
+                "\r\nExtID: " + this.progExtId;
+
+            unhandled.Data.Add("Episode", epDetails);
+            unhandled.Data.Add("Programme", progDetails);
+            unhandled.Data.Add("Provider", Plugins.PluginInfo(this.pluginId));
+
+            Model.Download.SetErrorred(this.episodeInfo.Epid, ErrorType.UnknownError, new ErrorReporting("Download Error", unhandled));
             this.DownloadFinished();
         }
 
