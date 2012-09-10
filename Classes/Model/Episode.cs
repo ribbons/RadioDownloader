@@ -365,17 +365,14 @@ namespace RadioDld.Model
                         command.ExecuteNonQuery();
                     }
 
-                    if (episodeInfo.ExtInfo != null)
+                    using (SQLiteCommand command = new SQLiteCommand("insert or replace into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn(), transMon.Trans))
                     {
-                        using (SQLiteCommand command = new SQLiteCommand("insert or replace into episodeext (epid, name, value) values (@epid, @name, @value)", FetchDbConn(), transMon.Trans))
+                        foreach (KeyValuePair<string, string> extItem in episodeInfo.ExtInfo)
                         {
-                            foreach (KeyValuePair<string, string> extItem in episodeInfo.ExtInfo)
-                            {
-                                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                                command.Parameters.Add(new SQLiteParameter("@name", extItem.Key));
-                                command.Parameters.Add(new SQLiteParameter("@value", extItem.Value));
-                                command.ExecuteNonQuery();
-                            }
+                            command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                            command.Parameters.Add(new SQLiteParameter("@name", extItem.Key));
+                            command.Parameters.Add(new SQLiteParameter("@value", extItem.Value));
+                            command.ExecuteNonQuery();
                         }
                     }
 

@@ -91,8 +91,6 @@ namespace RadioDld
                         this.providerEpisodeInfo.Image = Database.RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
                     }
 
-                    this.providerEpisodeInfo.ExtInfo = new Dictionary<string, string>();
-
                     using (SQLiteCommand extCommand = new SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn()))
                     {
                         extCommand.Parameters.Add(new SQLiteParameter("@epid", epid));

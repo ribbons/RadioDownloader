@@ -198,15 +198,14 @@ namespace PodcastProvider
                         return null;
                     }
 
-                    Dictionary<string, string> extInfo = new Dictionary<string, string>();
-                    extInfo.Add("EnclosureURL", urlAttrib.Value);
+                    EpisodeInfo episodeInfo = new EpisodeInfo();
+                    episodeInfo.ExtInfo.Add("EnclosureURL", urlAttrib.Value);
 
                     if (titleNode == null || string.IsNullOrEmpty(titleNode.InnerText))
                     {
                         return null;
                     }
 
-                    EpisodeInfo episodeInfo = new EpisodeInfo();
                     episodeInfo.Name = titleNode.InnerText;
 
                     // If the item has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
@@ -358,7 +357,6 @@ namespace PodcastProvider
                     }
 
                     episodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);
-                    episodeInfo.ExtInfo = extInfo;
 
                     return episodeInfo;
                 }

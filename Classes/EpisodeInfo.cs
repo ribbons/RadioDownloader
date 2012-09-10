@@ -30,6 +30,7 @@ namespace RadioDld
         /// </summary>
         public EpisodeInfo()
         {
+            this.ExtInfo = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -38,6 +39,7 @@ namespace RadioDld
         /// </summary>
         /// <param name="epInfo">Episode object specifying initial values.</param>
         internal EpisodeInfo(Model.Episode epInfo)
+            : this()
         {
             this.Name = epInfo.Name;
             this.Description = epInfo.Description;
@@ -71,8 +73,8 @@ namespace RadioDld
         public Bitmap Image { get; set; }
 
         /// <summary>
-        /// Gets or sets an collection of name value pairs for the provider to use for storing arbitary data.
+        /// Gets a collection of name value pairs for the provider to use for storing arbitary data.
         /// </summary>
-        public Dictionary<string, string> ExtInfo { get; set; }
+        public Dictionary<string, string> ExtInfo { get; private set; }
     }
 }
