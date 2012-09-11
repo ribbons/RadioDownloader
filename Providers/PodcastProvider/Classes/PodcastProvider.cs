@@ -156,172 +156,163 @@ namespace PodcastProvider
         public EpisodeInfo GetEpisodeInfo(string progExtId, ProgrammeInfo progInfo, string episodeExtId)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
-
             XmlNamespaceManager namespaceMgr = this.CreateNamespaceMgr(rss);
+            XmlNode itemNode = this.ItemNodeFromEpisodeID(rss, episodeExtId);
 
-            XmlNodeList itemNodes = rss.SelectNodes("./rss/channel/item");
-
-            if (itemNodes == null)
+            if (itemNode == null)
             {
                 return null;
             }
 
-            foreach (XmlNode itemNode in itemNodes)
+            XmlNode titleNode = itemNode.SelectSingleNode("./title");
+            XmlNode pubDateNode = itemNode.SelectSingleNode("./pubDate");
+            XmlNode enclosureNode = itemNode.SelectSingleNode("./enclosure");
+
+            if (enclosureNode == null)
             {
-                string itemId = this.ItemNodeToEpisodeID(itemNode);
+                return null;
+            }
 
-                if (itemId == episodeExtId)
+            XmlAttribute urlAttrib = enclosureNode.Attributes["url"];
+
+            if (urlAttrib == null)
+            {
+                return null;
+            }
+
+            try
+            {
+                new Uri(urlAttrib.Value);
+            }
+            catch (UriFormatException)
+            {
+                // The enclosure url is empty or malformed
+                return null;
+            }
+
+            EpisodeInfo episodeInfo = new EpisodeInfo();
+
+            if (titleNode == null || string.IsNullOrEmpty(titleNode.InnerText))
+            {
+                return null;
+            }
+
+            episodeInfo.Name = titleNode.InnerText;
+
+            // If the item has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
+            XmlNode descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
+
+            if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
+            {
+                episodeInfo.Description = descriptionNode.InnerText;
+            }
+            else
+            {
+                // Fall back to the standard description tag, but strip the HTML
+                descriptionNode = itemNode.SelectSingleNode("./description");
+
+                if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                 {
-                    XmlNode titleNode = itemNode.SelectSingleNode("./title");
-                    XmlNode pubDateNode = itemNode.SelectSingleNode("./pubDate");
-                    XmlNode enclosureNode = itemNode.SelectSingleNode("./enclosure");
+                    episodeInfo.Description = this.HtmlToText(descriptionNode.InnerText);
+                }
+            }
 
-                    if (enclosureNode == null)
+            try
+            {
+                XmlNode durationNode = itemNode.SelectSingleNode("./itunes:duration", namespaceMgr);
+
+                if (durationNode != null)
+                {
+                    string[] splitDuration = durationNode.InnerText.Split(new char[] { '.', ':' });
+
+                    if (splitDuration.GetUpperBound(0) == 0)
                     {
-                        return null;
+                        episodeInfo.Duration = Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture);
                     }
-
-                    XmlAttribute urlAttrib = enclosureNode.Attributes["url"];
-
-                    if (urlAttrib == null)
+                    else if (splitDuration.GetUpperBound(0) == 1)
                     {
-                        return null;
-                    }
-
-                    try
-                    {
-                        new Uri(urlAttrib.Value);
-                    }
-                    catch (UriFormatException)
-                    {
-                        // The enclosure url is empty or malformed
-                        return null;
-                    }
-
-                    EpisodeInfo episodeInfo = new EpisodeInfo();
-                    episodeInfo.ExtInfo.Add("EnclosureURL", urlAttrib.Value);
-
-                    if (titleNode == null || string.IsNullOrEmpty(titleNode.InnerText))
-                    {
-                        return null;
-                    }
-
-                    episodeInfo.Name = titleNode.InnerText;
-
-                    // If the item has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
-                    XmlNode descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
-
-                    if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
-                    {
-                        episodeInfo.Description = descriptionNode.InnerText;
+                        episodeInfo.Duration = (Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture);
                     }
                     else
                     {
-                        // Fall back to the standard description tag, but strip the HTML
-                        descriptionNode = itemNode.SelectSingleNode("./description");
-
-                        if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
-                        {
-                            episodeInfo.Description = this.HtmlToText(descriptionNode.InnerText);
-                        }
+                        episodeInfo.Duration = (((Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture)) * 60) + Convert.ToInt32(splitDuration[2], CultureInfo.InvariantCulture);
                     }
+                }
+                else
+                {
+                    episodeInfo.Duration = null;
+                }
+            }
+            catch
+            {
+                episodeInfo.Duration = null;
+            }
 
-                    try
+            if (pubDateNode != null)
+            {
+                string pubDate = pubDateNode.InnerText.Trim();
+                int zonePos = pubDate.LastIndexOf(" ", StringComparison.Ordinal);
+                TimeSpan offset = new TimeSpan(0);
+
+                if (zonePos > 0)
+                {
+                    string zone = pubDate.Substring(zonePos + 1);
+                    string zoneFree = pubDate.Substring(0, zonePos);
+
+                    switch (zone)
                     {
-                        XmlNode durationNode = itemNode.SelectSingleNode("./itunes:duration", namespaceMgr);
+                        case "GMT":
+                            // No need to do anything
+                            break;
+                        case "UT":
+                            offset = new TimeSpan(0);
+                            pubDate = zoneFree;
+                            break;
+                        case "EDT":
+                            offset = new TimeSpan(-4, 0, 0);
+                            pubDate = zoneFree;
+                            break;
+                        case "EST":
+                        case "CDT":
+                            offset = new TimeSpan(-5, 0, 0);
+                            pubDate = zoneFree;
+                            break;
+                        case "CST":
+                        case "MDT":
+                            offset = new TimeSpan(-6, 0, 0);
+                            pubDate = zoneFree;
+                            break;
+                        case "MST":
+                        case "PDT":
+                            offset = new TimeSpan(-7, 0, 0);
+                            pubDate = zoneFree;
+                            break;
+                        case "PST":
+                            offset = new TimeSpan(-8, 0, 0);
+                            pubDate = zoneFree;
+                            break;
+                        default:
+                            if (zone.Length >= 4 && (Information.IsNumeric(zone) || Information.IsNumeric(zone.Substring(1))))
+                            {
+                                try
+                                {
+                                    int value = int.Parse(zone, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
+                                    offset = new TimeSpan(value / 100, value % 100, 0);
+                                    pubDate = zoneFree;
+                                }
+                                catch (FormatException)
+                                {
+                                    // The last part of the date was not a time offset
+                                }
+                            }
 
-                        if (durationNode != null)
-                        {
-                            string[] splitDuration = durationNode.InnerText.Split(new char[] { '.', ':' });
-
-                            if (splitDuration.GetUpperBound(0) == 0)
-                            {
-                                episodeInfo.Duration = Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture);
-                            }
-                            else if (splitDuration.GetUpperBound(0) == 1)
-                            {
-                                episodeInfo.Duration = (Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture);
-                            }
-                            else
-                            {
-                                episodeInfo.Duration = (((Convert.ToInt32(splitDuration[0], CultureInfo.InvariantCulture) * 60) + Convert.ToInt32(splitDuration[1], CultureInfo.InvariantCulture)) * 60) + Convert.ToInt32(splitDuration[2], CultureInfo.InvariantCulture);
-                            }
-                        }
-                        else
-                        {
-                            episodeInfo.Duration = null;
-                        }
+                            break;
                     }
-                    catch
-                    {
-                        episodeInfo.Duration = null;
-                    }
+                }
 
-                    if (pubDateNode != null)
-                    {
-                        string pubDate = pubDateNode.InnerText.Trim();
-                        int zonePos = pubDate.LastIndexOf(" ", StringComparison.Ordinal);
-                        TimeSpan offset = new TimeSpan(0);
-
-                        if (zonePos > 0)
-                        {
-                            string zone = pubDate.Substring(zonePos + 1);
-                            string zoneFree = pubDate.Substring(0, zonePos);
-
-                            switch (zone)
-                            {
-                                case "GMT":
-                                    // No need to do anything
-                                    break;
-                                case "UT":
-                                    offset = new TimeSpan(0);
-                                    pubDate = zoneFree;
-                                    break;
-                                case "EDT":
-                                    offset = new TimeSpan(-4, 0, 0);
-                                    pubDate = zoneFree;
-                                    break;
-                                case "EST":
-                                case "CDT":
-                                    offset = new TimeSpan(-5, 0, 0);
-                                    pubDate = zoneFree;
-                                    break;
-                                case "CST":
-                                case "MDT":
-                                    offset = new TimeSpan(-6, 0, 0);
-                                    pubDate = zoneFree;
-                                    break;
-                                case "MST":
-                                case "PDT":
-                                    offset = new TimeSpan(-7, 0, 0);
-                                    pubDate = zoneFree;
-                                    break;
-                                case "PST":
-                                    offset = new TimeSpan(-8, 0, 0);
-                                    pubDate = zoneFree;
-                                    break;
-                                default:
-                                    if (zone.Length >= 4 && (Information.IsNumeric(zone) || Information.IsNumeric(zone.Substring(1))))
-                                    {
-                                        try
-                                        {
-                                            int value = int.Parse(zone, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-                                            offset = new TimeSpan(value / 100, value % 100, 0);
-                                            pubDate = zoneFree;
-                                        }
-                                        catch (FormatException)
-                                        {
-                                            // The last part of the date was not a time offset
-                                        }
-                                    }
-
-                                    break;
-                            }
-                        }
-
-                        // Strip the day of the week from the beginning of the date string if it is there,
-                        // as it can contradict the date itself.
-                        string[] days =
+                // Strip the day of the week from the beginning of the date string if it is there,
+                // as it can contradict the date itself.
+                string[] days =
                         {
                             "mon,",
                             "tue,",
@@ -332,42 +323,43 @@ namespace PodcastProvider
                             "sun,"
                         };
 
-                        foreach (string day in days)
-                        {
-                            if (pubDate.StartsWith(day, StringComparison.OrdinalIgnoreCase))
-                            {
-                                pubDate = pubDate.Substring(day.Length).Trim();
-                                break;
-                            }
-                        }
-
-                        try
-                        {
-                            episodeInfo.Date = DateTime.Parse(pubDate, null, DateTimeStyles.AssumeUniversal);
-                            episodeInfo.Date = episodeInfo.Date.Value.Subtract(offset);
-                        }
-                        catch (FormatException)
-                        {
-                            episodeInfo.Date = null;
-                        }
-                    }
-                    else
+                foreach (string day in days)
+                {
+                    if (pubDate.StartsWith(day, StringComparison.OrdinalIgnoreCase))
                     {
-                        episodeInfo.Date = null;
+                        pubDate = pubDate.Substring(day.Length).Trim();
+                        break;
                     }
+                }
 
-                    episodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);
-
-                    return episodeInfo;
+                try
+                {
+                    episodeInfo.Date = DateTime.Parse(pubDate, null, DateTimeStyles.AssumeUniversal);
+                    episodeInfo.Date = episodeInfo.Date.Value.Subtract(offset);
+                }
+                catch (FormatException)
+                {
+                    episodeInfo.Date = null;
                 }
             }
+            else
+            {
+                episodeInfo.Date = null;
+            }
 
-            return null;
+            episodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);
+
+            return episodeInfo;
         }
 
         public string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
         {
-            Uri downloadUrl = new Uri(epInfo.ExtInfo["EnclosureURL"]);
+            XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
+            XmlNamespaceManager namespaceMgr = this.CreateNamespaceMgr(rss);
+            XmlNode itemNode = this.ItemNodeFromEpisodeID(rss, episodeExtId);
+            XmlNode enclosureNode = itemNode.SelectSingleNode("./enclosure");
+            XmlAttribute urlAttrib = enclosureNode.Attributes["url"];
+            Uri downloadUrl = new Uri(urlAttrib.Value);
 
             int fileNamePos = finalName.LastIndexOf("\\", StringComparison.Ordinal);
             int extensionPos = downloadUrl.AbsolutePath.LastIndexOf(".", StringComparison.Ordinal);
@@ -494,6 +486,28 @@ namespace PodcastProvider
             }
 
             return itemId;
+        }
+
+        private XmlNode ItemNodeFromEpisodeID(XmlDocument rss, string episodeExtId)
+        {
+            XmlNodeList itemNodes = rss.SelectNodes("./rss/channel/item");
+
+            if (itemNodes == null)
+            {
+                return null;
+            }
+
+            foreach (XmlNode itemNode in itemNodes)
+            {
+                string itemId = this.ItemNodeToEpisodeID(itemNode);
+
+                if (itemId == episodeExtId)
+                {
+                    return itemNode;
+                }
+            }
+
+            return null;
         }
 
         private Bitmap RSSNodeImage(XmlNode node, XmlNamespaceManager namespaceMgr)
