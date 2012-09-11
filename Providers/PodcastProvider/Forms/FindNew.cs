@@ -43,8 +43,7 @@ namespace PodcastProvider
 
                 Application.DoEvents();
 
-                Uri feedUrl = null;
-                XmlDocument rss = null;
+                Uri feedUrl;
 
                 try
                 {
@@ -52,16 +51,25 @@ namespace PodcastProvider
                 }
                 catch (UriFormatException)
                 {
-                    this.LabelResult.Text = "The specified URL was not valid.";
+                    this.LabelResult.Text = "The specified URL is not valid.";
                     this.LabelResult.ForeColor = System.Drawing.Color.Red;
                     this.ButtonView.Enabled = true;
                     return;
                 }
 
+                XmlDocument rss;
+
                 // Test that we can load something from the URL, and it is valid XML
                 try
                 {
                     rss = this.pluginInst.LoadFeedXml(feedUrl);
+                }
+                catch (NotSupportedException)
+                {
+                    this.LabelResult.Text = "The prefix of the specified URL is not recognised.";
+                    this.LabelResult.ForeColor = System.Drawing.Color.Red;
+                    this.ButtonView.Enabled = true;
+                    return;
                 }
                 catch (WebException)
                 {
