@@ -45,6 +45,14 @@ namespace RadioDld
                 return false;
             }
 
+            // Migrate old (pre 0.26) version databases from www.nerdoftheherd.com -> NerdoftheHerd.com
+            string oldDbPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com"), Application.ProductName), DbFileName);
+
+            if (File.Exists(oldDbPath) && !File.Exists(appDbPath))
+            {
+                File.Move(oldDbPath, appDbPath);
+            }
+
             // Test if there is an existing application database
             if (!File.Exists(appDbPath))
             {
