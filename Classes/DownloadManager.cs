@@ -116,7 +116,7 @@ namespace RadioDld
         {
             List<int> epids = new List<int>();
 
-            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where status=@statuserr and errortime < datetime('now', '-' || power(2, errorcount) || ' hours')", FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select epid from downloads where status=@statuserr and errortime < datetime('now', '-' || (1 << errorcount) || ' hours')", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@statuserr", Model.Download.DownloadStatus.Errored));
 
