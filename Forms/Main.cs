@@ -2171,7 +2171,7 @@ namespace RadioDld
 
         private void TextSidebarDescript_LinkClicked(object sender, System.Windows.Forms.LinkClickedEventArgs e)
         {
-            Process.Start(e.LinkText);
+            OsUtils.LaunchUrl(new Uri(e.LinkText), "Sidebar Link");
         }
 
         private void TextSidebarDescript_Resize(object sender, EventArgs e)
