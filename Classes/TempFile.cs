@@ -177,6 +177,11 @@ namespace RadioDld
                             // File is still in use - try again later
                             continue;
                         }
+                        catch (UnauthorizedAccessException)
+                        {
+                            // Do not have the correct permissions to delete - try again later
+                            continue;
+                        }
 
                         lock (Database.DbUpdateLock)
                         {
