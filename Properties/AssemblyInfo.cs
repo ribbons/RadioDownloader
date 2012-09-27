@@ -12,7 +12,7 @@ using System.Security;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("0.24.2.0")]
+[assembly: AssemblyVersion("0.25.0.0")]
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguageAttribute("en-GB")]
