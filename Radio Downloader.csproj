@@ -205,6 +205,9 @@
     <Compile Include="Classes\Plugins.cs" />
     <Compile Include="Classes\DatabaseInit.cs" />
     <Compile Include="Classes\ViewState.cs" />
+    <Compile Include="Controls\ExtLinkLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Controls\SearchBox.cs">
       <SubType>Component</SubType>
     </Compile>

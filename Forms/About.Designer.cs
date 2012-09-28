@@ -35,7 +35,7 @@ namespace RadioDld
             System.Windows.Forms.Label LabelLicense;
             this.LabelNameAndVer = new System.Windows.Forms.Label();
             this.LabelCopyright = new System.Windows.Forms.Label();
-            this.LinkHomepage = new System.Windows.Forms.LinkLabel();
+            this.LinkHomepage = new ExtLinkLabel();
             this.ButtonOk = new System.Windows.Forms.Button();
             ImageLogo = new System.Windows.Forms.PictureBox();
             TextLicense = new System.Windows.Forms.TextBox();
@@ -149,7 +149,7 @@ namespace RadioDld
         }
         private System.Windows.Forms.Label LabelNameAndVer;
         private System.Windows.Forms.Label LabelCopyright;
-        private System.Windows.Forms.LinkLabel LinkHomepage;
+        private ExtLinkLabel LinkHomepage;
         private System.Windows.Forms.Button ButtonOk;
 
         #endregion

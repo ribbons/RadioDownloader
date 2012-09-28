@@ -27,6 +27,7 @@ namespace RadioDld
         public const int WM_CREATE = 0x1;
         public const int WM_SETFOCUS = 0x7;
         public const int WM_PAINT = 0xf;
+        public const int WM_SETCURSOR = 0x20;
         public const int WM_NOTIFY = 0x4e;
         public const int WM_NCHITTEST = 0x84;
         public const int WM_CHANGEUISTATE = 0x127;
@@ -103,6 +104,9 @@ namespace RadioDld
         // Notify messages
         public const int NM_FIRST = 0;
         public const int NM_RCLICK = NM_FIRST - 5;
+
+        // System cursors
+        public const int IDC_HAND = 32649;
 
         // ITaskbarList3 Flags
         [Flags]
@@ -211,6 +215,9 @@ namespace RadioDld
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        public static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
@@ -222,6 +229,9 @@ namespace RadioDld
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, string lParam);
+
+        [DllImport("user32.dll")]
+        public static extern IntPtr SetCursor(IntPtr hCursor);
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
         public static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);

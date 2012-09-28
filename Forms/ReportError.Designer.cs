@@ -34,7 +34,7 @@ namespace RadioDld
             this.ImageIcon = new System.Windows.Forms.PictureBox();
             this.ButtonSend = new System.Windows.Forms.Button();
             this.ButtonDontSend = new System.Windows.Forms.Button();
-            this.LinkWhatData = new System.Windows.Forms.LinkLabel();
+            this.LinkWhatData = new ExtLinkLabel();
             LabelTopMessage = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.ImageIcon)).BeginInit();
             this.SuspendLayout();
@@ -124,7 +124,7 @@ namespace RadioDld
         }
         private System.Windows.Forms.Button ButtonSend;
         private System.Windows.Forms.Button ButtonDontSend;
-        private System.Windows.Forms.LinkLabel LinkWhatData;
+        private ExtLinkLabel LinkWhatData;
         private System.Windows.Forms.PictureBox ImageIcon;
 
         #endregion
