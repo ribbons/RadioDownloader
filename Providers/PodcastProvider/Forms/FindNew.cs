@@ -47,7 +47,15 @@ namespace PodcastProvider
 
                 try
                 {
-                    feedUrl = new Uri(this.TextFeedUrl.Text);
+                    if (this.TextFeedUrl.Text.Contains("://"))
+                    {
+                        feedUrl = new Uri(this.TextFeedUrl.Text);
+                    }
+                    else
+                    {
+                        // The URL is probably HTTP, so add it automatically
+                        feedUrl = new Uri("http://" + this.TextFeedUrl.Text);
+                    }
                 }
                 catch (UriFormatException)
                 {
