@@ -266,9 +266,11 @@ namespace RadioDld
 
                     MessageBox.Show(successMessage, Application.ProductName);
 
-                    if (returnLines[1].StartsWith("http://", StringComparison.Ordinal) || returnLines[1].StartsWith("https://", StringComparison.Ordinal))
+                    Uri moreInfo;
+
+                    if (Uri.TryCreate(returnLines[1], UriKind.Absolute, out moreInfo))
                     {
-                        Process.Start(returnLines[1]);
+                        OsUtils.LaunchUrl(moreInfo, "Error Report");
                     }
 
                     return true;
