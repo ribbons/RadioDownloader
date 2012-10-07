@@ -28,8 +28,8 @@ Full Release
  9. Move source and installers to local nerdoftheherd downloads and sourceforge folders.
 10. Update nerdoftheherd.com properties file with latest version number.
 11. Add new version number into the Radio Downloader product in Bugzilla.
-12. Write news item.
-13. Upload source and installers to SourceForge
+12. Upload source and installers to SourceForge
+13. Write news item.
 14. Mark win32 installer as Windows platform default on SourceForge
 15. Upload files and news to website.
 16. Prevent errors from being submitted against previous version in error reporting.
