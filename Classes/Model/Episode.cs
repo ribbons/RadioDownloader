@@ -307,7 +307,7 @@ namespace RadioDld.Model
             }
             catch (Exception provExp)
             {
-                provExp.Data.Add("Programme ExtID", progExtId);
+                provExp.Data.Add("Programme", progInfo.ToString() +"\r\nExtID: " + progExtId);
                 provExp.Data.Add("Episode ExtID", episodeExtId);
                 throw new ProviderException("Call to GetEpisodeInfo failed", provExp, pluginId);
             }
