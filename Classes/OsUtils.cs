@@ -29,23 +29,28 @@ namespace RadioDld
     public static class OsUtils
     {
         /// <summary>
-        /// Add tracking parameters to the specified URL and launch it in the user's browser.
+        /// Launch the specified URL in the user's browser, with added tracking parameters if
+        /// the URL to be launched is part of nerdoftheherd.com
         /// </summary>
         /// <param name="url">The URL to open.</param>
         /// <param name="action">The action which caused the URL to be launched, which will be set as the 'campaign'.</param>
         public static void LaunchUrl(Uri url, string action)
         {
             UriBuilder launchUri = new UriBuilder(url);
-            string analyticsVals = "utm_source=" + HttpUtility.UrlEncode(Application.ProductName + " " + Application.ProductVersion) + "&utm_medium=desktop&utm_campaign=" + HttpUtility.UrlEncode(action);
 
-            // UriBuilder.Query always adds a ? to the start of a passed query
-            if (launchUri.Query != null && launchUri.Query.Length > 1)
+            if (launchUri.Host == "nerdoftheherd.com" || launchUri.Host == "www.nerdoftheherd.com")
             {
-                launchUri.Query = url.Query.Substring(1) + "&" + analyticsVals;
-            }
-            else
-            {
-                launchUri.Query = analyticsVals;
+                string analyticsVals = "utm_source=" + HttpUtility.UrlEncode(Application.ProductName + " " + Application.ProductVersion) + "&utm_medium=Desktop&utm_campaign=" + HttpUtility.UrlEncode(action);
+
+                // UriBuilder.Query always adds a ? to the start of a passed query
+                if (launchUri.Query != null && launchUri.Query.Length > 1)
+                {
+                    launchUri.Query = url.Query.Substring(1) + "&" + analyticsVals;
+                }
+                else
+                {
+                    launchUri.Query = analyticsVals;
+                }
             }
 
             Process.Start(launchUri.Uri.ToString());
