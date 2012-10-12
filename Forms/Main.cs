@@ -2171,7 +2171,10 @@ namespace RadioDld
 
         private void TextSidebarDescript_LinkClicked(object sender, System.Windows.Forms.LinkClickedEventArgs e)
         {
-            OsUtils.LaunchUrl(new Uri(e.LinkText), "Sidebar Link");
+            // Prefix the url with http:// if a protocol isn't specified
+            string launch = (e.LinkText.Contains("://") ? string.Empty : "http://") + e.LinkText;
+
+            OsUtils.LaunchUrl(new Uri(launch), "Sidebar Link");
         }
 
         private void TextSidebarDescript_Resize(object sender, EventArgs e)
