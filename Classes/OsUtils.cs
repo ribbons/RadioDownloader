@@ -40,7 +40,7 @@ namespace RadioDld
 
             if (launchUri.Host == "nerdoftheherd.com" || launchUri.Host == "www.nerdoftheherd.com")
             {
-                string analyticsVals = "utm_source=" + HttpUtility.UrlEncode(Application.ProductName + " " + Application.ProductVersion) + "&utm_medium=Desktop&utm_campaign=" + HttpUtility.UrlEncode(action);
+                string analyticsVals = "utm_source=" + HttpUtility.UrlEncode(Application.ProductName + " " + Application.ProductVersion) + "&utm_medium=desktop&utm_campaign=" + HttpUtility.UrlEncode(action);
 
                 // UriBuilder.Query always adds a ? to the start of a passed query
                 if (launchUri.Query != null && launchUri.Query.Length > 1)
