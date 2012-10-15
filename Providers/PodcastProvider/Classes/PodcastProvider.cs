@@ -101,8 +101,13 @@ namespace PodcastProvider
             ProgrammeInfo progInfo = new ProgrammeInfo();
             progInfo.Name = titleNode.InnerText;
 
+            XmlNode descriptionNode = null;
+
             // If the channel has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
-            XmlNode descriptionNode = rss.SelectSingleNode("./rss/channel/itunes:summary", namespaceMgr);
+            if (namespaceMgr.HasNamespace("itunes"))
+            {
+                descriptionNode = rss.SelectSingleNode("./rss/channel/itunes:summary", namespaceMgr);
+            }
 
             if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
             {
@@ -199,8 +204,13 @@ namespace PodcastProvider
 
             episodeInfo.Name = titleNode.InnerText;
 
+            XmlNode descriptionNode = null;
+
             // If the item has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
-            XmlNode descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
+            if (namespaceMgr.HasNamespace("itunes"))
+            {
+                descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
+            }
 
             if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
             {
