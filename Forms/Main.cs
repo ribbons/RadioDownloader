@@ -32,7 +32,6 @@ namespace RadioDld
     {
         private DataSearch dataSearch;
         private ViewState view;
-        private UpdateCheck checkUpdate;
         private TaskbarNotify tbarNotif;
 
         private Thread searchThread;
@@ -277,8 +276,6 @@ namespace RadioDld
 
             // Set up the initial notification status
             this.UpdateTrayStatus(false);
-
-            this.checkUpdate = new UpdateCheck("http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=" + Application.ProductVersion);
 
             this.ImageSidebarBorder.Width = 2;
 
@@ -1572,23 +1569,34 @@ namespace RadioDld
 
         private void TimerCheckForUpdates_Tick(object sender, EventArgs e)
         {
-            if (this.checkUpdate.IsUpdateAvailable())
+            if (Settings.LastCheckForUpdates.AddDays(1) < DateTime.Now)
             {
-                if (Settings.LastUpdatePrompt.AddDays(7) < DateTime.Now)
+                UpdateCheck.CheckAvailable(this.UpdateAvailable);
+            }
+        }
+
+        private void UpdateAvailable()
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke((MethodInvoker)delegate { this.UpdateAvailable(); });
+                return;
+            }
+
+            if (Settings.LastUpdatePrompt.AddDays(7) < DateTime.Now)
+            {
+                Settings.LastUpdatePrompt = DateTime.Now;
+
+                using (UpdateNotify showUpdate = new UpdateNotify())
                 {
-                    Settings.LastUpdatePrompt = DateTime.Now;
-
-                    using (UpdateNotify showUpdate = new UpdateNotify())
+                    if (this.WindowState == FormWindowState.Minimized || !this.Visible)
                     {
-                        if (this.WindowState == FormWindowState.Minimized || !this.Visible)
-                        {
-                            showUpdate.StartPosition = FormStartPosition.CenterScreen;
-                        }
+                        showUpdate.StartPosition = FormStartPosition.CenterScreen;
+                    }
 
-                        if (showUpdate.ShowDialog(this) == DialogResult.Yes)
-                        {
-                            OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/"), "Download Update");
-                        }
+                    if (showUpdate.ShowDialog(this) == DialogResult.Yes)
+                    {
+                        OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/"), "Download Update (Auto)");
                     }
                 }
             }

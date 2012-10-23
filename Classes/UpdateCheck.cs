@@ -18,53 +18,50 @@ namespace RadioDld
 {
     using System;
     using System.Net;
+    using System.Threading;
     using System.Windows.Forms;
 
-    internal class UpdateCheck
+    internal static class UpdateCheck
     {
-        private string versionInfoURL;
+        private const string BaseUrl = "http://www.nerdoftheherd.com/tools/radiodld/latestversion.txt?reqver=";
+        private const int CacheHours = 24;
 
-        public UpdateCheck(string versionInfoURL)
+        /// <summary>
+        /// Check to see if an update to the application is available.
+        /// </summary>
+        /// <param name="available">A <see cref="MethodInvoker"/> delegate which is called if an update is available.</param>
+        internal static void CheckAvailable(MethodInvoker available)
         {
-            this.versionInfoURL = versionInfoURL;
-        }
-
-        public bool IsUpdateAvailable()
-        {
-            if (Settings.LastCheckForUpdates.AddDays(1) > DateTime.Now)
+            ThreadPool.QueueUserWorkItem(delegate
             {
-                return false;
-            }
+                CachedWebClient checkUpdate = CachedWebClient.GetInstance();
+                string versionInfo = null;
 
-            WebClient checkUpdate = new WebClient();
-            checkUpdate.Headers.Add("user-agent", Application.ProductName + " " + Application.ProductVersion);
-
-            string versionInfo = null;
-
-            try
-            {
-                versionInfo = checkUpdate.DownloadString(this.versionInfoURL);
-            }
-            catch (WebException)
-            {
-                // Temporary problem downloading the information, try again later
-                return false;
-            }
-
-            Settings.LastCheckForUpdates = DateTime.Now;
-
-            if (!string.IsNullOrEmpty(versionInfo))
-            {
-                versionInfo = versionInfo.Split(new string[] { "\r\n" }, StringSplitOptions.None)[0];
-
-                // There is a new version available
-                if (string.Compare(versionInfo, Application.ProductVersion, StringComparison.Ordinal) > 0)
+                try
                 {
-                    return true;
+                    versionInfo = checkUpdate.DownloadString(new Uri(BaseUrl + Application.ProductVersion), CacheHours);
                 }
-            }
+                catch (WebException)
+                {
+                    // Temporary problem downloading the information, try again later
+                    return;
+                }
 
-            return false;
+                Settings.LastCheckForUpdates = DateTime.Now;
+
+                if (!string.IsNullOrEmpty(versionInfo))
+                {
+                    versionInfo = versionInfo.Split(new string[] { "\r\n" }, StringSplitOptions.None)[0];
+
+                    if (string.Compare(versionInfo, Application.ProductVersion, StringComparison.Ordinal) > 0)
+                    {
+                        // There is a new version available
+                        available();
+                    }
+                }
+
+                return;
+            });
         }
     }
 }
