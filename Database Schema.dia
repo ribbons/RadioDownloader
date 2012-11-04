@@ -68,7 +68,7 @@
         <dia:point val="7,7"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="7,7;18.31,14.5"/>
+        <dia:rectangle val="7,7;18.31,15.3"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -80,7 +80,7 @@
         <dia:real val="11.309999999999999"/>
       </dia:attribute>
       <dia:attribute name="elem_height">
-        <dia:real val="7.5"/>
+        <dia:real val="8.2999999999999989"/>
       </dia:attribute>
       <dia:attribute name="text_colour">
         <dia:color val="#000000"/>
@@ -237,6 +237,26 @@
           </dia:attribute>
           <dia:attribute name="type">
             <dia:string>#integer#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="comment">
+            <dia:string>##</dia:string>
+          </dia:attribute>
+          <dia:attribute name="primary_key">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+          <dia:attribute name="nullable">
+            <dia:boolean val="true"/>
+          </dia:attribute>
+          <dia:attribute name="unique">
+            <dia:boolean val="false"/>
+          </dia:attribute>
+        </dia:composite>
+        <dia:composite type="table_attribute">
+          <dia:attribute name="name">
+            <dia:string>#description#</dia:string>
+          </dia:attribute>
+          <dia:attribute name="type">
+            <dia:string>#varchar#</dia:string>
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>##</dia:string>
@@ -446,7 +466,7 @@
             <dia:string>#description#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#memo#</dia:string>
+            <dia:string>#varchar#</dia:string>
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>##</dia:string>
@@ -815,16 +835,16 @@
     </dia:object>
     <dia:object type="Database - Table" version="0" id="O5">
       <dia:attribute name="obj_pos">
-        <dia:point val="7,15.5"/>
+        <dia:point val="7,16"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="7,15.5;14.845,18.2"/>
+        <dia:rectangle val="7,16;14.845,18.7"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="7,15.5"/>
+        <dia:point val="7,16"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="7.8450000000000006"/>
@@ -925,17 +945,17 @@
     </dia:object>
     <dia:object type="Database - Reference" version="0" id="O6">
       <dia:attribute name="obj_pos">
-        <dia:point val="7,16.9"/>
+        <dia:point val="7,17.4"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="6,11.75;7,16.9"/>
+        <dia:rectangle val="6,11.75;7,17.4"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="7,16.9"/>
-        <dia:point val="6,16.9"/>
+        <dia:point val="7,17.4"/>
+        <dia:point val="6,17.4"/>
         <dia:point val="6,12.4"/>
         <dia:point val="7,12.4"/>
       </dia:attribute>
@@ -985,17 +1005,17 @@
     </dia:object>
     <dia:object type="Database - Reference" version="0" id="O7">
       <dia:attribute name="obj_pos">
-        <dia:point val="14.845,16.9"/>
+        <dia:point val="14.845,17.4"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="14.845,13.35;21,16.9"/>
+        <dia:rectangle val="14.845,13.35;21,17.4"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="14.845,16.9"/>
-        <dia:point val="20,16.9"/>
+        <dia:point val="14.845,17.4"/>
+        <dia:point val="20,17.4"/>
         <dia:point val="20,14"/>
         <dia:point val="21,14"/>
       </dia:attribute>
@@ -1236,7 +1256,7 @@
             <dia:string>#errordetails#</dia:string>
           </dia:attribute>
           <dia:attribute name="type">
-            <dia:string>#memo#</dia:string>
+            <dia:string>#varchar#</dia:string>
           </dia:attribute>
           <dia:attribute name="comment">
             <dia:string>##</dia:string>
@@ -1295,16 +1315,16 @@
     </dia:object>
     <dia:object type="Database - Table" version="0" id="O9">
       <dia:attribute name="obj_pos">
-        <dia:point val="7,22.5"/>
+        <dia:point val="7,23"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="7,22.5;13.305,24.4"/>
+        <dia:rectangle val="7,23;13.305,24.9"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="7,22.5"/>
+        <dia:point val="7,23"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="6.3049999999999997"/>
@@ -1385,17 +1405,17 @@
     </dia:object>
     <dia:object type="Database - Reference" version="0" id="O10">
       <dia:attribute name="obj_pos">
-        <dia:point val="7,23.9"/>
+        <dia:point val="7,24.4"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="4,7.75;7,23.9"/>
+        <dia:rectangle val="4,7.75;7,24.4"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="orth_points">
-        <dia:point val="7,23.9"/>
-        <dia:point val="4,23.9"/>
+        <dia:point val="7,24.4"/>
+        <dia:point val="4,24.4"/>
         <dia:point val="4,8.4"/>
         <dia:point val="7,8.4"/>
       </dia:attribute>
@@ -1615,16 +1635,16 @@
     </dia:object>
     <dia:object type="Database - Table" version="0" id="O13">
       <dia:attribute name="obj_pos">
-        <dia:point val="7,19.5"/>
+        <dia:point val="7,20"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="7,19.5;13.305,21.4"/>
+        <dia:rectangle val="7,20;13.305,21.9"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
       </dia:attribute>
       <dia:attribute name="elem_corner">
-        <dia:point val="7,19.5"/>
+        <dia:point val="7,20"/>
       </dia:attribute>
       <dia:attribute name="elem_width">
         <dia:real val="6.3049999999999997"/>
@@ -1708,7 +1728,7 @@
         <dia:point val="7,8.4"/>
       </dia:attribute>
       <dia:attribute name="obj_bb">
-        <dia:rectangle val="5,7.75;7,20.9"/>
+        <dia:rectangle val="5,7.75;7,21.4"/>
       </dia:attribute>
       <dia:attribute name="meta">
         <dia:composite type="dict"/>
@@ -1716,8 +1736,8 @@
       <dia:attribute name="orth_points">
         <dia:point val="7,8.4"/>
         <dia:point val="5,8.4"/>
-        <dia:point val="5,20.9"/>
-        <dia:point val="7,20.9"/>
+        <dia:point val="5,21.4"/>
+        <dia:point val="7,21.4"/>
       </dia:attribute>
       <dia:attribute name="orth_orient">
         <dia:enum val="0"/>
