@@ -425,10 +425,11 @@ namespace RadioDld.Model
                 {
                     if (progid == null)
                     {
-                        using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid) values (@pluginid, @extid)", FetchDbConn()))
+                        using (SQLiteCommand command = new SQLiteCommand("insert into programmes (pluginid, extid, name) values (@pluginid, @extid, @name)", FetchDbConn()))
                         {
                             command.Parameters.Add(new SQLiteParameter("@pluginid", pluginId.ToString()));
                             command.Parameters.Add(new SQLiteParameter("@extid", progExtId));
+                            command.Parameters.Add(new SQLiteParameter("@name", progExtId));
                             command.ExecuteNonQuery();
                         }
 

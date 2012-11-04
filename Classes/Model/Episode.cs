@@ -340,10 +340,11 @@ namespace RadioDld.Model
 
                     if (epid == null)
                     {
-                        using (SQLiteCommand command = new SQLiteCommand("insert into episodes (progid, extid, date) values (@progid, @extid, @date)", FetchDbConn(), transMon.Trans))
+                        using (SQLiteCommand command = new SQLiteCommand("insert into episodes (progid, extid, name, date) values (@progid, @extid, @name, @date)", FetchDbConn(), transMon.Trans))
                         {
                             command.Parameters.Add(new SQLiteParameter("@progid", progid));
                             command.Parameters.Add(new SQLiteParameter("@extid", episodeExtId));
+                            command.Parameters.Add(new SQLiteParameter("@name", episodeInfo.Name));
                             command.Parameters.Add(new SQLiteParameter("@date", episodeInfo.Date));
                             command.ExecuteNonQuery();
                         }
