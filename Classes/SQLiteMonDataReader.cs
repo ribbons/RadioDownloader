@@ -60,7 +60,7 @@ namespace RadioDld
 
             if (!string.IsNullOrEmpty(info))
             {
-                exp.Data.Add("readers", info);
+                exp.Data.Add("Readers", info);
             }
 
             return exp;
