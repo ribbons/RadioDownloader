@@ -126,9 +126,9 @@ namespace RadioDld
 
         private new void Hide()
         {
-            if (this.InvokeRequired)
+            if (!this.IsDisposed)
             {
-                this.Invoke((MethodInvoker)delegate { this.Hide(); });
+                this.Invoke((MethodInvoker)delegate { base.Hide(); });
                 return;
             }
 
