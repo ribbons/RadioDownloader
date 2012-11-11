@@ -36,7 +36,7 @@ namespace RadioDld
             if (m.Msg == NativeMethods.WM_SETCURSOR)
             {
                 // Fetch a handle to the system 'hand' cursor.
-                IntPtr cursor = NativeMethods.LoadCursor(IntPtr.Zero, NativeMethods.IDC_HAND);
+                IntPtr cursor = NativeMethods.LoadCursor(IntPtr.Zero, (IntPtr)NativeMethods.IDC_HAND);
 
                 // NULL cursor
                 if (cursor == IntPtr.Zero)

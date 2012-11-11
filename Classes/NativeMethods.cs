@@ -216,7 +216,7 @@ namespace RadioDld
         public static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        public static extern IntPtr LoadCursor(IntPtr hInstance, int lpCursorName);
+        public static extern IntPtr LoadCursor(IntPtr hInstance, IntPtr lpCursorName);
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
