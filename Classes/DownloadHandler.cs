@@ -113,7 +113,7 @@ namespace RadioDld
 
         public event FinishedEventHandler Finished;
 
-        public int ProgressValue { get; set; }
+        public int ProgressValue { get; private set; }
 
         public void Start()
         {
