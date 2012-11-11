@@ -11,7 +11,7 @@ using System.Security;
 [assembly: AssemblyCopyright("Copyright © 2007-2012 Matt Robinson")]
 [assembly: AssemblyTrademark("")]
 
-[assembly: AssemblyVersion("0.26.0.0")]
+[assembly: AssemblyVersion("0.26.1.0")]
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguageAttribute("en-GB")]
