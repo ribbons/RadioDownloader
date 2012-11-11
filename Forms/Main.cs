@@ -884,9 +884,13 @@ namespace RadioDld
 
         private void ProgData_ProviderAdded(System.Guid providerId)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.ProgData_ProviderAdded(providerId); });
                 return;
             }
@@ -940,9 +944,13 @@ namespace RadioDld
 
         private void Programme_Updated(int progid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.Programme_Updated(progid); });
                 return;
             }
@@ -1011,9 +1019,13 @@ namespace RadioDld
 
         private void ProgData_EpisodeAdded(int epid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.ProgData_EpisodeAdded(epid); });
                 return;
             }
@@ -1026,9 +1038,13 @@ namespace RadioDld
 
         private void Episode_Updated(int epid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.Episode_Updated(epid); });
                 return;
             }
@@ -1052,9 +1068,13 @@ namespace RadioDld
 
         private void Favourite_Added(int progid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.Favourite_Added(progid); });
                 return;
             }
@@ -1075,9 +1095,13 @@ namespace RadioDld
 
         private void Favourite_Updated(int progid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.Favourite_Updated(progid); });
                 return;
             }
@@ -1120,9 +1144,13 @@ namespace RadioDld
 
         private void Favourite_Removed(int progid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.Favourite_Removed(progid); });
                 return;
             }
@@ -1176,9 +1204,13 @@ namespace RadioDld
 
         private void Subscription_Added(int progid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.Subscription_Added(progid); });
                 return;
             }
@@ -1198,9 +1230,13 @@ namespace RadioDld
 
         private void Subscription_Updated(int progid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.Subscription_Updated(progid); });
                 return;
             }
@@ -1226,9 +1262,13 @@ namespace RadioDld
 
         private void Subscription_Removed(int progid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.Subscription_Removed(progid); });
                 return;
             }
@@ -1346,9 +1386,13 @@ namespace RadioDld
 
         private void DataSearch_DownloadAdded(int epid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadAdded(epid); });
                 return;
             }
@@ -1368,9 +1412,13 @@ namespace RadioDld
 
         private void DataSearch_DownloadProgress(int epid, int percent, ProgressType type)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadProgress(epid, percent, type); });
                 return;
             }
@@ -1412,9 +1460,13 @@ namespace RadioDld
 
         private void DataSearch_DownloadRemoved(int epid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadRemoved(epid); });
                 return;
             }
@@ -1440,9 +1492,13 @@ namespace RadioDld
 
         private void DataSearch_DownloadUpdated(int epid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadUpdated(epid); });
                 return;
             }
@@ -1476,9 +1532,13 @@ namespace RadioDld
 
         private void DownloadManager_ProgressTotal(bool downloading, int percent)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.DownloadManager_ProgressTotal(downloading, percent); });
                 return;
             }
@@ -1511,9 +1571,13 @@ namespace RadioDld
 
         private void ProgData_FindNewFailed()
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.ProgData_FindNewFailed(); });
                 return;
             }
@@ -1524,9 +1588,13 @@ namespace RadioDld
 
         private void ProgData_FoundNew(int progid)
         {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
             if (this.InvokeRequired)
             {
-                // Events will sometimes be fired on a different thread to the ui
                 this.Invoke((MethodInvoker)delegate { this.ProgData_FoundNew(progid); });
                 return;
             }
@@ -2364,7 +2432,10 @@ namespace RadioDld
                     return;
                 }
 
-                this.Invoke((MethodInvoker)delegate { this.PerformSearch(origView, search); });
+                if (!this.IsDisposed)
+                {
+                    this.Invoke((MethodInvoker)delegate { this.PerformSearch(origView, search); });
+                }
             }
         }
 
