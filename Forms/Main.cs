@@ -31,7 +31,7 @@ namespace RadioDld
     internal partial class Main : GlassForm
     {
         private DataSearch dataSearch;
-        private ViewState view;
+        private ViewState view = new ViewState();
         private TaskbarNotify tbarNotif;
 
         private Thread searchThread;
@@ -226,7 +226,6 @@ namespace RadioDld
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Progress, "Progress");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
 
-            this.view = new ViewState();
             this.view.UpdateNavBtnState += this.View_UpdateNavBtnState;
             this.view.ViewChanged += this.View_ViewChanged;
             this.view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
