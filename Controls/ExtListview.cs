@@ -52,6 +52,7 @@ namespace RadioDld
                 EmbeddedProgress embedded = default(EmbeddedProgress);
                 embedded.Progress = new ProgressBar();
                 embedded.Progress.Value = percent;
+                embedded.Progress.Visible = false;
                 embedded.Column = column;
 
                 // Add an event handler to select the ListView row when the progress bar is clicked
