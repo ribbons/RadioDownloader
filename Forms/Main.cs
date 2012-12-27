@@ -451,13 +451,16 @@ namespace RadioDld
 
         private void ListEpisodes_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.ListEpisodes.SelectedItems.Count > 0)
+            if (this.view.CurrentView == ViewState.View.ProgEpisodes)
             {
-                this.ShowEpisodeInfo();
-            }
-            else
-            {
-                this.SetViewDefaults(); // Revert back to programme info in sidebar
+                if (this.ListEpisodes.SelectedItems.Count > 0)
+                {
+                    this.ShowEpisodeInfo();
+                }
+                else
+                {
+                    this.SetViewDefaults(); // Revert back to programme info in sidebar
+                }
             }
         }
 
