@@ -1,0 +1,7 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Adjust default diff settings for specific files
+*.cs     diff=csharp
+*.rtf	  diff=astextplain
+*.RTF	  diff=astextplain

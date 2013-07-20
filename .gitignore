@@ -1,0 +1,11 @@
+bin/*/Radio Downloader.*
+bin/*/PodcastProvider.*
+bin/*/store.db
+build/publish-win-vars.bat
+installer/*.msi
+installer/*.wixpdb
+obj
+Radio Downloader.sln.cache
+Radio Downloader.suo
+*.csproj.user
+StyleCop.Cache
