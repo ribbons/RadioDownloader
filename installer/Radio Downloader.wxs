@@ -64,7 +64,7 @@
 						<File Source="..\store.db" />
 					</Component>
 					<Component>
-						<File Source="..\GPL.txt" />
+						<File Source="..\LICENSE.txt" />
 					</Component>
 					<Component>
 						<File Source="$(var.PlatformBin)\PodcastProvider.dll" />
@@ -84,7 +84,7 @@
 			<ComponentRef Id="Radio_Downloader.pdb" />
 			<ComponentRef Id="System.Data.SQLite.DLL" />
 			<ComponentRef Id="store.db" />
-			<ComponentRef Id="GPL.txt" />
+			<ComponentRef Id="LICENSE.txt" />
 			<ComponentRef Id="PodcastProvider.dll" />
 			<ComponentRef Id="PodcastProvider.pdb" />
 		</Feature>

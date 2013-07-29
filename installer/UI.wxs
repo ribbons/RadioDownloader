@@ -234,7 +234,7 @@
 			</Control>
 			<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" TabSkip="no" Text="[BannerBitmap]" />
 			<Control Id="AgreementText" Type="ScrollableText" X="20" Y="60" Width="330" Height="147" Sunken="yes" TabSkip="no">
-				<Text SourceFile="..\license.rtf" />
+				<Text SourceFile="license.rtf" />
 			</Control>
 			<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
 			<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
