@@ -18,6 +18,7 @@ You'll need the following before you can start developing:
 
 These items are optional:
 
+* [Git](http://msysgit.github.io/) in your PATH - for automatic version numbers
 * [WiX](http://wix.sourceforge.net/) - for building the installer
 * [Microsoft Windows SDK for Windows 7 and .NET Framework 4](http://www.microsoft.com/download/en/details.aspx?id=8279) - for publishing builds
 * FxCop (Part of the Windows SDK)

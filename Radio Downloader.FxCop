@@ -152,7 +152,6 @@
     <Rule Name="WrapVulnerableFinallyClausesInOuterTry" Enabled="True" />
    </RuleFile>
    <RuleFile Name="$(FxCopDir)\Rules\UsageRules.dll" Enabled="True" AllRulesEnabled="False">
-    <Rule Name="AttributeStringLiteralsShouldParseCorrectly" Enabled="True" />
     <Rule Name="CallBaseClassMethodsOnISerializableTypes" Enabled="True" />
     <Rule Name="CallGCSuppressFinalizeCorrectly" Enabled="True" />
     <Rule Name="CollectionPropertiesShouldBeReadOnly" Enabled="True" />
