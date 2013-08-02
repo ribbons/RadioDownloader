@@ -1,6 +1,21 @@
 @echo off
 
-rem Batch file to build and Radio Downloader and providers
+rem This file is part of Radio Downloader.
+rem Copyright © 2007-2013 Matt Robinson
+rem
+rem This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
+rem Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
+rem option) any later version.
+rem
+rem This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
+rem implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
+rem License for more details.
+rem
+rem You should have received a copy of the GNU General Public License along with this program.  If not, see
+rem <http://www.gnu.org/licenses/>.
+
+rem Make sure we are running from the directory this is located in
+cd /D "%~dp0"
 
 rem Check the platform has been passed to this script and is known
 if "%~1" == "" goto noplatform
@@ -22,19 +37,18 @@ call "%sdklocation%\Bin\setenv.cmd" /Release /%~1
 :haveenv
 
 rem Build Radio Downloader and the providers
-msbuild /p:Configuration=Release /p:Platform=%platname% /t:Clean "../Radio Downloader.sln"
+msbuild /p:Configuration=Release /p:Platform=%platname% /p:TreatWarningsAsErrors=true /t:Clean "../Radio Downloader.sln"
 if ERRORLEVEL 1 exit /B 1
-msbuild /p:Configuration=Release /p:Platform=%platname% "../Radio Downloader.sln"
+msbuild /p:Configuration=Release /p:Platform=%platname% /p:TreatWarningsAsErrors=true /p:StyleCopTreatErrorsAsWarnings=false "../Radio Downloader.sln"
 if ERRORLEVEL 1 exit /B 1
 
 rem Run FxCop on the built assemblies
 "%ProgramFiles(x86)%\Microsoft FxCop 10.0\FxCopCmd.exe" "/project:../Radio Downloader.FxCop" "/out:../obj/FxCopViolations.xml"
 if ERRORLEVEL 1 exit /B 1
 
-rem Make sure the FxCop violations file exists even when there are no violations
-if not exist ..\obj\FxCopViolations.xml (
-	echo ^<?xml version="1.0" encoding="utf-8"?^> > ..\obj\FxCopViolations.xml
-	echo ^<FxCopReport /^> >> ..\obj\FxCopViolations.xml
+rem Fail build if there were FxCop violations
+if exist ..\obj\FxCopViolations.xml (
+	exit /B 1
 )
 
 goto :EOF
