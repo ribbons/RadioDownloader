@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 Matt Robinson
+ * Copyright © 2007-2013 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -70,7 +70,7 @@ namespace RadioDld.Model
 
         public static event EpisodeEventHandler Removed;
 
-        public enum DownloadCols
+        internal enum DownloadCols
         {
             EpisodeName = 0,
             EpisodeDate = 1,
@@ -79,7 +79,7 @@ namespace RadioDld.Model
             Duration = 4
         }
 
-        public enum DownloadStatus
+        internal enum DownloadStatus
         {
             Waiting = 0,
             Downloaded = 1,
