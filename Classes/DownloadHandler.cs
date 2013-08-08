@@ -144,7 +144,7 @@ namespace RadioDld
                 this.Progress(this.episodeInfo.Epid, 0, ProgressType.Downloading);
             }
 
-            if (!Plugins.PluginExists(this.pluginId))
+            if (!Provider.Exists(this.pluginId))
             {
                 this.DownloadError(ErrorType.LocalProblem, "The plugin provider required to download this episode is not currently available.  Please try updating the Radio Downloader providers or cancelling the download.");
                 return;
@@ -152,7 +152,7 @@ namespace RadioDld
 
             lock (this.pluginInstanceLock)
             {
-                this.pluginInstance = Plugins.GetPluginInstance(this.pluginId);
+                this.pluginInstance = Provider.GetFromId(this.pluginId).CreateInstance();
                 this.pluginInstance.Progress += this.DownloadPluginInst_Progress;
             }
 
@@ -293,7 +293,7 @@ namespace RadioDld
 
             unhandled.Data.Add("Episode", epDetails);
             unhandled.Data.Add("Programme", progDetails);
-            unhandled.Data.Add("Provider", Plugins.PluginInfo(this.pluginId));
+            unhandled.Data.Add("Provider", this.pluginInstance.ToString());
 
             Model.Download.SetErrorred(this.episodeInfo.Epid, ErrorType.UnknownError, new ErrorReporting("Download Error", unhandled));
             this.DownloadFinished();

@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 Matt Robinson
+ * Copyright © 2007-2013 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -226,15 +226,10 @@ namespace RadioDld
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Progress, "Progress");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
 
-            this.view.UpdateNavBtnState += this.View_UpdateNavBtnState;
-            this.view.ViewChanged += this.View_ViewChanged;
-            this.view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
-
-            Data.ProviderAdded += this.ProgData_ProviderAdded;
-            Data.EpisodeAdded += this.ProgData_EpisodeAdded;
-            Data.FindNewViewChange += this.ProgData_FindNewViewChange;
-            Data.FindNewFailed += this.ProgData_FindNewFailed;
-            Data.FoundNew += this.ProgData_FoundNew;
+            FindNew.EpisodeAdded += this.ProgData_EpisodeAdded;
+            FindNew.FindNewViewChange += this.ProgData_FindNewViewChange;
+            FindNew.FindNewFailed += this.ProgData_FindNewFailed;
+            FindNew.FoundNew += this.ProgData_FoundNew;
 
             Model.Programme.Updated += this.Programme_Updated;
             Model.Favourite.Added += this.Favourite_Added;
@@ -252,10 +247,14 @@ namespace RadioDld
             this.dataSearch.DownloadRemoved += this.DataSearch_DownloadRemoved;
             this.dataSearch.DownloadProgress += this.DataSearch_DownloadProgress;
 
-            Data.InitProviderList();
+            this.InitProviderList();
             this.InitFavouriteList();
             this.InitSubscriptionList();
             this.InitDownloadList();
+
+            this.view.UpdateNavBtnState += this.View_UpdateNavBtnState;
+            this.view.ViewChanged += this.View_ViewChanged;
+            this.view.SetView(ViewState.MainTab.FindProgramme, ViewState.View.FindNewChooseProvider);
 
             this.ListFavourites.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Favourite);
             this.ListSubscribed.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Subscription);
@@ -378,8 +377,8 @@ namespace RadioDld
 
         private void ShowProviderInfo(Guid providerId)
         {
-            Data.ProviderData info = Data.FetchProviderData(providerId);
-            this.SetSideBar(info.Name, info.Description, null);
+            Provider provider = Provider.GetFromId(providerId);
+            this.SetSideBar(provider.Name, provider.Description, null);
 
             if (this.view.CurrentView == ViewState.View.FindNewChooseProvider)
             {
@@ -885,36 +884,21 @@ namespace RadioDld
             this.view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
         }
 
-        private void ProgData_ProviderAdded(System.Guid providerId)
+        private ListViewItem ProviderListItem(Provider provider)
         {
-            if (this.IsDisposed)
-            {
-                return;
-            }
-
-            if (this.InvokeRequired)
-            {
-                this.Invoke((MethodInvoker)delegate { this.ProgData_ProviderAdded(providerId); });
-                return;
-            }
-
-            Data.ProviderData info = Data.FetchProviderData(providerId);
-
             ListViewItem addItem = new ListViewItem();
-            addItem.Name = providerId.ToString();
-            addItem.Text = info.Name;
+            addItem.Name = provider.Id.ToString();
+            addItem.Text = provider.Name;
 
-            if (info.Icon != null)
+            if (provider.Icon != null)
             {
-                this.ImagesProviders.Images.Add(providerId.ToString(), info.Icon);
-                addItem.ImageKey = providerId.ToString();
+                this.ImagesProviders.Images.Add(provider.Id.ToString(), provider.Icon);
+                addItem.ImageKey = provider.Id.ToString();
             }
             else
             {
                 addItem.ImageKey = "default";
             }
-
-            this.ListProviders.Items.Add(addItem);
 
             // Hide the 'No providers' provider options menu item
             if (this.MenuOptionsProviderOptsNoProvs.Visible)
@@ -922,11 +906,11 @@ namespace RadioDld
                 this.MenuOptionsProviderOptsNoProvs.Visible = false;
             }
 
-            MenuItem addMenuItem = new MenuItem(info.Name + " Provider");
+            MenuItem addMenuItem = new MenuItem(provider.Name + " Provider");
 
-            if (info.ShowOptionsHandler != null)
+            if (provider.ShowOptionsHandler != null)
             {
-                addMenuItem.Click += info.ShowOptionsHandler;
+                addMenuItem.Click += provider.ShowOptionsHandler;
             }
             else
             {
@@ -935,14 +919,7 @@ namespace RadioDld
 
             this.MenuOptionsProviderOpts.MenuItems.Add(addMenuItem);
 
-            if (this.view.CurrentView == ViewState.View.FindNewChooseProvider)
-            {
-                if (this.ListProviders.SelectedItems.Count == 0)
-                {
-                    // Update the displayed statistics
-                    this.SetViewDefaults();
-                }
-            }
+            return addItem;
         }
 
         private void Programme_Updated(int progid)
@@ -2051,17 +2028,17 @@ namespace RadioDld
                     }
 
                     this.PanelPluginSpace.Visible = true;
-                    this.PanelPluginSpace.Controls.Add(Data.GetFindNewPanel(findViewData.ProviderID, findViewData.View));
+                    this.PanelPluginSpace.Controls.Add(FindNew.GetFindNewPanel(findViewData.ProviderID, findViewData.View));
                     this.PanelPluginSpace.Controls[0].Dock = DockStyle.Fill;
                     this.PanelPluginSpace.Controls[0].Focus();
                     break;
                 case ViewState.View.ProgEpisodes:
                     this.ListEpisodes.Visible = true;
-                    Data.CancelEpisodeListing();
+                    FindNew.CancelEpisodeListing();
                     this.ListEpisodes.Items.Clear(); // Clear before DoEvents so that old items don't flash up on screen
                     Application.DoEvents(); // Give any queued Invoke calls a chance to be processed
                     this.ListEpisodes.Items.Clear();
-                    Data.InitEpisodeList((int)data);
+                    FindNew.InitEpisodeList((int)data);
                     break;
                 case ViewState.View.Favourites:
                     this.ListFavourites.Visible = true;
@@ -2284,6 +2261,14 @@ namespace RadioDld
         {
             Settings.ResetDownloadCols();
             this.InitDownloadList();
+        }
+
+        private void InitProviderList()
+        {
+            foreach (Provider provider in Provider.GetAll())
+            {
+                this.ListProviders.Items.Add(this.ProviderListItem(provider));
+            }
         }
 
         private void InitFavouriteList()

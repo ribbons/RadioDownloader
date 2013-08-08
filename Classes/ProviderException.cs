@@ -39,7 +39,7 @@ namespace RadioDld
             : base(message, innerException)
         {
             this.ProviderId = pluginId;
-            this.ProviderName = Plugins.PluginName(pluginId);
+            this.ProviderName = Provider.GetFromId(pluginId).Name;
         }
 
         /// <summary>
@@ -69,9 +69,9 @@ namespace RadioDld
         public ErrorReporting BuildReport()
         {
             Exception provExp = this.InnerException;
-            provExp.Data.Add("Provider", Plugins.PluginInfo(this.ProviderId));
+            provExp.Data.Add("Provider", Provider.GetFromId(this.ProviderId).ToString());
 
-            ErrorReporting report = new ErrorReporting(Plugins.PluginClass(this.ProviderId), provExp);
+            ErrorReporting report = new ErrorReporting(Provider.GetFromId(this.ProviderId).Class, provExp);
             return report;
         }
     }

@@ -202,7 +202,7 @@
     <Compile Include="Classes\CachedWebClient.cs" />
     <Compile Include="Classes\DownloadHandler.cs" />
     <Compile Include="Classes\ErrorReporting.cs" />
-    <Compile Include="Classes\Plugins.cs" />
+    <Compile Include="Classes\Provider.cs" />
     <Compile Include="Classes\DatabaseInit.cs" />
     <Compile Include="Classes\ViewState.cs" />
     <Compile Include="Controls\ExtLinkLabel.cs">
@@ -258,7 +258,7 @@
     <Compile Include="Properties\VersionInfo.cs">
       <Visible>false</Visible>
     </Compile>
-    <Compile Include="Classes\Data.cs">
+    <Compile Include="Classes\FindNew.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controls\ExtListView.cs">

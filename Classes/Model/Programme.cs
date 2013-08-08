@@ -89,7 +89,7 @@ namespace RadioDld.Model
 
         public static int? FetchInfo(Guid pluginId, string progExtId)
         {
-            if (!Plugins.PluginExists(pluginId))
+            if (!Provider.Exists(pluginId))
             {
                 return null;
             }
@@ -211,7 +211,7 @@ namespace RadioDld.Model
                 }
             }
 
-            if (!Plugins.PluginExists(providerId))
+            if (!Provider.Exists(providerId))
             {
                 return null;
             }
@@ -237,7 +237,7 @@ namespace RadioDld.Model
             List<string> allEpExtIds = new List<string>();
             int page = 1;
 
-            IRadioProvider providerInst = Plugins.GetPluginInstance(providerId);
+            IRadioProvider providerInst = Provider.GetFromId(providerId).CreateInstance();
             AvailableEpisodes available;
 
             do
@@ -369,11 +369,11 @@ namespace RadioDld.Model
             this.SingleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
 
             Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-            IRadioProvider providerInst = Plugins.GetPluginInstance(pluginId);
+            Provider provider = Provider.GetFromId(pluginId);
 
-            if (providerInst != null)
+            if (provider != null)
             {
-                this.ProviderName = providerInst.ProviderName;
+                this.ProviderName = provider.Name;
             }
             else
             {
@@ -388,12 +388,12 @@ namespace RadioDld.Model
 
         private static int? UpdateInfo(Guid pluginId, string progExtId)
         {
-            if (!Plugins.PluginExists(pluginId))
+            if (!Provider.Exists(pluginId))
             {
                 return null;
             }
 
-            IRadioProvider pluginInstance = Plugins.GetPluginInstance(pluginId);
+            IRadioProvider pluginInstance = Provider.GetFromId(pluginId).CreateInstance();
             ProgrammeInfo progInfo;
 
             try
@@ -486,9 +486,9 @@ namespace RadioDld.Model
                     {
                         providerId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
 
-                        if (Plugins.PluginExists(providerId))
+                        if (Provider.Exists(providerId))
                         {
-                            IRadioProvider pluginInstance = Plugins.GetPluginInstance(providerId);
+                            IRadioProvider pluginInstance = Provider.GetFromId(providerId).CreateInstance();
 
                             if (reader.GetDateTime(reader.GetOrdinal("lastupdate")).AddDays(pluginInstance.ProgInfoUpdateFreqDays) < DateTime.Now)
                             {

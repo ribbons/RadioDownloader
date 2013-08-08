@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 Matt Robinson
+ * Copyright © 2007-2013 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -18,18 +18,15 @@ namespace RadioDld
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Threading;
     using System.Windows.Forms;
 
-    internal static class Data
+    internal static class FindNew
     {
         private static Thread episodeListThread;
 
         private static object episodeListThreadLock = new object();
         private static IRadioProvider findNewPluginInst;
-
-        public delegate void ProviderAddedEventHandler(Guid providerId);
 
         public delegate void FindNewViewChangeEventHandler(object viewData);
 
@@ -38,8 +35,6 @@ namespace RadioDld
         public delegate void FoundNewEventHandler(int progid);
 
         public delegate void EpisodeAddedEventHandler(int epid);
-
-        public static event ProviderAddedEventHandler ProviderAdded;
 
         public static event FindNewViewChangeEventHandler FindNewViewChange;
 
@@ -51,9 +46,9 @@ namespace RadioDld
 
         public static Panel GetFindNewPanel(Guid pluginID, object view)
         {
-            if (Plugins.PluginExists(pluginID))
+            if (Provider.Exists(pluginID))
             {
-                findNewPluginInst = Plugins.GetPluginInstance(pluginID);
+                findNewPluginInst = Provider.GetFromId(pluginID).CreateInstance();
                 findNewPluginInst.FindNewException += FindNewPluginInst_FindNewException;
                 findNewPluginInst.FindNewViewChange += FindNewPluginInst_FindNewViewChange;
                 findNewPluginInst.FoundNew += FindNewPluginInst_FoundNew;
@@ -62,20 +57,6 @@ namespace RadioDld
             else
             {
                 return new Panel();
-            }
-        }
-
-        public static void InitProviderList()
-        {
-            Guid[] pluginIdList = null;
-            pluginIdList = Plugins.GetPluginIdList();
-
-            foreach (Guid pluginId in pluginIdList)
-            {
-                if (ProviderAdded != null)
-                {
-                    ProviderAdded(pluginId);
-                }
             }
         }
 
@@ -95,19 +76,6 @@ namespace RadioDld
             {
                 episodeListThread = null;
             }
-        }
-
-        public static ProviderData FetchProviderData(Guid providerId)
-        {
-            IRadioProvider providerInstance = Plugins.GetPluginInstance(providerId);
-
-            ProviderData info = new ProviderData();
-            info.Name = providerInstance.ProviderName;
-            info.Description = providerInstance.ProviderDescription;
-            info.Icon = providerInstance.ProviderIcon;
-            info.ShowOptionsHandler = providerInstance.GetShowOptionsHandler();
-
-            return info;
         }
 
         private static void FindNewPluginInst_FindNewException(Exception exception, bool unhandled)
@@ -229,14 +197,6 @@ namespace RadioDld
 
                 return;
             }
-        }
-
-        public struct ProviderData
-        {
-            public string Name;
-            public string Description;
-            public Bitmap Icon;
-            public EventHandler ShowOptionsHandler;
         }
     }
 }
