@@ -1,5 +1,5 @@
 bin/*/Radio Downloader.*
-bin/*/PodcastProvider.*
+bin/*/*Provider.*
 bin/*/store.db
 build/publish-win-vars.bat
 installer/*.msi
