@@ -1,7 +1,9 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-# Adjust default diff settings for specific files
+# Adjust default settings for specific files
 *.cs     diff=csharp
-*.rtf	  diff=astextplain
-*.RTF	  diff=astextplain
+*.rtf    diff=astextplain
+*.RTF    diff=astextplain
+*.sln    text eol=crlf
+*.csproj text eol=crlf
