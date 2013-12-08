@@ -1,7 +1,7 @@
 @echo off
 
 rem This file is part of Radio Downloader.
-rem Copyright © 2007-2013 Matt Robinson
+rem Copyright Â© 2007-2013 Matt Robinson
 rem
 rem This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
 rem Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -27,7 +27,7 @@ if "%~1" == "x64" set platname=win64
 if "%platname%" == "" goto badplatform
 
 rem Check the SDK is installed
-set sdklocation=%programfiles%\Microsoft SDKs\Windows\v7.1
+FOR /F "skip=2 tokens=2,*" %%A IN ('reg query "HKLM\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v7.1" /v InstallationFolder 2^> nul') DO set sdklocation=%%B
 if not exist "%sdklocation%" goto nosdk
 
 rem Set up a Release build environment
