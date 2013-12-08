@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 Matt Robinson
+ * Copyright © 2007-2013 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -49,7 +49,7 @@ namespace RadioDld
             return instance;
         }
 
-        public byte[] DownloadData(Uri uri, int fetchIntervalHrs)
+        public byte[] DownloadData(Uri uri, int fetchIntervalHrs, string userAgent)
         {
             if (fetchIntervalHrs == 0)
             {
@@ -92,7 +92,7 @@ namespace RadioDld
             Debug.Print("CachedWebClient: Fetching " + uri.ToString());
 
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-            request.UserAgent = Application.ProductName + " " + Application.ProductVersion;
+            request.UserAgent = userAgent;
             request.Headers.Add(HttpRequestHeader.AcceptEncoding, "gzip");
 
             using (MemoryStream dataStream = new MemoryStream())
@@ -155,9 +155,19 @@ namespace RadioDld
             }
         }
 
-        public string DownloadString(Uri uri, int fetchIntervalHrs)
+        public string DownloadString(Uri uri, int fetchIntervalHrs, string userAgent)
         {
-            return Encoding.UTF8.GetString(this.DownloadData(uri, fetchIntervalHrs));
+            return Encoding.UTF8.GetString(this.DownloadData(uri, fetchIntervalHrs, userAgent));
+        }
+
+        internal byte[] DownloadData(Uri uri, int fetchIntervalHrs)
+        {
+            return this.DownloadData(uri, fetchIntervalHrs, Application.ProductName + " " + Application.ProductVersion);
+        }
+
+        internal string DownloadString(Uri uri, int fetchIntervalHrs)
+        {
+            return this.DownloadString(uri, fetchIntervalHrs, Application.ProductName + " " + Application.ProductVersion);
         }
 
         private string DatabasePath()

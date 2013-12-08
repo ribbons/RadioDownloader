@@ -1,6 +1,6 @@
 /* 
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2012 Matt Robinson
+ * Copyright © 2007-2013 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -22,6 +22,7 @@ namespace PodcastProvider
     using System.Globalization;
     using System.IO;
     using System.Net;
+    using System.Reflection;
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
@@ -34,6 +35,7 @@ namespace PodcastProvider
     public class PodcastProvider : IRadioProvider
     {
         internal const int CacheHTTPHours = 2;
+        internal static readonly string UserAgent = "Podcast Provider " + ((AssemblyInformationalVersionAttribute)typeof(PodcastProvider).Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false)[0]).InformationalVersion + " for " + Application.ProductName + " " + Application.ProductVersion;
 
         private DownloadWrapper doDownload;
 
@@ -452,7 +454,7 @@ namespace PodcastProvider
             XmlDocument feedXml = new XmlDocument();
             CachedWebClient cachedWeb = CachedWebClient.GetInstance();
 
-            string feedString = cachedWeb.DownloadString(url, PodcastProvider.CacheHTTPHours);
+            string feedString = cachedWeb.DownloadString(url, PodcastProvider.CacheHTTPHours, UserAgent);
 
             // The LoadXml method of XmlDocument doesn't work correctly all of the time,
             // so convert the string to a UTF-8 byte array
@@ -531,7 +533,7 @@ namespace PodcastProvider
                 if (imageNode != null)
                 {
                     Uri imageUrl = new Uri(imageNode.Attributes["href"].Value);
-                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
+                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {
@@ -554,7 +556,7 @@ namespace PodcastProvider
                 if (imageUrlNode != null)
                 {
                     Uri imageUrl = new Uri(imageUrlNode.InnerText);
-                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
+                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {
@@ -577,7 +579,7 @@ namespace PodcastProvider
                 if (imageNode != null)
                 {
                     Uri imageUrl = new Uri(imageNode.Attributes["url"].Value);
-                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours);
+                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {
