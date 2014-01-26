@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 Matt Robinson
+ * Copyright © 2007-2014 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -1643,7 +1643,7 @@ namespace RadioDld
 
                     if (showUpdate.ShowDialog(this) == DialogResult.Yes)
                     {
-                        OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/"), "Download Update (Auto)");
+                        OsUtils.LaunchUrl(new Uri("http://nerdoftheherd.com/tools/radiodld/"), "Download Update (Auto)");
                     }
                 }
             }
@@ -1925,19 +1925,19 @@ namespace RadioDld
             {
                 case ViewState.View.FindNewChooseProvider:
                 case ViewState.View.FindNewProviderForm:
-                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.find-programme");
+                    helpUri = new Uri("http://nerdoftheherd.com/tools/radiodld/help/views.find-programme");
                     break;
                 case ViewState.View.ProgEpisodes:
-                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.available-episodes/");
+                    helpUri = new Uri("http://nerdoftheherd.com/tools/radiodld/help/views.available-episodes/");
                     break;
                 case ViewState.View.Favourites:
-                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.favourites/");
+                    helpUri = new Uri("http://nerdoftheherd.com/tools/radiodld/help/views.favourites/");
                     break;
                 case ViewState.View.Subscriptions:
-                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.subscriptions/");
+                    helpUri = new Uri("http://nerdoftheherd.com/tools/radiodld/help/views.subscriptions/");
                     break;
                 case ViewState.View.Downloads:
-                    helpUri = new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/views.downloads/");
+                    helpUri = new Uri("http://nerdoftheherd.com/tools/radiodld/help/views.downloads/");
                     break;
                 default:
                     throw new InvalidOperationException("Context sensitive help is not defined for the \"" + this.view.CurrentView.ToString() + "\" view.");
@@ -1948,12 +1948,12 @@ namespace RadioDld
 
         private void MenuHelpContents_Click(object sender, EventArgs e)
         {
-            OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/"), "Help Menu");
+            OsUtils.LaunchUrl(new Uri("http://nerdoftheherd.com/tools/radiodld/help/"), "Help Menu");
         }
 
         private void MenuHelpReportBug_Click(object sender, EventArgs e)
         {
-            OsUtils.LaunchUrl(new Uri("http://www.nerdoftheherd.com/tools/radiodld/help/report-a-bug/"), "Help Menu");
+            OsUtils.LaunchUrl(new Uri("http://nerdoftheherd.com/tools/radiodld/help/report-a-bug/"), "Help Menu");
         }
 
         private void ButtonCleanUp_Click()

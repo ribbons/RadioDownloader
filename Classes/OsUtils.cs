@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 Matt Robinson
+ * Copyright © 2007-2014 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -38,7 +38,7 @@ namespace RadioDld
         {
             UriBuilder launchUri = new UriBuilder(url);
 
-            if (launchUri.Host == "nerdoftheherd.com" || launchUri.Host == "www.nerdoftheherd.com")
+            if (launchUri.Host == "nerdoftheherd.com")
             {
                 string analyticsVals = "utm_source=" + HttpUtility.UrlEncode(Application.ProductName + " " + Application.ProductVersion) + "&utm_medium=desktop&utm_campaign=" + HttpUtility.UrlEncode(action);
 
