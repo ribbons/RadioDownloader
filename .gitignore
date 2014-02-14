@@ -9,4 +9,5 @@ Radio Downloader.sln.cache
 Radio Downloader.suo
 *.csproj.user
 StyleCop.Cache
+tools/recoverdb/recoverdb.exe
 VersionInfo.cs

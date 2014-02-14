@@ -8,3 +8,4 @@
 *.sln    text eol=crlf
 *.csproj text eol=crlf
 *.bat    text eol=crlf
+*.sed    text eol=crlf
