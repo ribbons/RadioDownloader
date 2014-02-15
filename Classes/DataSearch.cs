@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 Matt Robinson
+ * Copyright © 2007-2014 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -41,24 +41,7 @@ namespace RadioDld
             Dictionary<string, string[]> tableCols = new Dictionary<string, string[]>();
             tableCols.Add("downloads", new string[] { "name", "description" });
 
-            bool rebuild = false;
-
-            if (!this.CheckIndex(tableCols))
-            {
-                rebuild = true;
-            }
-            else
-            {
-                using (SQLiteCommand command = new SQLiteCommand("select count(*) from downloads", this.FetchDbConn()))
-                {
-                    if (Model.Download.Count() != (long)command.ExecuteScalar())
-                    {
-                        rebuild = true;
-                    }
-                }
-            }
-
-            if (rebuild)
+            if (this.NeedRebuild(tableCols))
             {
                 // Close & clean up the connection used for testing
                 dbConn.Close();
@@ -159,6 +142,35 @@ namespace RadioDld
             }
 
             return dbConn;
+        }
+
+        private bool NeedRebuild(Dictionary<string, string[]> tableCols)
+        {
+            using (SQLiteCommand command = new SQLiteCommand("pragma integrity_check(1)", this.FetchDbConn()))
+            {
+                string result = (string)command.ExecuteScalar();
+
+                if (result.ToUpperInvariant() != "OK")
+                {
+                    // Database is corrupt
+                    return true;
+                }
+            }
+
+            if (!this.CheckIndex(tableCols))
+            {
+                return true;
+            }
+
+            using (SQLiteCommand command = new SQLiteCommand("select count(*) from downloads", this.FetchDbConn()))
+            {
+                if (Model.Download.Count() != (long)command.ExecuteScalar())
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private bool CheckIndex(Dictionary<string, string[]> tableCols)

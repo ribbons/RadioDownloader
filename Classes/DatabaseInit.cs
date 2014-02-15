@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 Matt Robinson
+ * Copyright © 2007-2014 Matt Robinson
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -45,64 +45,91 @@ namespace RadioDld
                 return false;
             }
 
-            // Migrate old (pre 0.26) version databases from www.nerdoftheherd.com -> NerdoftheHerd.com
-            string oldDbPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com"), Application.ProductName), DbFileName);
-
-            if (File.Exists(oldDbPath) && !File.Exists(appDbPath))
+            using (SQLiteConnection specConn = new SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False;Read Only=True"))
             {
-                File.Move(oldDbPath, appDbPath);
-            }
+                specConn.Open();
 
-            // Test if there is an existing application database
-            if (!File.Exists(appDbPath))
-            {
-                // Start with a copy of the template database
-                File.Copy(specDbPath, appDbPath);
-
-                // Set the current database version in the new database
-                Settings.DatabaseVersion = Database.CurrentDbVersion;
-            }
-            else
-            {
-                // Start a transaction so we can roll back a half-completed upgrade on error
-                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
+                using (SQLiteCommand command = new SQLiteCommand("pragma integrity_check(1)", specConn))
                 {
-                    try
+                    string result = (string)command.ExecuteScalar();
+
+                    if (result.ToUpperInvariant() != "OK")
                     {
-                        // Perform a check and automatic update of the database table structure
-                        using (SQLiteConnection specConn = new SQLiteConnection("Data Source=" + specDbPath + ";Version=3;New=False;Read Only=True"))
+                        MessageBox.Show("The Radio Downloader template database at '" + specDbPath + "' appears to be corrupted." + Environment.NewLine + Environment.NewLine + "Try repairing the Radio Downloader installation or installing the latest version from nerdoftheherd.com", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                        return false;
+                    }
+                }
+
+                // Migrate old (pre 0.26) version databases from www.nerdoftheherd.com -> NerdoftheHerd.com
+                string oldDbPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com"), Application.ProductName), DbFileName);
+
+                if (File.Exists(oldDbPath) && !File.Exists(appDbPath))
+                {
+                    File.Move(oldDbPath, appDbPath);
+                }
+
+                // Test if there is an existing application database
+                if (!File.Exists(appDbPath))
+                {
+                    // Start with a copy of the template database
+                    File.Copy(specDbPath, appDbPath);
+
+                    // Set the current database version in the new database
+                    Settings.DatabaseVersion = Database.CurrentDbVersion;
+                }
+                else
+                {
+                    using (SQLiteCommand command = new SQLiteCommand("pragma integrity_check(1)", FetchDbConn()))
+                    {
+                        string result = (string)command.ExecuteScalar();
+
+                        if (result.ToUpperInvariant() != "OK")
                         {
-                            specConn.Open();
+                            if (MessageBox.Show("Unfortunately Radio Downloader cannot start because your database has become corrupted." + Environment.NewLine + Environment.NewLine + "Would you like to view some help about resolving this issue?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Stop) == DialogResult.Yes)
+                            {
+                                OsUtils.LaunchUrl(new Uri("http://nerdoftheherd.com/tools/radiodld/help/corrupt-database"), "corruptdb");
+                            }
+
+                            return false;
+                        }
+                    }
+
+                    // Start a transaction so we can roll back a half-completed upgrade on error
+                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
+                    {
+                        try
+                        {
+                            // Perform a check and automatic update of the database table structure
                             UpdateStructure(specConn, Database.FetchDbConn());
-                        }
 
-                        // Perform any updates required which were not handled by UpdateStructure
-                        switch (Settings.DatabaseVersion)
+                            // Perform any updates required which were not handled by UpdateStructure
+                            switch (Settings.DatabaseVersion)
+                            {
+                                case 4:
+                                    // Clear error details previously serialised as XML
+                                    using (SQLiteCommand command = new SQLiteCommand("update downloads set errordetails=null where errortype=@errortype", FetchDbConn()))
+                                    {
+                                        command.Parameters.Add(new SQLiteParameter("errortype", ErrorType.UnknownError));
+                                        command.ExecuteNonQuery();
+                                    }
+
+                                    break;
+                                case Database.CurrentDbVersion:
+                                    // Nothing to do, this is the current version.
+                                    break;
+                            }
+
+                            // Set the current database version
+                            Settings.DatabaseVersion = Database.CurrentDbVersion;
+                        }
+                        catch (SQLiteException)
                         {
-                            case 4:
-                                // Clear error details previously serialised as XML
-                                using (SQLiteCommand command = new SQLiteCommand("update downloads set errordetails=null where errortype=@errortype", FetchDbConn()))
-                                {
-                                    command.Parameters.Add(new SQLiteParameter("errortype", ErrorType.UnknownError));
-                                    command.ExecuteNonQuery();
-                                }
-
-                                break;
-                            case Database.CurrentDbVersion:
-                                // Nothing to do, this is the current version.
-                                break;
+                            transMon.Trans.Rollback();
+                            throw;
                         }
 
-                        // Set the current database version
-                        Settings.DatabaseVersion = Database.CurrentDbVersion;
+                        transMon.Trans.Commit();
                     }
-                    catch (SQLiteException)
-                    {
-                        transMon.Trans.Rollback();
-                        throw;
-                    }
-
-                    transMon.Trans.Commit();
                 }
             }
 
