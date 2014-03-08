@@ -177,6 +177,7 @@
     <Compile Include="Classes\EpisodeInfo.cs" />
     <Compile Include="Classes\ProgrammeInfo.cs" />
     <Compile Include="Classes\ProviderException.cs" />
+    <Compile Include="Classes\RssFeed.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Database.cs" />
     <Compile Include="Classes\ComboNameValue.cs" />
@@ -347,7 +348,6 @@
     </EmbeddedResource>
     <None Include="Resources\toolbar\choose programme_16.png" />
     <None Include="Resources\icons\Icon 64.png" />
-    <None Include="Resources\icons\Icon 32.png" />
     <None Include="Resources\icons\Working.ico" />
     <None Include="Resources\icons\Icon.ico" />
     <None Include="Resources\icons\Error.ico" />
@@ -389,6 +389,9 @@
     <None Include="store.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\icons\Icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\StyleCop\v4.7\StyleCop.targets" Condition=" '$(OS)' == 'Windows_NT' " />

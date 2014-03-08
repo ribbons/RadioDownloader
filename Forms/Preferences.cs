@@ -91,6 +91,13 @@ namespace RadioDld
             Settings.RunOnStartup = this.CheckRunOnStartup.Checked;
             Settings.RunAfterCommand = this.TextRunAfter.Text;
             Settings.ParallelDownloads = (int)this.NumberParallel.Value;
+            Settings.RssServer = this.CheckRssServer.Checked;
+
+            if (this.CheckRssServer.Checked)
+            {
+                Settings.RssServerPort = (int)this.NumberServerPort.Value;
+                Settings.RssServerNumRecentEps = (int)this.NumberEpisodes.Value;
+            }
 
             if (OsUtils.WinSevenOrLater())
             {
@@ -126,6 +133,11 @@ namespace RadioDld
                 this.CheckCloseToSystray.Enabled = false;
             }
 
+            this.CheckRssServer.Checked = Settings.RssServer;
+            this.NumberServerPort.Enabled = this.CheckRssServer.Checked;
+            this.NumberServerPort.Value = Settings.RssServerPort;
+            this.NumberEpisodes.Enabled = this.CheckRssServer.Checked;
+            this.NumberEpisodes.Value = Settings.RssServerNumRecentEps;
             this.NumberParallel.Value = Settings.ParallelDownloads;
             this.NumberParallel.Maximum = Math.Max(this.NumberParallel.Value, Environment.ProcessorCount * 2);
 
@@ -183,6 +195,12 @@ namespace RadioDld
 
                 this.Close();
             }
+        }
+
+        private void CheckRssServer_CheckedChanged(object sender, EventArgs e)
+        {
+            this.NumberServerPort.Enabled = this.CheckRssServer.Checked;
+            this.NumberEpisodes.Enabled = this.CheckRssServer.Checked;
         }
     }
 }

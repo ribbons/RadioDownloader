@@ -33,6 +33,8 @@ namespace RadioDld
             System.Windows.Forms.Label LabelFileNameFormat;
             System.Windows.Forms.Label LabelRunAfter;
             System.Windows.Forms.Label LabelParallel;
+            System.Windows.Forms.Label LabelServerPort;
+            System.Windows.Forms.Label LabelEpisodes;
             this.ButtonCancel = new System.Windows.Forms.Button();
             this.ButtonOk = new System.Windows.Forms.Button();
             this.ButtonChangeFolder = new System.Windows.Forms.Button();
@@ -45,11 +47,18 @@ namespace RadioDld
             this.CheckRunOnStartup = new System.Windows.Forms.CheckBox();
             this.CheckCloseToSystray = new System.Windows.Forms.CheckBox();
             this.NumberParallel = new System.Windows.Forms.NumericUpDown();
+            this.CheckRssServer = new System.Windows.Forms.CheckBox();
+            this.NumberServerPort = new System.Windows.Forms.NumericUpDown();
+            this.NumberEpisodes = new System.Windows.Forms.NumericUpDown();
             LabelSaveIn = new System.Windows.Forms.Label();
             LabelFileNameFormat = new System.Windows.Forms.Label();
             LabelRunAfter = new System.Windows.Forms.Label();
             LabelParallel = new System.Windows.Forms.Label();
+            LabelServerPort = new System.Windows.Forms.Label();
+            LabelEpisodes = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.NumberParallel)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumberServerPort)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumberEpisodes)).BeginInit();
             this.SuspendLayout();
             // 
             // LabelSaveIn
@@ -58,29 +67,29 @@ namespace RadioDld
             LabelSaveIn.BackColor = System.Drawing.SystemColors.Control;
             LabelSaveIn.Cursor = System.Windows.Forms.Cursors.Default;
             LabelSaveIn.ForeColor = System.Drawing.SystemColors.ControlText;
-            LabelSaveIn.Location = new System.Drawing.Point(9, 119);
+            LabelSaveIn.Location = new System.Drawing.Point(9, 188);
             LabelSaveIn.Name = "LabelSaveIn";
             LabelSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No;
             LabelSaveIn.Size = new System.Drawing.Size(187, 15);
-            LabelSaveIn.TabIndex = 7;
+            LabelSaveIn.TabIndex = 12;
             LabelSaveIn.Text = "Save downloaded programmes in:";
             // 
             // LabelFileNameFormat
             // 
             LabelFileNameFormat.AutoSize = true;
-            LabelFileNameFormat.Location = new System.Drawing.Point(9, 171);
+            LabelFileNameFormat.Location = new System.Drawing.Point(9, 240);
             LabelFileNameFormat.Name = "LabelFileNameFormat";
             LabelFileNameFormat.Size = new System.Drawing.Size(179, 15);
-            LabelFileNameFormat.TabIndex = 10;
+            LabelFileNameFormat.TabIndex = 15;
             LabelFileNameFormat.Text = "&File name format for downloads:";
             // 
             // LabelRunAfter
             // 
             LabelRunAfter.AutoSize = true;
-            LabelRunAfter.Location = new System.Drawing.Point(9, 245);
+            LabelRunAfter.Location = new System.Drawing.Point(9, 314);
             LabelRunAfter.Name = "LabelRunAfter";
             LabelRunAfter.Size = new System.Drawing.Size(172, 15);
-            LabelRunAfter.TabIndex = 13;
+            LabelRunAfter.TabIndex = 18;
             LabelRunAfter.Text = "Run command &after download:";
             // 
             // LabelParallel
@@ -89,12 +98,38 @@ namespace RadioDld
             LabelParallel.BackColor = System.Drawing.SystemColors.Control;
             LabelParallel.Cursor = System.Windows.Forms.Cursors.Default;
             LabelParallel.ForeColor = System.Drawing.SystemColors.ControlText;
-            LabelParallel.Location = new System.Drawing.Point(9, 67);
+            LabelParallel.Location = new System.Drawing.Point(9, 136);
             LabelParallel.Name = "LabelParallel";
             LabelParallel.RightToLeft = System.Windows.Forms.RightToLeft.No;
             LabelParallel.Size = new System.Drawing.Size(109, 15);
-            LabelParallel.TabIndex = 5;
+            LabelParallel.TabIndex = 10;
             LabelParallel.Text = "&Parallel downloads:";
+            // 
+            // LabelServerPort
+            // 
+            LabelServerPort.AutoSize = true;
+            LabelServerPort.BackColor = System.Drawing.SystemColors.Control;
+            LabelServerPort.Cursor = System.Windows.Forms.Cursors.Default;
+            LabelServerPort.ForeColor = System.Drawing.SystemColors.ControlText;
+            LabelServerPort.Location = new System.Drawing.Point(9, 84);
+            LabelServerPort.Name = "LabelServerPort";
+            LabelServerPort.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            LabelServerPort.Size = new System.Drawing.Size(67, 15);
+            LabelServerPort.TabIndex = 6;
+            LabelServerPort.Text = "Server p&ort:";
+            // 
+            // LabelEpisodes
+            // 
+            LabelEpisodes.AutoSize = true;
+            LabelEpisodes.BackColor = System.Drawing.SystemColors.Control;
+            LabelEpisodes.Cursor = System.Windows.Forms.Cursors.Default;
+            LabelEpisodes.ForeColor = System.Drawing.SystemColors.ControlText;
+            LabelEpisodes.Location = new System.Drawing.Point(129, 84);
+            LabelEpisodes.Name = "LabelEpisodes";
+            LabelEpisodes.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            LabelEpisodes.Size = new System.Drawing.Size(117, 15);
+            LabelEpisodes.TabIndex = 8;
+            LabelEpisodes.Text = "&Number of episodes:";
             // 
             // ButtonCancel
             // 
@@ -103,7 +138,7 @@ namespace RadioDld
             this.ButtonCancel.Cursor = System.Windows.Forms.Cursors.Default;
             this.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.ButtonCancel.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonCancel.Location = new System.Drawing.Point(312, 323);
+            this.ButtonCancel.Location = new System.Drawing.Point(312, 389);
             this.ButtonCancel.Name = "ButtonCancel";
             this.ButtonCancel.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.ButtonCancel.Size = new System.Drawing.Size(75, 23);
@@ -118,7 +153,7 @@ namespace RadioDld
             this.ButtonOk.Cursor = System.Windows.Forms.Cursors.Default;
             this.ButtonOk.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.ButtonOk.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonOk.Location = new System.Drawing.Point(231, 323);
+            this.ButtonOk.Location = new System.Drawing.Point(231, 389);
             this.ButtonOk.Name = "ButtonOk";
             this.ButtonOk.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.ButtonOk.Size = new System.Drawing.Size(75, 23);
@@ -134,11 +169,11 @@ namespace RadioDld
             this.ButtonChangeFolder.Cursor = System.Windows.Forms.Cursors.Default;
             this.ButtonChangeFolder.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.ButtonChangeFolder.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ButtonChangeFolder.Location = new System.Drawing.Point(393, 137);
+            this.ButtonChangeFolder.Location = new System.Drawing.Point(393, 206);
             this.ButtonChangeFolder.Name = "ButtonChangeFolder";
             this.ButtonChangeFolder.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.ButtonChangeFolder.Size = new System.Drawing.Size(75, 23);
-            this.ButtonChangeFolder.TabIndex = 9;
+            this.ButtonChangeFolder.TabIndex = 14;
             this.ButtonChangeFolder.Text = "&Change";
             this.ButtonChangeFolder.UseVisualStyleBackColor = false;
             this.ButtonChangeFolder.Click += new System.EventHandler(this.ButtonChangeFolder_Click);
@@ -150,34 +185,34 @@ namespace RadioDld
             | System.Windows.Forms.AnchorStyles.Right)));
             this.TextSaveIn.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.TextSaveIn.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.TextSaveIn.Location = new System.Drawing.Point(12, 137);
+            this.TextSaveIn.Location = new System.Drawing.Point(12, 206);
             this.TextSaveIn.Margin = new System.Windows.Forms.Padding(23, 3, 3, 11);
             this.TextSaveIn.MaxLength = 0;
             this.TextSaveIn.Name = "TextSaveIn";
             this.TextSaveIn.ReadOnly = true;
             this.TextSaveIn.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.TextSaveIn.Size = new System.Drawing.Size(375, 23);
-            this.TextSaveIn.TabIndex = 8;
+            this.TextSaveIn.TabIndex = 13;
             // 
             // TextFileNameFormat
             // 
             this.TextFileNameFormat.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextFileNameFormat.Location = new System.Drawing.Point(12, 189);
+            this.TextFileNameFormat.Location = new System.Drawing.Point(12, 258);
             this.TextFileNameFormat.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
             this.TextFileNameFormat.Name = "TextFileNameFormat";
             this.TextFileNameFormat.Size = new System.Drawing.Size(456, 23);
-            this.TextFileNameFormat.TabIndex = 11;
+            this.TextFileNameFormat.TabIndex = 16;
             this.TextFileNameFormat.TextChanged += new System.EventHandler(this.TextFileNameFormat_TextChanged);
             // 
             // LabelFilenameFormatResult
             // 
             this.LabelFilenameFormatResult.AutoSize = true;
-            this.LabelFilenameFormatResult.Location = new System.Drawing.Point(9, 219);
+            this.LabelFilenameFormatResult.Location = new System.Drawing.Point(9, 288);
             this.LabelFilenameFormatResult.Margin = new System.Windows.Forms.Padding(23, 0, 3, 15);
             this.LabelFilenameFormatResult.Name = "LabelFilenameFormatResult";
             this.LabelFilenameFormatResult.Size = new System.Drawing.Size(42, 15);
-            this.LabelFilenameFormatResult.TabIndex = 12;
+            this.LabelFilenameFormatResult.TabIndex = 17;
             this.LabelFilenameFormatResult.Text = "Result:";
             // 
             // ButtonReset
@@ -186,7 +221,7 @@ namespace RadioDld
             this.ButtonReset.BackColor = System.Drawing.SystemColors.Control;
             this.ButtonReset.Cursor = System.Windows.Forms.Cursors.Default;
             this.ButtonReset.FlatStyle = System.Windows.Forms.FlatStyle.System;
-            this.ButtonReset.Location = new System.Drawing.Point(393, 323);
+            this.ButtonReset.Location = new System.Drawing.Point(393, 389);
             this.ButtonReset.Name = "ButtonReset";
             this.ButtonReset.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.ButtonReset.Size = new System.Drawing.Size(75, 23);
@@ -199,20 +234,20 @@ namespace RadioDld
             // 
             this.TextRunAfter.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextRunAfter.Location = new System.Drawing.Point(12, 263);
+            this.TextRunAfter.Location = new System.Drawing.Point(12, 332);
             this.TextRunAfter.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
             this.TextRunAfter.Name = "TextRunAfter";
             this.TextRunAfter.Size = new System.Drawing.Size(456, 23);
-            this.TextRunAfter.TabIndex = 14;
+            this.TextRunAfter.TabIndex = 19;
             // 
             // LabelRunAfterTokDef
             // 
             this.LabelRunAfterTokDef.AutoSize = true;
-            this.LabelRunAfterTokDef.Location = new System.Drawing.Point(9, 289);
+            this.LabelRunAfterTokDef.Location = new System.Drawing.Point(9, 358);
             this.LabelRunAfterTokDef.Margin = new System.Windows.Forms.Padding(23, 0, 3, 0);
             this.LabelRunAfterTokDef.Name = "LabelRunAfterTokDef";
             this.LabelRunAfterTokDef.Size = new System.Drawing.Size(223, 15);
-            this.LabelRunAfterTokDef.TabIndex = 15;
+            this.LabelRunAfterTokDef.TabIndex = 20;
             this.LabelRunAfterTokDef.Text = "%file% = full path to the downloaded file";
             // 
             // CheckRunOnStartup
@@ -229,7 +264,6 @@ namespace RadioDld
             // 
             this.CheckCloseToSystray.AutoSize = true;
             this.CheckCloseToSystray.Location = new System.Drawing.Point(12, 37);
-            this.CheckCloseToSystray.Margin = new System.Windows.Forms.Padding(3, 3, 3, 11);
             this.CheckCloseToSystray.Name = "CheckCloseToSystray";
             this.CheckCloseToSystray.Size = new System.Drawing.Size(449, 19);
             this.CheckCloseToSystray.TabIndex = 4;
@@ -239,7 +273,7 @@ namespace RadioDld
             // 
             // NumberParallel
             // 
-            this.NumberParallel.Location = new System.Drawing.Point(12, 85);
+            this.NumberParallel.Location = new System.Drawing.Point(12, 154);
             this.NumberParallel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 11);
             this.NumberParallel.Minimum = new decimal(new int[] {
             1,
@@ -248,9 +282,66 @@ namespace RadioDld
             0});
             this.NumberParallel.Name = "NumberParallel";
             this.NumberParallel.Size = new System.Drawing.Size(75, 23);
-            this.NumberParallel.TabIndex = 6;
+            this.NumberParallel.TabIndex = 11;
             this.NumberParallel.Value = new decimal(new int[] {
             1,
+            0,
+            0,
+            0});
+            // 
+            // CheckRssServer
+            // 
+            this.CheckRssServer.AutoSize = true;
+            this.CheckRssServer.Location = new System.Drawing.Point(12, 62);
+            this.CheckRssServer.Name = "CheckRssServer";
+            this.CheckRssServer.Size = new System.Drawing.Size(391, 19);
+            this.CheckRssServer.TabIndex = 5;
+            this.CheckRssServer.Text = "S&erve podcast feed of recently downloaded episodes (requires restart)";
+            this.CheckRssServer.UseVisualStyleBackColor = true;
+            this.CheckRssServer.CheckedChanged += new System.EventHandler(this.CheckRssServer_CheckedChanged);
+            // 
+            // NumberServerPort
+            // 
+            this.NumberServerPort.Location = new System.Drawing.Point(12, 102);
+            this.NumberServerPort.Margin = new System.Windows.Forms.Padding(3, 3, 3, 11);
+            this.NumberServerPort.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.NumberServerPort.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.NumberServerPort.Name = "NumberServerPort";
+            this.NumberServerPort.Size = new System.Drawing.Size(75, 23);
+            this.NumberServerPort.TabIndex = 7;
+            this.NumberServerPort.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // NumberEpisodes
+            // 
+            this.NumberEpisodes.Location = new System.Drawing.Point(132, 102);
+            this.NumberEpisodes.Margin = new System.Windows.Forms.Padding(3, 3, 3, 11);
+            this.NumberEpisodes.Maximum = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            this.NumberEpisodes.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.NumberEpisodes.Name = "NumberEpisodes";
+            this.NumberEpisodes.Size = new System.Drawing.Size(75, 23);
+            this.NumberEpisodes.TabIndex = 9;
+            this.NumberEpisodes.Value = new decimal(new int[] {
+            5,
             0,
             0,
             0});
@@ -262,7 +353,12 @@ namespace RadioDld
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.CancelButton = this.ButtonCancel;
-            this.ClientSize = new System.Drawing.Size(480, 358);
+            this.ClientSize = new System.Drawing.Size(480, 424);
+            this.Controls.Add(LabelEpisodes);
+            this.Controls.Add(this.NumberEpisodes);
+            this.Controls.Add(LabelServerPort);
+            this.Controls.Add(this.NumberServerPort);
+            this.Controls.Add(this.CheckRssServer);
             this.Controls.Add(LabelParallel);
             this.Controls.Add(this.NumberParallel);
             this.Controls.Add(this.CheckCloseToSystray);
@@ -298,6 +394,8 @@ namespace RadioDld
             this.Load += new System.EventHandler(this.Preferences_Load);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Preferences_KeyDown);
             ((System.ComponentModel.ISupportInitialize)(this.NumberParallel)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumberServerPort)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumberEpisodes)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -314,6 +412,9 @@ namespace RadioDld
         private System.Windows.Forms.Button ButtonChangeFolder;
         private System.Windows.Forms.TextBox TextSaveIn;
         private System.Windows.Forms.NumericUpDown NumberParallel;
+        private System.Windows.Forms.CheckBox CheckRssServer;
+        private System.Windows.Forms.NumericUpDown NumberServerPort;
+        private System.Windows.Forms.NumericUpDown NumberEpisodes;
 
         #endregion
     }

@@ -329,6 +329,12 @@ namespace RadioDld
 
             OsUtils.ApplyRunOnStartup();
 
+            if (Settings.RssServer)
+            {
+                RssServer listener = new RssServer(Settings.RssServerPort);
+                listener.Start();
+            }
+
             DownloadManager.ResumeDownloads();
             this.TimerCheckForUpdates.Enabled = true;
         }

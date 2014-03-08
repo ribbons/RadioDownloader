@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -273,6 +273,45 @@ namespace RadioDld
             set
             {
                 SetValue("LastPrune", value);
+            }
+        }
+
+        internal static bool RssServer
+        {
+            get
+            {
+                return GetValue("RssServer", false);
+            }
+
+            set
+            {
+                SetValue("RssServer", value);
+            }
+        }
+
+        internal static int RssServerPort
+        {
+            get
+            {
+                return GetValue("RssServerPort", 8888);
+            }
+
+            set
+            {
+                SetValue("RssServerPort", value);
+            }
+        }
+
+        internal static int RssServerNumRecentEps
+        {
+            get
+            {
+                return GetValue("RssServerNumRecentEps", 25);
+            }
+
+            set
+            {
+                SetValue("RssServerNumRecentEps", value);
             }
         }
 

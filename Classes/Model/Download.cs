@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -198,6 +198,29 @@ namespace RadioDld.Model
                         {
                             items.Add(new Download(reader));
                         }
+                    }
+                }
+            }
+
+            return items;
+        }
+
+        public static List<Download> FetchLatest(int count)
+        {
+            List<Download> items = new List<Download>();
+
+            using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid and status=@status order by episodes.epid desc limit @count", FetchDbConn()))
+            {
+                command.Parameters.Add(new SQLiteParameter("@status", Download.DownloadStatus.Downloaded));
+                command.Parameters.Add(new SQLiteParameter("@count", count));
+
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    int epidOrdinal = reader.GetOrdinal("epid");
+
+                    while (reader.Read())
+                    {
+                        items.Add(new Download(reader));
                     }
                 }
             }
