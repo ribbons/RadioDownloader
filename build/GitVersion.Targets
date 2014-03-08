@@ -123,6 +123,6 @@
 [assembly: System.Reflection.AssemblyVersion("$(Version)")]
 [assembly: System.Reflection.AssemblyFileVersion("$(FileVersion)")]
 [assembly: System.Reflection.AssemblyInformationalVersion("$(RawVersion)")]
-[assembly: System.Reflection.AssemblyCopyright("Copyright © 2007-$(Year) Matt Robinson")]' />
+[assembly: System.Reflection.AssemblyCopyright("Copyright © 2007-$(Year)")]' />
   </Target>
 </Project>

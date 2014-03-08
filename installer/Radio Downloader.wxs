@@ -67,6 +67,9 @@
 						<File Source="..\LICENSE.txt" />
 					</Component>
 					<Component>
+						<File Name="AUTHORS.txt" Source="..\AUTHORS.md" />
+					</Component>
+					<Component>
 						<File Source="$(var.PlatformBin)\PodcastProvider.dll" />
 					</Component>
 					<Component>
@@ -85,6 +88,7 @@
 			<ComponentRef Id="System.Data.SQLite.DLL" />
 			<ComponentRef Id="store.db" />
 			<ComponentRef Id="LICENSE.txt" />
+			<ComponentRef Id="AUTHORS.txt" />
 			<ComponentRef Id="PodcastProvider.dll" />
 			<ComponentRef Id="PodcastProvider.pdb" />
 		</Feature>
