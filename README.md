@@ -24,3 +24,8 @@ These items are optional:
 * FxCop (Part of the Windows SDK)
 
 Then you are ready to open the _Radio Downloader.sln_ solution file, and get stuck in...
+
+Contribute
+----------
+
+Please feel free to send pull requests to fix bugs or add missing features.
