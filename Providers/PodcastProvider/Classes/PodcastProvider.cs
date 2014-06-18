@@ -1,6 +1,6 @@
 /* 
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -122,7 +122,7 @@ namespace PodcastProvider
 
                 if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                 {
-                    progInfo.Description = this.HtmlToText(descriptionNode.InnerText);
+                    progInfo.Description = HtmlToText.ConvertHtml(descriptionNode.InnerText);
                 }
             }
 
@@ -225,7 +225,7 @@ namespace PodcastProvider
 
                 if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                 {
-                    episodeInfo.Description = this.HtmlToText(descriptionNode.InnerText);
+                    episodeInfo.Description = HtmlToText.ConvertHtml(descriptionNode.InnerText);
                 }
             }
 
@@ -626,21 +626,6 @@ namespace PodcastProvider
             {
                 this.Progress(percent, ProgressType.Downloading);
             }
-        }
-
-        private string HtmlToText(string html)
-        {
-            // Add line breaks before common block level tags
-            html = html.Replace("<br", "\r\n<br");
-            html = html.Replace("<p", "\r\n<p");
-            html = html.Replace("<div", "\r\n<div");
-
-            // Replace HTML entities with their character counterparts
-            html = HttpUtility.HtmlDecode(html);
-
-            // Strip out the HTML tags
-            Regex stripTags = new Regex("<[^>]+>");
-            return stripTags.Replace(html, string.Empty);
         }
     }
 }

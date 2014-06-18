@@ -1,6 +1,7 @@
 bin/*/Radio Downloader.*
 bin/*/*Provider.*
 bin/*/store.db
+bin/*/HtmlAgilityPack.dll
 build/publish-win-vars.bat
 installer/*.msi
 installer/*.wixpdb

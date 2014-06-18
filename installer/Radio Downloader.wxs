@@ -70,6 +70,9 @@
 						<File Name="AUTHORS.txt" Source="..\AUTHORS.md" />
 					</Component>
 					<Component>
+						<File Source="..\bin\HtmlAgilityPack.dll" />
+					</Component>
+					<Component>
 						<File Source="$(var.PlatformBin)\PodcastProvider.dll" />
 					</Component>
 					<Component>
@@ -89,6 +92,7 @@
 			<ComponentRef Id="store.db" />
 			<ComponentRef Id="LICENSE.txt" />
 			<ComponentRef Id="AUTHORS.txt" />
+			<ComponentRef Id="HtmlAgilityPack.dll" />
 			<ComponentRef Id="PodcastProvider.dll" />
 			<ComponentRef Id="PodcastProvider.pdb" />
 		</Feature>

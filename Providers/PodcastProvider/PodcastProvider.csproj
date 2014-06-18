@@ -110,6 +110,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\..\bin\HtmlAgilityPack.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -126,6 +129,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\DownloadWrapper.cs" />
+    <Compile Include="Classes\HtmlToText.cs" />
     <Compile Include="Classes\PodcastProvider.cs" />
     <Compile Include="Forms\FindNew.Designer.cs">
       <DependentUpon>FindNew.cs</DependentUpon>
@@ -177,7 +181,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath32)\StyleCop\v4.7\StyleCop.targets" Condition=" '$(OS)' == 'Windows_NT' " />
-  <Import Project="..\..\build\GitVersion.Targets"/>
+  <Import Project="..\..\build\GitVersion.Targets" />
   <Target Name="BeforeBuild">
   </Target>
 </Project>
