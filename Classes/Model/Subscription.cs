@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -20,12 +20,16 @@ namespace RadioDld.Model
     using System.Collections.Generic;
     using System.Data.SQLite;
     using System.Globalization;
+    using System.IO;
     using System.Threading;
 
     internal class Subscription : Programme
     {
         private static Dictionary<int, int> sortCache;
         private static object sortCacheLock = new object();
+
+        private static SubscriptionCols sortBy = SubscriptionCols.ProgrammeName;
+        private static bool sortAsc;
 
         static Subscription()
         {
@@ -55,6 +59,55 @@ namespace RadioDld.Model
         public static new event ProgrammeEventHandler Updated;
 
         public static event ProgrammeEventHandler Removed;
+
+        internal enum SubscriptionCols
+        {
+            ProgrammeName = 0,
+            LastDownload = 1,
+            Provider = 2
+        }
+
+        public static SubscriptionCols SortByColumn
+        {
+            get
+            {
+                return sortBy;
+            }
+
+            set
+            {
+                lock (sortCacheLock)
+                {
+                    if (value != sortBy)
+                    {
+                        sortCache = null;
+                    }
+
+                    sortBy = value;
+                }
+            }
+        }
+
+        public static bool SortAscending
+        {
+            get
+            {
+                return sortAsc;
+            }
+
+            set
+            {
+                lock (sortCacheLock)
+                {
+                    if (value != sortAsc)
+                    {
+                        sortCache = null;
+                    }
+
+                    sortAsc = value;
+                }
+            }
+        }
 
         public static List<Subscription> FetchAll()
         {
@@ -124,8 +177,24 @@ namespace RadioDld.Model
                     sortCache = new Dictionary<int, int>();
 
                     int sort = 0;
+                    string orderBy = null;
 
-                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by name", FetchDbConn()))
+                    switch (sortBy)
+                    {
+                        case SubscriptionCols.ProgrammeName:
+                            orderBy = "name" + (sortAsc ? string.Empty : " desc");
+                            break;
+                        case SubscriptionCols.LastDownload:
+                            orderBy = "latestdownload" + (sortAsc ? string.Empty : " desc");
+                            break;
+                        case SubscriptionCols.Provider:
+                            orderBy = "pluginid" + (sortAsc ? " desc" : string.Empty);
+                            break;
+                        default:
+                            throw new InvalidDataException("Invalid column: " + sortBy.ToString());
+                    }
+
+                    using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by " + orderBy, FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {

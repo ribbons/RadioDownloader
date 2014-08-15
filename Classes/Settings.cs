@@ -102,6 +102,32 @@ namespace RadioDld
             }
         }
 
+        internal static Model.Subscription.SubscriptionCols SubscriptionColSortBy
+        {
+            get
+            {
+                return (Model.Subscription.SubscriptionCols)GetValue("SubscriptionColSortBy", (int)Model.Subscription.SubscriptionCols.ProgrammeName);
+            }
+
+            set
+            {
+                SetValue("SubscriptionColSortBy", (int)value);
+            }
+        }
+
+        internal static bool SubscriptionColSortAsc
+        {
+            get
+            {
+                return GetValue("SubscriptionColSortAsc", true);
+            }
+
+            set
+            {
+                SetValue("SubscriptionColSortAsc", value);
+            }
+        }
+
         internal static string DownloadCols
         {
             get

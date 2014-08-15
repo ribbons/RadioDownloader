@@ -549,6 +549,30 @@ namespace RadioDld
             }
         }
 
+        private void ListSubscribed_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
+        {
+            Model.Subscription.SubscriptionCols clickedCol = (Model.Subscription.SubscriptionCols)e.Column;
+
+            if (Model.Subscription.SortByColumn != clickedCol)
+            {
+                Model.Subscription.SortByColumn = clickedCol;
+                Model.Subscription.SortAscending = true;
+            }
+            else
+            {
+                Model.Subscription.SortAscending = !Model.Subscription.SortAscending;
+            }
+
+            // Set the column header to display the new sort order
+            this.ListSubscribed.ShowSortOnHeader((int)Model.Subscription.SortByColumn, Model.Subscription.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
+
+            // Save the current sort
+            Settings.SubscriptionColSortBy = Model.Subscription.SortByColumn;
+            Settings.SubscriptionColSortAsc = Model.Subscription.SortAscending;
+
+            this.ListSubscribed.Sort();
+        }
+
         private void ShowSubscriptionInfo(int progid)
         {
             Model.Subscription info = new Model.Subscription(progid);
@@ -2303,6 +2327,11 @@ namespace RadioDld
             {
                 this.SetViewDefaults(); // Revert back to default sidebar and toolbar
             }
+
+            // Apply the sort from the current settings
+            Model.Subscription.SortByColumn = Settings.SubscriptionColSortBy;
+            Model.Subscription.SortAscending = Settings.SubscriptionColSortAsc;
+            this.ListSubscribed.ShowSortOnHeader((int)Model.Subscription.SortByColumn, Model.Subscription.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Convert the list of Subscription items to an array of ListItems
             List<Model.Subscription> initData = Model.Subscription.FetchAll();

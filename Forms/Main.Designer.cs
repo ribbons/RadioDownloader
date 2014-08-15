@@ -648,6 +648,7 @@ namespace RadioDld
             this.ListSubscribed.TabIndex = 4;
             this.ListSubscribed.UseCompatibleStateImageBehavior = false;
             this.ListSubscribed.View = System.Windows.Forms.View.Details;
+            this.ListSubscribed.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListSubscribed_ColumnClick);
             this.ListSubscribed.ItemActivate += new System.EventHandler(this.ListSubscribed_ItemActivate);
             this.ListSubscribed.SelectedIndexChanged += new System.EventHandler(this.ListSubscribed_SelectedIndexChanged);
             // 
