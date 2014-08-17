@@ -695,6 +695,7 @@ namespace RadioDld
             this.ListFavourites.UseCompatibleStateImageBehavior = false;
             this.ListFavourites.View = System.Windows.Forms.View.Details;
             this.ListFavourites.ItemActivate += new System.EventHandler(this.ListFavourites_ItemActivate);
+            this.ListFavourites.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListFavourites_ColumnClick);
             this.ListFavourites.SelectedIndexChanged += new System.EventHandler(this.ListFavourites_SelectedIndexChanged);
             // 
             // Main

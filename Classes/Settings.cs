@@ -102,6 +102,32 @@ namespace RadioDld
             }
         }
 
+        internal static Model.Favourite.FavouriteCols FavouriteColSortBy
+        {
+            get
+            {
+                return (Model.Favourite.FavouriteCols)GetValue("FavouriteColSortBy", (int)Model.Favourite.FavouriteCols.ProgrammeName);
+            }
+
+            set
+            {
+                SetValue("FavouriteColSortBy", (int)value);
+            }
+        }
+
+        internal static bool FavouriteColSortAsc
+        {
+            get
+            {
+                return GetValue("FavouriteColSortAsc", true);
+            }
+
+            set
+            {
+                SetValue("FavouriteColSortAsc", value);
+            }
+        }
+
         internal static Model.Subscription.SubscriptionCols SubscriptionColSortBy
         {
             get

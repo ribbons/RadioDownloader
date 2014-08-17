@@ -9,5 +9,8 @@ Primary Developer
 ### Jon Egerton
 Sorting in subscriptions list
 
+### Isabelle Riverain
+Sorting in favourites list
+
 ### Nick Sharples
 Original proof of concept code for RSS server

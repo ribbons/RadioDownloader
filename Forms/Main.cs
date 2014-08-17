@@ -634,6 +634,30 @@ namespace RadioDld
             this.ListDownloads.Sort();
         }
 
+        private void ListFavourites_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
+        {
+            Model.Favourite.FavouriteCols clickedCol = (Model.Favourite.FavouriteCols)e.Column;
+
+            if (Model.Favourite.SortByColumn != clickedCol)
+            {
+                Model.Favourite.SortByColumn = clickedCol;
+                Model.Favourite.SortAscending = true;
+            }
+            else
+            {
+                Model.Favourite.SortAscending = !Model.Favourite.SortAscending;
+            }
+
+            // Set the column header to display the new sort order
+            this.ListFavourites.ShowSortOnHeader((int)Model.Favourite.SortByColumn, Model.Favourite.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
+
+            // Save the current sort
+            Settings.FavouriteColSortBy = Model.Favourite.SortByColumn;
+            Settings.FavouriteColSortAsc = Model.Favourite.SortAscending;
+
+            this.ListFavourites.Sort();
+        }
+
         private void ListDownloads_ColumnReordered(object sender, System.Windows.Forms.ColumnReorderedEventArgs e)
         {
             string[] oldOrder = new string[this.ListDownloads.Columns.Count];
@@ -2307,6 +2331,11 @@ namespace RadioDld
             {
                 this.SetViewDefaults(); // Revert back to default sidebar and toolbar
             }
+
+            // Apply the sort from the current settings
+            Model.Favourite.SortByColumn = Settings.FavouriteColSortBy;
+            Model.Favourite.SortAscending = Settings.FavouriteColSortAsc;
+            this.ListFavourites.ShowSortOnHeader((int)Model.Favourite.SortByColumn, Model.Favourite.SortAscending ? SortOrder.Ascending : SortOrder.Descending);
 
             // Convert the list of Favourite items to an array of ListItems
             List<Model.Favourite> initData = Model.Favourite.FetchAll();
