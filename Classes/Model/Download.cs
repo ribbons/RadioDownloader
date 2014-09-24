@@ -850,7 +850,10 @@ namespace RadioDld.Model
         {
             if (!auto)
             {
-                DownloadManager.CancelDownload(epid);
+                if (!DownloadManager.CancelDownload(epid))
+                {
+                    return;
+                }
             }
 
             lock (Database.DbUpdateLock)

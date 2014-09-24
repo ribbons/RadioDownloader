@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -39,6 +39,9 @@ namespace RadioDld
 
         private Thread downloadThread;
         private object downloadThreadLock = new object();
+
+        private bool cancelled;
+        private bool cancelResponse;
 
         public DownloadHandler(int epid)
         {
@@ -125,13 +128,34 @@ namespace RadioDld
             }
         }
 
-        public void Cancel()
+        public bool Cancel()
         {
             lock (this.downloadThreadLock)
             {
-                if (this.downloadThread != null && this.downloadThread.IsAlive)
+                lock (this.pluginInstanceLock)
                 {
+                    this.cancelled = true;
+
+                    if (this.downloadThread == null || !this.downloadThread.IsAlive)
+                    {
+                        return true;
+                    }
+
+                    this.pluginInstance.CancelDownload();
+
+                    for (int wait = 0; wait < 20; wait++)
+                    {
+                        Thread.Sleep(500);
+
+                        if (this.cancelResponse)
+                        {
+                            return true;
+                        }
+                    }
+
+                    // No timely response to request, kill the thread
                     this.downloadThread.Abort();
+                    return false;
                 }
             }
         }
@@ -198,11 +222,6 @@ namespace RadioDld
 
                 fileExtension = this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, finalName);
             }
-            catch (ThreadAbortException)
-            {
-                // The download has been cancelled
-                return;
-            }
             catch (DownloadException downloadExp)
             {
                 if (downloadExp.ErrorType == ErrorType.UnknownError)
@@ -220,6 +239,11 @@ namespace RadioDld
             {
                 this.DownloadError(unknownExp);
                 return;
+            }
+
+            if (this.cancelled)
+            {
+                this.cancelResponse = true;
             }
 
             finalName += "." + fileExtension;

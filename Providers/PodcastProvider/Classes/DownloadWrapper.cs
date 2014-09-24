@@ -1,6 +1,6 @@
 /* 
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -27,9 +27,6 @@ namespace PodcastProvider
 
         private Uri downloadUrl;
         private string destPath;
-        private bool downloadComplete;
-
-        private Exception downloadError;
 
         public DownloadWrapper(Uri downloadUrl, string destPath)
         {
@@ -41,15 +38,11 @@ namespace PodcastProvider
 
         public event DownloadProgressEventHandler DownloadProgress;
 
-        public bool Complete
-        {
-            get { return this.downloadComplete; }
-        }
+        public bool Complete { get; private set; }
 
-        public Exception Error
-        {
-            get { return this.downloadError; }
-        }
+        public Exception Error { get; private set; }
+
+        public bool Cancelled { get; private set; }
 
         public void Download()
         {
@@ -63,6 +56,12 @@ namespace PodcastProvider
             this.downloadClient.DownloadFileAsync(this.downloadUrl, this.destPath);
         }
 
+        public void Cancel()
+        {
+            this.Cancelled = true;
+            this.downloadClient.CancelAsync();
+        }
+
         private void DownloadClient_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
         {
             if (this.DownloadProgress != null)
@@ -73,18 +72,21 @@ namespace PodcastProvider
 
         private void DownloadClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            if (!e.Cancelled)
+            if (e.Cancelled && !this.Cancelled)
             {
-                SystemEvents.PowerModeChanged -= this.PowerModeChange;
+                // Cancelled before retry
+                return;
+            }
 
-                if (e.Error != null)
-                {
-                    this.downloadError = e.Error;
-                }
-                else
-                {
-                    this.downloadComplete = true;
-                }
+            SystemEvents.PowerModeChanged -= this.PowerModeChange;
+
+            if (e.Error != null)
+            {
+                this.Error = e.Error;
+            }
+            else if (!this.Cancelled)
+            {
+                this.Complete = true;
             }
         }
 

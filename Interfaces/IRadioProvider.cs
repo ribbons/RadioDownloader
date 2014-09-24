@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -89,6 +89,11 @@ namespace RadioDld
         /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
         /// <returns>The file extension of a successful download.</returns>
         string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
+
+        /// <summary>
+        /// Cancel the episode download currently in progress.
+        /// </summary>
+        void CancelDownload();
     }
 
     /// <summary>

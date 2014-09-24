@@ -393,6 +393,11 @@ namespace PodcastProvider
                 while ((!this.doDownload.Complete) && this.doDownload.Error == null)
                 {
                     Thread.Sleep(500);
+
+                    if (this.doDownload.Cancelled)
+                    {
+                        return null;
+                    }
                 }
 
                 if (this.doDownload.Error != null)
@@ -431,6 +436,11 @@ namespace PodcastProvider
             }
 
             return extension;
+        }
+
+        public void CancelDownload()
+        {
+            this.doDownload.Cancel();
         }
 
         internal void RaiseFindNewException(Exception exception)

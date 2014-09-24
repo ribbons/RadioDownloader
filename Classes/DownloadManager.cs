@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -59,27 +59,22 @@ namespace RadioDld
             StartNextDownload();
         }
 
-        public static void CancelDownload(int epid)
+        public static bool CancelDownload(int epid)
         {
-            bool cancelled = false;
-
             lock (downloads)
             {
-                if (downloads.ContainsKey(epid))
+                if (!downloads[epid].Cancel())
                 {
-                    downloads[epid].Cancel();
-                    cancelled = true;
-
-                    downloads.Remove(epid);
-                    startedDownloads.Remove(epid);
+                    return false;
                 }
+
+                downloads.Remove(epid);
+                startedDownloads.Remove(epid);
             }
 
-            if (cancelled)
-            {
-                UpdateTotalProgress();
-                StartNextDownload();
-            }
+            UpdateTotalProgress();
+            StartNextDownload();
+            return true;
         }
 
         private static void ResumeDownloadsAsync()
