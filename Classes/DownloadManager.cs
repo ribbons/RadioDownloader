@@ -63,6 +63,11 @@ namespace RadioDld
         {
             lock (downloads)
             {
+                if (!downloads.ContainsKey(epid))
+                {
+                    return true;
+                }
+                
                 if (!downloads[epid].Cancel())
                 {
                     return false;
