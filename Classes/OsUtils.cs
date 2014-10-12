@@ -183,7 +183,17 @@ namespace RadioDld
 
         internal static void ApplyRunOnStartup()
         {
-            RegistryKey runKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+            RegistryKey runKey;
+
+            try
+            {
+                runKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Access denied by non-standard ACL or antivirus
+                return;
+            }
 
             if (Settings.RunOnStartup)
             {
