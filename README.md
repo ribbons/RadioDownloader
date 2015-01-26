@@ -13,7 +13,7 @@ Develop
 
 You'll need the following before you can start developing:
 
-* [Microsoft Visual C# Express 2010](http://www.microsoft.com/visualstudio/en-us/products/2010-editions/visual-csharp-express)
+* [Microsoft Visual C# Express 2010](http://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4)
 * [StyleCop](http://stylecop.codeplex.com/)
 
 These items are optional:
