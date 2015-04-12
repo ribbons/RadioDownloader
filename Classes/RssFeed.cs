@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -145,7 +145,7 @@ namespace RadioDld
                     {
                         writer.WriteStartElement("item");
                         writer.WriteElementString("title", download.Name);
-                        writer.WriteElementString("description", HttpUtility.HtmlEncode(download.Description).Replace("\n", "<br>"));
+                        writer.WriteElementString("description", this.DescriptionHTML(download.Description));
                         writer.WriteElementString("pubDate", download.Date.ToString("r", CultureInfo.InvariantCulture));
                         writer.WriteElementString("duration", ItunesNS, this.DurationString(download));
 
@@ -338,6 +338,13 @@ namespace RadioDld
             int secs = (int)((download.Duration - (hours * 3600)) - (mins * 60));
 
             return string.Format(CultureInfo.InvariantCulture, "{0:0:; ; }{1:00}:{2:00}", hours, mins, secs);
+        }
+
+        private string DescriptionHTML(string text)
+        {
+            string html = HttpUtility.HtmlEncode(text).Replace("\n", "<br>");
+
+            return Regex.Replace(html, @"(https?://([-\w\.]+)+(:\d+)?(/([\w/_\.]*(\?\S+)?)?)?)", "<a href=\"$1\">$1</a>");
         }
 
         private string MimeTypeForFile(string filePath)
