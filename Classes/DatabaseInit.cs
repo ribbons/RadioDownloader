@@ -1,6 +1,6 @@
 /* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -87,7 +87,7 @@ namespace RadioDld
                         {
                             if (MessageBox.Show("Unfortunately Radio Downloader cannot start because your database has become corrupted." + Environment.NewLine + Environment.NewLine + "Would you like to view some help about resolving this issue?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Stop) == DialogResult.Yes)
                             {
-                                OsUtils.LaunchUrl(new Uri("http://nerdoftheherd.com/tools/radiodld/help/corrupt-database"), "corruptdb");
+                                OsUtils.LaunchUrl(new Uri("https://nerdoftheherd.com/tools/radiodld/help/corrupt-database"), "corruptdb");
                             }
 
                             return false;

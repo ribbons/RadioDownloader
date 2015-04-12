@@ -149,7 +149,7 @@ namespace RadioDld
             this.LinkHomepage.Size = new System.Drawing.Size(260, 15);
             this.LinkHomepage.TabIndex = 3;
             this.LinkHomepage.TabStop = true;
-            this.LinkHomepage.Text = "http://nerdoftheherd.com/tools/radiodld/";
+            this.LinkHomepage.Text = "https://nerdoftheherd.com/tools/radiodld/";
             this.LinkHomepage.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkHomepage_LinkClicked);
             // 
             // LabelCopyright
