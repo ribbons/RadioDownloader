@@ -214,19 +214,6 @@ namespace RadioDld
                 return;
             }
 
-            Model.Episode episode;
-
-            try
-            {
-                episode = new Model.Episode(epid);
-            }
-            catch (DataNotFoundException)
-            {
-                // Specified download does not exist
-                this.ErrorPage404(context);
-                return;
-            }
-
             Bitmap image = Model.Episode.GetImage(epid);
 
             if (image == null)

@@ -125,6 +125,7 @@
     <Rule Name="PreferJaggedArraysOverMultidimensional" Enabled="True" />
     <Rule Name="PropertiesShouldNotReturnArrays" Enabled="True" />
     <Rule Name="RemoveEmptyFinalizers" Enabled="True" />
+    <Rule Name="RemoveUnusedLocals" Enabled="True" />
     <Rule Name="TestForEmptyStringsUsingStringLength" Enabled="True" />
     <Rule Name="UseLiteralsWhereAppropriate" Enabled="True" />
    </RuleFile>

@@ -1,6 +1,6 @@
 /* 
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -367,13 +367,11 @@ namespace PodcastProvider
         public string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
-            XmlNamespaceManager namespaceMgr = this.CreateNamespaceMgr(rss);
             XmlNode itemNode = this.ItemNodeFromEpisodeID(rss, episodeExtId);
             XmlNode enclosureNode = itemNode.SelectSingleNode("./enclosure");
             XmlAttribute urlAttrib = enclosureNode.Attributes["url"];
             Uri downloadUrl = new Uri(urlAttrib.Value);
 
-            int fileNamePos = finalName.LastIndexOf("\\", StringComparison.Ordinal);
             int extensionPos = downloadUrl.AbsolutePath.LastIndexOf(".", StringComparison.Ordinal);
             string extension = "mp3";
 
