@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -17,6 +17,7 @@
 namespace RadioDld
 {
     using System;
+    using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Windows.Forms;
 
@@ -66,7 +67,7 @@ namespace RadioDld
         /// <param name="progExtId">The external id of the programme to list episodes for.</param>
         /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme (without image data).</param>
         /// <param name="page">The one-based page number to return results for.</param>
-        /// <returns>An <see cref="AvailableEpisodes"/> structure containing available episode data.</returns>
+        /// <returns>An <see cref="AvailableEpisodes"/> object containing available episode data.</returns>
         AvailableEpisodes GetAvailableEpisodes(string progExtId, ProgrammeInfo progInfo, int page);
 
         /// <summary>
@@ -97,19 +98,27 @@ namespace RadioDld
     }
 
     /// <summary>
-    /// Structure returned from providers when requesting a list of available episodes.
+    /// Return type from providers when requesting a list of available episodes.
     /// </summary>
-    public struct AvailableEpisodes
+    public class AvailableEpisodes
     {
         /// <summary>
-        /// A list of currently available episode IDs, can be null if there are none.
-        /// The list must be populated in reverse date order.
+        /// Initializes a new instance of the <see cref="AvailableEpisodes" /> class.
         /// </summary>
-        public string[] EpisodeIds;
+        public AvailableEpisodes()
+        {
+            this.EpisodeIds = new Collection<string>();
+        }
 
         /// <summary>
-        /// A flag to indicate that there are further pages of IDs available.
+        /// Gets a list to populate with currently available episode IDs.
+        /// The list must be populated in reverse date order.
         /// </summary>
-        public bool MoreAvailable;
+        public Collection<string> EpisodeIds { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether there are further pages of IDs available.
+        /// </summary>
+        public bool MoreAvailable { get; set; }
     }
 }

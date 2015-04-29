@@ -144,19 +144,16 @@ namespace PodcastProvider
                 return available;
             }
 
-            List<string> episodeIDs = new List<string>();
-
             foreach (XmlNode itemNode in itemNodes)
             {
                 string itemId = this.ItemNodeToEpisodeID(itemNode);
 
                 if (!string.IsNullOrEmpty(itemId))
                 {
-                    episodeIDs.Add(itemId);
+                    available.EpisodeIds.Add(itemId);
                 }
             }
-
-            available.EpisodeIds = episodeIDs.ToArray();
+            
             return available;
         }
 

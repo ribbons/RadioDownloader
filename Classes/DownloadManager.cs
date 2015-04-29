@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -26,6 +26,11 @@ namespace RadioDld
         private static Queue<int> downloadQueue = new Queue<int>();
         private static Dictionary<int, DownloadHandler> downloads = new Dictionary<int, DownloadHandler>();
         private static List<int> startedDownloads = new List<int>();
+
+        private DownloadManager()
+        {
+            // Prevent instance creation - would be a static class if we didn't need to inherit from Database
+        }
 
         public delegate void ProgressEventHandler(int epid, int percent, ProgressType type);
 

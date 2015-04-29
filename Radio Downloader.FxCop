@@ -40,6 +40,8 @@
     <Rule Name="DoNotDeclareProtectedMembersInSealedTypes" Enabled="True" />
     <Rule Name="DoNotDeclareStaticMembersOnGenericTypes" Enabled="True" />
     <Rule Name="DoNotDeclareVirtualMembersInSealedTypes" Enabled="True" />
+    <Rule Name="DoNotDeclareVisibleInstanceFields" Enabled="True" />
+    <Rule Name="DoNotExposeGenericLists" Enabled="True" />
     <Rule Name="DoNotHideBaseClassMethods" Enabled="True" />
     <Rule Name="DoNotNestGenericTypesInMemberSignatures" Enabled="True" />
     <Rule Name="DoNotOverloadOperatorEqualsOnReferenceTypes" Enabled="True" />
@@ -118,6 +120,7 @@
    </RuleFile>
    <RuleFile Name="$(FxCopDir)\Rules\PerformanceRules.dll" Enabled="True" AllRulesEnabled="False">
     <Rule Name="AvoidExcessiveLocals" Enabled="True" />
+    <Rule Name="AvoidUninstantiatedInternalClasses" Enabled="True" />
     <Rule Name="AvoidUnsealedAttributes" Enabled="True" />
     <Rule Name="AvoidUnusedPrivateFields" Enabled="True" />
     <Rule Name="DoNotCastUnnecessarily" Enabled="True" />
