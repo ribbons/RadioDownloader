@@ -113,7 +113,7 @@ namespace PodcastProvider
 
             if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
             {
-                progInfo.Description = descriptionNode.InnerText;
+                progInfo.Description = this.TidyUpWhitespace(descriptionNode.InnerText);
             }
             else
             {
@@ -122,7 +122,7 @@ namespace PodcastProvider
 
                 if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                 {
-                    progInfo.Description = HtmlToText.ConvertHtml(descriptionNode.InnerText);
+                    progInfo.Description = this.TidyUpWhitespace(HtmlToText.ConvertHtml(descriptionNode.InnerText));
                 }
             }
 
@@ -213,7 +213,7 @@ namespace PodcastProvider
 
             if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
             {
-                episodeInfo.Description = descriptionNode.InnerText;
+                episodeInfo.Description = this.TidyUpWhitespace(descriptionNode.InnerText);
             }
             else
             {
@@ -222,7 +222,7 @@ namespace PodcastProvider
 
                 if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
                 {
-                    episodeInfo.Description = HtmlToText.ConvertHtml(descriptionNode.InnerText);
+                    episodeInfo.Description = this.TidyUpWhitespace(HtmlToText.ConvertHtml(descriptionNode.InnerText));
                 }
             }
 
@@ -631,6 +631,18 @@ namespace PodcastProvider
             {
                 this.Progress(percent, ProgressType.Downloading);
             }
+        }
+
+        /// <summary>
+        /// Convert instances of CRLF to LF and replace runs of more than two line breaks in
+        /// a row with two line breaks.
+        /// </summary>
+        /// <param name="input">The string to process.</param>
+        /// <returns>The processed string.</returns>
+        private string TidyUpWhitespace(string input)
+        {
+            string output = input.Replace("\r\n", "\n");
+            return Regex.Replace(output, "\n{3,}", "\n\n").Trim();
         }
     }
 }

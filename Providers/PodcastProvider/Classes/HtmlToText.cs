@@ -1,6 +1,6 @@
 ﻿/* 
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
  * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
@@ -34,10 +34,7 @@ namespace PodcastProvider
                 writer.Flush();
 
                 // Reduce whitespace chars followed by runs of (non-breaking) spaces to just the whitespace char
-                string result = Regex.Replace(writer.ToString(), "(\\s)[\u00A0 ]+", "$1");
-
-                // Replace runs of more than one blank lines in a row with a single blank line
-                return Regex.Replace(result, "(?:\r\n){3,}", "\r\n\r\n").Trim();
+                return Regex.Replace(writer.ToString(), "(\\s)[\u00A0 ]+", "$1");
             }
         }
 
@@ -77,7 +74,7 @@ namespace PodcastProvider
                         case "p":
                         case "div":
                         case "li":
-                            writer.Write("\r\n");
+                            writer.Write("\n");
                             break;
                         case "script":
                         case "style":
