@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ namespace RadioDld
         /// <param name="m">The Windows <see cref="Message" /> to process.</param>
         protected override void WndProc(ref Message m)
         {
-            if (m.Msg == NativeMethods.WM_SETCURSOR)
+            if (OsUtils.Windows() && m.Msg == NativeMethods.WM_SETCURSOR)
             {
                 // Fetch a handle to the system 'hand' cursor.
                 IntPtr cursor = NativeMethods.LoadCursor(IntPtr.Zero, (IntPtr)NativeMethods.IDC_HAND);
