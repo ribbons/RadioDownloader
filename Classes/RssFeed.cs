@@ -1,17 +1,19 @@
-/* 
+/*
  * This file is part of Radio Downloader.
  * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
- * License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program.  If not, see
- * <http://www.gnu.org/licenses/>.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace RadioDld
@@ -78,7 +80,7 @@ namespace RadioDld
                     using (StreamWriter writer = new StreamWriter(context.Response.OutputStream))
                     {
                         writer.WriteLine("<!DOCTYPE html><html><head><title>Radio Downloader</title></head>" +
-                                         "<body><h1>Radio Downloader</h1>" + 
+                                         "<body><h1>Radio Downloader</h1>" +
                                          "<p><a href=\"downloaded.rss\">Downloaded epiodes feed</a></p></body></html>");
                     }
 

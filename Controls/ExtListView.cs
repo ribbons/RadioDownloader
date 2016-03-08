@@ -1,17 +1,19 @@
-/* 
+/*
  * This file is part of Radio Downloader.
  * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General
- * Public License as published by the Free Software Foundation, either version 3 of the License, or (at your
- * option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the
- * implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public
- * License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program.  If not, see
- * <http://www.gnu.org/licenses/>.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 namespace RadioDld
@@ -128,7 +130,7 @@ namespace RadioDld
                 case NativeMethods.WM_CREATE:
                     if (OsUtils.WinXpOrLater())
                     {
-                        // Set the theme of the control to "explorer", to give the 
+                        // Set the theme of the control to "explorer", to give the
                         // correct styling under Vista.  This has no effect under XP.
                         Marshal.ThrowExceptionForHR(NativeMethods.SetWindowTheme(this.Handle, "explorer", null));
                     }
@@ -222,7 +224,7 @@ namespace RadioDld
         // by a user's action.  For instance, clicking on a different item raises two - one for the
         // deselection of the old item, and one for the new.  Even worse, selecting multiple items
         // with the shift key causes an event to be raised for each one.
-        // 
+        //
         // To prevent this behavior, override OnSelectedIndexChanged, and instead set up a handler
         // to be called when the application is just about to become idle.
         protected override void OnSelectedIndexChanged(EventArgs e)
