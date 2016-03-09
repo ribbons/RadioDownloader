@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -178,8 +178,11 @@ namespace RadioDld
                 {
                     colour = activeTabBkg;
 
-                    // Invalidate between the buttons and the bottom of the toolstrip so that it gets repainted
-                    e.ToolStrip.Invalidate(new Rectangle(0, e.Item.Bounds.Bottom, e.ToolStrip.Bounds.Width, e.ToolStrip.Bounds.Height - e.Item.Bounds.Bottom));
+                    if (OsUtils.Windows())
+                    {
+                        // Invalidate between the buttons and the bottom of the toolstrip so that it gets repainted
+                        e.ToolStrip.Invalidate(new Rectangle(0, e.Item.Bounds.Bottom, e.ToolStrip.Bounds.Width, e.ToolStrip.Bounds.Height - e.Item.Bounds.Bottom));
+                    }
                 }
                 else if (e.Item.Selected)
                 {
