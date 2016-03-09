@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,8 +31,6 @@ namespace RadioDld
             this.IsSingleInstance = true;
             this.EnableVisualStyles = true;
             this.ShutdownStyle = ShutdownMode.AfterMainFormCloses;
-
-            this.Startup += this.App_Startup;
             this.UnhandledException += this.App_UnhandledException;
         }
 
@@ -58,6 +56,21 @@ namespace RadioDld
 
         protected override void OnCreateMainForm()
         {
+            // If /exit was passed on the command line, then just exit immediately
+            foreach (string commandLineArg in Environment.GetCommandLineArgs())
+            {
+                if (commandLineArg.ToUpperInvariant() == "/EXIT")
+                {
+                    Environment.Exit(1);
+                }
+            }
+
+            // Set up the application database and perform any required updates or cleanup
+            if (!DatabaseInit.Startup())
+            {
+                Environment.Exit(1);
+            }
+
             this.MainForm = new Main();
             this.StartupNextInstance += ((Main)this.MainForm).App_StartupNextInstance;
         }
@@ -88,26 +101,6 @@ namespace RadioDld
             }
 
             ReportException(unhandledExp);
-        }
-
-        private void App_Startup(object sender, StartupEventArgs e)
-        {
-            // If /exit was passed on the command line, then just exit immediately
-            foreach (string commandLineArg in Environment.GetCommandLineArgs())
-            {
-                if (commandLineArg.ToUpperInvariant() == "/EXIT")
-                {
-                    e.Cancel = true;
-                    return;
-                }
-            }
-
-            // Set up the application database and perform any required updates or cleanup
-            if (!DatabaseInit.Startup())
-            {
-                e.Cancel = true;
-                return;
-            }
         }
 
         private void App_UnhandledException(object sender, Microsoft.VisualBasic.ApplicationServices.UnhandledExceptionEventArgs e)
