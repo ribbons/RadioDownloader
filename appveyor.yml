@@ -1,0 +1,13 @@
+version: "{build}"
+clone_depth: 250
+
+build:
+  parallel: true
+  project: Radio Downloader.sln
+
+platform:
+  - win32
+#  - win64  # Currently fails with error CS8012
+  - mono
+
+configuration: Release

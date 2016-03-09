@@ -1,6 +1,8 @@
 Radio Downloader
 ================
 
+[![Build status](https://ci.appveyor.com/api/projects/status/933pimxj2u2eil9g/branch/master?svg=true)](https://ci.appveyor.com/project/ribbons/radiodownloader/branch/master)
+
 Radio Downloader is an easy to use Windows application for podcast subscriptions and downloads, written in C#. It also features a plugin framework that potentially allows it to provide podcast-like downloads of audio content from other providers who do not publish podcasts.
 
 Download
