@@ -31,7 +31,7 @@ namespace RadioDld
 
         public void SetGlassMargins(int leftMargin, int rightMargin, int topMargin, int bottomMargin)
         {
-            this.glassMargins = new NativeMethods.MARGINS();
+            this.glassMargins = default(NativeMethods.MARGINS);
 
             this.glassMargins.cxLeftWidth = leftMargin;
             this.glassMargins.cxRightWidth = rightMargin;

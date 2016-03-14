@@ -140,7 +140,7 @@ namespace RadioDld
             {
                 using (Status status = new Status())
                 {
-                    status.ShowDialog(delegate
+                    status.ShowDialog(() =>
                     {
                         Prune(status);
                     });
@@ -152,7 +152,7 @@ namespace RadioDld
             {
                 using (Status status = new Status())
                 {
-                    status.ShowDialog(delegate
+                    status.ShowDialog(() =>
                     {
                         Vacuum(status);
                     });

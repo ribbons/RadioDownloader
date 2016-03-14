@@ -79,7 +79,7 @@ namespace RadioDld
                     {
                         status.ShowDialog(
                             this,
-                            delegate
+                            () =>
                             {
                                 Model.Download.UpdatePaths(status, this.TextSaveIn.Text, this.TextFileNameFormat.Text);
                             });

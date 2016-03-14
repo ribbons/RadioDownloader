@@ -40,7 +40,7 @@ namespace RadioDld
                 throw new ArgumentNullException("item");
             }
 
-            if (column >= Columns.Count)
+            if (column >= this.Columns.Count)
             {
                 throw new ArgumentOutOfRangeException("column", column, "Value of column must be less than the current number of columns!");
             }
@@ -95,7 +95,7 @@ namespace RadioDld
 
             for (int processCols = 0; processCols <= this.Columns.Count; processCols++)
             {
-                NativeMethods.HDITEM headerInfo = new NativeMethods.HDITEM();
+                NativeMethods.HDITEM headerInfo = default(NativeMethods.HDITEM);
                 headerInfo.mask = NativeMethods.HDI_FORMAT;
 
                 NativeMethods.SendMessage(headersHwnd, NativeMethods.HDM_GETITEM, (IntPtr)processCols, ref headerInfo);

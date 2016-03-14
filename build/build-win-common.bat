@@ -1,7 +1,7 @@
 @echo off
 
 rem This file is part of Radio Downloader.
-rem Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+rem Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
 rem
 rem This program is free software: you can redistribute it and/or modify
 rem it under the terms of the GNU General Public License as published by
@@ -39,9 +39,9 @@ call "%sdklocation%\Bin\setenv.cmd" /Release /%~1
 :haveenv
 
 rem Build Radio Downloader and the providers
-msbuild /p:Configuration=Release /p:Platform=%platname% /p:TreatWarningsAsErrors=true /t:Clean "../Radio Downloader.sln"
+msbuild /p:Configuration=Release /p:Platform=%platname% /t:Clean "../Radio Downloader.sln"
 if ERRORLEVEL 1 exit /B 1
-msbuild /p:Configuration=Release /p:Platform=%platname% /p:TreatWarningsAsErrors=true /p:StyleCopTreatErrorsAsWarnings=false "../Radio Downloader.sln"
+msbuild /p:Configuration=Release /p:Platform=%platname% "../Radio Downloader.sln"
 if ERRORLEVEL 1 exit /B 1
 
 rem Run FxCop on the built assemblies

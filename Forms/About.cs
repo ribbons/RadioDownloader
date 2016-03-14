@@ -45,7 +45,7 @@ namespace RadioDld
         {
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.UpdateAvailable(); });
+                this.Invoke((MethodInvoker)(() => { this.UpdateAvailable(); }));
                 return;
             }
 

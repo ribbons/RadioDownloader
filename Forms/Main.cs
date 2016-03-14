@@ -128,7 +128,7 @@ namespace RadioDld
                     else if (this.ButtonCancel.Visible)
                     {
                         e.Handled = true;
-                        ButtonCancel_Click();
+                        this.ButtonCancel_Click();
                     }
 
                     break;
@@ -987,7 +987,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.Programme_Updated(progid); });
+                this.Invoke((MethodInvoker)(() => { this.Programme_Updated(progid); }));
                 return;
             }
 
@@ -1062,7 +1062,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.ProgData_EpisodeAdded(epid); });
+                this.Invoke((MethodInvoker)(() => { this.ProgData_EpisodeAdded(epid); }));
                 return;
             }
 
@@ -1081,7 +1081,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.Episode_Updated(epid); });
+                this.Invoke((MethodInvoker)(() => { this.Episode_Updated(epid); }));
                 return;
             }
 
@@ -1111,7 +1111,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.Favourite_Added(progid); });
+                this.Invoke((MethodInvoker)(() => { this.Favourite_Added(progid); }));
                 return;
             }
 
@@ -1138,7 +1138,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.Favourite_Updated(progid); });
+                this.Invoke((MethodInvoker)(() => { this.Favourite_Updated(progid); }));
                 return;
             }
 
@@ -1187,7 +1187,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.Favourite_Removed(progid); });
+                this.Invoke((MethodInvoker)(() => { this.Favourite_Removed(progid); }));
                 return;
             }
 
@@ -1247,7 +1247,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.Subscription_Added(progid); });
+                this.Invoke((MethodInvoker)(() => { this.Subscription_Added(progid); }));
                 return;
             }
 
@@ -1273,7 +1273,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.Subscription_Updated(progid); });
+                this.Invoke((MethodInvoker)(() => { this.Subscription_Updated(progid); }));
                 return;
             }
 
@@ -1305,7 +1305,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.Subscription_Removed(progid); });
+                this.Invoke((MethodInvoker)(() => { this.Subscription_Removed(progid); }));
                 return;
             }
 
@@ -1429,7 +1429,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadAdded(epid); });
+                this.Invoke((MethodInvoker)(() => { this.DataSearch_DownloadAdded(epid); }));
                 return;
             }
 
@@ -1455,7 +1455,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadProgress(epid, percent, type); });
+                this.Invoke((MethodInvoker)(() => { this.DataSearch_DownloadProgress(epid, percent, type); }));
                 return;
             }
 
@@ -1503,7 +1503,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadRemoved(epid); });
+                this.Invoke((MethodInvoker)(() => { this.DataSearch_DownloadRemoved(epid); }));
                 return;
             }
 
@@ -1535,7 +1535,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.DataSearch_DownloadUpdated(epid); });
+                this.Invoke((MethodInvoker)(() => { this.DataSearch_DownloadUpdated(epid); }));
                 return;
             }
 
@@ -1575,7 +1575,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.DownloadManager_ProgressTotal(downloading, percent); });
+                this.Invoke((MethodInvoker)(() => { this.DownloadManager_ProgressTotal(downloading, percent); }));
                 return;
             }
 
@@ -1614,7 +1614,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.ProgData_FindNewFailed(); });
+                this.Invoke((MethodInvoker)(() => { this.ProgData_FindNewFailed(); }));
                 return;
             }
 
@@ -1631,7 +1631,7 @@ namespace RadioDld
 
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.ProgData_FoundNew(progid); });
+                this.Invoke((MethodInvoker)(() => { this.ProgData_FoundNew(progid); }));
                 return;
             }
 
@@ -1682,7 +1682,7 @@ namespace RadioDld
         {
             if (this.InvokeRequired)
             {
-                this.Invoke((MethodInvoker)delegate { this.UpdateAvailable(); });
+                this.Invoke((MethodInvoker)(() => { this.UpdateAvailable(); }));
                 return;
             }
 
@@ -2187,7 +2187,7 @@ namespace RadioDld
                             description += "Errored: " + Convert.ToString(errorCount, CultureInfo.CurrentCulture);
                         }
 
-                        this.SetSideBar(Convert.ToString(ListDownloads.Items.Count, CultureInfo.CurrentCulture) + " download" + (ListDownloads.Items.Count == 1 ? string.Empty : "s"), description, null);
+                        this.SetSideBar(Convert.ToString(this.ListDownloads.Items.Count, CultureInfo.CurrentCulture) + " download" + (this.ListDownloads.Items.Count == 1 ? string.Empty : "s"), description, null);
                     }
 
                     break;
@@ -2488,7 +2488,7 @@ namespace RadioDld
 
                 if (!this.IsDisposed)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.PerformSearch(origView, search); });
+                    this.Invoke((MethodInvoker)(() => { this.PerformSearch(origView, search); }));
                 }
             }
         }

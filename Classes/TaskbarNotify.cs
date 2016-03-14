@@ -83,7 +83,9 @@ namespace RadioDld
             this.taskBarListInst.SetProgressState(parentWin.Handle, NativeMethods.TBPFLAG.TBPF_NOPROGRESS);
         }
 
-        [ComImport, Guid("56FDF344-FD6D-11D0-958A-006097C9A090"), ClassInterface(ClassInterfaceType.None)]
+        [ComImport]
+        [Guid("56FDF344-FD6D-11D0-958A-006097C9A090")]
+        [ClassInterface(ClassInterfaceType.None)]
         private class TaskbarList
         {
         }

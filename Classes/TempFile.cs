@@ -33,9 +33,8 @@ namespace RadioDld
         private bool isDisposed;
 
         /// <summary>
-        /// Initializes static members of the <see cref="TempFile"/> class and cleans up
-        /// any left-over files from previous sessions.  Any file names still listed in
-        /// the database are added to the notInUse list and are attempted to be deleted.
+        /// Initializes static members of the <see cref="TempFile"/> class.
+        /// Any file names still listed in the database are attempted to be deleted.
         /// </summary>
         static TempFile()
         {

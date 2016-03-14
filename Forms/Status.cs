@@ -45,7 +45,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.SetStatusText_FormThread(value); });
+                    this.Invoke((MethodInvoker)(() => { this.SetStatusText_FormThread(value); }));
                 }
                 else
                 {
@@ -65,7 +65,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarMarquee_FormThread(value); });
+                    this.Invoke((MethodInvoker)(() => { this.SetProgressBarMarquee_FormThread(value); }));
                 }
                 else
                 {
@@ -85,7 +85,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarMax_FormThread(value); });
+                    this.Invoke((MethodInvoker)(() => { this.SetProgressBarMax_FormThread(value); }));
                 }
                 else
                 {
@@ -105,7 +105,7 @@ namespace RadioDld
             {
                 if (this.IsHandleCreated)
                 {
-                    this.Invoke((MethodInvoker)delegate { this.SetProgressBarValue_FormThread(value); });
+                    this.Invoke((MethodInvoker)(() => { this.SetProgressBarValue_FormThread(value); }));
                 }
                 else
                 {
@@ -130,7 +130,7 @@ namespace RadioDld
         {
             if (!this.IsDisposed)
             {
-                this.Invoke((MethodInvoker)delegate { base.Hide(); });
+                this.Invoke((MethodInvoker)(() => { base.Hide(); }));
                 return;
             }
 

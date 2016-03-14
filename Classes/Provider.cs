@@ -122,7 +122,7 @@ namespace RadioDld
                         if (implInterface != null)
                         {
                             Provider provider = new Provider();
-                            provider.assembly  = assembly;
+                            provider.assembly = assembly;
                             provider.fullClass = thisType.FullName;
                             provider.Class = thisType.Name;
 

@@ -127,7 +127,7 @@ namespace RadioDld
             {
                 status.ShowDialog(
                     this,
-                    delegate
+                    () =>
                     {
                         Model.Download.Cleanup(status, olderThan, progid, this.CheckOrphan.Checked, this.CheckPlayed.Checked, this.CheckKeepFiles.Checked);
                     });

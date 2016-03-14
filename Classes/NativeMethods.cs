@@ -128,7 +128,9 @@ namespace RadioDld
             TBPF_PAUSED = 0x8
         }
 
-        [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF")]
+        [ComImport]
+        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        [Guid("EA1AFB91-9E28-4B86-90E9-9E9F8A5EEFAF")]
         public interface ITaskbarList3
         {
             void HrInit();
@@ -182,7 +184,7 @@ namespace RadioDld
         public static extern IntPtr SelectObject(IntPtr hdc, IntPtr hgdiobj);
 
         [DllImport("gdi32.dll", SetLastError = true)]
-        public static extern IntPtr CreateDIBSection(IntPtr hdc, [In()] ref BITMAPINFO lpbmi, uint usage, ref IntPtr ppvBits, IntPtr hSection, uint offset);
+        public static extern IntPtr CreateDIBSection(IntPtr hdc, [In] ref BITMAPINFO lpbmi, uint usage, ref IntPtr ppvBits, IntPtr hSection, uint offset);
 
         [DllImport("gdi32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -239,7 +241,7 @@ namespace RadioDld
         public static extern int SetWindowTheme(IntPtr hWnd, string pszSubAppName, string pszSubIdList);
 
         [DllImport("uxtheme.dll", CharSet = CharSet.Unicode)]
-        public static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, string pszText, int iCharCount, uint dwFlags, ref RECT pRect, [In()] ref DTTOPTS pOptions);
+        public static extern int DrawThemeTextEx(IntPtr hTheme, IntPtr hdc, int iPartId, int iStateId, string pszText, int iCharCount, uint dwFlags, ref RECT pRect, [In] ref DTTOPTS pOptions);
 
         // API Structs
         [StructLayout(LayoutKind.Sequential)]

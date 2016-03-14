@@ -52,7 +52,7 @@ namespace RadioDld
 
                 using (Status status = new Status())
                 {
-                    status.ShowDialog(delegate
+                    status.ShowDialog(() =>
                     {
                         this.RebuildIndex(status, tableCols);
                     });
