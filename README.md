@@ -15,8 +15,7 @@ Develop
 
 You'll need the following before you can start developing:
 
-* [Microsoft Visual C# Express 2010](http://www.visualstudio.com/downloads/download-visual-studio-vs#DownloadFamilies_4)
-* [StyleCop](http://stylecop.codeplex.com/)
+* [Microsoft Visual Studio Community 2015](https://www.visualstudio.com/products/visual-studio-community-vs)
 
 These items are optional:
 
