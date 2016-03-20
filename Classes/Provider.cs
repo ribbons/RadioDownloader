@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,6 +60,8 @@ namespace RadioDld
         public Bitmap Icon { get; private set; }
 
         public EventHandler ShowOptionsHandler { get; private set; }
+
+        public ShowMoreProgInfoEventHandler ShowMoreProgInfoHandler { get; private set; }
 
         public static bool Exists(Guid pluginId)
         {
@@ -134,6 +136,7 @@ namespace RadioDld
                                 provider.Description = instance.ProviderDescription;
                                 provider.Icon = instance.ProviderIcon;
                                 provider.ShowOptionsHandler = instance.GetShowOptionsHandler();
+                                provider.ShowMoreProgInfoHandler = instance.GetShowMoreProgInfoHandler();
                                 availableProviders.Add(instance.ProviderId, provider);
                             }
                             catch

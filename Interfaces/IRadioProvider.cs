@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,8 @@ namespace RadioDld
 
     public delegate void ProgressEventHandler(int percent, ProgressType type);
 
+    public delegate void ShowMoreProgInfoEventHandler(string progExtId);
+
     public enum ProgressType
     {
         Downloading,
@@ -57,7 +59,17 @@ namespace RadioDld
 
         int ProgInfoUpdateFreqDays { get; }
 
+        /// <summary>
+        /// Get an event handler to be called to show an options dialog for the provider
+        /// </summary>
+        /// <returns>The event handler or null for none</returns>
         EventHandler GetShowOptionsHandler();
+
+        /// <summary>
+        /// Get an event handler to be called to show provider specific details about a programme
+        /// </summary>
+        /// <returns>The event handler or null to for none</returns>
+        ShowMoreProgInfoEventHandler GetShowMoreProgInfoHandler();
 
         Panel GetFindNewPanel(object view);
 

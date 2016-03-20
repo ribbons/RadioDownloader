@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,6 +82,17 @@ namespace PodcastProvider
         public EventHandler GetShowOptionsHandler()
         {
             return null;
+        }
+
+        public ShowMoreProgInfoEventHandler GetShowMoreProgInfoHandler()
+        {
+            return this.ShowMoreProgInfo;
+        }
+
+        public void ShowMoreProgInfo(string progExtId)
+        {
+            MoreProgInfo showInfo = new MoreProgInfo(progExtId);
+            showInfo.ShowDialog();
         }
 
         public Panel GetFindNewPanel(object view)

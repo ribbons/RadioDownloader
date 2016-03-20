@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -204,6 +204,7 @@ namespace RadioDld
             this.ImagesToolbar.Images.Add("add_favourite", Properties.Resources.toolbar_add_favourite);
             this.ImagesToolbar.Images.Add("remove_favourite", Properties.Resources.toolbar_remove_favourite);
             this.ImagesToolbar.Images.Add("set_auto", Properties.Resources.toolbar_set_auto);
+            this.ImagesToolbar.Images.Add("more_info", Properties.Resources.toolbar_more_info);
 
             this.ToolbarMain.ImageList = this.ImagesToolbar;
             this.ToolbarHelp.ImageList = this.ImagesToolbar;
@@ -508,6 +509,11 @@ namespace RadioDld
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.AddRange(new ToolBarButton[] { this.ButtonRemFavourite, this.ButtonCurrentEps });
 
+            if (info.HasMoreInfo)
+            {
+                buttons.Add(this.ButtonMoreInfo);
+            }
+
             if (Model.Subscription.IsSubscribed(progid))
             {
                 buttons.Add(this.ButtonUnsubscribe);
@@ -582,6 +588,11 @@ namespace RadioDld
             List<ToolBarButton> buttons = new List<ToolBarButton>();
             buttons.Add(this.ButtonUnsubscribe);
             buttons.Add(this.ButtonCurrentEps);
+
+            if (info.HasMoreInfo)
+            {
+                buttons.Add(this.ButtonMoreInfo);
+            }
 
             if (Model.Favourite.IsFavourite(progid))
             {
@@ -881,6 +892,7 @@ namespace RadioDld
             this.ButtonRetry.Visible = false;
             this.ButtonReportError.Visible = false;
             this.ButtonCleanUp.Visible = false;
+            this.ButtonMoreInfo.Visible = false;
 
             foreach (ToolBarButton button in buttons)
             {
@@ -1937,6 +1949,23 @@ namespace RadioDld
             this.view.SetView(ViewState.View.ProgEpisodes, progid);
         }
 
+        private void ButtonMoreInfo_Click()
+        {
+            int progid = 0;
+
+            switch (this.view.CurrentView)
+            {
+                case ViewState.View.Favourites:
+                    progid = Convert.ToInt32(this.ListFavourites.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    break;
+                case ViewState.View.Subscriptions:
+                    progid = Convert.ToInt32(this.ListSubscribed.SelectedItems[0].Name, CultureInfo.InvariantCulture);
+                    break;
+            }
+
+            new Model.Programme(progid).ShowMoreInfo();
+        }
+
         private void ButtonReportError_Click()
         {
             int epid = Convert.ToInt32(this.ListDownloads.SelectedItems[0].Name, CultureInfo.InvariantCulture);
@@ -2231,6 +2260,9 @@ namespace RadioDld
                     break;
                 case "ButtonCurrentEps":
                     this.ButtonCurrentEps_Click();
+                    break;
+                case "ButtonMoreInfo":
+                    this.ButtonMoreInfo_Click();
                     break;
                 case "ButtonCancel":
                     this.ButtonCancel_Click();

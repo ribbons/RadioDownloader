@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,10 @@ namespace RadioDld.Model
 
     internal class Programme : Database
     {
-        internal const string Columns = "programmes.progid, programmes.name, programmes.description, singleepisode, pluginid, latestdownload";
+        internal const string Columns = "programmes.progid, programmes.extid, programmes.name, programmes.description, singleepisode, pluginid, latestdownload";
+
+        private string extId = null;
+        private ShowMoreProgInfoEventHandler moreInfoHandler = null;
 
         public Programme()
         {
@@ -70,6 +73,14 @@ namespace RadioDld.Model
         public string ProviderName { get; set; }
 
         public DateTime? LatestDownload { get; set; }
+
+        public bool HasMoreInfo
+        {
+            get
+            {
+                return this.moreInfoHandler != null;
+            }
+        }
 
         public static List<Programme> FetchAllWithDownloads()
         {
@@ -335,6 +346,11 @@ namespace RadioDld.Model
             return allEpExtIds;
         }
 
+        public void ShowMoreInfo()
+        {
+            this.moreInfoHandler(this.extId);
+        }
+
         public override string ToString()
         {
             string infoString = this.Name;
@@ -361,6 +377,7 @@ namespace RadioDld.Model
             int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
 
             this.Progid = reader.GetInt32(reader.GetOrdinal("progid"));
+            this.extId = reader.GetString(reader.GetOrdinal("extid"));
             this.Name = reader.GetString(reader.GetOrdinal("name"));
 
             if (!reader.IsDBNull(descriptionOrdinal))
@@ -376,6 +393,7 @@ namespace RadioDld.Model
             if (provider != null)
             {
                 this.ProviderName = provider.Name;
+                this.moreInfoHandler = provider.ShowMoreProgInfoHandler;
             }
             else
             {

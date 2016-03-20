@@ -76,6 +76,7 @@ namespace RadioDld
             this.ButtonRemFavourite = new System.Windows.Forms.ToolBarButton();
             this.ButtonSubscribe = new System.Windows.Forms.ToolBarButton();
             this.ButtonUnsubscribe = new System.Windows.Forms.ToolBarButton();
+            this.ButtonMoreInfo = new System.Windows.Forms.ToolBarButton();
             this.ButtonCancel = new System.Windows.Forms.ToolBarButton();
             this.ButtonPlay = new System.Windows.Forms.ToolBarButton();
             this.ButtonDelete = new System.Windows.Forms.ToolBarButton();
@@ -446,6 +447,7 @@ namespace RadioDld
             this.ButtonRemFavourite,
             this.ButtonSubscribe,
             this.ButtonUnsubscribe,
+            this.ButtonMoreInfo,
             this.ButtonCancel,
             this.ButtonPlay,
             this.ButtonDelete,
@@ -520,6 +522,12 @@ namespace RadioDld
             this.ButtonUnsubscribe.ImageKey = "unsubscribe";
             this.ButtonUnsubscribe.Name = "ButtonUnsubscribe";
             this.ButtonUnsubscribe.Text = "&Unsubscribe";
+            // 
+            // ButtonMoreInfo
+            // 
+            this.ButtonMoreInfo.Name = "ButtonMoreInfo";
+            this.ButtonMoreInfo.Text = "&More Info";
+            this.ButtonMoreInfo.ImageKey = "more_info";
             // 
             // ButtonCancel
             // 
@@ -694,8 +702,8 @@ namespace RadioDld
             this.ListFavourites.TabIndex = 3;
             this.ListFavourites.UseCompatibleStateImageBehavior = false;
             this.ListFavourites.View = System.Windows.Forms.View.Details;
-            this.ListFavourites.ItemActivate += new System.EventHandler(this.ListFavourites_ItemActivate);
             this.ListFavourites.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.ListFavourites_ColumnClick);
+            this.ListFavourites.ItemActivate += new System.EventHandler(this.ListFavourites_ItemActivate);
             this.ListFavourites.SelectedIndexChanged += new System.EventHandler(this.ListFavourites_SelectedIndexChanged);
             // 
             // Main
@@ -796,6 +804,7 @@ namespace RadioDld
         private System.Windows.Forms.ToolBarButton ButtonDownload;
         private System.Windows.Forms.ToolBarButton ButtonSetAuto;
         private System.Windows.Forms.MenuItem MenuHelpContext;
+        private System.Windows.Forms.ToolBarButton ButtonMoreInfo;
         #endregion
     }
 }

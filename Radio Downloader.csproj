@@ -374,6 +374,7 @@
     <None Include="Resources\toolbar\clean up_16.png" />
     <None Include="Resources\toolbar\back_24.png" />
     <None Include="Resources\toolbar\set_auto_16.png" />
+    <None Include="Resources\toolbar\more info_16.png" />
     <AdditionalFiles Include="stylecop.json" />
     <None Include="stylecop.ruleset" />
   </ItemGroup>
