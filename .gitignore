@@ -12,3 +12,4 @@ tools/recoverdb/recoverdb.exe
 VersionInfo.cs
 .vs
 packages
+.directory
