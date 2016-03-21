@@ -40,7 +40,7 @@ namespace RadioDld
             {
                 try
                 {
-                    Provider.ExamineAssembly(Assembly.LoadFrom(dll));
+                    ExamineAssembly(Assembly.LoadFrom(dll));
                 }
                 catch
                 {

@@ -174,7 +174,7 @@ namespace RadioDld
             }
         }
 
-        private void Status_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        private void Status_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
             {

@@ -122,7 +122,7 @@ namespace RadioDld
             }
         }
 
-        private void SearchBox_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        private void SearchBox_Paint(object sender, PaintEventArgs e)
         {
             if (VisualStyleRenderer.IsSupported)
             {
@@ -241,7 +241,7 @@ namespace RadioDld
             this.TextBox_MouseLeave(sender, e);
         }
 
-        private void Button_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void Button_MouseDown(object sender, MouseEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.Text))
             {
@@ -249,7 +249,7 @@ namespace RadioDld
             }
         }
 
-        private void Button_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void Button_MouseUp(object sender, MouseEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.Text))
             {
@@ -257,7 +257,7 @@ namespace RadioDld
             }
         }
 
-        private void Button_MouseClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void Button_MouseClick(object sender, MouseEventArgs e)
         {
             if (!string.IsNullOrEmpty(this.textBox.Text))
             {
@@ -323,7 +323,7 @@ namespace RadioDld
             }
         }
 
-        private void TextBox_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Escape)
             {

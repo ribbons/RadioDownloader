@@ -111,7 +111,7 @@ namespace RadioDld
             }
         }
 
-        private void Main_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        private void Main_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
             {
@@ -133,7 +133,7 @@ namespace RadioDld
 
                     break;
                 case Keys.Back:
-                    if (!object.ReferenceEquals(this.ActiveControl.GetType(), typeof(TextBox)) && !object.ReferenceEquals(this.ActiveControl.Parent.GetType(), typeof(ExtToolStrip)))
+                    if (!ReferenceEquals(this.ActiveControl.GetType(), typeof(TextBox)) && !ReferenceEquals(this.ActiveControl.Parent.GetType(), typeof(ExtToolStrip)))
                     {
                         if (e.Shift)
                         {
@@ -342,7 +342,7 @@ namespace RadioDld
             this.TimerCheckForUpdates.Enabled = true;
         }
 
-        private void Main_FormClosing(object eventSender, System.Windows.Forms.FormClosingEventArgs eventArgs)
+        private void Main_FormClosing(object eventSender, FormClosingEventArgs eventArgs)
         {
             if (eventArgs.CloseReason == CloseReason.UserClosing)
             {
@@ -557,7 +557,7 @@ namespace RadioDld
             }
         }
 
-        private void ListSubscribed_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
+        private void ListSubscribed_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             Model.Subscription.SubscriptionCols clickedCol = (Model.Subscription.SubscriptionCols)e.Column;
 
@@ -604,7 +604,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(info.Name, info.Description, Model.Subscription.GetImage(progid));
+            this.SetSideBar(info.Name, info.Description, Model.Programme.GetImage(progid));
         }
 
         private void ListSubscribed_ItemActivate(object sender, EventArgs e)
@@ -618,7 +618,7 @@ namespace RadioDld
             this.ButtonCurrentEps_Click();
         }
 
-        private void ListDownloads_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
+        private void ListDownloads_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             Model.Download.DownloadCols clickedCol = this.downloadColOrder[e.Column];
 
@@ -647,7 +647,7 @@ namespace RadioDld
             this.ListDownloads.Sort();
         }
 
-        private void ListFavourites_ColumnClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
+        private void ListFavourites_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             Model.Favourite.FavouriteCols clickedCol = (Model.Favourite.FavouriteCols)e.Column;
 
@@ -671,7 +671,7 @@ namespace RadioDld
             this.ListFavourites.Sort();
         }
 
-        private void ListDownloads_ColumnReordered(object sender, System.Windows.Forms.ColumnReorderedEventArgs e)
+        private void ListDownloads_ColumnReordered(object sender, ColumnReorderedEventArgs e)
         {
             string[] oldOrder = new string[this.ListDownloads.Columns.Count];
 
@@ -699,12 +699,12 @@ namespace RadioDld
             }
         }
 
-        private void ListDownloads_ColumnRightClick(object sender, System.Windows.Forms.ColumnClickEventArgs e)
+        private void ListDownloads_ColumnRightClick(object sender, ColumnClickEventArgs e)
         {
             this.MenuListHdrs.Show(this.ListDownloads, this.ListDownloads.PointToClient(Cursor.Position));
         }
 
-        private void ListDownloads_ColumnWidthChanged(object sender, System.Windows.Forms.ColumnWidthChangedEventArgs e)
+        private void ListDownloads_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e)
         {
             // Save the updated column's width
             this.downloadColSizes[(int)this.downloadColOrder[e.ColumnIndex]] = this.ListDownloads.Columns[e.ColumnIndex].Width;
@@ -927,7 +927,7 @@ namespace RadioDld
             Settings.ShownTrayBalloon = true;
         }
 
-        private void NotifyIcon_MouseDoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+        private void NotifyIcon_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             this.MenuTrayShow_Click(sender, e);
         }
@@ -2233,7 +2233,7 @@ namespace RadioDld
             this.view.NavFwd();
         }
 
-        private void ToolbarMain_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
+        private void ToolbarMain_ButtonClick(object sender, ToolBarButtonClickEventArgs e)
         {
             switch (e.Button.Name)
             {
@@ -2312,7 +2312,7 @@ namespace RadioDld
             }
         }
 
-        private void TextSidebarDescript_LinkClicked(object sender, System.Windows.Forms.LinkClickedEventArgs e)
+        private void TextSidebarDescript_LinkClicked(object sender, LinkClickedEventArgs e)
         {
             // Prefix the url with http:// if a protocol isn't specified
             string launch = (e.LinkText.Contains("://") ? string.Empty : "http://") + e.LinkText;
@@ -2325,7 +2325,7 @@ namespace RadioDld
             this.TextSidebarDescript.Refresh(); // Make sure the scrollbars update correctly
         }
 
-        private void ImageSidebarBorder_Paint(object sender, System.Windows.Forms.PaintEventArgs e)
+        private void ImageSidebarBorder_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawLine(new Pen(Color.FromArgb(255, 167, 186, 197)), 0, 0, 0, this.ImageSidebarBorder.Height);
         }
@@ -2512,7 +2512,7 @@ namespace RadioDld
 
             lock (this.searchThreadLock)
             {
-                if (!object.ReferenceEquals(Thread.CurrentThread, this.searchThread))
+                if (!ReferenceEquals(Thread.CurrentThread, this.searchThread))
                 {
                     // A search thread was created more recently, stop this thread
                     return;

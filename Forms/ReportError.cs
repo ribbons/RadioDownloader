@@ -72,15 +72,15 @@ namespace RadioDld
             this.Close();
         }
 
-        private void LinkWhatData_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
+        private void LinkWhatData_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             MessageBox.Show(this.report.ToString(), Application.ProductName);
         }
 
-        private void Error_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        private void Error_FormClosing(object sender, FormClosingEventArgs e)
         {
             // As there has been an error, blow away the rest of the app reasonably tidily
-            System.Environment.Exit(1);
+            Environment.Exit(1);
         }
 
         private void ReportError_Load(object sender, EventArgs e)

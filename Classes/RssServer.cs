@@ -322,9 +322,9 @@ namespace RadioDld
 
         private string DurationString(Model.Download download)
         {
-            int hours = (int)(download.Duration / 3600);
-            int mins = (int)((download.Duration - (hours * 3600)) / 60);
-            int secs = (int)((download.Duration - (hours * 3600)) - (mins * 60));
+            int hours = download.Duration / 3600;
+            int mins = (download.Duration - (hours * 3600)) / 60;
+            int secs = (download.Duration - (hours * 3600)) - (mins * 60);
 
             return string.Format(CultureInfo.InvariantCulture, "{0:0:; ; }{1:00}:{2:00}", hours, mins, secs);
         }

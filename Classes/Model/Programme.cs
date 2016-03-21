@@ -167,7 +167,7 @@ namespace RadioDld.Model
                 {
                     if (reader.Read())
                     {
-                        return Database.RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
+                        return RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
                     }
                     else
                     {
@@ -180,7 +180,7 @@ namespace RadioDld.Model
                             {
                                 if (latestRdr.Read())
                                 {
-                                    return Database.RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
+                                    return RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
                                 }
                             }
                         }
@@ -321,7 +321,7 @@ namespace RadioDld.Model
             // Unflag any no-longer available episodes in the database
             if (previousAvailable.Count > 0)
             {
-                lock (Database.DbUpdateLock)
+                lock (DbUpdateLock)
                 {
                     using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                     {
@@ -433,7 +433,7 @@ namespace RadioDld.Model
 
             int? progid = null;
 
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("select progid from programmes where pluginid=@pluginid and extid=@extid", FetchDbConn()))
                 {

@@ -279,7 +279,7 @@ namespace RadioDld
         {
             get
             {
-                return GetValue("DatabaseVersion", Database.CurrentDbVersion);
+                return GetValue("DatabaseVersion", CurrentDbVersion);
             }
 
             set
@@ -469,7 +469,7 @@ namespace RadioDld
                 throw new ArgumentException("Property name for value must be specified", "propertyName");
             }
 
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 if (string.IsNullOrEmpty(value))
                 {

@@ -58,7 +58,7 @@ namespace RadioDld
                 throw new ArgumentException("fetchIntervalHrs cannot be zero.", "fetchIntervalHrs");
             }
 
-            System.DateTime? lastFetch = this.GetHTTPCacheLastUpdate(uri);
+            DateTime? lastFetch = this.GetHTTPCacheLastUpdate(uri);
 
             if (lastFetch != null)
             {
@@ -77,7 +77,7 @@ namespace RadioDld
                         {
                             using (MemoryStream memoryStream = new MemoryStream(cacheData))
                             {
-                                System.Runtime.Serialization.Formatters.Binary.BinaryFormatter binaryFormatter = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+                                BinaryFormatter binaryFormatter = new BinaryFormatter();
 
                                 // Deserialise the CacheWebException structure
                                 CacheWebExpInfo cachedException = default(CacheWebExpInfo);
@@ -200,7 +200,7 @@ namespace RadioDld
             }
         }
 
-        private System.DateTime? GetHTTPCacheLastUpdate(Uri uri)
+        private DateTime? GetHTTPCacheLastUpdate(Uri uri)
         {
             using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", this.FetchDbConn()))
             {

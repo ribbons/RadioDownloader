@@ -472,7 +472,7 @@ namespace PodcastProvider
             XmlDocument feedXml = new XmlDocument();
             CachedWebClient cachedWeb = CachedWebClient.GetInstance();
 
-            string feedString = cachedWeb.DownloadString(url, PodcastProvider.CacheHTTPHours, UserAgent);
+            string feedString = cachedWeb.DownloadString(url, CacheHTTPHours, UserAgent);
 
             // The LoadXml method of XmlDocument doesn't work correctly all of the time,
             // so convert the string to a UTF-8 byte array
@@ -631,7 +631,7 @@ namespace PodcastProvider
             return manager;
         }
 
-        private void DoDownload_DownloadProgress(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        private void DoDownload_DownloadProgress(object sender, DownloadProgressChangedEventArgs e)
         {
             int percent = e.ProgressPercentage;
 

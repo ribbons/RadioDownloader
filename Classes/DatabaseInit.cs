@@ -77,7 +77,7 @@ namespace RadioDld
                     File.Copy(specDbPath, appDbPath);
 
                     // Set the current database version in the new database
-                    Settings.DatabaseVersion = Database.CurrentDbVersion;
+                    Settings.DatabaseVersion = CurrentDbVersion;
                 }
                 else
                 {
@@ -102,7 +102,7 @@ namespace RadioDld
                         try
                         {
                             // Perform a check and automatic update of the database table structure
-                            UpdateStructure(specConn, Database.FetchDbConn());
+                            UpdateStructure(specConn, FetchDbConn());
 
                             // Perform any updates required which were not handled by UpdateStructure
                             switch (Settings.DatabaseVersion)
@@ -116,13 +116,13 @@ namespace RadioDld
                                     }
 
                                     break;
-                                case Database.CurrentDbVersion:
+                                case CurrentDbVersion:
                                     // Nothing to do, this is the current version.
                                     break;
                             }
 
                             // Set the current database version
-                            Settings.DatabaseVersion = Database.CurrentDbVersion;
+                            Settings.DatabaseVersion = CurrentDbVersion;
                         }
                         catch (SQLiteException)
                         {
@@ -288,7 +288,7 @@ namespace RadioDld
                 tableName,
                 null
             };
-            DataTable columns = connection.GetSchema(System.Data.SQLite.SQLiteMetaDataCollectionNames.Columns, restrictionValues);
+            DataTable columns = connection.GetSchema(SQLiteMetaDataCollectionNames.Columns, restrictionValues);
 
             foreach (DataRow columnRow in columns.Rows)
             {
@@ -303,7 +303,7 @@ namespace RadioDld
             status.StatusText = "Compacting database.  This may take several minutes...";
 
             // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
                 {
@@ -316,7 +316,7 @@ namespace RadioDld
 
         private static void Prune(Status status)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {

@@ -93,7 +93,7 @@ namespace RadioDld.Model
 
                         if (!reader.IsDBNull(imageOrdinal))
                         {
-                            return Database.RetrieveImage(reader.GetInt32(imageOrdinal));
+                            return RetrieveImage(reader.GetInt32(imageOrdinal));
                         }
 
                         using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
@@ -104,7 +104,7 @@ namespace RadioDld.Model
                             {
                                 if (progReader.Read())
                                 {
-                                    return Database.RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
+                                    return RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
                                 }
                             }
                         }
@@ -201,7 +201,7 @@ namespace RadioDld.Model
 
         protected static void SetAutoDownloadAsync(int[] epids, bool autoDownload)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
@@ -320,7 +320,7 @@ namespace RadioDld.Model
                 episodeInfo.Date = DateTime.Now;
             }
 
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {

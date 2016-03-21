@@ -117,7 +117,7 @@ namespace RadioDld
             }
         }
 
-        private void ListColumns_ItemChecked(object sender, System.Windows.Forms.ItemCheckedEventArgs e)
+        private void ListColumns_ItemChecked(object sender, ItemCheckedEventArgs e)
         {
             this.UpdateButtonState();
         }

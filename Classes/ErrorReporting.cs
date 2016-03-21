@@ -44,7 +44,7 @@ namespace RadioDld
                 this.fields.Add("version", Application.ProductVersion);
                 this.fields.Add("errortext", errorText);
                 this.fields.Add("errordetails", errorDetails);
-                this.fields.Add("operatingsystem", System.Environment.OSVersion.VersionString);
+                this.fields.Add("operatingsystem", Environment.OSVersion.VersionString);
                 this.fields.Add("architecture", IntPtr.Size == 8 ? "x64" : "x86");
                 this.fields.Add("applicationuptime", (DateTime.Now - Process.GetCurrentProcess().StartTime).TotalSeconds.ToString("0", CultureInfo.InvariantCulture));
 
@@ -86,7 +86,7 @@ namespace RadioDld
         {
             try
             {
-                if (object.ReferenceEquals(uncaughtException.GetType(), typeof(System.Data.SQLite.SQLiteException)))
+                if (ReferenceEquals(uncaughtException.GetType(), typeof(System.Data.SQLite.SQLiteException)))
                 {
                     // Add extra information to the exception to help debug sqlite concurrency
                     uncaughtException = SQLiteMonDataReader.AddReadersInfo(uncaughtException);
@@ -201,7 +201,7 @@ namespace RadioDld
                 {
                     foreach (DictionaryEntry dataEntry in uncaughtException.Data)
                     {
-                        if (object.ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) && object.ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
+                        if (ReferenceEquals(dataEntry.Key.GetType(), typeof(string)) && ReferenceEquals(dataEntry.Value.GetType(), typeof(string)))
                         {
                             this.fields[(string)dataEntry.Key] = (string)dataEntry.Value;
                         }

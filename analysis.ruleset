@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="StyleCop rules" Description=" " ToolsVersion="14.0">
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
+    <Rule Id="CS8020" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
+    <Rule Id="IDE0001" Action="Warning" />
+    <Rule Id="IDE0002" Action="Warning" />
+    <Rule Id="IDE0003" Action="None" />
+    <Rule Id="IDE0004" Action="Warning" />
+  </Rules>
+  <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers">
+    <Rule Id="SA1600" Action="None" />
+    <Rule Id="SA1636" Action="None" />
+  </Rules>
+</RuleSet>

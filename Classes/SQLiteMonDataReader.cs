@@ -83,7 +83,7 @@ namespace RadioDld
             return this.wrappedReader.GetBytes(i, fieldOffset, buffer, bufferOffset, length);
         }
 
-        public System.DateTime GetDateTime(int i)
+        public DateTime GetDateTime(int i)
         {
             return this.wrappedReader.GetDateTime(i);
         }

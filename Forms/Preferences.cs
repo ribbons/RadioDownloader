@@ -41,7 +41,7 @@ namespace RadioDld
             browse.SelectedPath = this.TextSaveIn.Text;
             browse.Description = "Choose the folder to save downloaded programmes in:";
 
-            if (browse.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (browse.ShowDialog() == DialogResult.OK)
             {
                 this.TextSaveIn.Text = browse.SelectedPath;
                 this.folderChanged = true;
@@ -109,7 +109,7 @@ namespace RadioDld
             OsUtils.ApplyRunOnStartup();
         }
 
-        private void Preferences_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        private void Preferences_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (this.cancelClose)
             {

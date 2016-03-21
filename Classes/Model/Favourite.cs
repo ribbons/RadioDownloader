@@ -200,7 +200,7 @@ namespace RadioDld.Model
 
         private static void AddAsync(int progid)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("insert into favourites (progid) values (@progid)", FetchDbConn()))
                 {
@@ -228,12 +228,12 @@ namespace RadioDld.Model
                 Added(progid);
             }
 
-            Programme.RaiseUpdated(progid);
+            RaiseUpdated(progid);
         }
 
         private static void RemoveAsync(int progid)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("delete from favourites where progid=@progid", FetchDbConn()))
                 {
@@ -247,7 +247,7 @@ namespace RadioDld.Model
                 }
             }
 
-            Programme.RaiseUpdated(progid);
+            RaiseUpdated(progid);
 
             if (Removed != null)
             {

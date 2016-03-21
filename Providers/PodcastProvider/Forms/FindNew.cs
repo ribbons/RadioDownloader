@@ -121,7 +121,7 @@ namespace PodcastProvider
             }
         }
 
-        private void TextFeedUrl_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
+        private void TextFeedUrl_KeyPress(object sender, KeyPressEventArgs e)
         {
             try
             {

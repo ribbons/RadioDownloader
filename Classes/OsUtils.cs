@@ -60,7 +60,7 @@ namespace RadioDld
 
         internal static bool WinSevenOrLater()
         {
-            OperatingSystem curOs = System.Environment.OSVersion;
+            OperatingSystem curOs = Environment.OSVersion;
 
             if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 6) && (curOs.Version.Minor >= 1)) || (curOs.Version.Major > 6)))
             {
@@ -74,7 +74,7 @@ namespace RadioDld
 
         internal static bool WinVistaOrLater()
         {
-            OperatingSystem curOs = System.Environment.OSVersion;
+            OperatingSystem curOs = Environment.OSVersion;
 
             if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 6) && (curOs.Version.Minor >= 0)) || (curOs.Version.Major > 6)))
             {
@@ -88,7 +88,7 @@ namespace RadioDld
 
         internal static bool WinXpOrLater()
         {
-            OperatingSystem curOs = System.Environment.OSVersion;
+            OperatingSystem curOs = Environment.OSVersion;
 
             if (curOs.Platform == PlatformID.Win32NT && (((curOs.Version.Major == 5) && (curOs.Version.Minor >= 1)) || (curOs.Version.Major > 5)))
             {

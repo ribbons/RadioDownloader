@@ -36,7 +36,7 @@ namespace PodcastProvider
             this.destPath = destPath;
         }
 
-        public delegate void DownloadProgressEventHandler(object sender, System.Net.DownloadProgressChangedEventArgs e);
+        public delegate void DownloadProgressEventHandler(object sender, DownloadProgressChangedEventArgs e);
 
         public event DownloadProgressEventHandler DownloadProgress;
 
@@ -64,7 +64,7 @@ namespace PodcastProvider
             this.downloadClient.CancelAsync();
         }
 
-        private void DownloadClient_DownloadProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        private void DownloadClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             if (this.DownloadProgress != null)
             {

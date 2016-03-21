@@ -176,7 +176,7 @@ namespace RadioDld
 
                         lock (episodeListThreadLock)
                         {
-                            if (!object.ReferenceEquals(Thread.CurrentThread, episodeListThread))
+                            if (!ReferenceEquals(Thread.CurrentThread, episodeListThread))
                             {
                                 return;
                             }

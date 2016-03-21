@@ -54,7 +54,7 @@ namespace RadioDld
             GC.SuppressFinalize(this);
         }
 
-        protected override void Initialize(System.Windows.Forms.ToolStrip toolStrip)
+        protected override void Initialize(ToolStrip toolStrip)
         {
             base.Initialize(toolStrip);
 
@@ -64,7 +64,7 @@ namespace RadioDld
             toolStrip.FindForm().Deactivate += this.Form_Deactivated;
         }
 
-        protected override void OnRenderItemImage(System.Windows.Forms.ToolStripItemImageRenderEventArgs e)
+        protected override void OnRenderItemImage(ToolStripItemImageRenderEventArgs e)
         {
             if (e.Item.DisplayStyle == ToolStripItemDisplayStyle.ImageAndText)
             {
@@ -116,7 +116,7 @@ namespace RadioDld
             base.OnRenderItemImage(e);
         }
 
-        protected override void OnRenderToolStripBackground(System.Windows.Forms.ToolStripRenderEventArgs e)
+        protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)
         {
             if (OsUtils.CompositionEnabled())
             {
@@ -154,7 +154,7 @@ namespace RadioDld
             }
         }
 
-        protected override void OnRenderButtonBackground(System.Windows.Forms.ToolStripItemRenderEventArgs e)
+        protected override void OnRenderButtonBackground(ToolStripItemRenderEventArgs e)
         {
             if (e.Item.DisplayStyle == ToolStripItemDisplayStyle.Image)
             {
@@ -212,7 +212,7 @@ namespace RadioDld
             }
         }
 
-        protected override void OnRenderItemText(System.Windows.Forms.ToolStripItemTextRenderEventArgs e)
+        protected override void OnRenderItemText(ToolStripItemTextRenderEventArgs e)
         {
             if (!OsUtils.CompositionEnabled())
             {
@@ -325,7 +325,7 @@ namespace RadioDld
             e.Graphics.ReleaseHdc();
         }
 
-        protected override void OnRenderToolStripBorder(System.Windows.Forms.ToolStripRenderEventArgs e)
+        protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
         {
             if (OsUtils.WinVistaOrLater() && VisualStyleRenderer.IsSupported)
             {

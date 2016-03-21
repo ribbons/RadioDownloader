@@ -140,7 +140,7 @@ namespace RadioDld.Model
 
         public static bool Add(int progid)
         {
-            Model.Programme progInfo = new Model.Programme(progid);
+            Programme progInfo = new Programme(progid);
 
             if (progInfo.SingleEpisode)
             {
@@ -233,7 +233,7 @@ namespace RadioDld.Model
 
         private static void AddAsync(int progid)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("insert into subscriptions (progid) values (@progid)", FetchDbConn()))
                 {
@@ -261,12 +261,12 @@ namespace RadioDld.Model
                 Added(progid);
             }
 
-            Programme.RaiseUpdated(progid);
+            RaiseUpdated(progid);
         }
 
         private static void RemoveAsync(int progid)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("delete from subscriptions where progid=@progid", FetchDbConn()))
                 {
@@ -280,7 +280,7 @@ namespace RadioDld.Model
                 }
             }
 
-            Programme.RaiseUpdated(progid);
+            RaiseUpdated(progid);
 
             if (Removed != null)
             {
@@ -292,7 +292,7 @@ namespace RadioDld.Model
         {
             // Fetch the current subscriptions into a list, so that the reader doesn't remain open while
             // checking all of the subscriptions, as this blocks writes to the database from other threads
-            List<Subscription> subscriptions = Subscription.FetchAll();
+            List<Subscription> subscriptions = FetchAll();
 
             // Work through the list of subscriptions and check for new episodes
             foreach (Subscription subscription in subscriptions)
@@ -301,7 +301,7 @@ namespace RadioDld.Model
 
                 try
                 {
-                    episodeExtIds = Programme.GetAvailableEpisodes(subscription.Progid, false);
+                    episodeExtIds = GetAvailableEpisodes(subscription.Progid, false);
                 }
                 catch (ProviderException)
                 {

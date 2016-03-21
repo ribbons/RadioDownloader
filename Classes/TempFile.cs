@@ -75,7 +75,7 @@ namespace RadioDld
         {
             DeleteFiles();
 
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("insert into tempfiles (filepath) values (@filepath)", FetchDbConn()))
                 {
@@ -169,7 +169,7 @@ namespace RadioDld
                             continue;
                         }
 
-                        lock (Database.DbUpdateLock)
+                        lock (DbUpdateLock)
                         {
                             filepathParam.Value = filePath;
                             command.ExecuteNonQuery();

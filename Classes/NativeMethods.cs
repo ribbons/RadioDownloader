@@ -167,7 +167,7 @@ namespace RadioDld
 
             void SetThumbnailTooltip(IntPtr hwnd, [MarshalAs(UnmanagedType.LPWStr)] string pszTip);
 
-            void SetThumbnailClip(IntPtr hwnd, NativeMethods.RECT prcClip);
+            void SetThumbnailClip(IntPtr hwnd, RECT prcClip);
         }
 
         // API Declarations
@@ -213,7 +213,7 @@ namespace RadioDld
         public static extern IntPtr GetWindow(IntPtr hWnd, int wCmd);
 
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int GetClassName(System.IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
+        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
         [DllImport("user32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]

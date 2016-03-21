@@ -236,7 +236,7 @@ namespace RadioDld
                     {
                         this.AddDownload(downloadItem);
 
-                        status.ProgressBarValue = (int)((progress / downloadItems.Count) * 100);
+                        status.ProgressBarValue = (progress / downloadItems.Count) * 100;
                         progress += 1;
                     }
 

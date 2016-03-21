@@ -73,7 +73,7 @@ namespace RadioDld
                     }
                     else
                     {
-                        this.providerProgInfo.Image = Database.RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
+                        this.providerProgInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
                     }
 
                     this.providerEpisodeInfo = new EpisodeInfo(this.episodeInfo);
@@ -93,7 +93,7 @@ namespace RadioDld
                     }
                     else
                     {
-                        this.providerEpisodeInfo.Image = Database.RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
+                        this.providerEpisodeInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("epimg")));
                     }
 
                     using (SQLiteCommand extCommand = new SQLiteCommand("select name, value from episodeext where epid=@epid", FetchDbConn()))
@@ -250,7 +250,7 @@ namespace RadioDld
 
             finalName += "." + fileExtension;
 
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 Model.Download.SetComplete(this.episodeInfo.Epid, finalName);
                 Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.Date);

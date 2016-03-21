@@ -24,7 +24,7 @@ namespace RadioDld
 
     internal static class TextUtils
     {
-        public static string StripDateFromName(string name, System.DateTime stripDate)
+        public static string StripDateFromName(string name, DateTime stripDate)
         {
             // Use regex to remove a number of different date formats from episode titles.
             // Will only remove dates with the same month & year as the programme itself, but any day of the month

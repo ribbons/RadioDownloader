@@ -4,6 +4,12 @@
     "documentationRules": {
       "documentInternalElements": "false",
       "documentExposedElements": "false"
+    },
+	"layoutRules": {
+		"newlineAtEndOfFile": "require"
+    },
+	"documentationRules": {
+		"xmlHeader": false
     }
   }
 }

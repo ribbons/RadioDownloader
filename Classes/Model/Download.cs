@@ -213,7 +213,7 @@ namespace RadioDld.Model
 
             using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid and status=@status order by episodes.epid desc limit @count", FetchDbConn()))
             {
-                command.Parameters.Add(new SQLiteParameter("@status", Download.DownloadStatus.Downloaded));
+                command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
                 command.Parameters.Add(new SQLiteParameter("@count", count));
 
                 using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
@@ -261,7 +261,7 @@ namespace RadioDld.Model
 
         public static void SetComplete(int epid, string fileName)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn()))
                 {
@@ -301,7 +301,7 @@ namespace RadioDld.Model
                     break;
             }
 
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, errortime=datetime('now'), errortype=@errortype, errordetails=@errordetails, errorcount=errorcount+1, totalerrors=totalerrors+1 where epid=@epid", FetchDbConn()))
                 {
@@ -331,7 +331,7 @@ namespace RadioDld.Model
 
         public static void ResetAsync(int epid, bool auto)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 string errorCount = string.Empty;
 
@@ -422,7 +422,7 @@ namespace RadioDld.Model
             }
         }
 
-        public static string FindFreeSaveFileName(string formatString, Model.Programme progInfo, Model.Episode epInfo, string baseSavePath)
+        public static string FindFreeSaveFileName(string formatString, Programme progInfo, Episode epInfo, string baseSavePath)
         {
             string rootName = Path.Combine(baseSavePath, CreateSaveFileName(formatString, progInfo, epInfo));
             string savePath = rootName;
@@ -463,7 +463,7 @@ namespace RadioDld.Model
             return savePath;
         }
 
-        public static string CreateSaveFileName(string formatString, Model.Programme progInfo, Model.Episode epInfo)
+        public static string CreateSaveFileName(string formatString, Programme progInfo, Episode epInfo)
         {
             if (string.IsNullOrEmpty(formatString))
             {
@@ -551,7 +551,7 @@ namespace RadioDld.Model
 
                             if (newDownloadPath != download.DownloadPath)
                             {
-                                lock (Database.DbUpdateLock)
+                                lock (DbUpdateLock)
                                 {
                                     using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                                     {
@@ -777,7 +777,7 @@ namespace RadioDld.Model
         {
             List<int> added = new List<int>();
 
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
@@ -826,7 +826,7 @@ namespace RadioDld.Model
 
         private static void BumpPlayCountAsync(int epid)
         {
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteCommand command = new SQLiteCommand("update downloads set playcount=playcount+1 where epid=@epid", FetchDbConn()))
                 {
@@ -856,7 +856,7 @@ namespace RadioDld.Model
                 }
             }
 
-            lock (Database.DbUpdateLock)
+            lock (DbUpdateLock)
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
@@ -884,7 +884,7 @@ namespace RadioDld.Model
                     if (!auto)
                     {
                         // Unset the auto download flag, so if the user is subscribed it doesn't just download again
-                        Episode.SetAutoDownloadAsync(new int[] { epid }, false);
+                        SetAutoDownloadAsync(new int[] { epid }, false);
                     }
 
                     transMon.Trans.Commit();
