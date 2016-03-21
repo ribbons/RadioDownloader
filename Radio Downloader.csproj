@@ -284,11 +284,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Forms\ReportError.resx">
       <SubType>Designer</SubType>
       <DependentUpon>ReportError.cs</DependentUpon>
@@ -380,10 +375,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
     <None Include="store.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
