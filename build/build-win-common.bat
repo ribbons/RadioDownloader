@@ -44,15 +44,6 @@ if ERRORLEVEL 1 exit /B 1
 msbuild /p:Configuration=Release /p:Platform=%platname% "../Radio Downloader.sln"
 if ERRORLEVEL 1 exit /B 1
 
-rem Run FxCop on the built assemblies
-"%ProgramFiles(x86)%\Microsoft FxCop 10.0\FxCopCmd.exe" "/project:../Radio Downloader.FxCop" "/out:../obj/FxCopViolations.xml"
-if ERRORLEVEL 1 exit /B 1
-
-rem Fail build if there were FxCop violations
-if exist ..\obj\FxCopViolations.xml (
-	exit /B 1
-)
-
 goto :EOF
 
 :noplatform
