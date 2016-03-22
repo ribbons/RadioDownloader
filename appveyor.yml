@@ -13,4 +13,7 @@ platform:
   - win64
   - mono
 
-configuration: Release
+configuration: Package
+
+artifacts:
+  - path: installer/Radio_Downloader-win*.msi

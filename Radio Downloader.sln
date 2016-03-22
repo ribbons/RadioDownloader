@@ -7,11 +7,20 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radio Downloader", "Radio D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PodcastProvider", "Providers\PodcastProvider\PodcastProvider.csproj", "{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}"
 EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Installer", "installer\Installer.wixproj", "{15922BEB-0E0B-4C73-993A-6678F139F477}"
+	ProjectSection(ProjectDependencies) = postProject
+		{0B79D58E-5E08-493F-AC06-CC4922583572} = {0B79D58E-5E08-493F-AC06-CC4922583572}
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2} = {B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|mono = Debug|mono
 		Debug|win32 = Debug|win32
 		Debug|win64 = Debug|win64
+		Package|mono = Package|mono
+		Package|win32 = Package|win32
+		Package|win64 = Package|win64
 		Release|mono = Release|mono
 		Release|win32 = Release|win32
 		Release|win64 = Release|win64
@@ -23,6 +32,12 @@ Global
 		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|win32.Build.0 = Debug|x86
 		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|win64.ActiveCfg = Debug|x64
 		{0B79D58E-5E08-493F-AC06-CC4922583572}.Debug|win64.Build.0 = Debug|x64
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Package|mono.ActiveCfg = Release|Any CPU
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Package|mono.Build.0 = Release|Any CPU
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Package|win32.ActiveCfg = Release|x86
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Package|win32.Build.0 = Release|x86
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Package|win64.ActiveCfg = Release|x64
+		{0B79D58E-5E08-493F-AC06-CC4922583572}.Package|win64.Build.0 = Release|x64
 		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|mono.ActiveCfg = Release|Any CPU
 		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|mono.Build.0 = Release|Any CPU
 		{0B79D58E-5E08-493F-AC06-CC4922583572}.Release|win32.ActiveCfg = Release|x86
@@ -35,12 +50,29 @@ Global
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|win32.Build.0 = Debug|x86
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|win64.ActiveCfg = Debug|x64
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Debug|win64.Build.0 = Debug|x64
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Package|mono.ActiveCfg = Release|Any CPU
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Package|mono.Build.0 = Release|Any CPU
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Package|win32.ActiveCfg = Release|x86
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Package|win32.Build.0 = Release|x86
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Package|win64.ActiveCfg = Release|x64
+		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Package|win64.Build.0 = Release|x64
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|mono.ActiveCfg = Release|Any CPU
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|mono.Build.0 = Release|Any CPU
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|win32.ActiveCfg = Release|x86
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|win32.Build.0 = Release|x86
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|win64.ActiveCfg = Release|x64
 		{B8C8EEA9-5E4C-4F90-BC70-C4431C2438B2}.Release|win64.Build.0 = Release|x64
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Debug|mono.ActiveCfg = Debug|x86
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Debug|win32.ActiveCfg = Debug|x86
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Debug|win64.ActiveCfg = Debug|x64
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Package|mono.ActiveCfg = Release|x86
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Package|win32.ActiveCfg = Release|x86
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Package|win32.Build.0 = Release|x86
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Package|win64.ActiveCfg = Release|x64
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Package|win64.Build.0 = Release|x64
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Release|mono.ActiveCfg = Release|x86
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Release|win32.ActiveCfg = Release|x86
+		{15922BEB-0E0B-4C73-993A-6678F139F477}.Release|win64.ActiveCfg = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
