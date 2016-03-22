@@ -10,7 +10,7 @@ build:
 
 platform:
   - win32
-#  - win64  # Currently fails with error CS8012
+  - win64
   - mono
 
 configuration: Release

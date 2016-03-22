@@ -156,7 +156,10 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
-    <Reference Include="System.Web" />
+    <Reference Include="System.Web">
+      <HintPath Condition=" '$(Platform)' == 'x64' ">C:\Windows\Microsoft.NET\Framework64\v2.0.50727\System.Web.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
     </Reference>
