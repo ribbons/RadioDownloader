@@ -1,7 +1,9 @@
 // Disable warnings in the generated code
+#if !__MonoCS__
 #pragma warning disable IDE0001 // Simplify Names
 #pragma warning disable IDE0002 // Simplify Member Access
 #pragma warning disable IDE0004 // Remove Unnecessary Cast
+#endif
 
 namespace PodcastProvider
 {
