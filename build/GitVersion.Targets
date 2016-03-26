@@ -1,128 +1,86 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <UsingTask
-    TaskName="ExistsInPath"
-    TaskFactory="CodeTaskFactory"
-    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <FileName ParameterType="System.String" Required="true" />
-      <Exists ParameterType="System.Boolean" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System.IO" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-          foreach (var path in Environment.GetEnvironmentVariable("PATH").Split(';'))
-          {
-              var fullPath = Path.Combine(path, FileName + ".exe");
-              
-              if (File.Exists(fullPath))
-              {
-                  Exists = true;
-                  return true;
-              }
-          }
-          
-          Exists = false;
-        ]]>
-      </Code>
-    </Task>
-  </UsingTask>
-  
-  <UsingTask
-    TaskName="GetVersion"
-    TaskFactory="CodeTaskFactory"
-    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <VersionString ParameterType="System.String" Required="true" />
-      <Version ParameterType="System.String" Output="true" />
-      <FileVersion ParameterType="System.String" Output="true" />
-      <RawVersion ParameterType="System.String" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System.Text.RegularExpressions" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-          var match = Regex.Match(VersionString, @"^v?(?<major>\d+)\.(?<minor>\d+)(\.(?<patch>\d+))?-(?<revisions>\d+)-[a-z0-9]+$");
-          int major, minor, patch, revisions;
-          Int32.TryParse(match.Groups["major"].Value, out major);
-          Int32.TryParse(match.Groups["minor"].Value, out minor);
-          Int32.TryParse(match.Groups["patch"].Value, out patch);
-          Int32.TryParse(match.Groups["revisions"].Value, out revisions);
-          _Version = new Version(major, minor, 0, 0).ToString();
-          _FileVersion = new Version(major, minor, patch, revisions).ToString();
-          _RawVersion = match.Groups[0].Value;
-        ]]>
-      </Code>
-    </Task>
-  </UsingTask>
-  
-  <UsingTask
-    TaskName="GetYear"
-    TaskFactory="CodeTaskFactory"
-    AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <ParameterGroup>
-      <DateString ParameterType="System.String" Required="true" />
-      <Year ParameterType="System.String" Output="true" />
-    </ParameterGroup>
-    <Task>
-      <Using Namespace="System" />
-      <Using Namespace="System.Globalization" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-          _Year = DateTime.ParseExact(DateString, "yyyy-MM-dd HH:mm:ss K", CultureInfo.InvariantCulture).ToString("yyyy");
-        ]]>
-      </Code>
-    </Task>
-  </UsingTask>
-  
-  <Target Name="CreateVersionInfo" BeforeTargets="CoreCompile">
-    <ExistsInPath FileName="git">
-      <Output TaskParameter="Exists" PropertyName="GitExists" />
-    </ExistsInPath>
-    
-    <Warning Text="Unable to find git executable in the current PATH." Condition="!$(GitExists)" />
-    
-    <Exec Command="git describe --long > &quot;$(ProjectDir)\$(IntermediateOutputPath)git-version.txt&quot;" Outputs="$(ProjectDir)\$(IntermediateOutputPath)git-version.txt" WorkingDirectory="$(SolutionDir)" Condition="$(GitExists)" />
-    <Exec Command="git show -s --format=&quot;%%ci&quot; > &quot;$(ProjectDir)\$(IntermediateOutputPath)git-date.txt&quot;" Outputs="$(ProjectDir)\$(IntermediateOutputPath)git-date.txt" WorkingDirectory="$(SolutionDir)" Condition="$(GitExists)" />
-    
-    <ReadLinesFromFile File="$(IntermediateOutputPath)git-version.txt" Condition="$(GitExists)">
-      <Output TaskParameter="Lines" ItemName="VersionLines"/>
-    </ReadLinesFromFile>
-    
-    <ReadLinesFromFile File="$(IntermediateOutputPath)git-date.txt" Condition="$(GitExists)">
-      <Output TaskParameter="Lines" ItemName="DateLines"/>
-    </ReadLinesFromFile>
-    
-    <GetVersion VersionString="@(VersionLines)" Condition="$(GitExists)">
-      <Output TaskParameter="Version" PropertyName="Version"/>
-      <Output TaskParameter="FileVersion" PropertyName="FileVersion"/>
-      <Output TaskParameter="RawVersion" PropertyName="RawVersion"/>
-    </GetVersion>
-    
-    <GetYear DateString="@(DateLines)" Condition="$(GitExists)">
-      <Output TaskParameter="Year" PropertyName="Year"/>
-    </GetYear>
-    
-    <PropertyGroup>
-      <Version Condition="'$(Version)'==''">0.0.0.0</Version>
-      <FileVersion Condition="'$(FileVersion)'==''">0.0.0.0</FileVersion>
-      <RawVersion Condition="'$(RawVersion)'==''">0.0.0.0</RawVersion>
-      <Year Condition="'$(Year)'==''">0000</Year>
-    </PropertyGroup>
-    
-    <WriteLinesToFile Overwrite="true" File="$(ProjectDir)/Properties/VersionInfo.cs" Encoding="UTF-8" Lines='//------------------------------------------------------------------------------
-// &lt;auto-generated&gt;
-//     This code was generated by a tool.
-//
-//     Changes to this file may cause incorrect behavior and will be lost if
-//     the code is regenerated.
-// &lt;/auto-generated&gt;
-//------------------------------------------------------------------------------
+  <!-- <Import Project="..\packages\MSBuildTasks.1.4.0.128\tools\MSBuild.Community.Tasks.Targets" /> -->
 
-[assembly: System.Reflection.AssemblyVersion("$(Version)")]
-[assembly: System.Reflection.AssemblyFileVersion("$(FileVersion)")]
-[assembly: System.Reflection.AssemblyInformationalVersion("$(RawVersion)")]
-[assembly: System.Reflection.AssemblyCopyright("Copyright © 2007-$(Year)")]' />
+  <!-- Once https://github.com/loresoft/msbuildtasks/pull/212 is included in a
+       release of MSBuildTasks on NuGet, the line above can be uncommented and
+       the workaround below removed -->
+  <PropertyGroup>
+    <MSBuildCommunityTasksLib>..\packages\MSBuildTasks.1.4.0.128\tools\MSBuild.Community.Tasks.dll</MSBuildCommunityTasksLib>
+  </PropertyGroup>
+
+  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.AssemblyInfo" />
+  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Git.GitDescribe" />
+  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Git.GitCommitDate" />
+  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.RegexReplace" />
+  <!-- End of workaround for https://github.com/loresoft/msbuildtasks/pull/212 -->
+
+  <Target Name="CreateVersionInfo" BeforeTargets="CoreCompile">
+    <GitDescribe>
+      <Output TaskParameter="Tag" PropertyName="GitTag" />
+      <Output TaskParameter="CommitHash" PropertyName="GitCommitHash" />
+      <Output TaskParameter="CommitCount" PropertyName="GitCommitCount" />
+    </GitDescribe>
+
+    <GitCommitDate Format="yyyy">
+      <Output TaskParameter="CommitDate" PropertyName="CopyrightYear" />
+    </GitCommitDate>
+
+    <PropertyGroup>
+      <MajorVerPat>^v?([0-9]+).*$</MajorVerPat>
+      <MinorVerPat>^v?[0-9]+[.]([0-9]+).*$</MinorVerPat>
+      <PatchVerPat>^v?[0-9]+[.][0-9]+[.]([0-9]+).*$</PatchVerPat>
+      <TruncGitHashPat>^([a-z0-9]{8}).*$</TruncGitHashPat>
+    </PropertyGroup>
+
+    <RegexReplace Input="$(GitTag)" Expression="$(MajorVerPat)" Replacement="TRUE">
+      <Output TaskParameter="Output" PropertyName="HasMajorVer" />
+    </RegexReplace>
+
+    <RegexReplace Input="$(GitTag)" Expression="$(MajorVerPat)" Replacement="$1" Condition="$(HasMajorVer)=='TRUE'">
+      <Output TaskParameter="Output" PropertyName="MajorVer" />
+    </RegexReplace>
+
+    <RegexReplace Input="$(GitTag)" Expression="$(MinorVerPat)" Replacement="TRUE">
+      <Output TaskParameter="Output" PropertyName="HasMinorVer" />
+    </RegexReplace>
+
+    <RegexReplace Input="$(GitTag)" Expression="$(MinorVerPat)" Replacement="$1" Condition="$(HasMinorVer)=='TRUE'">
+      <Output TaskParameter="Output" PropertyName="MinorVer" />
+    </RegexReplace>
+
+    <RegexReplace Input="$(GitTag)" Expression="$(PatchVerPat)" Replacement="TRUE">
+      <Output TaskParameter="Output" PropertyName="HasPatchVer" />
+    </RegexReplace>
+
+    <RegexReplace Input="$(GitTag)" Expression="$(PatchVerPat)" Replacement="$1" Condition="$(HasPatchVer)=='TRUE'">
+      <Output TaskParameter="Output" PropertyName="PatchVer" />
+    </RegexReplace>
+
+    <RegexReplace Input="$(GitCommitHash)" Expression="$(TruncGitHashPat)" Replacement="TRUE">
+      <Output TaskParameter="Output" PropertyName="HasTruncGitHash" />
+    </RegexReplace>
+
+    <RegexReplace Input="$(GitCommitHash)" Expression="$(TruncGitHashPat)" Replacement="$1" Condition="$(HasTruncGitHash)=='TRUE'">
+      <Output TaskParameter="Output" PropertyName="TruncGitHash" />
+    </RegexReplace>
+
+    <PropertyGroup>
+      <MajorVer Condition="'$(MajorVer)'==''">0</MajorVer>
+      <MinorVer Condition="'$(MinorVer)'==''">0</MinorVer>
+      <PatchVer Condition="'$(PatchVer)'==''">0</PatchVer>
+      <GitTag Condition="'$(GitTag)'==''">?.?</GitTag>
+      <GitCommitCount Condition="'$(GitCommitCount)'==''">0</GitCommitCount>
+      <TruncGitHash Condition="'$(TruncGitHash)'==''">Unknown</TruncGitHash>
+      <CopyrightYear Condition="'$(CopyrightYear)'==''">0000</CopyrightYear>
+      <InfoVersion>$(GitTag)-$(TruncGitHash)</InfoVersion>
+      <InfoVersion Condition="'$(GitCommitCount)'!='0'">$(GitTag)-$(GitCommitCount)-$(TruncGitHash)</InfoVersion>
+    </PropertyGroup>
+
+    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\VersionInfo.cs"
+      AssemblyVersion="$(MajorVer).$(MinorVer).$(PatchVer).0"
+      AssemblyFileVersion="$(MajorVer).$(MinorVer).$(PatchVer).$(GitCommitCount)"
+      AssemblyInformationalVersion="$(InfoVersion)"
+      AssemblyCopyright="Copyright © 2007-$(CopyrightYear)" />
   </Target>
 </Project>
