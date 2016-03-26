@@ -1,0 +1,17 @@
+language: csharp
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - libmono-microsoft-build2.0-cil
+      - libmono-system2.0-cil
+
+mono:
+  - 3.8.0
+
+install:
+  - nuget restore
+
+script:
+  - xbuild /p:Configuration=Release /p:Platform=mono "Radio Downloader.sln"
