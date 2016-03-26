@@ -19,6 +19,7 @@
 namespace RadioDld
 {
     using System;
+    using System.Configuration;
     using System.Data.SQLite;
     using System.Drawing;
     using System.IO;
@@ -44,7 +45,18 @@ namespace RadioDld
         {
             if (dbConn == null)
             {
-                dbConn = new SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False");
+                ConnectionStringSettings storeConnectionStringSettings = ConfigurationManager.ConnectionStrings["RadioDld.Properties.Settings.StoreConnectionString"];
+                string storeConnectionString;
+                if (storeConnectionStringSettings == null)
+                {
+                    storeConnectionString = "Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False";
+                }
+                else
+                {
+                    storeConnectionString = storeConnectionStringSettings.ConnectionString;
+                }
+
+                dbConn = new SQLiteConnection(storeConnectionString);
                 dbConn.Open();
             }
 
