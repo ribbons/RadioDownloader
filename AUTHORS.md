@@ -14,3 +14,6 @@ Sorting in favourites list
 
 ### Nick Sharples
 Original proof of concept code for RSS server
+
+### Boris Ockham
+Optional path to the database in .config

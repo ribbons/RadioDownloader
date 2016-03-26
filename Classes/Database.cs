@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 namespace RadioDld
 {
     using System;
+    using System.Configuration;
     using System.Data.SQLite;
     using System.Drawing;
     using System.IO;
@@ -44,7 +45,13 @@ namespace RadioDld
         {
             if (dbConn == null)
             {
-                dbConn = new SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False");
+                string storePath = ConfigurationManager.AppSettings["RadioDld.Properties.Settings.StorePath"];
+                if (string.IsNullOrEmpty(storePath) || !File.Exists(storePath))
+                {
+                    storePath = Path.Combine(FileUtils.GetAppDataFolder(), "store.db");
+                }
+
+                dbConn = new SQLiteConnection("Data Source=" + storePath + ";Version=3;New=False");
                 dbConn.Open();
             }
 
