@@ -385,9 +385,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.manifest" />
-    <None Include="store.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="store.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\icons\Icon.png" />
@@ -399,10 +397,20 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="build\GitVersion.Targets" />
+  <!-- Generate store.db from store.sql, but only when required -->
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <CompileDependsOn>
+        GenerateStoreDb;
+        $(CompileDependsOn);
+        CopyStoreDb
+    </CompileDependsOn>
+    <Sqlite3Path Condition="'$(OS)' == 'Windows_NT'">tools\</Sqlite3Path>
   </PropertyGroup>
+  <Target Name="GenerateStoreDb" Inputs="store.sql" Outputs="$(IntermediateOutputPath)store.db">
+    <Delete Files="$(IntermediateOutputPath)store.db" />
+    <Exec Command="$(Sqlite3Path)sqlite3 $(IntermediateOutputPath)store.db &lt; store.sql" />
+  </Target>
+  <Target Name="CopyStoreDb" Inputs="$(IntermediateOutputPath)store.db" Outputs="$(OutputPath)store.db">
+    <Copy SourceFiles="$(IntermediateOutputPath)store.db" DestinationFolder="$(OutputPath)" />
+  </Target>
 </Project>
