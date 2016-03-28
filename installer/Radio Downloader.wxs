@@ -1,103 +1,122 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!--
+    This file is part of Radio Downloader.
+    Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
 <Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
-	<Product Id="*" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader"
-	         Version="!(bind.FileVersion.Radio_Downloader.exe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
-		<Package InstallScope="perMachine" Compressed="yes" Keywords="Radio Downloader,Installer,Radio,Podcasts"
-		         Comments="Radio Downloader allows you to easily download radio station content and podcasts." />
-		<Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes" />
-		
-		<?include UI.wxs ?>
-		
-		<?if $(sys.BUILDARCH) = "x64" ?>
-			<?define ProgramFiles = "ProgramFiles64Folder" ?>
-			<?define PlatformBin = "..\bin\win64" ?>
-		<?else ?>
-			<?define ProgramFiles = "ProgramFilesFolder" ?>
-			<?define PlatformBin = "..\bin\win32" ?>
-		<?endif ?>
-		
-		<Property Id="InstallMode"><![CDATA[Custom]]></Property>
-		<Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
-		<Property Id="PROMPTROLLBACKCOST"><![CDATA[P]]></Property>
-		
-		<Property Id="ARPHELPLINK" Value="http://www.nerdoftheherd.com/tools/radiodld/" />
-		<Property Id="ARPNOMODIFY" Value="1" />
-		<Property Id="ARPPRODUCTICON" Value="RadioDownloader.exe" />
-		
-		<Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
-		<Condition Message="This version of [ProductName] is already installed.  To remove it, right-click on the installer and choose 'Uninstall'.">NOT ((Installed AND NOT (REINSTALL OR REMOVE)))</Condition>
-		
-		<?if $(sys.BUILDARCH) = "x86" ?>
-			<Condition Message="This is the 32-bit Radio Downloader installer, but you are running 64-bit Windows.  Please download the 64-bit installer from http://nerdoftheherd.com/tools/radiodld/">NOT Msix64</Condition>
-		<?endif ?>
-		
-		<MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
-		              Schedule="afterInstallInitialize" AllowSameVersionUpgrades="yes" />
-		
-		<AdminExecuteSequence />
-		
-		<InstallExecuteSequence>
-			<Custom Action="CloseBeforeUninstall" Before="InstallValidate">Installed OR WIX_UPGRADE_DETECTED</Custom>
-			<Custom Action="RunAfterInstall" After="InstallFinalize">NOT Installed</Custom>
-		</InstallExecuteSequence>
-		
-		<Directory Id="TARGETDIR" Name="SourceDir">
-			<Directory Id="$(var.ProgramFiles)" Name="Program Files">
-				<Directory Id="INSTALLLOCATION" Name="Radio Downloader">
-					<Component>
-						<File Source="$(var.PlatformBin)\Radio Downloader.exe" KeyPath="yes">
-							<Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloader.exe" Description="Easily download radio station content and podcasts.">
-								<Icon Id="RadioDownloader.exe" SourceFile="..\Resources\icons\Icon.ico" />
-							</Shortcut>
-						</File>
-					</Component>
-					<Component>
-						<File Source="$(var.PlatformBin)\Radio Downloader.exe.config" />
-					</Component>
-					<Component>
-						<File Source="$(var.PlatformBin)\Radio Downloader.pdb" />
-					</Component>
-					<Component>
-						<File Source="$(var.PlatformBin)\System.Data.SQLite.DLL" />
-					</Component>
-					<Component>
-						<File Source="..\store.db" />
-					</Component>
-					<Component>
-						<File Source="..\LICENSE.txt" />
-					</Component>
-					<Component>
-						<File Name="AUTHORS.txt" Source="..\AUTHORS.md" />
-					</Component>
-					<Component>
-						<File Source="..\bin\HtmlAgilityPack.dll" />
-					</Component>
-					<Component>
-						<File Source="$(var.PlatformBin)\PodcastProvider.dll" />
-					</Component>
-					<Component>
-						<File Source="$(var.PlatformBin)\PodcastProvider.pdb" />
-					</Component>
-				</Directory>
-			</Directory>
-			<Directory Id="ProgramMenuFolder" Name="Start Menu Programs" />
-		</Directory>
-		
-		<Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow"
-		         AllowAdvertise="no" Description="The Radio Downloader application.">
-			<ComponentRef Id="Radio_Downloader.exe" />
-			<ComponentRef Id="Radio_Downloader.exe.config" />
-			<ComponentRef Id="Radio_Downloader.pdb" />
-			<ComponentRef Id="System.Data.SQLite.DLL" />
-			<ComponentRef Id="store.db" />
-			<ComponentRef Id="LICENSE.txt" />
-			<ComponentRef Id="AUTHORS.txt" />
-			<ComponentRef Id="HtmlAgilityPack.dll" />
-			<ComponentRef Id="PodcastProvider.dll" />
-			<ComponentRef Id="PodcastProvider.pdb" />
-		</Feature>
-		
-		<CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="Radio_Downloader.exe" Return="asyncNoWait" Impersonate="yes" />
-		<CustomAction ExeCommand="/exit" Id="CloseBeforeUninstall" FileKey="Radio_Downloader.exe" Return="ignore" Impersonate="yes" />
-	</Product>
+    <Product Id="*" Language="1033" Manufacturer="NerdoftheHerd.com" Name="Radio Downloader"
+             Version="!(bind.FileVersion.Radio_Downloader.exe)" UpgradeCode="D593C2E0-724E-4CF8-8395-4F4CD240DF49">
+        <Package InstallScope="perMachine" Compressed="yes" Keywords="Radio Downloader,Installer,Radio,Podcasts"
+                 Comments="Radio Downloader allows you to easily download radio station content and podcasts." />
+        <Media Id="1" Cabinet="RadioDld.cab" CompressionLevel="high" EmbedCab="yes" />
+
+        <?include UI.wxs ?>
+
+        <?if $(sys.BUILDARCH) = "x64" ?>
+            <?define ProgramFiles = "ProgramFiles64Folder" ?>
+            <?define PlatformBin = "..\bin\win64" ?>
+        <?else ?>
+            <?define ProgramFiles = "ProgramFilesFolder" ?>
+            <?define PlatformBin = "..\bin\win32" ?>
+        <?endif ?>
+
+        <Property Id="InstallMode"><![CDATA[Custom]]></Property>
+        <Property Id="MSIRESTARTMANAGERCONTROL" Value="Disable" />
+        <Property Id="PROMPTROLLBACKCOST"><![CDATA[P]]></Property>
+
+        <Property Id="ARPHELPLINK" Value="http://www.nerdoftheherd.com/tools/radiodld/" />
+        <Property Id="ARPNOMODIFY" Value="1" />
+        <Property Id="ARPPRODUCTICON" Value="RadioDownloader.exe" />
+
+        <Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
+        <Condition Message="This version of [ProductName] is already installed.  To remove it, right-click on the installer and choose 'Uninstall'.">NOT ((Installed AND NOT (REINSTALL OR REMOVE)))</Condition>
+
+        <?if $(sys.BUILDARCH) = "x86" ?>
+            <Condition Message="This is the 32-bit Radio Downloader installer, but you are running 64-bit Windows.  Please download the 64-bit installer from http://nerdoftheherd.com/tools/radiodld/">NOT Msix64</Condition>
+        <?endif ?>
+
+        <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed."
+                      Schedule="afterInstallInitialize" AllowSameVersionUpgrades="yes" />
+
+        <AdminExecuteSequence />
+
+        <InstallExecuteSequence>
+            <Custom Action="CloseBeforeUninstall" Before="InstallValidate">Installed OR WIX_UPGRADE_DETECTED</Custom>
+            <Custom Action="RunAfterInstall" After="InstallFinalize">NOT Installed</Custom>
+        </InstallExecuteSequence>
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="$(var.ProgramFiles)" Name="Program Files">
+                <Directory Id="INSTALLLOCATION" Name="Radio Downloader">
+                    <Component>
+                        <File Source="$(var.PlatformBin)\Radio Downloader.exe" KeyPath="yes">
+                            <Shortcut Id="RadioDownloaderExeShortcut" Directory="ProgramMenuFolder" Name="Radio Downloader" IconIndex="0" WorkingDirectory="INSTALLLOCATION" Advertise="yes" Icon="RadioDownloader.exe" Description="Easily download radio station content and podcasts.">
+                                <Icon Id="RadioDownloader.exe" SourceFile="..\Resources\icons\Icon.ico" />
+                            </Shortcut>
+                        </File>
+                    </Component>
+                    <Component>
+                        <File Source="$(var.PlatformBin)\Radio Downloader.exe.config" />
+                    </Component>
+                    <Component>
+                        <File Source="$(var.PlatformBin)\Radio Downloader.pdb" />
+                    </Component>
+                    <Component>
+                        <File Source="$(var.PlatformBin)\System.Data.SQLite.DLL" />
+                    </Component>
+                    <Component>
+                        <File Source="..\store.db" />
+                    </Component>
+                    <Component>
+                        <File Source="..\LICENSE.txt" />
+                    </Component>
+                    <Component>
+                        <File Name="AUTHORS.txt" Source="..\AUTHORS.md" />
+                    </Component>
+                    <Component>
+                        <File Source="..\bin\HtmlAgilityPack.dll" />
+                    </Component>
+                    <Component>
+                        <File Source="$(var.PlatformBin)\PodcastProvider.dll" />
+                    </Component>
+                    <Component>
+                        <File Source="$(var.PlatformBin)\PodcastProvider.pdb" />
+                    </Component>
+                </Directory>
+            </Directory>
+            <Directory Id="ProgramMenuFolder" Name="Start Menu Programs" />
+        </Directory>
+
+        <Feature Id="RadioDownloader" Level="1" Title="Radio Downloader" Absent="disallow"
+                 AllowAdvertise="no" Description="The Radio Downloader application.">
+            <ComponentRef Id="Radio_Downloader.exe" />
+            <ComponentRef Id="Radio_Downloader.exe.config" />
+            <ComponentRef Id="Radio_Downloader.pdb" />
+            <ComponentRef Id="System.Data.SQLite.DLL" />
+            <ComponentRef Id="store.db" />
+            <ComponentRef Id="LICENSE.txt" />
+            <ComponentRef Id="AUTHORS.txt" />
+            <ComponentRef Id="HtmlAgilityPack.dll" />
+            <ComponentRef Id="PodcastProvider.dll" />
+            <ComponentRef Id="PodcastProvider.pdb" />
+        </Feature>
+
+        <CustomAction ExeCommand="" Id="RunAfterInstall" FileKey="Radio_Downloader.exe" Return="asyncNoWait" Impersonate="yes" />
+        <CustomAction ExeCommand="/exit" Id="CloseBeforeUninstall" FileKey="Radio_Downloader.exe" Return="ignore" Impersonate="yes" />
+    </Product>
 </Wix>
