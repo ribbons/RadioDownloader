@@ -21,4 +21,5 @@ If you have found a problem then you can [report a bug](report-a-bug.md).
 
 ## Contribute
 
-Find out how you can [contribute to Radio Downloader](contribute.md).
+Find out how you can [contribute to Radio
+Downloader](https://github.com/ribbons/RadioDownloader#contribute).

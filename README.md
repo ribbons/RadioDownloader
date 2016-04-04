@@ -29,4 +29,8 @@ Then you are ready to open the _Radio Downloader.sln_ solution file, and get stu
 Contribute
 ----------
 
-Please feel free to send pull requests to fix bugs or add missing features.
+I don't have enough time to implement all of the [requested
+enhancements](/ribbons/RadioDownloader/issues?labels=enhancement&amp;state=open)
+for Radio Downloader, so I would welcome [pull
+requests](/ribbons/RadioDownloader/pulls) to implement these, or to fix any
+bugs that you have found.
