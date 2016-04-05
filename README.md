@@ -30,7 +30,6 @@ Contribute
 ----------
 
 I don't have enough time to implement all of the [requested
-enhancements](/ribbons/RadioDownloader/issues?labels=enhancement&amp;state=open)
-for Radio Downloader, so I would welcome [pull
-requests](/ribbons/RadioDownloader/pulls) to implement these, or to fix any
-bugs that you have found.
+enhancements](https://github.com/ribbons/RadioDownloader/issues?labels=enhancement&amp;state=open)
+for Radio Downloader, so I would welcome pull requests to implement these, or
+to fix any bugs that you have found.
