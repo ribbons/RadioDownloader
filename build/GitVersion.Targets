@@ -77,10 +77,18 @@
       <InfoVersion Condition="'$(GitCommitCount)'!='0'">$(GitTag)-$(GitCommitCount)-$(TruncGitHash)</InfoVersion>
     </PropertyGroup>
 
-    <AssemblyInfo CodeLanguage="CS" OutputFile="Properties\VersionInfo.cs"
+    <ReadLinesFromFile File="$(IntermediateOutputPath)lastcommit.txt">
+      <Output TaskParameter="Lines" PropertyName="LastCommit"/>
+    </ReadLinesFromFile>
+
+    <AssemblyInfo Condition="'$(GitCommitHash)'!='$(LastCommit)'"
+      CodeLanguage="CS" OutputFile="Properties\VersionInfo.cs"
       AssemblyVersion="$(MajorVer).$(MinorVer).$(PatchVer).0"
       AssemblyFileVersion="$(MajorVer).$(MinorVer).$(PatchVer).$(GitCommitCount)"
       AssemblyInformationalVersion="$(InfoVersion)"
       AssemblyCopyright="Copyright © 2007-$(CopyrightYear)" />
+
+    <WriteLinesToFile File="$(IntermediateOutputPath)lastcommit.txt"
+                      Lines="$(GitCommitHash)" Overwrite="true" />
   </Target>
 </Project>
