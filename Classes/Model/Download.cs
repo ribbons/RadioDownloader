@@ -456,7 +456,9 @@ namespace RadioDld.Model
             while (Directory.GetFiles(saveDir, Path.GetFileName(savePath) + ".*").Length > 0 &&
                    savePath != currentFileName)
             {
-                savePath = rootName + " (" + Convert.ToString(diffNum, CultureInfo.CurrentCulture) + ")";
+                // The first file will have the name "xxxx" and the next "xxxx1"
+                // this way the alphabetical order is the same as the downloaded order.
+                savePath = rootName + Convert.ToString(diffNum, CultureInfo.CurrentCulture);
                 diffNum += 1;
             }
 
