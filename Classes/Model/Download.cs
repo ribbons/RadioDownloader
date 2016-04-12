@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -456,7 +456,7 @@ namespace RadioDld.Model
             while (Directory.GetFiles(saveDir, Path.GetFileName(savePath) + ".*").Length > 0 &&
                    savePath != currentFileName)
             {
-                savePath = rootName + " (" + Convert.ToString(diffNum, CultureInfo.CurrentCulture) + ")";
+                savePath = rootName + Convert.ToString(diffNum, CultureInfo.CurrentCulture);
                 diffNum += 1;
             }
 
