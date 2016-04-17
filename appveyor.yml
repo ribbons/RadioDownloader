@@ -1,5 +1,5 @@
 before_build:
-  - nuget restore
+  - appveyor-retry nuget restore
 
 version: "{build}"
 clone_depth: 250
