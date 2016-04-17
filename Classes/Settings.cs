@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,45 +26,6 @@ namespace RadioDld
 
     public class Settings : Database
     {
-        internal static string SaveFolder
-        {
-            get
-            {
-                return GetValue("SaveFolder");
-            }
-
-            set
-            {
-                SetValue("SaveFolder", value);
-            }
-        }
-
-        internal static string FileNameFormat
-        {
-            get
-            {
-                return GetValue("FileNameFormat", "%epname% %day%-%month%-%year%");
-            }
-
-            set
-            {
-                SetValue("FileNameFormat", value);
-            }
-        }
-
-        internal static string RunAfterCommand
-        {
-            get
-            {
-                return GetValue("RunAfterCommand");
-            }
-
-            set
-            {
-                SetValue("RunAfterCommand", value);
-            }
-        }
-
         internal static DateTime LastUpdatePrompt
         {
             get
@@ -369,6 +330,36 @@ namespace RadioDld
             }
         }
 
+        internal static string SetSaveFolder(Model.Programme progInfo)
+        {
+            return GetValuePostfix(progInfo, "SaveFolder", null);
+        }
+
+        internal static void SetSaveFolder(Model.Programme progInfo, string value)
+        {
+            SetValuePostfix(progInfo, "SaveFolder", value);
+        }
+
+        internal static string GetFileNameFormat(Model.Programme progInfo)
+        {
+            return GetValuePostfix(progInfo, "FileNameFormat", "%epname% %day%-%month%-%year%");
+        }
+
+        internal static void SetFileNameFormat(Model.Programme progInfo, string value)
+        {
+            SetValuePostfix(progInfo, "FileNameFormat", value);
+        }
+
+        internal static string GetRunAfterCommand(Model.Programme progInfo)
+        {
+            return GetValuePostfix(progInfo, "RunAfterCommand", null);
+        }
+
+        internal static void SetRunAfterCommand(Model.Programme progInfo, string value)
+        {
+            SetValuePostfix(progInfo, "RunAfterCommand", value);
+        }
+
         internal static void ResetUserSettings()
         {
             SetValue("RunOnStartup", null);
@@ -489,6 +480,33 @@ namespace RadioDld
                     }
                 }
             }
+        }
+
+        private static string GetValuePostfix(Model.Programme progInfo, string name, string defaultValue)
+        {
+            string value = null;
+            if (progInfo != null)
+            {
+                value = GetValue(name + progInfo.Progid.ToString(CultureInfo.InvariantCulture));
+            }
+
+            if (string.IsNullOrEmpty(value))
+            {
+                value = GetValue(name, defaultValue);
+            }
+
+            return value;
+        }
+
+        private static void SetValuePostfix(Model.Programme progInfo, string name, string value)
+        {
+            string postfix = string.Empty;
+            if (progInfo != null)
+            {
+                postfix = progInfo.Progid.ToString(CultureInfo.InvariantCulture);
+            }
+
+            SetValue(name = postfix, value);
         }
     }
 }

@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,20 +24,20 @@ namespace RadioDld
 
     internal static class FileUtils
     {
-        public static string GetSaveFolder()
+        public static string GetSaveFolder(Model.Programme progInfo)
         {
             const string DefaultFolder = "Downloaded Radio";
 
-            string saveFolder;
+            string saveFolder = Settings.SetSaveFolder(progInfo);
 
-            if (!string.IsNullOrEmpty(Settings.SaveFolder))
+            if (!string.IsNullOrEmpty(saveFolder))
             {
-                if (!new DirectoryInfo(Settings.SaveFolder).Exists)
+                if (!new DirectoryInfo(saveFolder).Exists)
                 {
                     throw new DirectoryNotFoundException();
                 }
 
-                return Settings.SaveFolder;
+                return saveFolder;
             }
 
             try
