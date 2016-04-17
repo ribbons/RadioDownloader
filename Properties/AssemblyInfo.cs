@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,5 +31,5 @@ using System.Security;
 
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
-[assembly: NeutralResourcesLanguageAttribute("en-GB")]
-[assembly: SecurityTransparentAttribute]
+[assembly: NeutralResourcesLanguage("en-GB")]
+[assembly: SecurityTransparent]
