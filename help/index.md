@@ -17,7 +17,8 @@
 
 * [Corrupt Database](corrupt-database.md)
 
-If you have found a problem then you can [report a bug](report-a-bug.md).
+If you have found a problem then you can create [an
+issue](https://github.com/ribbons/RadioDownloader/issues).
 
 ## Contribute
 

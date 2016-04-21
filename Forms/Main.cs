@@ -2038,7 +2038,7 @@ namespace RadioDld
 
         private void MenuHelpReportBug_Click(object sender, EventArgs e)
         {
-            OsUtils.LaunchUrl(new Uri("https://nerdoftheherd.com/tools/radiodld/help/report-a-bug/"), "Help Menu");
+            OsUtils.LaunchUrl(new Uri("https://github.com/ribbons/RadioDownloader/issues"), "Help Menu");
         }
 
         private void ButtonCleanUp_Click()
