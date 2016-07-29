@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!-- <Import Project="..\packages\MSBuildTasks.1.4.0.128\tools\MSBuild.Community.Tasks.Targets" /> -->
-
-  <!-- Once https://github.com/loresoft/msbuildtasks/pull/212 is included in a
-       release of MSBuildTasks on NuGet, the line above can be uncommented and
-       the workaround below removed -->
-  <PropertyGroup>
-    <MSBuildCommunityTasksLib>..\packages\MSBuildTasks.1.4.0.128\tools\MSBuild.Community.Tasks.dll</MSBuildCommunityTasksLib>
-  </PropertyGroup>
-
-  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.AssemblyInfo" />
-  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Git.GitDescribe" />
-  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.Git.GitCommitDate" />
-  <UsingTask AssemblyFile="$(MSBuildCommunityTasksLib)" TaskName="MSBuild.Community.Tasks.RegexReplace" />
-  <!-- End of workaround for https://github.com/loresoft/msbuildtasks/pull/212 -->
+  <Import Project="..\packages\MSBuildTasks.1.5.0.196\tools\MSBuild.Community.Tasks.Targets" />
 
   <Target Name="CreateVersionInfo" BeforeTargets="CoreCompile">
     <GitDescribe>
