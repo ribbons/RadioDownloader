@@ -1,14 +1,8 @@
 language: csharp
 sudo: false
 
-addons:
-  apt:
-    packages:
-      - libmono-microsoft-build2.0-cil
-      - libmono-system2.0-cil
-
 mono:
-  - 3.8.0
+  - 4.2.1 # Default in Ubuntu Xenial, supported until April 2021
 
 install:
   - nuget restore
