@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,12 @@ namespace RadioDld
             if (!this.wholeDropDownButtons.Contains(button))
             {
                 this.wholeDropDownButtons.Add(button);
+
+                if (!OsUtils.Windows())
+                {
+                    // Append a down arrow as BTNS_WHOLEDROPDOWN is only supported under Windows
+                    button.Text += " ▾";
+                }
             }
 
             NativeMethods.TBBUTTONINFO buttonInfo = default(NativeMethods.TBBUTTONINFO);
@@ -80,6 +86,19 @@ namespace RadioDld
             base.WndProc(ref m);
         }
 
+        protected override void OnButtonClick(ToolBarButtonClickEventArgs e)
+        {
+            if (this.wholeDropDownButtons.Contains(e.Button))
+            {
+                // As the click event has fired for a whole dropdown we aren't
+                // running under Windows, so show it ourselves
+                this.ShowDropdownMenu(e.Button);
+                return;
+            }
+
+            base.OnButtonClick(e);
+        }
+
         protected override bool ProcessMnemonic(char inputChar)
         {
             foreach (ToolBarButton checkButton in this.Buttons)
@@ -88,21 +107,7 @@ namespace RadioDld
                 {
                     if (this.wholeDropDownButtons.Contains(checkButton))
                     {
-                        // Give the toolbar button a pressed appearance
-                        checkButton.Pushed = true;
-
-                        // Set the whole dropdown flag again as setting pushed will have cleared it
-                        this.SetWholeDropDown(checkButton);
-
-                        // Calculate where the menu should be shown
-                        Point menuLocation = new Point(checkButton.Rectangle.Left, checkButton.Rectangle.Bottom);
-
-                        // Show the menu (modally)
-                        ((ContextMenu)checkButton.DropDownMenu).Show(this, menuLocation);
-
-                        // Remove the pressed appearance
-                        checkButton.Pushed = false;
-                        this.SetWholeDropDown(checkButton);
+                        this.ShowDropdownMenu(checkButton);
                     }
                     else
                     {
@@ -116,6 +121,25 @@ namespace RadioDld
             }
 
             return false;
+        }
+
+        private void ShowDropdownMenu(ToolBarButton button)
+        {
+            // Give the toolbar button a pressed appearance
+            button.Pushed = true;
+
+            // Set the whole dropdown flag again as setting pushed will have cleared it
+            this.SetWholeDropDown(button);
+
+            // Calculate where the menu should be shown
+            Point menuLocation = new Point(button.Rectangle.Left, button.Rectangle.Bottom);
+
+            // Show the menu (modally)
+            ((ContextMenu)button.DropDownMenu).Show(this, menuLocation);
+
+            // Remove the pressed appearance
+            button.Pushed = false;
+            this.SetWholeDropDown(button);
         }
     }
 }
