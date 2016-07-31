@@ -107,6 +107,12 @@ namespace RadioDld
 
         internal static void TrayAnimate(Form form, bool down)
         {
+            if (!Windows())
+            {
+                // FindWindow is Windows specific, so don't try to call it
+                return;
+            }
+
             StringBuilder className = new StringBuilder(255);
             IntPtr taskbarHwnd = default(IntPtr);
             IntPtr trayHwnd = default(IntPtr);
