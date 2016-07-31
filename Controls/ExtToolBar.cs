@@ -137,6 +137,12 @@ namespace RadioDld
             // Show the menu (modally)
             ((ContextMenu)button.DropDownMenu).Show(this, menuLocation);
 
+            if (this.IsDisposed)
+            {
+                // Application has exited
+                return;
+            }
+
             // Remove the pressed appearance
             button.Pushed = false;
             this.SetWholeDropDown(button);
