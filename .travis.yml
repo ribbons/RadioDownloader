@@ -1,6 +1,9 @@
 language: csharp
 sudo: false
 
+git:
+  depth: 250
+
 mono:
   - 4.2.1 # Default in Ubuntu Xenial, supported until April 2021
 
