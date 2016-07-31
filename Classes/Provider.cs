@@ -119,7 +119,7 @@ namespace RadioDld
                     if (!((thisType.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract))
                     {
                         // See if this type implements our interface
-                        Type implInterface = thisType.GetInterface(typeof(IRadioProvider).Name, true);
+                        Type implInterface = thisType.GetInterface(typeof(IRadioProvider).Name);
 
                         if (implInterface != null)
                         {
