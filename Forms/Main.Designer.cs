@@ -461,7 +461,6 @@ namespace RadioDld
             this.ButtonRetry,
             this.ButtonReportError,
             this.ButtonCleanUp});
-            this.ToolbarMain.ButtonSize = new System.Drawing.Size(135, 22);
             this.ToolbarMain.Divider = false;
             this.ToolbarMain.DropDownArrows = true;
             this.ToolbarMain.Location = new System.Drawing.Point(3, 2);
@@ -532,9 +531,9 @@ namespace RadioDld
             // 
             // ButtonMoreInfo
             // 
+            this.ButtonMoreInfo.ImageKey = "more_info";
             this.ButtonMoreInfo.Name = "ButtonMoreInfo";
             this.ButtonMoreInfo.Text = "&More Info";
-            this.ButtonMoreInfo.ImageKey = "more_info";
             // 
             // ButtonCancel
             // 
