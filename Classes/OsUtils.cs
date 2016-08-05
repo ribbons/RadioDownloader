@@ -22,6 +22,7 @@ namespace RadioDld
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Drawing;
+    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text;
     using System.Web;
@@ -245,14 +246,28 @@ namespace RadioDld
         /// <returns>The number of free bytes available to the current user in the specified location.</returns>
         internal static ulong PathAvailableSpace(string path)
         {
-            ulong freeBytesAvailable, totalAvailableBytes, totalFreeBytes;
-
-            if (!NativeMethods.GetDiskFreeSpaceEx(path, out freeBytesAvailable, out totalAvailableBytes, out totalFreeBytes))
+            if (Windows())
             {
-                throw new Win32Exception();
-            }
+                ulong freeBytesAvailable, totalAvailableBytes, totalFreeBytes;
 
-            return freeBytesAvailable;
+                if (!NativeMethods.GetDiskFreeSpaceEx(path, out freeBytesAvailable, out totalAvailableBytes, out totalFreeBytes))
+                {
+                    throw new Win32Exception();
+                }
+
+                return freeBytesAvailable;
+            }
+            else
+            {
+                // Call the private Mono internal method System.IO.DriveInfo.GetDiskFreeSpace
+                // as this does exactly the same as GetDiskFreeSpaceEx does under Windows
+                MethodInfo dynMethod = typeof(System.IO.DriveInfo).GetMethod("GetDiskFreeSpace", BindingFlags.NonPublic | BindingFlags.Static);
+
+                object[] args = new object[] { path, null, null, null };
+                dynMethod.Invoke(null, args);
+
+                return (ulong)args[3];
+            }
         }
     }
 }
