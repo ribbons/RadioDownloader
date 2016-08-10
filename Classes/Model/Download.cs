@@ -477,8 +477,8 @@ namespace RadioDld.Model
             fileName = fileName.Replace("%title%", "%epname%");
 
             // Make variable substitutions
-            fileName = fileName.Replace("%progname%", progInfo.Name);
-            fileName = fileName.Replace("%epname%", epInfo.Name);
+            fileName = fileName.Replace("%progname%", progInfo.Name.Replace(Path.DirectorySeparatorChar, ' '));
+            fileName = fileName.Replace("%epname%", epInfo.Name.Replace(Path.DirectorySeparatorChar, ' '));
             fileName = fileName.Replace("%hour%", epInfo.Date.ToString("HH", CultureInfo.CurrentCulture));
             fileName = fileName.Replace("%minute%", epInfo.Date.ToString("mm", CultureInfo.CurrentCulture));
             fileName = fileName.Replace("%day%", epInfo.Date.ToString("dd", CultureInfo.CurrentCulture));
