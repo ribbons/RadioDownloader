@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,13 +43,6 @@ namespace RadioDld
             using (SQLiteCommand command = new SQLiteCommand("create table httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", this.FetchDbConn()))
             {
                 command.ExecuteNonQuery();
-            }
-
-            if (!OsUtils.Windows())
-            {
-                // Mono has a bug which causes the useDefaultCredentials attribute to be
-                // treated as invalid, so clear the default proxy to prevent an exception
-                WebRequest.DefaultWebProxy = null;
             }
         }
 

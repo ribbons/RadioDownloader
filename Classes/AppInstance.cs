@@ -20,7 +20,7 @@ namespace RadioDld
 {
     using System;
     using System.Diagnostics;
-    using System.IO;
+    using System.Net;
     using System.Windows.Forms;
     using Microsoft.VisualBasic.ApplicationServices;
 
@@ -63,6 +63,13 @@ namespace RadioDld
                 {
                     Environment.Exit(1);
                 }
+            }
+
+            if (!OsUtils.Windows())
+            {
+                // Mono has a bug which causes the useDefaultCredentials attribute to be
+                // treated as invalid, so clear the default proxy to prevent an exception
+                WebRequest.DefaultWebProxy = null;
             }
 
             // Set up the application database and perform any required updates or cleanup
