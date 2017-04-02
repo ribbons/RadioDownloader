@@ -122,7 +122,6 @@ namespace RadioDld
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Radio Downloader";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Error_FormClosing);
             this.Load += new System.EventHandler(this.ReportError_Load);
             ((System.ComponentModel.ISupportInitialize)(this.ImageIcon)).EndInit();
             this.ResumeLayout(false);
