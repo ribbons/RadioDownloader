@@ -228,6 +228,7 @@ namespace RadioDld
             this.downloadColNames.Add((int)Model.Download.DownloadCols.EpisodeName, "Episode Name");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Progress, "Progress");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.ProgrammeName, "Programme Name");
 
             FindNew.EpisodeAdded += this.ProgData_EpisodeAdded;
             FindNew.FindNewViewChange += this.ProgData_FindNewViewChange;
@@ -751,6 +752,7 @@ namespace RadioDld
         private void ShowDownloadInfo(int epid)
         {
             Model.Download info = new Model.Download(epid);
+            Model.Programme progInfo = new Model.Programme(info.Progid);
 
             string infoText = string.Empty;
 
@@ -825,7 +827,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
+            this.SetSideBar(TextUtils.StripDateFromName(progInfo.Name + " - " + info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
@@ -1400,6 +1402,11 @@ namespace RadioDld
                         }
 
                         item.SubItems[column].Text = durationText;
+                        break;
+                    case Model.Download.DownloadCols.ProgrammeName:
+                        // display Programme Name in the download list
+                        Model.Programme progInfo = new Model.Programme(info.Progid);
+                        item.SubItems[column].Text = progInfo.Name;
                         break;
                     default:
                         throw new InvalidDataException("Unknown column type of " + this.downloadColOrder[column].ToString());
@@ -2422,7 +2429,7 @@ namespace RadioDld
             this.ListDownloads.Clear();
             this.ListDownloads.HideAllProgress();
 
-            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6";
+            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.0";
 
             if (string.IsNullOrEmpty(Settings.DownloadColSizes))
             {

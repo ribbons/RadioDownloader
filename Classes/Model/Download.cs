@@ -78,7 +78,8 @@ namespace RadioDld.Model
             EpisodeDate = 1,
             Status = 2,
             Progress = 3,
-            Duration = 4
+            Duration = 4,
+            ProgrammeName = 5
         }
 
         internal enum DownloadStatus
@@ -684,6 +685,7 @@ namespace RadioDld.Model
                     sortCache = new Dictionary<int, int>();
 
                     int sort = 0;
+                    string sqlCmd = "select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by ";
                     string orderBy = null;
 
                     switch (sortBy)
@@ -700,11 +702,16 @@ namespace RadioDld.Model
                         case DownloadCols.Duration:
                             orderBy = "duration" + (sortAsc ? string.Empty : " desc");
                             break;
+                        case DownloadCols.ProgrammeName:
+                            // OrderBy Programme.Name
+                            sqlCmd = "select downloads.epid from downloads, episodes, programmes where downloads.epid=episodes.epid and episodes.progid=programmes.progid order by ";
+                            orderBy = "programmes.name" + (sortAsc ? string.Empty : " desc");
+                            break;
                         default:
                             throw new InvalidDataException("Invalid column: " + sortBy.ToString());
                     }
 
-                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand(sqlCmd + orderBy, FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {

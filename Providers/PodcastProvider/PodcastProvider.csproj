@@ -179,6 +179,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\podcast_64.png" />
   </ItemGroup>
   <ItemGroup>
