@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -75,12 +75,6 @@ namespace RadioDld
         private void LinkWhatData_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             MessageBox.Show(this.report.ToString(), Application.ProductName);
-        }
-
-        private void Error_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            // As there has been an error, blow away the rest of the app reasonably tidily
-            Environment.Exit(1);
         }
 
         private void ReportError_Load(object sender, EventArgs e)

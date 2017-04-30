@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@ namespace RadioDld
 {
     using System;
     using System.Diagnostics;
-    using System.IO;
+    using System.Net;
     using System.Windows.Forms;
     using Microsoft.VisualBasic.ApplicationServices;
 
@@ -65,6 +65,13 @@ namespace RadioDld
                 }
             }
 
+            if (!OsUtils.Windows())
+            {
+                // Mono has a bug which causes the useDefaultCredentials attribute to be
+                // treated as invalid, so clear the default proxy to prevent an exception
+                WebRequest.DefaultWebProxy = null;
+            }
+
             // Set up the application database and perform any required updates or cleanup
             if (!DatabaseInit.Startup())
             {
@@ -83,6 +90,8 @@ namespace RadioDld
             {
                 showError.ShowReport(report);
             }
+
+            Environment.Exit(1);
         }
 
         private static void AppDomainExceptionHandler(object sender, System.UnhandledExceptionEventArgs e)

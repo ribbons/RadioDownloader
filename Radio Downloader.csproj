@@ -140,6 +140,42 @@
     <CodeAnalysisRuleSet>analysis.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Signed|AnyCPU'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\mono\</OutputPath>
+    <DocumentationFile>bin\mono\Radio Downloader.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>analysis.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Signed|x86'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win32\</OutputPath>
+    <DocumentationFile>bin\win32\Radio Downloader.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>analysis.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Signed|x64'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\win64\</OutputPath>
+    <DocumentationFile>bin\win64\Radio Downloader.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <CodeAnalysisRuleSet>analysis.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System">
@@ -414,4 +450,5 @@
   <Target Name="CopyStoreDb" Inputs="$(IntermediateOutputPath)store.db" Outputs="$(OutputPath)store.db">
     <Copy SourceFiles="$(IntermediateOutputPath)store.db" DestinationFolder="$(OutputPath)" />
   </Target>
+  <Import Project="build\SignTool.Targets" />
 </Project>
