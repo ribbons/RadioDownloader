@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,6 +228,7 @@ namespace RadioDld
             this.downloadColNames.Add((int)Model.Download.DownloadCols.EpisodeName, "Episode Name");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Progress, "Progress");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.ProgrammeName, "Programme Name");
 
             FindNew.EpisodeAdded += this.ProgData_EpisodeAdded;
             FindNew.FindNewViewChange += this.ProgData_FindNewViewChange;
@@ -1401,6 +1402,10 @@ namespace RadioDld
 
                         item.SubItems[column].Text = durationText;
                         break;
+                    case Model.Download.DownloadCols.ProgrammeName:
+                        Model.Programme progInfo = new Model.Programme(info.Progid);
+                        item.SubItems[column].Text = progInfo.Name;
+                        break;
                     default:
                         throw new InvalidDataException("Unknown column type of " + this.downloadColOrder[column].ToString());
                 }
@@ -2422,7 +2427,7 @@ namespace RadioDld
             this.ListDownloads.Clear();
             this.ListDownloads.HideAllProgress();
 
-            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6";
+            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.4";
 
             if (string.IsNullOrEmpty(Settings.DownloadColSizes))
             {

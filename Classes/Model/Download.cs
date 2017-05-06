@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,8 @@ namespace RadioDld.Model
             EpisodeDate = 1,
             Status = 2,
             Progress = 3,
-            Duration = 4
+            Duration = 4,
+            ProgrammeName = 5
         }
 
         internal enum DownloadStatus
@@ -689,7 +690,7 @@ namespace RadioDld.Model
                     switch (sortBy)
                     {
                         case DownloadCols.EpisodeName:
-                            orderBy = "name" + (sortAsc ? string.Empty : " desc");
+                            orderBy = "episodes.name" + (sortAsc ? string.Empty : " desc");
                             break;
                         case DownloadCols.EpisodeDate:
                             orderBy = "date" + (sortAsc ? string.Empty : " desc");
@@ -700,11 +701,14 @@ namespace RadioDld.Model
                         case DownloadCols.Duration:
                             orderBy = "duration" + (sortAsc ? string.Empty : " desc");
                             break;
+                        case DownloadCols.ProgrammeName:
+                            orderBy = "programmes.name" + (sortAsc ? string.Empty : " desc");
+                            break;
                         default:
                             throw new InvalidDataException("Invalid column: " + sortBy.ToString());
                     }
 
-                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes where downloads.epid=episodes.epid order by " + orderBy, FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes, programmes where downloads.epid=episodes.epid and episodes.progid=programmes.progid order by " + orderBy, FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {

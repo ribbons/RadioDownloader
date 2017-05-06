@@ -17,3 +17,6 @@ Original proof of concept code for RSS server
 
 ### Boris Ockham
 Optional path to the database in .config
+
+### Neil Blanchard
+Programme Name column in downloads list
