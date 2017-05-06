@@ -19,4 +19,4 @@ Original proof of concept code for RSS server
 Optional path to the database in .config
 
 ### Neil Blanchard
-Added Programme Name column (with sorting) in Download list
+Programme Name column in downloads list

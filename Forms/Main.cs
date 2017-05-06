@@ -752,7 +752,6 @@ namespace RadioDld
         private void ShowDownloadInfo(int epid)
         {
             Model.Download info = new Model.Download(epid);
-            Model.Programme progInfo = new Model.Programme(info.Progid);
 
             string infoText = string.Empty;
 
