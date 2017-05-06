@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,7 +58,7 @@ namespace RadioDld
                 return;
             }
 
-            bool formatChanged = Settings.FileNameFormat != this.TextFileNameFormat.Text;
+            bool formatChanged = Settings.GetFileNameFormat(null) != this.TextFileNameFormat.Text;
 
             if (this.folderChanged || formatChanged)
             {
@@ -86,12 +86,12 @@ namespace RadioDld
                     }
                 }
 
-                Settings.SaveFolder = this.TextSaveIn.Text;
-                Settings.FileNameFormat = this.TextFileNameFormat.Text;
+                Settings.SetSaveFolder(null, this.TextSaveIn.Text);
+                Settings.SetFileNameFormat(null, this.TextFileNameFormat.Text);
             }
 
             Settings.RunOnStartup = this.CheckRunOnStartup.Checked;
-            Settings.RunAfterCommand = this.TextRunAfter.Text;
+            Settings.SetRunAfterCommand(null, this.TextRunAfter.Text);
             Settings.ParallelDownloads = (int)this.NumberParallel.Value;
             Settings.RssServer = this.CheckRssServer.Checked;
 
@@ -145,15 +145,15 @@ namespace RadioDld
 
             try
             {
-                this.TextSaveIn.Text = FileUtils.GetSaveFolder();
+                this.TextSaveIn.Text = FileUtils.GetSaveFolder(null);
             }
             catch (DirectoryNotFoundException)
             {
-                this.TextSaveIn.Text = Settings.SaveFolder;
+                this.TextSaveIn.Text = Settings.SetSaveFolder(null);
             }
 
-            this.TextFileNameFormat.Text = Settings.FileNameFormat;
-            this.TextRunAfter.Text = Settings.RunAfterCommand;
+            this.TextFileNameFormat.Text = Settings.GetFileNameFormat(null);
+            this.TextRunAfter.Text = Settings.GetRunAfterCommand(null);
         }
 
         private void Preferences_HelpButtonClicked(object sender, System.ComponentModel.CancelEventArgs e)

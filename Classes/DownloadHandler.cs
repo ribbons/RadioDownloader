@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -190,7 +190,7 @@ namespace RadioDld
 
                 try
                 {
-                    saveLocation = FileUtils.GetSaveFolder();
+                    saveLocation = FileUtils.GetSaveFolder(this.progInfo);
                 }
                 catch (DirectoryNotFoundException)
                 {
@@ -209,7 +209,7 @@ namespace RadioDld
 
                 try
                 {
-                    finalName = Model.Download.FindFreeSaveFileName(Settings.FileNameFormat, this.progInfo, this.episodeInfo, saveLocation);
+                    finalName = Model.Download.FindFreeSaveFileName(Settings.GetFileNameFormat(this.progInfo), this.progInfo, this.episodeInfo, saveLocation);
                 }
                 catch (IOException ioExp)
                 {
@@ -256,26 +256,27 @@ namespace RadioDld
                 Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.Date);
             }
 
+            string runAfterCommand = Settings.GetRunAfterCommand(this.progInfo);
+            if (!string.IsNullOrEmpty(runAfterCommand))
+            {
+                try
+                {
+                    // Use VB Interaction.Shell as Process.Start doesn't give the option of a non-focused window
+                    // The "comspec" environment variable gives the path to cmd.exe
+                    Microsoft.VisualBasic.Interaction.Shell("\"" + Environment.GetEnvironmentVariable("comspec") + "\" /c " + runAfterCommand.Replace("%file%", finalName), Microsoft.VisualBasic.AppWinStyle.NormalNoFocus);
+                }
+                catch
+                {
+                    // Just ignore the error, as it just means that something has gone wrong with the run after command.
+                }
+            }
+
             // Remove single episode subscriptions
             if (Model.Subscription.IsSubscribed(this.progInfo.Progid))
             {
                 if (this.progInfo.SingleEpisode)
                 {
                     Model.Subscription.Remove(this.progInfo.Progid);
-                }
-            }
-
-            if (!string.IsNullOrEmpty(Settings.RunAfterCommand))
-            {
-                try
-                {
-                    // Use VB Interaction.Shell as Process.Start doesn't give the option of a non-focused window
-                    // The "comspec" environment variable gives the path to cmd.exe
-                    Microsoft.VisualBasic.Interaction.Shell("\"" + Environment.GetEnvironmentVariable("comspec") + "\" /c " + Settings.RunAfterCommand.Replace("%file%", finalName), Microsoft.VisualBasic.AppWinStyle.NormalNoFocus);
-                }
-                catch
-                {
-                    // Just ignore the error, as it just means that something has gone wrong with the run after command.
                 }
             }
 
