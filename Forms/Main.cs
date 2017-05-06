@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -827,7 +827,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(TextUtils.StripDateFromName(progInfo.Name + " - " + info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
+            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
@@ -1404,7 +1404,6 @@ namespace RadioDld
                         item.SubItems[column].Text = durationText;
                         break;
                     case Model.Download.DownloadCols.ProgrammeName:
-                        // display Programme Name in the download list
                         Model.Programme progInfo = new Model.Programme(info.Progid);
                         item.SubItems[column].Text = progInfo.Name;
                         break;
@@ -2429,7 +2428,7 @@ namespace RadioDld
             this.ListDownloads.Clear();
             this.ListDownloads.HideAllProgress();
 
-            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.0";
+            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.4";
 
             if (string.IsNullOrEmpty(Settings.DownloadColSizes))
             {
