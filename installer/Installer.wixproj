@@ -28,9 +28,6 @@
   <ItemGroup>
     <Compile Include="Radio Downloader.wxs" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
   <Import Project="..\build\SignTool.Targets" />
 </Project>
