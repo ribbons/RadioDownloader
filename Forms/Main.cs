@@ -752,6 +752,7 @@ namespace RadioDld
         private void ShowDownloadInfo(int epid)
         {
             Model.Download info = new Model.Download(epid);
+            Model.Programme progInfo = new Model.Programme(info.Progid);
 
             string infoText = string.Empty;
 
@@ -826,7 +827,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
+            this.SetSideBar(TextUtils.StripDateFromName(progInfo.Name + " - " + info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
