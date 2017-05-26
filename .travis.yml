@@ -8,7 +8,10 @@ mono:
   - 4.2.1 # Default in Ubuntu Xenial, supported until April 2021
 
 install:
-  - nuget restore
+    # nuget available in Travis env isn't new enough for some packages
+  - travis_retry curl -L -o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+  - travis_retry mono ./nuget.exe restore
 
 script:
   - xbuild /p:Configuration=Release /p:Platform=mono "Radio Downloader.sln"
+  - mono ./packages/xunit.runners.1.9.2/tools/xunit.console.exe "./bin/mono/Radio Downloader Test.dll"

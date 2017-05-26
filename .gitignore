@@ -1,7 +1,9 @@
 bin/*/Radio Downloader.*
+bin/*/Radio Downloader Test.*
 bin/*/*Provider.*
 bin/*/store.db
 bin/*/HtmlAgilityPack.dll
+bin/*/xunit.*
 installer/*.msi
 installer/*.wixpdb
 obj
