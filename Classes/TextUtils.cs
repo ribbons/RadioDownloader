@@ -29,11 +29,41 @@ namespace RadioDld
             // Use regex to remove a number of different date formats from episode titles.
             // Will only remove dates with the same month & year as the programme itself, but any day of the month
             // as there is sometimes a mismatch of a day or two between the date in a title and the publish date.
-            Regex matchStripDate = new Regex("\\A(" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "/" + stripDate.ToString("MM", CultureInfo.InvariantCulture) + "/\\d{2} ?-? )?(?<name>.*?)( ?:? (\\d{2}/" + stripDate.ToString("MM", CultureInfo.InvariantCulture) + "/" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "|((Mon|Tue|Wed|Thu|Fri) )?(\\d{1,2}(st|nd|rd|th)? )?(" + stripDate.ToString("MMMM", CultureInfo.InvariantCulture) + "|" + stripDate.ToString("MMM", CultureInfo.InvariantCulture) + ")( \\d{1,2}(st|nd|rd|th)?| (" + stripDate.ToString("yy", CultureInfo.InvariantCulture) + "|" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "))?))?\\Z");
+            // old RegEx
+            // Regex matchStripDate = new Regex("\\A(" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "/" + stripDate.ToString("MM", CultureInfo.InvariantCulture) + "/\\d{2} ?-? )?(?<name>.*?)( ?:? (\\d{2}/" + stripDate.ToString("MM", CultureInfo.InvariantCulture) + "/" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "|((Mon|Tue|Wed|Thu|Fri) )?(\\d{1,2}(st|nd|rd|th)? )?(" + stripDate.ToString("MMMM", CultureInfo.InvariantCulture) + "|" + stripDate.ToString("MMM", CultureInfo.InvariantCulture) + ")( \\d{1,2}(st|nd|rd|th)?| (" + stripDate.ToString("yy", CultureInfo.InvariantCulture) + "|" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "))?))?\\Z");
+
+            // Issue #59
+            // - Look for date in middle of name (as well as start and end)
+            // - look for other date formats like 13.02.2009; also 13 Feb 2009; 13th feb 2009; 13th-Feb-2009; 13feb09;
+            // - consider full day names as well eg Monday, Tuesday...
+            // - also other delims before and or after the date e.g. 'title - 2009-02-13'
+
+            // Key formats
+            // 1 / d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
+            // 2 / yyyy('yy)(yy)|m(mm)(mmm)|d(dd)(st|nd|rd|th)
+            // 3 / mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
+
+            // ## Common Delims
+            //    .| -|/|{ ws}
+            //
+            // ###Test Beds
+            // https://www.debuggex.com/
+            // http://regexstorm.net/tester
+            //
+            // new RegEx
+            string re1 = "((3[01]|2\\d|1\\d|0?\\d)(st|nd|rd|th)?(\\.|\\-|\\/| )((2\\d|1\\d|0?\\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\\.|\\-|\\/| )(\\d{4}|\'\\d{2}|\\d{2}))( ?)";
+            string re2 = "((\\d{4}|\'\\d{2}|\\d{2})(\\.|\\-|\\/| )((2\\d|1\\d|0?\\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\\.|\\-|\\/| )(3[01]|2\\d|1\\d|0?\\d)(st|nd|rd|th)?( ?))";
+            string re3 = "((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\\.|\\-|\\/| )(3[01]|2\\d|1\\d|0?\\d)(st|nd|rd|th)?(\\.|\\-|\\/| )((?:(?:\\d{4})|(?:\\d{2})(?![\\d])|(?:\')(?:\\d{2})(?![\\d])))( ?)";
+
+            // Checks for match on ANY date...
+            // actually need to check for / compare the 'date' as passed in to function
+            Regex matchStripDate = new Regex("(" + re1 + "|" + re2 + "|" + re3 + ")", RegexOptions.IgnoreCase);
 
             if (matchStripDate.IsMatch(name))
             {
-                name = matchStripDate.Match(name).Groups["name"].ToString();
+                // name = matchStripDate.Match(name).Groups["name"].ToString();
+                // name = matchStripDate.Match(name).ToString();
+                name = matchStripDate.Replace(name, string.Empty).ToString();
             }
 
             return name;
