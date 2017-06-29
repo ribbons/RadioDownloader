@@ -50,17 +50,34 @@ namespace RadioDld
             // https://www.debuggex.com/
             // http://regexstorm.net/tester
             //
-            // new RegEx
-            string re1 = "((3[01]|2\\d|1\\d|0?\\d)(st|nd|rd|th)?(\\.|\\-|\\/| )((2\\d|1\\d|0?\\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\\.|\\-|\\/| )(\\d{4}|\'\\d{2}|\\d{2}))( ?)";
-            string re2 = "((\\d{4}|\'\\d{2}|\\d{2})(\\.|\\-|\\/| )((2\\d|1\\d|0?\\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\\.|\\-|\\/| )(3[01]|2\\d|1\\d|0?\\d)(st|nd|rd|th)?( ?))";
-            string re3 = "((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\\.|\\-|\\/| )(3[01]|2\\d|1\\d|0?\\d)(st|nd|rd|th)?(\\.|\\-|\\/| )((?:(?:\\d{4})|(?:\\d{2})(?![\\d])|(?:\')(?:\\d{2})(?![\\d])))( ?)";
+            // new RegEx in Java
+            // (((3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?(\.|\-|\/| )((2\d|1\d|0?\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(\d{4}|\'\d{2}|\d{2}))( ?)|((\d{4}|\'\d{2}|\d{2})(\.|\-|\/| )((2\d|1\d|0?\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?( ?))|((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?(\.|\-|\/| )((?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d])))( ?))
+
+            // Common Groups
+            string reDelim = @"(\.|\-|\/| )"; // Common Delims .| -|/|{ ws}
+            string reDay = @"(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?";       // d(dd)(st | nd | rd | th)
+            string reMonth = @"(2\d|1\d|0?\d)"; // m(mm)
+            string reMonthText = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"; // (mmm)
+            string reYear = @"((?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d])))"; // yyyy('yy)(yy)
+            string reWS = @"( ?)"; // trailing white space
+
+            // Key formats
+            // 1 / d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
+            string reF1 = @reDay + reDelim + "(" + reMonth + "|" + reMonthText + ")" + reDelim + reYear + reWS;
+
+            // 2 / yyyy('yy)(yy)|m(mm)(mmm)|d(dd)(st|nd|rd|th)
+            string reF2 = @"(" + reYear + reDelim + "(" + reMonth + "|" + reMonthText + ")" + reDelim + reDay + reWS + ")";
+
+            // 3 / mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
+            string reF3 = @"(" + reMonthText + ")" + reDelim + reDay + reDelim + reYear + reWS;
+
+            // Build RegEx string
+            Regex matchStripDate = new Regex("(" + reF1 + "|" + reF2 + "|" + reF3 + ")", RegexOptions.IgnoreCase| RegexOptions.ECMAScript);
 
             // Checks for match on ANY date...
-            // actually need to check for / compare the 'date' as passed in to function
-            Regex matchStripDate = new Regex("(" + re1 + "|" + re2 + "|" + re3 + ")", RegexOptions.IgnoreCase);
-
             if (matchStripDate.IsMatch(name))
             {
+                // actually need to check for / compare the 'date' as passed in to function
                 // name = matchStripDate.Match(name).Groups["name"].ToString();
                 // name = matchStripDate.Match(name).ToString();
                 name = matchStripDate.Replace(name, string.Empty).ToString();
