@@ -119,6 +119,7 @@ namespace RadioDldTest
             }
             catch
             {
+                Assert.False(true);
             }
         }
 
@@ -275,6 +276,7 @@ namespace RadioDldTest
             }
             catch
             {
+                Assert.False(true);
             }
 
             // new date
@@ -306,6 +308,7 @@ namespace RadioDldTest
             }
             catch
             {
+                Assert.False(true);
             }
         }
 
@@ -320,15 +323,63 @@ namespace RadioDldTest
 
             try
             {
-                Assert.Equal("Test", TextUtils.StripDateFromName("Test 16/02/2009", date));
-                Assert.Equal("Test", TextUtils.StripDateFromName("16/02/2009 Test", date));
-                Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 16/02/2009 Test", date));
+                // older than date by >9 days
+                // DATE should be left in the name
+                Assert.Equal("Test 01/02/2009", TextUtils.StripDateFromName("Test 01/02/2009", date));
+                Assert.Equal("01/02/2009 Test", TextUtils.StripDateFromName("01/02/2009 Test", date));
+                Assert.Equal("Test 02/02/2009 Test", TextUtils.StripDateFromName("Test 02/02/2009 Test", date));
+                Assert.Equal("Test 02/02/2009", TextUtils.StripDateFromName("Test 02/02/2009", date));
+                Assert.Equal("01/02/2009 Test", TextUtils.StripDateFromName("01/02/2009 Test", date));
+                Assert.Equal("Test 02/02/2009 Test", TextUtils.StripDateFromName("Test 02/02/2009 Test", date));
+
+                // older than date by 5-6 days
+                // DATE should be removed
+                Assert.Equal("Test", TextUtils.StripDateFromName("Test 08/02/2009", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("07/02/2009 Test", date));
+                Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 07/02/2009 Test", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("Test 08/02/2009", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("7/02/2009 Test", date));
+                Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 07/02/2009 Test", date));
+
+                // older than date by 1-2 days
+                // DATE should be removed
                 Assert.Equal("Test", TextUtils.StripDateFromName("Test 11/02/2009", date));
-                Assert.Equal("Test", TextUtils.StripDateFromName("1/02/2009 Test", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("12/02/2009 Test", date));
                 Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 11/02/2009 Test", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("Test 11/02/2009", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("11/02/2009 Test", date));
+                Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 12/02/2009 Test", date));
+
+                // newer than date by 1-2 days
+                // DATE should be removed
+                Assert.Equal("Test", TextUtils.StripDateFromName("Test 15/02/2009", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("14/02/2009 Test", date));
+                Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 15/02/2009 Test", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("Test 14/02/2009", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("15/02/2009 Test", date));
+                Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 14/02/2009 Test", date));
+
+                // newer than date by 5-6 days
+                // DATE should be removed
+                Assert.Equal("Test", TextUtils.StripDateFromName("Test 18/02/2009", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("19/02/2009 Test", date));
+                Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 19/02/2009 Test", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("Test 19/02/2009", date));
+                Assert.Equal("Test", TextUtils.StripDateFromName("18/02/2009 Test", date));
+                Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 18/02/2009 Test", date));
+
+                // newer than date by >9 days
+                // DATE should be left in the name
+                Assert.Equal("Test 22/02/2009", TextUtils.StripDateFromName("Test 22/02/2009", date));
+                Assert.Equal("24/02/2009 Test", TextUtils.StripDateFromName("24/02/2009 Test", date));
+                Assert.Equal("Test 23/02/2009 Test", TextUtils.StripDateFromName("Test 23/02/2009 Test", date));
+                Assert.Equal("Test 24/02/2009", TextUtils.StripDateFromName("Test 24/02/2009", date));
+                Assert.Equal("22/02/2009 Test", TextUtils.StripDateFromName("22/02/2009 Test", date));
+                Assert.Equal("Test 22/02/2009 Test", TextUtils.StripDateFromName("Test 22/02/2009 Test", date));
             }
             catch
             {
+                Assert.False(true);
             }
         }
 
@@ -340,7 +391,19 @@ namespace RadioDldTest
         public void StripDateFromNameIgnoreDifferent()
         {
             DateTime date = new DateTime(2009, 02, 13);
-            Assert.Equal("Test 26/05/2010", TextUtils.StripDateFromName("Test 26/05/2010", date));
+
+            try
+            {
+                Assert.Equal("Test 26/05/2010", TextUtils.StripDateFromName("Test 26/05/2010", date));
+                Assert.Equal("Test 26/05/2011", TextUtils.StripDateFromName("Test 26/05/2011", date));
+                Assert.Equal("Test 2010/05/26", TextUtils.StripDateFromName("Test 2010/05/26", date));
+                Assert.Equal("Test 26/08/2010", TextUtils.StripDateFromName("Test 26/08/2010", date));
+                Assert.Equal("Test 06/05/2012", TextUtils.StripDateFromName("Test 06/05/2012", date));
+            }
+            catch
+            {
+                Assert.False(true);
+            }
         }
     }
 }
