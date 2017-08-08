@@ -38,6 +38,7 @@ namespace RadioDld
         // ###Test Beds
         // https://www.debuggex.com/
         // http://regexstorm.net/tester
+        // https://regex101.com/
         //
         // new RegEx in Java
         // (((3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?(\.|\-|\/| )((2\d|1\d|0?\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(\d{4}|\'\d{2}|\d{2}))( ?)|((\d{4}|\'\d{2}|\d{2})(\.|\-|\/| )((2\d|1\d|0?\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?( ?))|((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?(\.|\-|\/| )((?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d])))( ?))
@@ -45,6 +46,7 @@ namespace RadioDld
         // Common Groups
         private static string reDelim = @"(\.|\-|\/| )"; // Common Delims .| -|/|{ ws}
         private static string reDay = @"(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?";       // d(dd)(st | nd | rd | th)
+        private static string reDaySuffix = "(?<=[0-9])(?:st |nd |rd |th )";
         private static string reMonth = @"(2\d|1\d|0?\d)"; // m(mm)
         private static string reMonthText = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"; // (mmm)
         private static string reYear = @"((?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d])))"; // yyyy('yy)(yy)
@@ -62,10 +64,11 @@ namespace RadioDld
 
         // Build RegEx string
         private static Regex matchStripDate = new Regex("(" + reF1 + "|" + reF2 + "|" + reF3 + ")", RegexOptions.IgnoreCase | RegexOptions.ECMAScript);
+        private static Regex removeDaySuffix = new Regex(reDaySuffix, RegexOptions.IgnoreCase);
 
         // Set day range for Similar date check
-        // private static int iSimilarDateDayRange = 6;
-        private static int iSimilarDateDayRange = 3;
+        private static int iSimilarDateDayRange = 6;
+        //// private static int iSimilarDateDayRange = 3;
 
         /* OLD FUNCTION for record
         *  public static string oldStripDateFromName(string name, DateTime stripDate)
@@ -98,10 +101,18 @@ namespace RadioDld
                 if (matchStripDate.IsMatch(name))
                 {
                     // Date Found - now get the date value found
-                    DateTime dtDateFound = Convert.ToDateTime(matchStripDate.Match(name).Value, CultureInfo.CurrentCulture);
+                    string sDateFound = matchStripDate.Match(name).ToString();
+
+                    // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
+                    sDateFound = sDateFound.Replace("'", string.Empty);
+                    sDateFound = sDateFound.Replace("Sept", "Sep").Replace("sept", "sep");
+                    sDateFound = removeDaySuffix.Replace(sDateFound, " ");
+
+                    // Convert to DateTime for comparison to similardate
+                    DateTime dtDateFound = Convert.ToDateTime(sDateFound, CultureInfo.CurrentCulture);
 
                     // Check if date is within the +/- 'similardateday' range of 'date'
-                    if (dtDateFound > stripDate.AddDays(-iSimilarDateDayRange) && dtDateFound < stripDate.AddDays(iSimilarDateDayRange))
+                    if (dtDateFound >= stripDate.AddDays(-iSimilarDateDayRange) && dtDateFound <= stripDate.AddDays(iSimilarDateDayRange))
                     {
                        name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
                     }
