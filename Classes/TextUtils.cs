@@ -116,8 +116,6 @@ namespace RadioDld
                     {
                        name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
                     }
-
-                    // name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
                 }
 
                 return name;

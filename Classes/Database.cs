@@ -76,23 +76,14 @@ namespace RadioDld
                     int dataLength = (int)reader.GetBytes(reader.GetOrdinal("image"), 0, null, 0, 0);
                     byte[] content = new byte[dataLength];
 
-                    try
-                    {
-                        reader.GetBytes(reader.GetOrdinal("image"), 0, content, 0, dataLength);
+                    reader.GetBytes(reader.GetOrdinal("image"), 0, content, 0, dataLength);
 
-                        using (MemoryStream contentStream = new MemoryStream(content))
-                        {
-                            using (Bitmap streamBitmap = new Bitmap(contentStream))
-                            {
-                                // 16Aug2017 encoutered 'out of Memory Error' here when downloading 
-                                // multiple (20-30) episodes from BBC World Service Crowd Science stream...
-                                return new Bitmap(streamBitmap);
-                            }
-                        }
-                    }
-                    catch
+                    using (MemoryStream contentStream = new MemoryStream(content))
                     {
-                        return null;
+                        using (Bitmap streamBitmap = new Bitmap(contentStream))
+                        {
+                            return new Bitmap(streamBitmap);
+                        }
                     }
                 }
             }
