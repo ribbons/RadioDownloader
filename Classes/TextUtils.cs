@@ -24,49 +24,28 @@ namespace RadioDld
 
     public static class TextUtils
     {
-        // Move Static RegEx content here to declutte the 'StripDateFromName' function
-        // Declarations
-
-        // Key date formats to look out for
+        // ## Key date formats to look out for
         // 1 / d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
         // 2 / yyyy('yy)(yy)|m(mm)(mmm)|d(dd)(st|nd|rd|th)
         // 3 / mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
-
-        // ## Common Delims
-        //    .| -|/|{ ws}
-        //
-        // ###Test Beds
-        // https://www.debuggex.com/
-        // http://regexstorm.net/tester
-        // https://regex101.com/
-        //
-        // new RegEx in Java
-        // (((3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?(\.|\-|\/| )((2\d|1\d|0?\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(\d{4}|\'\d{2}|\d{2}))( ?)|((\d{4}|\'\d{2}|\d{2})(\.|\-|\/| )((2\d|1\d|0?\d)|(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?( ?))|((?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?))(\.|\-|\/| )(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?(\.|\-|\/| )((?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d])))( ?))
 
         // Common Groups
-        private static string reDelim = @"(\.|\-|\/| )"; // Common Delims .| -|/|{ ws}
-        private static string reDay = @"(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?";       // d(dd)(st | nd | rd | th)
-        private static string reDaySuffix = "(?<=[0-9])(?:st |nd |rd |th )";
-        private static string reMonth = @"(2\d|1\d|0?\d)"; // m(mm)
-        private static string reMonthText = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)"; // (mmm)
-        private static string reYear = @"((?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d])))"; // yyyy('yy)(yy)
-        private static string reWS = @"( ?)"; // trailing white space
+        // TODO change notion format
+        private const string MatchDelim = @"(\.|\-|\/| )";
+        private const string MatchDay = @"(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?";
+        private const string MatchDaySuffix = "(?<=[0-9])(?:st |nd |rd |th )";
+        private const string MatchMonth = @"(2\d|1\d|0?\d)";
+        private const string MatchMonthText = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+        private const string MatchYear = @"((?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d])))";
+        private const string MatchWS = @"( ?)";
 
-        // Key date formats to look out for
-        // 1 / d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
-        private static string reF1 = @reDay + reDelim + "(" + reMonth + "|" + reMonthText + ")" + reDelim + reYear + reWS;
+        private const string MatchFormat1 = @MatchDay + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchYear + MatchWS;
+        private const string MatchFormat2 = @"(" + MatchYear + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchWS + ")";
+        private const string MatchFormat3 = @"(" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchDelim + MatchYear + MatchWS;
 
-        // 2 / yyyy('yy)(yy)|m(mm)(mmm)|d(dd)(st|nd|rd|th)
-        private static string reF2 = @"(" + reYear + reDelim + "(" + reMonth + "|" + reMonthText + ")" + reDelim + reDay + reWS + ")";
+        private static Regex matchStripDate = new Regex("(" + MatchFormat1 + "|" + MatchFormat2 + "|" + MatchFormat3 + ")", RegexOptions.IgnoreCase);
+        private static Regex removeDaySuffix = new Regex(MatchDaySuffix, RegexOptions.IgnoreCase);
 
-        // 3 / mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
-        private static string reF3 = @"(" + reMonthText + ")" + reDelim + reDay + reDelim + reYear + reWS;
-
-        // Build RegEx string
-        private static Regex matchStripDate = new Regex("(" + reF1 + "|" + reF2 + "|" + reF3 + ")", RegexOptions.IgnoreCase | RegexOptions.ECMAScript);
-        private static Regex removeDaySuffix = new Regex(reDaySuffix, RegexOptions.IgnoreCase);
-
-        // Set day range for Similar date check
         private static int iSimilarDateDayRange = 6;
         //// private static int iSimilarDateDayRange = 3;
 
@@ -85,16 +64,15 @@ namespace RadioDld
         *  }
         */
 
+        /// <summary>
+        /// Use regex to remove a number of different date formats from episode titles.
+        /// Will only remove dates within a set range eitherside of the programme date.
+        /// </summary>
+        /// <param name="name">Episode Name to be checked.</param>
+        /// <param name="stripDate">Date value to be striped from the Episode Name.</param>
+        /// <returns>Episode name with date content removed</returns>
         public static string StripDateFromName(string name, DateTime stripDate)
         {
-            // Use regex to remove a number of different date formats from episode titles.
-            // Will only remove dates within a set range eitherside of the programme date.
-
-            // Issue #59
-            // - Look for date in middle of name (as well as start and end)
-            // - look for other date formats like 13.02.2009; also 13 Feb 2009; 13th feb 2009; 13th-Feb-2009; 13feb09;
-            // - consider full day names as well eg Monday, Tuesday...
-            // - also other delims before and or after the date e.g. 'title - 2009-02-13'
             try
             {
                 // Checks for match on ANY date in the string...
