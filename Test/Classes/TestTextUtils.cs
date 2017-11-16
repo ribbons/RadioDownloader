@@ -173,7 +173,7 @@ namespace RadioDldTest
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st February 2009 Test", date));
 
             // new date
-            date = new DateTime(2009, 02, 3);
+            date = new DateTime(2009, 02, 03);
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 3.2.09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 3.2.2009 Test", date));
