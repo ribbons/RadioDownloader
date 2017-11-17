@@ -73,8 +73,8 @@ namespace RadioDld
         /// <returns>Episode name with date content removed</returns>
         public static string StripDateFromName(string name, DateTime stripDate)
         {
-            //try
-            //{
+            // try
+            // {
                 // Checks for match on ANY date in the string...
                 if (matchStripDate.IsMatch(name))
                 {
@@ -97,11 +97,12 @@ namespace RadioDld
                 }
 
                 return name;
-            //}
-            //catch
-            //{
-            //    return null;
-            //}
+
+            // }
+            // catch
+            // {
+            //     return null;
+            // }
         }
 
         public static string DescDuration(int duration)
