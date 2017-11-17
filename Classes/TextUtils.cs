@@ -73,36 +73,43 @@ namespace RadioDld
         /// <returns>Episode name with date content removed</returns>
         public static string StripDateFromName(string name, DateTime stripDate)
         {
-            // try
-            // {
-                // Checks for match on ANY date in the string...
-                if (matchStripDate.IsMatch(name))
+            // Checks for match on ANY date in the string...
+            if (matchStripDate.IsMatch(name))
+            {
+                // Date Found - now get the date value found
+                string sDateFound = matchStripDate.Match(name).ToString();
+
+                // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
+                sDateFound = sDateFound.Replace("'", string.Empty);
+                sDateFound = sDateFound.Replace("Sept", "Sep").Replace("sept", "sep");
+                sDateFound = removeDaySuffix.Replace(sDateFound, " ");
+                sDateFound.Trim();
+
+                // Convert to DateTime for comparison to similardate
+                DateTime dtDateFound;
+                var formats = new[]
                 {
-                    // Date Found - now get the date value found
-                    string sDateFound = matchStripDate.Match(name).ToString();
+                    "d/M/yy", "d/M/yyyy", "d/MM/yy", "d/MM/yyyy", "dd/MM/yy", "dd/MM/yyyy",
+                    "d MMM yy", "d MMM yyyy", "d MMMM yy", "d MMMM yyyy",
+                    "d.M.yy", "d.M.yyyy", "d.MM.yy", "d.MM.yyyy",
+                    "d-M-yy", "d-M-yyyy", "d-MM-yy", "d-MM-yyyy", "d-MMM-yy", "d-MMM-yyyy",
+                    "yy/M/d", "yyyy/M/d", "yy/MM/d", "yyyy/MM/d", "yy/MM/dd", "yyyy/MM/dd",
+                    "yy.M.d", "yyyy.M.d", "yy.MM.d", "yyyy.MM.d", "yy.MM.dd", "yyyy.MM.dd",
+                    "yy-M-d", "yyyy-M-d", "yyyy/MM/dd", "yyyy-MM-dd",
+                    "MM dd yy", "MM dd yyyy", "MMM d yy", "MMM d yyyy", "MMM dd yy", "MMM dd yyyy",
+                };
 
-                    // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
-                    sDateFound = sDateFound.Replace("'", string.Empty);
-                    sDateFound = sDateFound.Replace("Sept", "Sep").Replace("sept", "sep");
-                    sDateFound = removeDaySuffix.Replace(sDateFound, " ");
-
-                    // Convert to DateTime for comparison to similardate
-                    DateTime dtDateFound = Convert.ToDateTime(sDateFound, CultureInfo.CurrentCulture);
-
+                if (DateTime.TryParseExact(sDateFound.Trim(), formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dtDateFound))
+                {
                     // Check if date is within the +/- 'similardateday' range of 'date'
                     if (dtDateFound >= stripDate.AddDays(-iSimilarDateDayRange) && dtDateFound <= stripDate.AddDays(iSimilarDateDayRange))
                     {
                        name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
                     }
                 }
+            }
 
-                return name;
-
-            // }
-            // catch
-            // {
-            //     return null;
-            // }
+            return name;
         }
 
         public static string DescDuration(int duration)
