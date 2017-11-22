@@ -30,7 +30,6 @@ namespace RadioDld
         // 3 / mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
 
         // Common Groups
-        // TODO change notion format
         private const string MatchDelim = @"(\.|\-|\/| )";
         private const string MatchDay = @"(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?";
         private const string MatchDaySuffix = "(?<=[0-9])(?:st |nd |rd |th )";
@@ -46,47 +45,30 @@ namespace RadioDld
         private static Regex matchStripDate = new Regex("(" + MatchFormat1 + "|" + MatchFormat2 + "|" + MatchFormat3 + ")", RegexOptions.IgnoreCase);
         private static Regex removeDaySuffix = new Regex(MatchDaySuffix, RegexOptions.IgnoreCase);
 
-        private static int iSimilarDateDayRange = 6;
-        //// private static int iSimilarDateDayRange = 3;
-
-        /* OLD FUNCTION for record
-        *  public static string oldStripDateFromName(string name, DateTime stripDate)
-        *  {
-        *      // Use regex to remove a number of different date formats from episode titles.
-        *      // Will only remove dates with the same month & year as the programme itself, but any day of the month
-        *      // as there is sometimes a mismatch of a day or two between the date in a title and the publish date.
-        *      Regex matchStripDate = new Regex("\\A(" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "/" + stripDate.ToString("MM", CultureInfo.InvariantCulture) + "/\\d{2} ?-? )?(?<name>.*?)( ?:? (\\d{2}/" + stripDate.ToString("MM", CultureInfo.InvariantCulture) + "/" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "|((Mon|Tue|Wed|Thu|Fri) )?(\\d{1,2}(st|nd|rd|th)? )?(" + stripDate.ToString("MMMM", CultureInfo.InvariantCulture) + "|" + stripDate.ToString("MMM", CultureInfo.InvariantCulture) + ")( \\d{1,2}(st|nd|rd|th)?| (" + stripDate.ToString("yy", CultureInfo.InvariantCulture) + "|" + stripDate.ToString("yyyy", CultureInfo.InvariantCulture) + "))?))?\\Z");
-        *      if (matchStripDate.IsMatch(name))
-        *      {
-        *          name = matchStripDate.Match(name).Groups["name"].ToString();
-        *      }
-        *      return name;
-        *  }
-        */
+        private static int similarDateDayRange = 6;
+        //// private static int isimilarDateDayRange = 3;
 
         /// <summary>
         /// Use regex to remove a number of different date formats from episode titles.
-        /// Will only remove dates within a set range eitherside of the programme date.
+        /// Will only remove dates within a set range (similarDateDayRange) eitherside of the programme date.
         /// </summary>
         /// <param name="name">Episode Name to be checked.</param>
         /// <param name="stripDate">Date value to be striped from the Episode Name.</param>
         /// <returns>Episode name with date content removed</returns>
         public static string StripDateFromName(string name, DateTime stripDate)
         {
-            // Checks for match on ANY date in the string...
             if (matchStripDate.IsMatch(name))
             {
-                // Date Found - now get the date value found
-                string sDateFound = matchStripDate.Match(name).ToString();
+                string dateStringFound = matchStripDate.Match(name).ToString();
 
                 // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
-                sDateFound = sDateFound.Replace("'", string.Empty);
-                sDateFound = sDateFound.Replace("Sept", "Sep").Replace("sept", "sep");
-                sDateFound = removeDaySuffix.Replace(sDateFound, " ");
-                sDateFound.Trim();
+                dateStringFound = dateStringFound.Replace("'", string.Empty);
+                dateStringFound = dateStringFound.Replace("Sept", "Sep").Replace("sept", "sep");
+                dateStringFound = removeDaySuffix.Replace(dateStringFound, " ");
+                dateStringFound.Trim();
 
                 // Convert to DateTime for comparison to similardate
-                DateTime dtDateFound;
+                DateTime dateFound;
                 var formats = new[]
                 {
                     "d/M/yy", "d/M/yyyy", "d/MM/yy", "d/MM/yyyy", "dd/MM/yy", "dd/MM/yyyy",
@@ -99,10 +81,10 @@ namespace RadioDld
                     "MM dd yy", "MM dd yyyy", "MMM d yy", "MMM d yyyy", "MMM dd yy", "MMM dd yyyy",
                 };
 
-                if (DateTime.TryParseExact(sDateFound.Trim(), formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dtDateFound))
+                if (DateTime.TryParseExact(dateStringFound.Trim(), formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateFound))
                 {
                     // Check if date is within the +/- 'similardateday' range of 'date'
-                    if (dtDateFound >= stripDate.AddDays(-iSimilarDateDayRange) && dtDateFound <= stripDate.AddDays(iSimilarDateDayRange))
+                    if (dateFound >= stripDate.AddDays(-similarDateDayRange) && dateFound <= stripDate.AddDays(similarDateDayRange))
                     {
                        name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
                     }
