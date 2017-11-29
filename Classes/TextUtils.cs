@@ -24,29 +24,28 @@ namespace RadioDld
 
     public static class TextUtils
     {
-        // ## Key date formats to look out for
-        // 1 / d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
-        // 2 / yyyy('yy)(yy)|m(mm)(mmm)|d(dd)(st|nd|rd|th)
-        // 3 / mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
-
         // Common Groups
-        private const string MatchDelim = @"(\.|\-|\/| )";
-        private const string MatchDay = @"(3[01]|2\d|1\d|0?\d)(st|nd|rd|th)?";
+        private const string MatchDelim = @"(?:\.|\-|\/| )";
+        private const string MatchDay = @"(?:3[01]|2\d|1\d|0?\d)(?:st|nd|rd|th)?";
         private const string MatchDaySuffix = "(?<=[0-9])(?:st |nd |rd |th )";
-        private const string MatchMonth = @"(2\d|1\d|0?\d)";
+        private const string MatchMonth = @"(?:2\d|1\d|0?\d)";
         private const string MatchMonthText = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
-        private const string MatchYear = @"((?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d])))";
-        private const string MatchWS = @"( ?)";
+        private const string MatchYear = @"(?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d]))";
+        private const string MatchWS = @"(?: ?)";
 
+        // ## Date format: d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
         private const string MatchFormat1 = @MatchDay + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchYear + MatchWS;
+
+        // ## Date format: yyyy('yy)(yy)|m(mm)(mmm)|d(dd)(st|nd|rd|th)
         private const string MatchFormat2 = @"(" + MatchYear + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchWS + ")";
+
+        // ## Date format: mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
         private const string MatchFormat3 = @"(" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchDelim + MatchYear + MatchWS;
 
         private static Regex matchStripDate = new Regex("(" + MatchFormat1 + "|" + MatchFormat2 + "|" + MatchFormat3 + ")", RegexOptions.IgnoreCase);
         private static Regex removeDaySuffix = new Regex(MatchDaySuffix, RegexOptions.IgnoreCase);
 
         private static int similarDateDayRange = 6;
-        //// private static int isimilarDateDayRange = 3;
 
         /// <summary>
         /// Use regex to remove a number of different date formats from episode titles.

@@ -126,7 +126,7 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 03 '09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 03 2009", date));
 
-            // test dates in September
+            // test dates in September including the potential 'Sept' abbreviation
             date = new DateTime(2009, 09, 13);
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 Sep 2009", date));
