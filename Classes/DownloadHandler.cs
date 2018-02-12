@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,10 +33,10 @@ namespace RadioDld
         private string episodeExtId;
         private Model.Programme progInfo;
         private Model.Episode episodeInfo;
-        private ProgrammeInfo providerProgInfo;
-        private EpisodeInfo providerEpisodeInfo;
+        private Provider.ProgrammeInfo providerProgInfo;
+        private Provider.EpisodeInfo providerEpisodeInfo;
 
-        private IRadioProvider pluginInstance;
+        private Provider.RadioProvider pluginInstance;
         private object pluginInstanceLock = new object();
 
         private Thread downloadThread;
@@ -65,7 +65,7 @@ namespace RadioDld
                     this.progInfo = new Model.Programme(reader.GetInt32(reader.GetOrdinal("progid")));
                     this.episodeInfo = new Model.Episode(epid);
 
-                    this.providerProgInfo = new ProgrammeInfo(this.progInfo);
+                    this.providerProgInfo = new Provider.ProgrammeInfo(this.progInfo);
 
                     if (reader.IsDBNull(reader.GetOrdinal("progimg")))
                     {
@@ -76,7 +76,7 @@ namespace RadioDld
                         this.providerProgInfo.Image = RetrieveImage(reader.GetInt32(reader.GetOrdinal("progimg")));
                     }
 
-                    this.providerEpisodeInfo = new EpisodeInfo(this.episodeInfo);
+                    this.providerEpisodeInfo = new Provider.EpisodeInfo(this.episodeInfo);
 
                     if (reader.IsDBNull(reader.GetOrdinal("duration")))
                     {
@@ -167,18 +167,18 @@ namespace RadioDld
             if (this.Progress != null)
             {
                 // Raise a progress event to give the user some feedback
-                this.Progress(this.episodeInfo.Epid, 0, ProgressType.Downloading);
+                this.Progress(this.episodeInfo.Epid, 0, Provider.ProgressType.Downloading);
             }
 
-            if (!Provider.Exists(this.pluginId))
+            if (!Provider.Handler.Exists(this.pluginId))
             {
-                this.DownloadError(ErrorType.LocalProblem, "The plugin provider required to download this episode is not currently available.  Please try updating the Radio Downloader providers or cancelling the download.");
+                this.DownloadError(Provider.ErrorType.LocalProblem, "The plugin provider required to download this episode is not currently available.  Please try updating the Radio Downloader providers or cancelling the download.");
                 return;
             }
 
             lock (this.pluginInstanceLock)
             {
-                this.pluginInstance = Provider.GetFromId(this.pluginId).CreateInstance();
+                this.pluginInstance = Provider.Handler.GetFromId(this.pluginId).CreateInstance();
                 this.pluginInstance.Progress += this.DownloadPluginInst_Progress;
             }
 
@@ -194,7 +194,7 @@ namespace RadioDld
                 }
                 catch (DirectoryNotFoundException)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.");
+                    this.DownloadError(Provider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.");
                     return;
                 }
 
@@ -203,7 +203,7 @@ namespace RadioDld
 
                 if (availableSpace <= FreeMb * 1024 * 1024)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes does not have enough free space.  Make sure that you have at least " + FreeMb.ToString(CultureInfo.CurrentCulture) + " MB free, or select a new location under Options -> Main Options.");
+                    this.DownloadError(Provider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes does not have enough free space.  Make sure that you have at least " + FreeMb.ToString(CultureInfo.CurrentCulture) + " MB free, or select a new location under Options -> Main Options.");
                     return;
                 }
 
@@ -213,20 +213,20 @@ namespace RadioDld
                 }
                 catch (IOException ioExp)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Encountered an error generating the download file name.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
+                    this.DownloadError(Provider.ErrorType.LocalProblem, "Encountered an error generating the download file name.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
                     return;
                 }
                 catch (UnauthorizedAccessException unAuthExp)
                 {
-                    this.DownloadError(ErrorType.LocalProblem, "Encountered a permissions problem generating the download file name.  " + unAuthExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
+                    this.DownloadError(Provider.ErrorType.LocalProblem, "Encountered a permissions problem generating the download file name.  " + unAuthExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
                     return;
                 }
 
                 fileExtension = this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, finalName);
             }
-            catch (DownloadException downloadExp)
+            catch (Provider.DownloadException downloadExp)
             {
-                if (downloadExp.ErrorType == ErrorType.UnknownError)
+                if (downloadExp.ErrorType == Provider.ErrorType.UnknownError)
                 {
                     this.DownloadError(downloadExp);
                 }
@@ -282,7 +282,7 @@ namespace RadioDld
             this.DownloadFinished();
         }
 
-        private void DownloadPluginInst_Progress(int percent, ProgressType type)
+        private void DownloadPluginInst_Progress(int percent, Provider.ProgressType type)
         {
             // Don't raise the progress event if the value is the same as last time
             if (percent == this.ProgressValue)
@@ -303,7 +303,7 @@ namespace RadioDld
             }
         }
 
-        private void DownloadError(ErrorType errorType, string errorDetails)
+        private void DownloadError(Provider.ErrorType errorType, string errorDetails)
         {
             Model.Download.SetErrorred(this.episodeInfo.Epid, errorType, errorDetails);
             this.DownloadFinished();
@@ -321,7 +321,7 @@ namespace RadioDld
             unhandled.Data.Add("Programme", progDetails);
             unhandled.Data.Add("Provider", this.pluginInstance.ToString());
 
-            Model.Download.SetErrorred(this.episodeInfo.Epid, ErrorType.UnknownError, new ErrorReporting("Download Error", unhandled));
+            Model.Download.SetErrorred(this.episodeInfo.Epid, Provider.ErrorType.UnknownError, new ErrorReporting("Download Error", unhandled));
             this.DownloadFinished();
         }
 

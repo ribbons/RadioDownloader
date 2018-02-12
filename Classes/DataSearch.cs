@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -308,7 +308,7 @@ namespace RadioDld
             // No need to clear the visibility cache, as having an extra entry won't cause an issue
         }
 
-        private void Download_Progress(int epid, int percent, ProgressType type)
+        private void Download_Progress(int epid, int percent, Provider.ProgressType type)
         {
             if (this.DownloadProgress != null && this.DownloadIsVisible(epid))
             {

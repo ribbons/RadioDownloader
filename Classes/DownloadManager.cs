@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ namespace RadioDld
             // Prevent instance creation - would be a static class if we didn't need to inherit from Database
         }
 
-        public delegate void ProgressEventHandler(int epid, int percent, ProgressType type);
+        public delegate void ProgressEventHandler(int epid, int percent, Provider.ProgressType type);
 
         public delegate void ProgressTotalEventHandler(bool downloading, int percent);
 
@@ -169,7 +169,7 @@ namespace RadioDld
             }
         }
 
-        private static void DownloadHandler_Progress(int epid, int percent, ProgressType type)
+        private static void DownloadHandler_Progress(int epid, int percent, Provider.ProgressType type)
         {
             if (Progress != null)
             {

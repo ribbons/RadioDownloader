@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -133,7 +133,7 @@ namespace RadioDld.Model
 
         public DownloadStatus Status { get; set; }
 
-        public ErrorType ErrorType { get; set; }
+        public Provider.ErrorType ErrorType { get; set; }
 
         public string ErrorDetails { get; set; }
 
@@ -284,14 +284,14 @@ namespace RadioDld.Model
             }
         }
 
-        public static void SetErrorred(int epid, ErrorType errorType, object details)
+        public static void SetErrorred(int epid, Provider.ErrorType errorType, object details)
         {
             switch (errorType)
             {
-                case ErrorType.RemoveFromList:
+                case Provider.ErrorType.RemoveFromList:
                     RemoveAsync(epid, true);
                     return;
-                case ErrorType.UnknownError:
+                case Provider.ErrorType.UnknownError:
                     using (MemoryStream stream = new MemoryStream())
                     {
                         BinaryFormatter formatter = new BinaryFormatter();
@@ -745,9 +745,9 @@ namespace RadioDld.Model
 
             if (this.Status == DownloadStatus.Errored)
             {
-                this.ErrorType = (ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
+                this.ErrorType = (Provider.ErrorType)reader.GetInt32(reader.GetOrdinal("errortype"));
 
-                if (this.ErrorType != ErrorType.UnknownError)
+                if (this.ErrorType != Provider.ErrorType.UnknownError)
                 {
                     this.ErrorDetails = reader.GetString(reader.GetOrdinal("errordetails"));
                 }

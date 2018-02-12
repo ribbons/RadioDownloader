@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace RadioDld
+namespace RadioDld.Provider
 {
     using System;
     using System.Collections.Generic;
@@ -24,14 +24,14 @@ namespace RadioDld
     using System.IO;
     using System.Reflection;
 
-    internal class Provider
+    internal class Handler
     {
-        private static Dictionary<Guid, Provider> availableProviders = new Dictionary<Guid, Provider>();
+        private static Dictionary<Guid, Handler> availableProviders = new Dictionary<Guid, Handler>();
 
         private Assembly assembly;
         private string fullClass;
 
-        static Provider()
+        static Handler()
         {
             // Get an array of all of the dlls ending with the text Provider in the application folder
             string[] dlls = Directory.GetFileSystemEntries(AppDomain.CurrentDomain.BaseDirectory, "*Provider.dll");
@@ -68,7 +68,7 @@ namespace RadioDld
             return availableProviders.ContainsKey(pluginId);
         }
 
-        public static Provider GetFromId(Guid pluginId)
+        public static Handler GetFromId(Guid pluginId)
         {
             if (Exists(pluginId))
             {
@@ -80,19 +80,19 @@ namespace RadioDld
             }
         }
 
-        public static Provider[] GetAll()
+        public static Handler[] GetAll()
         {
-            Provider[] providers = new Provider[availableProviders.Values.Count];
+            Handler[] providers = new Handler[availableProviders.Values.Count];
             availableProviders.Values.CopyTo(providers, 0);
 
             return providers;
         }
 
-        public IRadioProvider CreateInstance()
+        public RadioProvider CreateInstance()
         {
             try
             {
-                return (IRadioProvider)this.assembly.CreateInstance(this.fullClass);
+                return (RadioProvider)this.assembly.CreateInstance(this.fullClass);
             }
             catch
             {
@@ -118,25 +118,22 @@ namespace RadioDld
                     // Ignore abstract classes
                     if (!((thisType.Attributes & TypeAttributes.Abstract) == TypeAttributes.Abstract))
                     {
-                        // See if this type implements our interface
-                        Type implInterface = thisType.GetInterface(typeof(IRadioProvider).Name);
-
-                        if (implInterface != null)
+                        if (thisType.IsSubclassOf(typeof(RadioProvider)))
                         {
-                            Provider provider = new Provider();
+                            Handler provider = new Handler();
                             provider.assembly = assembly;
                             provider.fullClass = thisType.FullName;
                             provider.Class = thisType.Name;
 
                             try
                             {
-                                IRadioProvider instance = (IRadioProvider)assembly.CreateInstance(thisType.FullName);
+                                RadioProvider instance = (RadioProvider)assembly.CreateInstance(thisType.FullName);
                                 provider.Id = instance.ProviderId;
                                 provider.Name = instance.ProviderName;
                                 provider.Description = instance.ProviderDescription;
                                 provider.Icon = instance.ProviderIcon;
-                                provider.ShowOptionsHandler = instance.GetShowOptionsHandler();
-                                provider.ShowMoreProgInfoHandler = instance.GetShowMoreProgInfoHandler();
+                                provider.ShowOptionsHandler = instance.ShowOptionsHandler;
+                                provider.ShowMoreProgInfoHandler = instance.ShowMoreProgInfoHandler;
                                 availableProviders.Add(instance.ProviderId, provider);
                             }
                             catch

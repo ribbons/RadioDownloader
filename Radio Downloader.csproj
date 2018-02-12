@@ -214,15 +214,15 @@
   <ItemGroup>
     <Compile Include="Classes\AppInstance.cs" />
     <Compile Include="Classes\DownloadManager.cs" />
-    <Compile Include="Classes\EpisodeInfo.cs" />
-    <Compile Include="Classes\ProgrammeInfo.cs" />
+    <Compile Include="Classes\Provider\EpisodeInfo.cs" />
+    <Compile Include="Classes\Provider\ProgrammeInfo.cs" />
     <Compile Include="Classes\ProviderException.cs" />
     <Compile Include="Classes\RssServer.cs" />
     <Compile Include="Classes\Settings.cs" />
     <Compile Include="Classes\Database.cs" />
     <Compile Include="Classes\ComboNameValue.cs" />
     <Compile Include="Classes\DataNotFoundException.cs" />
-    <Compile Include="Classes\DownloadException.cs" />
+    <Compile Include="Classes\Provider\DownloadException.cs" />
     <Compile Include="Classes\Model\Download.cs" />
     <Compile Include="Classes\Model\Subscription.cs" />
     <Compile Include="Classes\Model\Episode.cs" />
@@ -243,7 +243,7 @@
     <Compile Include="Classes\CachedWebClient.cs" />
     <Compile Include="Classes\DownloadHandler.cs" />
     <Compile Include="Classes\ErrorReporting.cs" />
-    <Compile Include="Classes\Provider.cs" />
+    <Compile Include="Classes\Provider\Handler.cs" />
     <Compile Include="Classes\DatabaseInit.cs" />
     <Compile Include="Classes\ViewState.cs" />
     <Compile Include="Controls\ExtLinkLabel.cs">
@@ -295,7 +295,8 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="GlobalSuppressions.cs" />
-    <Compile Include="Interfaces\IRadioProvider.cs" />
+    <Compile Include="Classes\Provider\AvailableEpisodes.cs" />
+    <Compile Include="Classes\Provider\RadioProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\VersionInfo.cs">
       <Visible>false</Visible>

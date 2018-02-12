@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ namespace RadioDld.Model
         internal const string Columns = "programmes.progid, programmes.extid, programmes.name, programmes.description, singleepisode, pluginid, latestdownload";
 
         private string extId = null;
-        private ShowMoreProgInfoEventHandler moreInfoHandler = null;
+        private Provider.ShowMoreProgInfoEventHandler moreInfoHandler = null;
 
         public Programme()
         {
@@ -102,7 +102,7 @@ namespace RadioDld.Model
 
         public static int? FetchInfo(Guid pluginId, string progExtId)
         {
-            if (!Provider.Exists(pluginId))
+            if (!Provider.Handler.Exists(pluginId))
             {
                 return null;
             }
@@ -195,7 +195,7 @@ namespace RadioDld.Model
         {
             Guid providerId;
             string progExtId;
-            ProgrammeInfo progInfo;
+            Provider.ProgrammeInfo progInfo;
 
             using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid, name, description, singleepisode from programmes where progid=@progid", FetchDbConn()))
             {
@@ -211,7 +211,7 @@ namespace RadioDld.Model
                     providerId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
                     progExtId = reader.GetString(reader.GetOrdinal("extid"));
 
-                    progInfo = new ProgrammeInfo();
+                    progInfo = new Provider.ProgrammeInfo();
                     progInfo.Name = reader.GetString(reader.GetOrdinal("name"));
                     int descriptionOrdinal = reader.GetOrdinal("description");
 
@@ -224,7 +224,7 @@ namespace RadioDld.Model
                 }
             }
 
-            if (!Provider.Exists(providerId))
+            if (!Provider.Handler.Exists(providerId))
             {
                 return null;
             }
@@ -250,8 +250,8 @@ namespace RadioDld.Model
             List<string> allEpExtIds = new List<string>();
             int page = 1;
 
-            IRadioProvider providerInst = Provider.GetFromId(providerId).CreateInstance();
-            AvailableEpisodes available;
+            Provider.RadioProvider providerInst = Provider.Handler.GetFromId(providerId).CreateInstance();
+            Provider.AvailableEpisodes available;
 
             do
             {
@@ -388,7 +388,7 @@ namespace RadioDld.Model
             this.SingleEpisode = reader.GetBoolean(reader.GetOrdinal("singleepisode"));
 
             Guid pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
-            Provider provider = Provider.GetFromId(pluginId);
+            Provider.Handler provider = Provider.Handler.GetFromId(pluginId);
 
             if (provider != null)
             {
@@ -408,13 +408,13 @@ namespace RadioDld.Model
 
         private static int? UpdateInfo(Guid pluginId, string progExtId)
         {
-            if (!Provider.Exists(pluginId))
+            if (!Provider.Handler.Exists(pluginId))
             {
                 return null;
             }
 
-            IRadioProvider pluginInstance = Provider.GetFromId(pluginId).CreateInstance();
-            ProgrammeInfo progInfo;
+            Provider.RadioProvider pluginInstance = Provider.Handler.GetFromId(pluginId).CreateInstance();
+            Provider.ProgrammeInfo progInfo;
 
             try
             {
@@ -506,9 +506,9 @@ namespace RadioDld.Model
                     {
                         providerId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
 
-                        if (Provider.Exists(providerId))
+                        if (Provider.Handler.Exists(providerId))
                         {
-                            IRadioProvider pluginInstance = Provider.GetFromId(providerId).CreateInstance();
+                            Provider.RadioProvider pluginInstance = Provider.Handler.GetFromId(providerId).CreateInstance();
 
                             if (reader.GetDateTime(reader.GetOrdinal("lastupdate")).AddDays(pluginInstance.ProgInfoUpdateFreqDays) < DateTime.Now)
                             {

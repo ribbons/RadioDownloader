@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -387,7 +387,7 @@ namespace RadioDld
 
         private void ShowProviderInfo(Guid providerId)
         {
-            Provider provider = Provider.GetFromId(providerId);
+            Provider.Handler provider = Provider.Handler.GetFromId(providerId);
             this.SetSideBar(provider.Name, provider.Description, null);
 
             if (this.view.CurrentView == ViewState.View.FindNewChooseProvider)
@@ -787,25 +787,25 @@ namespace RadioDld
 
                     switch (info.ErrorType)
                     {
-                        case ErrorType.LocalProblem:
+                        case Provider.ErrorType.LocalProblem:
                             errorName = "Local problem";
                             break;
-                        case ErrorType.ShorterThanExpected:
+                        case Provider.ErrorType.ShorterThanExpected:
                             errorName = "Shorter than expected";
                             break;
-                        case ErrorType.NotAvailable:
+                        case Provider.ErrorType.NotAvailable:
                             errorName = "Not available";
                             break;
-                        case ErrorType.NotAvailableInLocation:
+                        case Provider.ErrorType.NotAvailableInLocation:
                             errorName = "Not available in your location";
                             break;
-                        case ErrorType.NetworkProblem:
+                        case Provider.ErrorType.NetworkProblem:
                             errorName = "Network problem";
                             break;
-                        case ErrorType.RemoteProblem:
+                        case Provider.ErrorType.RemoteProblem:
                             errorName = "Remote problem";
                             break;
-                        case ErrorType.UnknownError:
+                        case Provider.ErrorType.UnknownError:
                             errorName = "Unknown error";
                             errorDetails = "An unknown error occurred when trying to download this programme.  Press the 'Report Error' button on the toolbar to send a report of this error back to NerdoftheHerd, so that it can be fixed.";
                             buttons.Add(this.ButtonReportError);
@@ -953,7 +953,7 @@ namespace RadioDld
             this.view.SetView(ViewState.MainTab.Downloads, ViewState.View.Downloads);
         }
 
-        private ListViewItem ProviderListItem(Provider provider)
+        private ListViewItem ProviderListItem(Provider.Handler provider)
         {
             ListViewItem addItem = new ListViewItem();
             addItem.Name = provider.Id.ToString();
@@ -1463,7 +1463,7 @@ namespace RadioDld
             }
         }
 
-        private void DataSearch_DownloadProgress(int epid, int percent, ProgressType type)
+        private void DataSearch_DownloadProgress(int epid, int percent, Provider.ProgressType type)
         {
             if (this.IsDisposed)
             {
@@ -1487,7 +1487,7 @@ namespace RadioDld
             {
                 string statusText = "Downloading...";
 
-                if (type == ProgressType.Processing)
+                if (type == Provider.ProgressType.Processing)
                 {
                     statusText = "Processing...";
                 }
@@ -1502,10 +1502,10 @@ namespace RadioDld
 
             switch (type)
             {
-                case ProgressType.Downloading:
+                case Provider.ProgressType.Downloading:
                     item.ImageKey = "downloading";
                     break;
-                case ProgressType.Processing:
+                case Provider.ProgressType.Processing:
                     item.ImageKey = "processing";
                     break;
             }
@@ -2358,7 +2358,7 @@ namespace RadioDld
 
         private void InitProviderList()
         {
-            foreach (Provider provider in Provider.GetAll())
+            foreach (Provider.Handler provider in Provider.Handler.GetAll())
             {
                 this.ListProviders.Items.Add(this.ProviderListItem(provider));
             }

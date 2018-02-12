@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ namespace RadioDld
         private static Thread episodeListThread;
 
         private static object episodeListThreadLock = new object();
-        private static IRadioProvider findNewPluginInst;
+        private static Provider.RadioProvider findNewPluginInst;
 
         public delegate void FindNewViewChangeEventHandler(object viewData);
 
@@ -48,9 +48,9 @@ namespace RadioDld
 
         public static Panel GetFindNewPanel(Guid pluginID, object view)
         {
-            if (Provider.Exists(pluginID))
+            if (Provider.Handler.Exists(pluginID))
             {
-                findNewPluginInst = Provider.GetFromId(pluginID).CreateInstance();
+                findNewPluginInst = Provider.Handler.GetFromId(pluginID).CreateInstance();
                 findNewPluginInst.FindNewException += FindNewPluginInst_FindNewException;
                 findNewPluginInst.FindNewViewChange += FindNewPluginInst_FindNewViewChange;
                 findNewPluginInst.FoundNew += FindNewPluginInst_FoundNew;

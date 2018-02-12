@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace RadioDld
+namespace RadioDld.Provider
 {
     using System;
-    using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Windows.Forms;
 
@@ -39,41 +38,70 @@ namespace RadioDld
         Processing
     }
 
-    public interface IRadioProvider
+    public abstract class RadioProvider
     {
-        event FindNewViewChangeEventHandler FindNewViewChange;
+        public virtual event FindNewViewChangeEventHandler FindNewViewChange
+        {
+            add { }
+            remove { }
+        }
 
-        event FindNewExceptionEventHandler FindNewException;
+        public virtual event FindNewExceptionEventHandler FindNewException
+        {
+            add { }
+            remove { }
+        }
 
-        event FoundNewEventHandler FoundNew;
+        public abstract event FoundNewEventHandler FoundNew;
 
-        event ProgressEventHandler Progress;
+        public abstract event ProgressEventHandler Progress;
 
-        Guid ProviderId { get; }
+        public abstract Guid ProviderId { get; }
 
-        string ProviderName { get; }
-
-        Bitmap ProviderIcon { get; }
-
-        string ProviderDescription { get; }
-
-        int ProgInfoUpdateFreqDays { get; }
+        public abstract string ProviderName { get; }
 
         /// <summary>
-        /// Get an event handler to be called to show an options dialog for the provider
+        /// Gets the icon to display in the Find New view for the provider, or null for default.
+        /// </summary>
+        public virtual Bitmap ProviderIcon
+        {
+            get
+            {
+                return null;
+            }
+        }
+
+        public abstract string ProviderDescription { get; }
+
+        public abstract int ProgInfoUpdateFreqDays { get; }
+
+        /// <summary>
+        /// Gets an event handler to be called to show an options dialog for the provider
         /// </summary>
         /// <returns>The event handler or null for none</returns>
-        EventHandler GetShowOptionsHandler();
+        public virtual EventHandler ShowOptionsHandler
+        {
+            get
+            {
+                return null;
+            }
+        }
 
         /// <summary>
-        /// Get an event handler to be called to show provider specific details about a programme
+        /// Gets an event handler to be called to show provider specific details about a programme
         /// </summary>
         /// <returns>The event handler or null to for none</returns>
-        ShowMoreProgInfoEventHandler GetShowMoreProgInfoHandler();
+        public virtual ShowMoreProgInfoEventHandler ShowMoreProgInfoHandler
+        {
+            get
+            {
+                return null;
+            }
+        }
 
-        Panel GetFindNewPanel(object view);
+        public abstract Panel GetFindNewPanel(object view);
 
-        ProgrammeInfo GetProgrammeInfo(string progExtId);
+        public abstract ProgrammeInfo GetProgrammeInfo(string progExtId);
 
         /// <summary>
         /// Fetch a list of IDs for currently available episodes.
@@ -82,7 +110,7 @@ namespace RadioDld
         /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme (without image data).</param>
         /// <param name="page">The one-based page number to return results for.</param>
         /// <returns>An <see cref="AvailableEpisodes"/> object containing available episode data.</returns>
-        AvailableEpisodes GetAvailableEpisodes(string progExtId, ProgrammeInfo progInfo, int page);
+        public abstract AvailableEpisodes GetAvailableEpisodes(string progExtId, ProgrammeInfo progInfo, int page);
 
         /// <summary>
         /// Fetch information about the specified episode.
@@ -91,7 +119,7 @@ namespace RadioDld
         /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme (without image data).</param>
         /// <param name="episodeExtId">The external id of the episode to fetch information about.</param>
         /// <returns>An <see cref="EpisodeInfo"/> class populated with information about the episode, or null.</returns>
-        EpisodeInfo GetEpisodeInfo(string progExtId, ProgrammeInfo progInfo, string episodeExtId);
+        public abstract EpisodeInfo GetEpisodeInfo(string progExtId, ProgrammeInfo progInfo, string episodeExtId);
 
         /// <summary>
         /// Perform a download of the specified episode.
@@ -103,36 +131,11 @@ namespace RadioDld
         /// <param name="finalName">The path and filename (minus file extension) to save this download as.</param>
         /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
         /// <returns>The file extension of a successful download.</returns>
-        string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
+        public abstract string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
 
         /// <summary>
         /// Cancel the episode download currently in progress.
         /// </summary>
-        void CancelDownload();
-    }
-
-    /// <summary>
-    /// Return type from providers when requesting a list of available episodes.
-    /// </summary>
-    public class AvailableEpisodes
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AvailableEpisodes" /> class.
-        /// </summary>
-        public AvailableEpisodes()
-        {
-            this.EpisodeIds = new Collection<string>();
-        }
-
-        /// <summary>
-        /// Gets a list to populate with currently available episode IDs.
-        /// The list must be populated in reverse date order.
-        /// </summary>
-        public Collection<string> EpisodeIds { get; private set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether there are further pages of IDs available.
-        /// </summary>
-        public bool MoreAvailable { get; set; }
+        public abstract void CancelDownload();
     }
 }

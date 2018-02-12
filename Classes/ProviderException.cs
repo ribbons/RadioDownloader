@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ namespace RadioDld
             : base(message, innerException)
         {
             this.ProviderId = pluginId;
-            this.ProviderName = Provider.GetFromId(pluginId).Name;
+            this.ProviderName = Provider.Handler.GetFromId(pluginId).Name;
         }
 
         /// <summary>
@@ -71,9 +71,9 @@ namespace RadioDld
         public ErrorReporting BuildReport()
         {
             Exception provExp = this.InnerException;
-            provExp.Data.Add("Provider", Provider.GetFromId(this.ProviderId).ToString());
+            provExp.Data.Add("Provider", Provider.Handler.GetFromId(this.ProviderId).ToString());
 
-            ErrorReporting report = new ErrorReporting(Provider.GetFromId(this.ProviderId).Class, provExp);
+            ErrorReporting report = new ErrorReporting(Provider.Handler.GetFromId(this.ProviderId).Class, provExp);
             return report;
         }
     }

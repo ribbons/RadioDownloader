@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,60 +33,53 @@ namespace PodcastProvider
     using System.Xml;
     using Microsoft.VisualBasic;
     using RadioDld;
+    using RadioDld.Provider;
 
-    public class PodcastProvider : IRadioProvider
+    public class PodcastProvider : RadioProvider
     {
         internal const int CacheHTTPHours = 2;
         internal static readonly string UserAgent = "Podcast Provider " + ((AssemblyInformationalVersionAttribute)typeof(PodcastProvider).Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false)[0]).InformationalVersion + " for " + Application.ProductName + " " + Application.ProductVersion;
 
         private DownloadWrapper doDownload;
 
-        public event FindNewViewChangeEventHandler FindNewViewChange
-        {
-            add { }
-            remove { }
-        }
+        public override event FindNewExceptionEventHandler FindNewException;
 
-        public event FindNewExceptionEventHandler FindNewException;
+        public override event FoundNewEventHandler FoundNew;
 
-        public event FoundNewEventHandler FoundNew;
+        public override event ProgressEventHandler Progress;
 
-        public event ProgressEventHandler Progress;
-
-        public Guid ProviderId
+        public override Guid ProviderId
         {
             get { return new Guid("3cfbe63e-95b8-4f80-8570-4ace909e0921"); }
         }
 
-        public string ProviderName
+        public override string ProviderName
         {
             get { return "Podcast"; }
         }
 
-        public Bitmap ProviderIcon
+        public override Bitmap ProviderIcon
         {
             get { return Properties.Resources.provider_icon; }
         }
 
-        public string ProviderDescription
+        public override string ProviderDescription
         {
             get { return "Audio files made available as enclosures on an RSS feed."; }
         }
 
-        public int ProgInfoUpdateFreqDays
+        public override int ProgInfoUpdateFreqDays
         {
             // Updating the programme info every week should be a reasonable trade-off
             get { return 7; }
         }
 
-        public EventHandler GetShowOptionsHandler()
+        public override ShowMoreProgInfoEventHandler ShowMoreProgInfoHandler
         {
-            return null;
-        }
-
-        public ShowMoreProgInfoEventHandler GetShowMoreProgInfoHandler()
-        {
-            return this.ShowMoreProgInfo;
+            get
+            {
+                return this.ShowMoreProgInfo;
+            }
         }
 
         public void ShowMoreProgInfo(string progExtId)
@@ -95,13 +88,13 @@ namespace PodcastProvider
             showInfo.ShowDialog();
         }
 
-        public Panel GetFindNewPanel(object view)
+        public override Panel GetFindNewPanel(object view)
         {
             FindNew findNewInst = new FindNew(this);
             return findNewInst.PanelFindNew;
         }
 
-        public ProgrammeInfo GetProgrammeInfo(string progExtId)
+        public override ProgrammeInfo GetProgrammeInfo(string progExtId)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
             XmlNamespaceManager namespaceMgr = this.CreateNamespaceMgr(rss);
@@ -144,7 +137,7 @@ namespace PodcastProvider
             return progInfo;
         }
 
-        public AvailableEpisodes GetAvailableEpisodes(string progExtId, ProgrammeInfo progInfo, int page)
+        public override AvailableEpisodes GetAvailableEpisodes(string progExtId, ProgrammeInfo progInfo, int page)
         {
             AvailableEpisodes available = new AvailableEpisodes();
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
@@ -170,7 +163,7 @@ namespace PodcastProvider
             return available;
         }
 
-        public EpisodeInfo GetEpisodeInfo(string progExtId, ProgrammeInfo progInfo, string episodeExtId)
+        public override EpisodeInfo GetEpisodeInfo(string progExtId, ProgrammeInfo progInfo, string episodeExtId)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
             XmlNamespaceManager namespaceMgr = this.CreateNamespaceMgr(rss);
@@ -374,7 +367,7 @@ namespace PodcastProvider
             return episodeInfo;
         }
 
-        public string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
+        public override string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
             XmlNode itemNode = this.ItemNodeFromEpisodeID(rss, episodeExtId);
@@ -446,7 +439,7 @@ namespace PodcastProvider
             return extension;
         }
 
-        public void CancelDownload()
+        public override void CancelDownload()
         {
             this.doDownload.Cancel();
         }

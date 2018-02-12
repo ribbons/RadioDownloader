@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -261,7 +261,7 @@ namespace RadioDld.Model
         {
             Guid pluginId;
             string progExtId;
-            ProgrammeInfo progInfo;
+            Provider.ProgrammeInfo progInfo;
 
             using (SQLiteCommand command = new SQLiteCommand("select pluginid, extid, name, description, singleepisode from programmes where progid=@progid", FetchDbConn()))
             {
@@ -277,7 +277,7 @@ namespace RadioDld.Model
                     pluginId = new Guid(reader.GetString(reader.GetOrdinal("pluginid")));
                     progExtId = reader.GetString(reader.GetOrdinal("extid"));
 
-                    progInfo = new ProgrammeInfo();
+                    progInfo = new Provider.ProgrammeInfo();
                     progInfo.Name = reader.GetString(reader.GetOrdinal("name"));
                     int descriptionOrdinal = reader.GetOrdinal("description");
 
@@ -290,8 +290,8 @@ namespace RadioDld.Model
                 }
             }
 
-            IRadioProvider providerInst = Provider.GetFromId(pluginId).CreateInstance();
-            EpisodeInfo episodeInfo;
+            Provider.RadioProvider providerInst = Provider.Handler.GetFromId(pluginId).CreateInstance();
+            Provider.EpisodeInfo episodeInfo;
 
             try
             {
