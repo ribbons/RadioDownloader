@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ namespace RadioDld
         {
             ThreadPool.QueueUserWorkItem(delegate
             {
-                CachedWebClient checkUpdate = CachedWebClient.GetInstance();
+                CachedWebClient checkUpdate = new CachedWebClient();
                 string versionInfo = null;
 
                 try

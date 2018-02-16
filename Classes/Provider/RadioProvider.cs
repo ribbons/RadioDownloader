@@ -40,6 +40,8 @@ namespace RadioDld.Provider
 
     public abstract class RadioProvider
     {
+        private CachedWebClientBase cachedWebClient;
+
         public virtual event FindNewViewChangeEventHandler FindNewViewChange
         {
             add { }
@@ -96,6 +98,27 @@ namespace RadioDld.Provider
             get
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="CachedWebClientBase"/> instance for this provider.
+        /// </summary>
+        public CachedWebClientBase CachedWebClient
+        {
+            get
+            {
+                if (this.cachedWebClient == null)
+                {
+                    this.cachedWebClient = new CachedWebClient();
+                }
+
+                return this.cachedWebClient;
+            }
+
+            set
+            {
+                this.cachedWebClient = value;
             }
         }
 

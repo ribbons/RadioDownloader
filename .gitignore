@@ -1,6 +1,8 @@
 bin/*/Radio Downloader.*
 bin/*/Radio Downloader Test.*
 bin/*/*Provider.*
+bin/*/*Provider Test.*
+bin/*/TestData/
 bin/*/store.db
 bin/*/HtmlAgilityPack.dll
 bin/*/xunit.*

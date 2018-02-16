@@ -15,3 +15,4 @@ install:
 script:
   - xbuild /p:Configuration=Release /p:Platform=mono "Radio Downloader.sln"
   - mono ./packages/xunit.runners.1.9.2/tools/xunit.console.exe "./bin/mono/Radio Downloader Test.dll"
+  - mono ./packages/xunit.runners.1.9.2/tools/xunit.console.exe "./bin/mono/PodcastProvider Test.dll"

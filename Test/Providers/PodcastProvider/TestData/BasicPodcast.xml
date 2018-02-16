@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Basic Podcast</title>
+        <link>http://example.com/BasicPodcast.xml</link>
+        <description>Basic Podcast description</description>
+        <item>
+            <title>Episode 2</title>
+            <description>Episode 2 description</description>
+            <pubDate>Tue, 10 Feb 2018 20:00:00 +0000</pubDate>
+            <enclosure url="http://example.com/programme1/episode2.mp3" length="12345" type="audio/mpeg" />
+        </item>
+        <item>
+            <title>Episode 1</title>
+            <description>Episode 1 description</description>
+            <pubDate>Mon, 09 Feb 2018 20:00:00 +0000</pubDate>
+            <enclosure url="http://example.com/programme1/episode1.mp3" length="12345" type="audio/mpeg" />
+        </item>
+    </channel>
+</rss>

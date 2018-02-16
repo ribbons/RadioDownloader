@@ -15,6 +15,8 @@ Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Installer", "installer\Inst
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Radio Downloader Test", "Test\Radio Downloader Test.csproj", "{E13EF72F-D399-41DA-9DF6-ACED6D1A91BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PodcastProvider Test", "Test\Providers\PodcastProvider\PodcastProvider Test.csproj", "{753640B4-D65C-449C-B434-15F46D88D01A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|mono = Debug|mono
@@ -119,6 +121,30 @@ Global
 		{E13EF72F-D399-41DA-9DF6-ACED6D1A91BF}.Signed|win32.Build.0 = Release|x86
 		{E13EF72F-D399-41DA-9DF6-ACED6D1A91BF}.Signed|win64.ActiveCfg = Release|x64
 		{E13EF72F-D399-41DA-9DF6-ACED6D1A91BF}.Signed|win64.Build.0 = Release|x64
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Debug|mono.ActiveCfg = Debug|Any CPU
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Debug|mono.Build.0 = Debug|Any CPU
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Debug|win32.ActiveCfg = Debug|x86
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Debug|win32.Build.0 = Debug|x86
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Debug|win64.ActiveCfg = Debug|x64
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Debug|win64.Build.0 = Debug|x64
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Package|mono.ActiveCfg = Release|Any CPU
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Package|mono.Build.0 = Release|Any CPU
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Package|win32.ActiveCfg = Release|x86
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Package|win32.Build.0 = Release|x86
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Package|win64.ActiveCfg = Release|x64
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Package|win64.Build.0 = Release|x64
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Release|mono.ActiveCfg = Release|Any CPU
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Release|mono.Build.0 = Release|Any CPU
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Release|win32.ActiveCfg = Release|x86
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Release|win32.Build.0 = Release|x86
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Release|win64.ActiveCfg = Release|x64
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Release|win64.Build.0 = Release|x64
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Signed|mono.ActiveCfg = Release|Any CPU
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Signed|mono.Build.0 = Release|Any CPU
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Signed|win32.ActiveCfg = Release|x86
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Signed|win32.Build.0 = Release|x86
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Signed|win64.ActiveCfg = Release|x64
+		{753640B4-D65C-449C-B434-15F46D88D01A}.Signed|win64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

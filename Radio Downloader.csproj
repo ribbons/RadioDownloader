@@ -213,6 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\AppInstance.cs" />
+    <Compile Include="Classes\CachedWebClientBase.cs" />
     <Compile Include="Classes\DownloadManager.cs" />
     <Compile Include="Classes\Provider\EpisodeInfo.cs" />
     <Compile Include="Classes\Provider\ProgrammeInfo.cs" />

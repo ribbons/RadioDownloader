@@ -463,9 +463,7 @@ namespace PodcastProvider
         internal XmlDocument LoadFeedXml(Uri url)
         {
             XmlDocument feedXml = new XmlDocument();
-            CachedWebClient cachedWeb = CachedWebClient.GetInstance();
-
-            string feedString = cachedWeb.DownloadString(url, CacheHTTPHours, UserAgent);
+            string feedString = this.CachedWebClient.DownloadString(url, CacheHTTPHours, UserAgent);
 
             // The LoadXml method of XmlDocument doesn't work correctly all of the time,
             // so convert the string to a UTF-8 byte array
@@ -535,8 +533,6 @@ namespace PodcastProvider
 
         private Bitmap RSSNodeImage(XmlNode node, XmlNamespaceManager namespaceMgr)
         {
-            CachedWebClient cachedWeb = CachedWebClient.GetInstance();
-
             try
             {
                 XmlNode imageNode = node.SelectSingleNode("itunes:image", namespaceMgr);
@@ -544,7 +540,7 @@ namespace PodcastProvider
                 if (imageNode != null)
                 {
                     Uri imageUrl = new Uri(imageNode.Attributes["href"].Value);
-                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
+                    byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {
@@ -567,7 +563,7 @@ namespace PodcastProvider
                 if (imageUrlNode != null)
                 {
                     Uri imageUrl = new Uri(imageUrlNode.InnerText);
-                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
+                    byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {
@@ -590,7 +586,7 @@ namespace PodcastProvider
                 if (imageNode != null)
                 {
                     Uri imageUrl = new Uri(imageNode.Attributes["url"].Value);
-                    byte[] imageData = cachedWeb.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
+                    byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
 
                     using (MemoryStream imageStream = new MemoryStream(imageData))
                     {

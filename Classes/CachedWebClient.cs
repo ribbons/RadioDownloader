@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,33 +25,24 @@ namespace RadioDld
     using System.IO.Compression;
     using System.Net;
     using System.Runtime.Serialization.Formatters.Binary;
-    using System.Text;
-    using System.Windows.Forms;
 
-    public class CachedWebClient
+    internal class CachedWebClient : CachedWebClientBase
     {
-        private static CachedWebClient instance = new CachedWebClient();
-
         [ThreadStatic]
         private static SQLiteConnection dbConn;
 
-        private CachedWebClient()
+        static CachedWebClient()
         {
-            File.Delete(this.DatabasePath());
+            File.Delete(DatabasePath());
 
             // Create the the database and table for caching HTTP requests
-            using (SQLiteCommand command = new SQLiteCommand("create table httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("create table httpcache (uri varchar (1000) primary key, lastfetch datetime, success int, data blob)", FetchDbConn()))
             {
                 command.ExecuteNonQuery();
             }
         }
 
-        public static CachedWebClient GetInstance()
-        {
-            return instance;
-        }
-
-        public byte[] DownloadData(Uri uri, int fetchIntervalHrs, string userAgent)
+        public override byte[] DownloadData(Uri uri, int fetchIntervalHrs, string userAgent)
         {
             if (fetchIntervalHrs == 0)
             {
@@ -157,31 +148,16 @@ namespace RadioDld
             }
         }
 
-        public string DownloadString(Uri uri, int fetchIntervalHrs, string userAgent)
-        {
-            return Encoding.UTF8.GetString(this.DownloadData(uri, fetchIntervalHrs, userAgent));
-        }
-
-        internal byte[] DownloadData(Uri uri, int fetchIntervalHrs)
-        {
-            return this.DownloadData(uri, fetchIntervalHrs, Application.ProductName + " " + Application.ProductVersion);
-        }
-
-        internal string DownloadString(Uri uri, int fetchIntervalHrs)
-        {
-            return this.DownloadString(uri, fetchIntervalHrs, Application.ProductName + " " + Application.ProductVersion);
-        }
-
-        private string DatabasePath()
+        private static string DatabasePath()
         {
             return Path.Combine(Path.GetTempPath(), "radiodld-httpcache.db");
         }
 
-        private SQLiteConnection FetchDbConn()
+        private static SQLiteConnection FetchDbConn()
         {
             if (dbConn == null)
             {
-                dbConn = new SQLiteConnection("Data Source=" + this.DatabasePath() + ";Version=3");
+                dbConn = new SQLiteConnection("Data Source=" + DatabasePath() + ";Version=3");
                 dbConn.Open();
             }
 
@@ -190,7 +166,7 @@ namespace RadioDld
 
         private void AddToHTTPCache(Uri uri, bool requestSuccess, byte[] data)
         {
-            using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("insert or replace into httpcache (uri, lastfetch, success, data) values(@uri, @lastfetch, @success, @data)", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
                 command.Parameters.Add(new SQLiteParameter("@lastfetch", DateTime.Now));
@@ -202,7 +178,7 @@ namespace RadioDld
 
         private DateTime? GetHTTPCacheLastUpdate(Uri uri)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select lastfetch from httpcache where uri=@uri", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
 
@@ -222,7 +198,7 @@ namespace RadioDld
 
         private byte[] GetHTTPCacheContent(Uri uri, ref bool requestSuccess)
         {
-            using (SQLiteCommand command = new SQLiteCommand("select success, data from httpcache where uri=@uri", this.FetchDbConn()))
+            using (SQLiteCommand command = new SQLiteCommand("select success, data from httpcache where uri=@uri", FetchDbConn()))
             {
                 command.Parameters.Add(new SQLiteParameter("@uri", uri.ToString()));
 
