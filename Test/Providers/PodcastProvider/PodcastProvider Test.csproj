@@ -98,6 +98,7 @@
     <Compile Include="Classes\CachedWebClientTest.cs" />
     <Compile Include="Classes\DownloadWrapperTest.cs" />
     <Compile Include="Classes\TempFileTest.cs" />
+    <Compile Include="Classes\TestCommon.cs" />
     <Compile Include="Classes\TestDownload.cs" />
     <Compile Include="Classes\TestGetInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -126,6 +127,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="TestData\BasicPodcast.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\ChapterImage.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\ChapterImage.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestData\ChaptersExample.xml">

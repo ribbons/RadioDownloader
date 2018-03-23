@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Podlove Chapter Image Podcast</title>
+        <link>http://example.com/ChapterImage.xml</link>
+        <description>Chapter Image Podcast description</description>
+        <item>
+            <title>Episode 1</title>
+            <description>Episode 1 description</description>
+            <pubDate>Fri, 23 Mar 2018 19:00:00 +0000</pubDate>
+            <enclosure url="http://example.com/programme1/episode1.mp3" length="12345" type="audio/mpeg" />
+            <psc:chapters version="1.2" xmlns:psc="http://podlove.org/simple-chapters">
+                <psc:chapter start="0" title="Image" image="http://example.com/ChapterImage.png" />
+            </psc:chapters>
+        </item>
+    </channel>
+</rss>

@@ -19,8 +19,8 @@
 namespace PodcastProviderTest
 {
     using System;
+    using System.Drawing;
     using System.IO;
-    using PodcastProvider;
     using Xunit;
 
     /// <summary>
@@ -38,10 +38,7 @@ namespace PodcastProviderTest
             string epExtId = "urn:uuid:3241ace2-ca21-dd12-2341-1412ce31fad2";
             string tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
-            var instance = new PodcastProvider();
-            instance.CachedWebClient = new CachedWebClientTest();
-            instance.GetTempFileInstance = (string fileExtension) => { return new TempFileTest(); };
-            instance.GetDownloadWrapperInstance = (Uri downloadUrl, string destPath) => { return new DownloadWrapperTest(downloadUrl, destPath); };
+            var instance = TestCommon.CreateInstance();
 
             var programme = instance.GetProgrammeInfo(progExtId);
             var episode = instance.GetEpisodeInfo(progExtId, programme, epExtId);
@@ -69,6 +66,27 @@ namespace PodcastProviderTest
             {
                 Assert.Null(download.Chapters[i].Image);
             }
+        }
+
+        /// <summary>
+        /// Test retrieval of images from Podlove Simple Chapter data
+        /// </summary>
+        [Fact]
+        public void ChapterImage()
+        {
+            string progExtId = "http://example.com/ChapterImage.xml";
+            string epExtId = "http://example.com/programme1/episode1.mp3";
+            string tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            var instance = TestCommon.CreateInstance();
+
+            var programme = instance.GetProgrammeInfo(progExtId);
+            var episode = instance.GetEpisodeInfo(progExtId, programme, epExtId);
+            var download = instance.DownloadProgramme(progExtId, epExtId, programme, episode, tempFileName);
+            File.Delete(tempFileName + "." + download.Extension);
+
+            Assert.Equal(1, download.Chapters.Count);
+            Assert.NotNull(download.Chapters[0].Image);
         }
     }
 }

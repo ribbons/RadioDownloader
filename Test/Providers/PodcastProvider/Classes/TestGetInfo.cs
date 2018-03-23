@@ -32,8 +32,7 @@ namespace PodcastProviderTest
         [Fact]
         public void BasicInfo()
         {
-            var instance = new PodcastProvider();
-            instance.CachedWebClient = new CachedWebClientTest();
+            var instance = TestCommon.CreateInstance();
             string extId = "http://example.com/BasicPodcast.xml";
 
             var programme = instance.GetProgrammeInfo(extId);

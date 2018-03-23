@@ -656,11 +656,27 @@ namespace PodcastProvider
 
                 chapter.Start = start.Value;
 
-                var hrefNode = chapterNode.Attributes["href"];
+                var hrefAttr = chapterNode.Attributes["href"];
 
-                if (hrefNode != null && !string.IsNullOrEmpty(hrefNode.Value))
+                if (hrefAttr != null && !string.IsNullOrEmpty(hrefAttr.Value))
                 {
-                    chapter.Link = new Uri(hrefNode.Value);
+                    chapter.Link = new Uri(hrefAttr.Value);
+                }
+
+                var imageAttr = chapterNode.Attributes["image"];
+
+                if (imageAttr != null)
+                {
+                    Uri imageUrl = new Uri(imageAttr.Value);
+                    byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
+
+                    using (MemoryStream imageStream = new MemoryStream(imageData))
+                    {
+                        using (Bitmap streamBitmap = new Bitmap(imageStream))
+                        {
+                            chapter.Image = new Bitmap(streamBitmap);
+                        }
+                    }
                 }
 
                 chapters.Add(chapter);
