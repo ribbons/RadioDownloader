@@ -182,7 +182,8 @@ namespace RadioDld
                 this.pluginInstance.Progress += this.DownloadPluginInst_Progress;
             }
 
-            string finalName, fileExtension;
+            string finalName;
+            Provider.DownloadInfo info;
 
             try
             {
@@ -222,7 +223,7 @@ namespace RadioDld
                     return;
                 }
 
-                fileExtension = this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, finalName);
+                info = this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, finalName);
             }
             catch (Provider.DownloadException downloadExp)
             {
@@ -248,11 +249,11 @@ namespace RadioDld
                 this.cancelResponse = true;
             }
 
-            finalName += "." + fileExtension;
+            finalName += "." + info.Extension;
 
             lock (DbUpdateLock)
             {
-                Model.Download.SetComplete(this.episodeInfo.Epid, finalName);
+                Model.Download.SetComplete(this.episodeInfo.Epid, finalName, info);
                 Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.Date);
             }
 

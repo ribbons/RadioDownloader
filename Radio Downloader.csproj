@@ -215,6 +215,9 @@
     <Compile Include="Classes\AppInstance.cs" />
     <Compile Include="Classes\CachedWebClientBase.cs" />
     <Compile Include="Classes\DownloadManager.cs" />
+    <Compile Include="Classes\Model\Chapter.cs" />
+    <Compile Include="Classes\Provider\ChapterInfo.cs" />
+    <Compile Include="Classes\Provider\DownloadInfo.cs" />
     <Compile Include="Classes\Provider\EpisodeInfo.cs" />
     <Compile Include="Classes\Provider\ProgrammeInfo.cs" />
     <Compile Include="Classes\ProviderException.cs" />
@@ -239,6 +242,7 @@
     <Compile Include="Classes\SQLiteMonTransaction.cs" />
     <Compile Include="Classes\TaskbarNotify.cs" />
     <Compile Include="Classes\TempFile.cs" />
+    <Compile Include="Classes\TempFileBase.cs" />
     <Compile Include="Classes\TextUtils.cs" />
     <Compile Include="Classes\UpdateCheck.cs" />
     <Compile Include="Classes\CachedWebClient.cs" />

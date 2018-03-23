@@ -96,6 +96,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\CachedWebClientTest.cs" />
+    <Compile Include="Classes\DownloadWrapperTest.cs" />
+    <Compile Include="Classes\TempFileTest.cs" />
+    <Compile Include="Classes\TestDownload.cs" />
     <Compile Include="Classes\TestGetInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <AdditionalFiles Include="..\..\..\stylecop.json" />
@@ -124,6 +127,10 @@
   <ItemGroup>
     <Content Include="TestData\BasicPodcast.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\ChaptersExample.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
 </Project>

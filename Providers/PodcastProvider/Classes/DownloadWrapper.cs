@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,33 +20,33 @@ namespace PodcastProvider
 {
     using System;
     using System.Net;
-    using System.Windows.Forms;
     using Microsoft.Win32;
 
-    internal class DownloadWrapper
+    public class DownloadWrapper
     {
         private WebClient downloadClient;
 
         private Uri downloadUrl;
-        private string destPath;
 
         public DownloadWrapper(Uri downloadUrl, string destPath)
         {
             this.downloadUrl = downloadUrl;
-            this.destPath = destPath;
+            this.DestPath = destPath;
         }
 
         public delegate void DownloadProgressEventHandler(object sender, DownloadProgressChangedEventArgs e);
 
         public event DownloadProgressEventHandler DownloadProgress;
 
-        public bool Complete { get; private set; }
+        public bool Complete { get; protected set; }
 
         public Exception Error { get; private set; }
 
         public bool Cancelled { get; private set; }
 
-        public void Download()
+        protected string DestPath { get; private set; }
+
+        public virtual void Download()
         {
             SystemEvents.PowerModeChanged += this.PowerModeChange;
 
@@ -55,7 +55,7 @@ namespace PodcastProvider
             this.downloadClient.DownloadFileCompleted += this.DownloadClient_DownloadFileCompleted;
 
             this.downloadClient.Headers.Add("user-agent", PodcastProvider.UserAgent);
-            this.downloadClient.DownloadFileAsync(this.downloadUrl, this.destPath);
+            this.downloadClient.DownloadFileAsync(this.downloadUrl, this.DestPath);
         }
 
         public void Cancel()
@@ -105,7 +105,7 @@ namespace PodcastProvider
                     System.Threading.Thread.Sleep(30000);
 
                     // Restart the download
-                    this.downloadClient.DownloadFileAsync(this.downloadUrl, this.destPath);
+                    this.downloadClient.DownloadFileAsync(this.downloadUrl, this.DestPath);
                 }
             }
         }

@@ -19,7 +19,7 @@
 namespace PodcastProvider
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Drawing;
     using System.Globalization;
     using System.IO;
@@ -28,12 +28,12 @@ namespace PodcastProvider
     using System.Text;
     using System.Text.RegularExpressions;
     using System.Threading;
-    using System.Web;
     using System.Windows.Forms;
     using System.Xml;
-    using Microsoft.VisualBasic;
     using RadioDld;
     using RadioDld.Provider;
+
+    public delegate DownloadWrapper GetDownloadWrapperInstance(Uri downloadUrl, string destPath);
 
     public class PodcastProvider : RadioProvider
     {
@@ -41,6 +41,7 @@ namespace PodcastProvider
         internal static readonly string UserAgent = "Podcast Provider " + ((AssemblyInformationalVersionAttribute)typeof(PodcastProvider).Assembly.GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false)[0]).InformationalVersion + " for " + Application.ProductName + " " + Application.ProductVersion;
 
         private DownloadWrapper doDownload;
+        private GetDownloadWrapperInstance getDownloadWrapperInstance;
 
         public override event FindNewExceptionEventHandler FindNewException;
 
@@ -79,6 +80,30 @@ namespace PodcastProvider
             get
             {
                 return this.ShowMoreProgInfo;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the method for constructing <see cref="DownloadWrapper"/> instances.
+        /// </summary>
+        public GetDownloadWrapperInstance GetDownloadWrapperInstance
+        {
+            get
+            {
+                if (this.getDownloadWrapperInstance == null)
+                {
+                    this.getDownloadWrapperInstance = (Uri downloadUrl, string destPath) =>
+                    {
+                        return new DownloadWrapper(downloadUrl, destPath);
+                    };
+                }
+
+                return this.getDownloadWrapperInstance;
+            }
+
+            set
+            {
+                this.getDownloadWrapperInstance = value;
             }
         }
 
@@ -307,7 +332,7 @@ namespace PodcastProvider
                             pubDate = zoneFree;
                             break;
                         default:
-                            if (zone.Length >= 4 && (Information.IsNumeric(zone) || Information.IsNumeric(zone.Substring(1))))
+                            if (zone.Length >= 4 && (Microsoft.VisualBasic.Information.IsNumeric(zone) || Microsoft.VisualBasic.Information.IsNumeric(zone.Substring(1))))
                             {
                                 try
                                 {
@@ -367,7 +392,7 @@ namespace PodcastProvider
             return episodeInfo;
         }
 
-        public override string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
+        public override DownloadInfo DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
             XmlNode itemNode = this.ItemNodeFromEpisodeID(rss, episodeExtId);
@@ -376,18 +401,22 @@ namespace PodcastProvider
             Uri downloadUrl = new Uri(urlAttrib.Value);
 
             int extensionPos = downloadUrl.AbsolutePath.LastIndexOf(".", StringComparison.Ordinal);
-            string extension = "mp3";
+
+            DownloadInfo info = new DownloadInfo();
+            this.EpisodeChapters(info.Chapters, itemNode, this.CreateNamespaceMgr(rss));
+
+            info.Extension = "mp3";
 
             if (extensionPos > -1)
             {
-                extension = downloadUrl.AbsolutePath.Substring(extensionPos + 1);
+                info.Extension = downloadUrl.AbsolutePath.Substring(extensionPos + 1);
             }
 
-            using (TempFile downloadFile = new TempFile(extension))
+            using (TempFileBase downloadFile = this.GetTempFileInstance(info.Extension))
             {
-                finalName += "." + extension;
+                finalName += "." + info.Extension;
 
-                this.doDownload = new DownloadWrapper(downloadUrl, downloadFile.FilePath);
+                this.doDownload = this.GetDownloadWrapperInstance(downloadUrl, downloadFile.FilePath);
                 this.doDownload.DownloadProgress += this.DoDownload_DownloadProgress;
                 this.doDownload.Download();
 
@@ -436,7 +465,7 @@ namespace PodcastProvider
                 File.Move(downloadFile.FilePath, finalName);
             }
 
-            return extension;
+            return info;
         }
 
         public override void CancelDownload()
@@ -605,6 +634,73 @@ namespace PodcastProvider
             return null;
         }
 
+        private void EpisodeChapters(Collection<ChapterInfo> chapters, XmlNode itemNode, XmlNamespaceManager namespaceMgr)
+        {
+            XmlNode chaptersNode = itemNode.SelectSingleNode("./psc:chapters", namespaceMgr);
+
+            if (chaptersNode == null)
+            {
+                return;
+            }
+
+            foreach (XmlNode chapterNode in chaptersNode.SelectNodes("./psc:chapter", namespaceMgr))
+            {
+                var chapter = new ChapterInfo();
+                chapter.Name = chapterNode.Attributes["title"].Value;
+                var start = this.ParseChapterStart(chapterNode.Attributes["start"].Value);
+
+                if (start == null)
+                {
+                    continue;
+                }
+
+                chapter.Start = start.Value;
+
+                var hrefNode = chapterNode.Attributes["href"];
+
+                if (hrefNode != null && !string.IsNullOrEmpty(hrefNode.Value))
+                {
+                    chapter.Link = new Uri(hrefNode.Value);
+                }
+
+                chapters.Add(chapter);
+            }
+        }
+
+        private TimeSpan? ParseChapterStart(string value)
+        {
+            var pattern = new Regex(@"^(?:(?:(?<hours>[0-9]+):)?(?<minutes>[0-9]+):)?(?<seconds>[0-9]+)(?:\.(?<millisec>[0-9]{3}))?$");
+            var match = pattern.Match(value);
+
+            if (!match.Success)
+            {
+                return null;
+            }
+
+            int hours = 0;
+            int minutes = 0;
+            int milliseconds = 0;
+
+            if (match.Groups["hours"].Success)
+            {
+                hours = int.Parse(match.Groups["hours"].Value, CultureInfo.InvariantCulture);
+            }
+
+            if (match.Groups["minutes"].Success)
+            {
+                minutes = int.Parse(match.Groups["minutes"].Value, CultureInfo.InvariantCulture);
+            }
+
+            int seconds = int.Parse(match.Groups["seconds"].Value, CultureInfo.InvariantCulture);
+
+            if (match.Groups["millisec"].Success)
+            {
+                milliseconds = int.Parse(match.Groups["millisec"].Value, CultureInfo.InvariantCulture);
+            }
+
+            return new TimeSpan(0, hours, minutes, seconds, milliseconds);
+        }
+
         private XmlNamespaceManager CreateNamespaceMgr(XmlDocument document)
         {
             XmlNamespaceManager manager = new XmlNamespaceManager(document.NameTable);
@@ -616,6 +712,8 @@ namespace PodcastProvider
                     manager.AddNamespace(attrib.LocalName, attrib.Value);
                 }
             }
+
+            manager.AddNamespace("psc", "http://podlove.org/simple-chapters");
 
             return manager;
         }

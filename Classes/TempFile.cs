@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,7 +26,7 @@ namespace RadioDld
     /// <summary>
     /// Handle generating temporary file names and guarantee that any files with those names will be cleaned up.
     /// </summary>
-    public sealed class TempFile : Database, IDisposable
+    public sealed class TempFile : TempFileBase, IDisposable
     {
         private static List<string> notInUse = new List<string>();
 
@@ -122,25 +122,19 @@ namespace RadioDld
             }
         }
 
-        ~TempFile()
+        protected override void Dispose(bool disposing)
         {
-            this.Dispose(false);
-        }
+            if (!this.isDisposed && this.FilePath != null)
+            {
+                lock (notInUse)
+                {
+                    notInUse.Add(this.FilePath);
+                }
 
-        /// <summary>
-        /// Gets the generated temporary file path.  This file did not exist when the class
-        /// was created.
-        /// </summary>
-        public string FilePath { get; private set; }
+                DeleteFiles();
+            }
 
-        /// <summary>
-        /// Delete the temporary file at the path given by FilePath.  If the file is in use it will
-        /// be cleaned up the next time a temporary file is created or deleted after it becomes free.
-        /// </summary>
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
+            this.isDisposed = true;
         }
 
         private static void DeleteFiles()
@@ -177,21 +171,6 @@ namespace RadioDld
                     }
                 }
             }
-        }
-
-        private void Dispose(bool disposing)
-        {
-            if (!this.isDisposed && this.FilePath != null)
-            {
-                lock (notInUse)
-                {
-                    notInUse.Add(this.FilePath);
-                }
-
-                DeleteFiles();
-            }
-
-            this.isDisposed = true;
         }
     }
 }

@@ -260,16 +260,22 @@ namespace RadioDld.Model
             return true;
         }
 
-        public static void SetComplete(int epid, string fileName)
+        public static void SetComplete(int epid, string fileName, Provider.DownloadInfo info)
         {
             lock (DbUpdateLock)
             {
-                using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn()))
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
-                    command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
-                    command.Parameters.Add(new SQLiteParameter("@filepath", fileName));
-                    command.Parameters.Add(new SQLiteParameter("@epid", epid));
-                    command.ExecuteNonQuery();
+                    using (SQLiteCommand command = new SQLiteCommand("update downloads set status=@status, filepath=@filepath where epid=@epid", FetchDbConn(), transMon.Trans))
+                    {
+                        command.Parameters.Add(new SQLiteParameter("@status", DownloadStatus.Downloaded));
+                        command.Parameters.Add(new SQLiteParameter("@filepath", fileName));
+                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                        command.ExecuteNonQuery();
+                    }
+
+                    Chapter.AddRange(epid, info.Chapters);
+                    transMon.Trans.Commit();
                 }
             }
 

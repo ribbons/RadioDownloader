@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,6 +93,16 @@ CREATE TABLE episodeext
     name varchar NOT NULL,
     value varchar NOT NULL,
     PRIMARY KEY (epid, name)
+);
+
+CREATE TABLE chapters
+(
+    epid integer NOT NULL,
+    start integer NOT NULL,
+    name varchar NOT NULL,
+    link varchar,
+    image integer,
+    PRIMARY KEY (epid, start)
 );
 
 COMMIT;

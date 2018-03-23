@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2015 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ namespace RadioDld
     internal class RssServer
     {
         private const string ItunesNS = "http://www.itunes.com/dtds/podcast-1.0.dtd";
+        private const string ChaptersNS = "http://podlove.org/simple-chapters/";
 
         private HttpListener listener;
 
@@ -94,6 +95,9 @@ namespace RadioDld
                 case "/episode-image":
                     this.EpisodeImageContent(context);
                     break;
+                case "/chapter-image":
+                    this.ChapterImageContent(context);
+                    break;
                 case "/file":
                     this.DownloadContent(context);
                     break;
@@ -121,6 +125,7 @@ namespace RadioDld
                 writer.WriteStartElement("rss");
                 writer.WriteAttributeString("version", "2.0");
                 writer.WriteAttributeString("xmlns", "itunes", null, ItunesNS);
+                writer.WriteAttributeString("xmlns", "psc", null, ChaptersNS);
 
                 writer.WriteStartElement("channel");
                 writer.WriteElementString("title", Application.ProductName);
@@ -165,6 +170,35 @@ namespace RadioDld
                         writer.WriteAttributeString("length", file.Length.ToString(CultureInfo.InvariantCulture));
                         writer.WriteAttributeString("type", this.MimeTypeForFile(download.DownloadPath));
                         writer.WriteEndElement();
+
+                        var chapters = Model.Chapter.FetchAll(download);
+
+                        if (chapters.Count > 0)
+                        {
+                            writer.WriteStartElement("chapters", ChaptersNS);
+                            writer.WriteAttributeString("version", "1.2");
+
+                            foreach (var chapter in chapters)
+                            {
+                                writer.WriteStartElement("chapter", ChaptersNS);
+                                writer.WriteAttributeString("start", chapter.Start.TotalSeconds.ToString(CultureInfo.InvariantCulture));
+                                writer.WriteAttributeString("title", chapter.Name);
+
+                                if (chapter.Link != null)
+                                {
+                                    writer.WriteAttributeString("href", chapter.Link.ToString());
+                                }
+
+                                if (chapter.HasImage)
+                                {
+                                    writer.WriteAttributeString("image", string.Format(CultureInfo.InvariantCulture, "http://{0}/chapter-image?epid={1}&start={2}", context.Request.UserHostName, download.Epid, chapter.Start.TotalMilliseconds));
+                                }
+
+                                writer.WriteEndElement();
+                            }
+
+                            writer.WriteEndElement();
+                        }
 
                         writer.WriteEndElement(); // item
                         writer.Flush();
@@ -221,6 +255,63 @@ namespace RadioDld
             if (image == null)
             {
                 // Specified episode does not have an image
+                this.ErrorPage404(context);
+                return;
+            }
+
+            context.Response.ContentType = "image/png";
+
+            // Find the appropriate codec for saving the image as a png
+            System.Drawing.Imaging.ImageCodecInfo pngCodec = null;
+
+            foreach (System.Drawing.Imaging.ImageCodecInfo codec in System.Drawing.Imaging.ImageCodecInfo.GetImageEncoders())
+            {
+                if (codec.MimeType == context.Response.ContentType)
+                {
+                    pngCodec = codec;
+                    break;
+                }
+            }
+
+            try
+            {
+                image.Save(context.Response.OutputStream, pngCodec, null);
+            }
+            catch (HttpListenerException)
+            {
+                // Don't worry about dropped connections etc.
+            }
+        }
+
+        private void ChapterImageContent(HttpListenerContext context)
+        {
+            Regex paramsPattern = new Regex(@"^\?epid=([0-9]+)&start=([0-9]+)$");
+            Match match = paramsPattern.Match(context.Request.Url.Query);
+
+            int epid, start;
+
+            if (!int.TryParse(match.Groups[1].Value, out epid))
+            {
+                // Request doesn't contain a valid episode id
+                this.ErrorPage404(context);
+                return;
+            }
+
+            if (!int.TryParse(match.Groups[2].Value, out start))
+            {
+                // Request doesn't contain a valid start time
+                this.ErrorPage404(context);
+                return;
+            }
+
+            var download = new Model.Download(epid);
+            var chapter = new Model.Chapter(download, start);
+
+            Bitmap image = chapter.Image;
+
+            if (image == null)
+            {
+                // Specified chapter does not have an image
                 this.ErrorPage404(context);
                 return;
             }

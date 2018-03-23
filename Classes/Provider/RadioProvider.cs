@@ -32,6 +32,8 @@ namespace RadioDld.Provider
 
     public delegate void ShowMoreProgInfoEventHandler(string progExtId);
 
+    public delegate TempFileBase GetTempFileInstance(string fileExtension);
+
     public enum ProgressType
     {
         Downloading,
@@ -41,6 +43,8 @@ namespace RadioDld.Provider
     public abstract class RadioProvider
     {
         private CachedWebClientBase cachedWebClient;
+
+        private GetTempFileInstance getTempFileInstance;
 
         public virtual event FindNewViewChangeEventHandler FindNewViewChange
         {
@@ -122,6 +126,31 @@ namespace RadioDld.Provider
             }
         }
 
+        /// <summary>
+        /// Gets or sets the method for constructing <see cref="TempFileBase"/> instances
+        /// for this provider.
+        /// </summary>
+        public GetTempFileInstance GetTempFileInstance
+        {
+            get
+            {
+                if (this.getTempFileInstance == null)
+                {
+                    this.getTempFileInstance = (string fileExtension) =>
+                    {
+                        return new TempFile(fileExtension);
+                    };
+                }
+
+                return this.getTempFileInstance;
+            }
+
+            set
+            {
+                this.getTempFileInstance = value;
+            }
+        }
+
         public abstract Panel GetFindNewPanel(object view);
 
         public abstract ProgrammeInfo GetProgrammeInfo(string progExtId);
@@ -153,8 +182,8 @@ namespace RadioDld.Provider
         /// <param name="epInfo">Data from the last call to GetEpisodeInfo for this episode.</param>
         /// <param name="finalName">The path and filename (minus file extension) to save this download as.</param>
         /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
-        /// <returns>The file extension of a successful download.</returns>
-        public abstract string DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
+        /// <returns>A <see cref="DownloadInfo" /> object containing information about the successful download.</returns>
+        public abstract DownloadInfo DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
 
         /// <summary>
         /// Cancel the episode download currently in progress.
