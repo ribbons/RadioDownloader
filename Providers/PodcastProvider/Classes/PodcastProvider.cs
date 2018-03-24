@@ -424,7 +424,7 @@ namespace PodcastProvider
                 {
                     Thread.Sleep(500);
 
-                    if (this.doDownload.Cancelled)
+                    if (this.doDownload.Canceled)
                     {
                         return null;
                     }

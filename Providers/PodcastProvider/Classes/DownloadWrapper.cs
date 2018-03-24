@@ -34,15 +34,13 @@ namespace PodcastProvider
             this.DestPath = destPath;
         }
 
-        public delegate void DownloadProgressEventHandler(object sender, DownloadProgressChangedEventArgs e);
-
-        public event DownloadProgressEventHandler DownloadProgress;
+        public event EventHandler<DownloadProgressChangedEventArgs> DownloadProgress;
 
         public bool Complete { get; protected set; }
 
         public Exception Error { get; private set; }
 
-        public bool Cancelled { get; private set; }
+        public bool Canceled { get; private set; }
 
         protected string DestPath { get; private set; }
 
@@ -60,7 +58,7 @@ namespace PodcastProvider
 
         public void Cancel()
         {
-            this.Cancelled = true;
+            this.Canceled = true;
             this.downloadClient.CancelAsync();
         }
 
@@ -74,7 +72,7 @@ namespace PodcastProvider
 
         private void DownloadClient_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            if (e.Cancelled && !this.Cancelled)
+            if (e.Cancelled && !this.Canceled)
             {
                 // Cancelled before retry
                 return;
@@ -86,7 +84,7 @@ namespace PodcastProvider
             {
                 this.Error = e.Error;
             }
-            else if (!this.Cancelled)
+            else if (!this.Canceled)
             {
                 this.Complete = true;
             }
