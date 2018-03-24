@@ -870,6 +870,8 @@ namespace RadioDld.Model
             {
                 using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                 {
+                    Chapter.RemoveAll(epid);
+
                     SQLiteParameter epidParam = new SQLiteParameter("@epid", epid);
 
                     using (SQLiteCommand command = new SQLiteCommand("delete from downloads where epid=@epid", FetchDbConn(), transMon.Trans))

@@ -127,6 +127,23 @@ namespace RadioDld.Model
             return results;
         }
 
+        public static void RemoveAll(int epid)
+        {
+            lock (DbUpdateLock)
+            {
+                using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
+                {
+                    using (SQLiteCommand command = new SQLiteCommand("delete from chapters where epid=@epid", FetchDbConn(), transMon.Trans))
+                    {
+                        command.Parameters.Add(new SQLiteParameter("@epid", epid));
+                        command.ExecuteNonQuery();
+                    }
+
+                    transMon.Trans.Commit();
+                }
+            }
+        }
+
         private void FetchData(SQLiteMonDataReader reader)
         {
             int linkOrdinal = reader.GetOrdinal("link");
