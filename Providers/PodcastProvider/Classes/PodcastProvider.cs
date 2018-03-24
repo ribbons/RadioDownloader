@@ -215,13 +215,8 @@ namespace PodcastProvider
                 return null;
             }
 
-            try
+            if (!Uri.IsWellFormedUriString(urlAttrib.Value, UriKind.Absolute))
             {
-                new Uri(urlAttrib.Value);
-            }
-            catch (UriFormatException)
-            {
-                // The enclosure url is empty or malformed
                 return null;
             }
 

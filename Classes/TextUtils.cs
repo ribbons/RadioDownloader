@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,6 @@ namespace RadioDld
                 dateStringFound = dateStringFound.Replace("'", string.Empty);
                 dateStringFound = dateStringFound.Replace("Sept", "Sep").Replace("sept", "sep");
                 dateStringFound = removeDaySuffix.Replace(dateStringFound, " ");
-                dateStringFound.Trim();
 
                 // Convert to DateTime for comparison to similardate
                 DateTime dateFound;
