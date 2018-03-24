@@ -9,7 +9,6 @@
 //------------------------------------------------------------------------------
 
 namespace RadioDld.Properties {
-    using System;
     
     
     /// <summary>

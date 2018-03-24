@@ -21,7 +21,6 @@ namespace RadioDld
     using System;
     using System.ComponentModel;
     using System.Windows.Forms;
-    using System.Windows.Forms.VisualStyles;
 
     /// <summary>
     /// An enhanced version of the standard LinkLabel control which displays the correct system

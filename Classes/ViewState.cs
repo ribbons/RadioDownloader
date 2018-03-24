@@ -18,7 +18,6 @@
 
 namespace RadioDld
 {
-    using System;
     using System.Collections.Generic;
 
     internal class ViewState

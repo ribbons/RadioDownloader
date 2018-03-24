@@ -18,7 +18,6 @@
 
 namespace PodcastProviderTest
 {
-    using PodcastProvider;
     using Xunit;
 
     /// <summary>

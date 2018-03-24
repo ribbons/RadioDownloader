@@ -20,7 +20,6 @@ namespace RadioDld
 {
     using System;
     using System.Collections.Generic;
-    using System.Configuration;
     using System.Diagnostics;
     using System.Drawing;
     using System.Globalization;

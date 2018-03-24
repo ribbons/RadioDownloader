@@ -9,7 +9,6 @@
 //------------------------------------------------------------------------------
 
 namespace PodcastProvider.Properties {
-    using System;
     
     
     /// <summary>

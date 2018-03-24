@@ -21,7 +21,6 @@ namespace RadioDld.Model
     using System;
     using System.Collections.Generic;
     using System.Data.SQLite;
-    using System.Globalization;
     using System.Threading;
 
     internal class Programme : Database

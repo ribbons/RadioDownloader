@@ -18,7 +18,6 @@
 
 namespace RadioDld
 {
-    using System;
     using System.Windows.Forms;
 
     internal class ToolStripSearchBox : ToolStripControlHost

@@ -19,7 +19,6 @@
 namespace RadioDld.Provider
 {
     using System;
-    using System.Collections.Generic;
     using System.Drawing;
 
     /// <summary>

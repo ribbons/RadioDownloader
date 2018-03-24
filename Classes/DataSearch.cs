@@ -21,7 +21,6 @@ namespace RadioDld
     using System;
     using System.Collections.Generic;
     using System.Data.SQLite;
-    using System.Globalization;
     using System.IO;
 
     internal class DataSearch
