@@ -333,7 +333,17 @@ namespace RadioDld
                     status.StatusText = "Cleaning up unused images...";
 
                     // Remove images which are now no-longer referenced by a programme or episode
-                    using (SQLiteCommand command = new SQLiteCommand("delete from images where imgid in (select imgid from images left outer join programmes on imgid=programmes.image left outer join episodes on imgid=episodes.image where programmes.image is null and episodes.image is null)", FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand(
+                        @"delete from images where imgid in
+                        (
+                            select imgid from images
+                            left outer join programmes on imgid=programmes.image
+                            left outer join episodes on imgid=episodes.image
+                            left outer join chapters on imgid=chapters.image
+                            where programmes.image is null and
+                                  episodes.image is null and
+                                  chapters.image is null
+                        )", FetchDbConn()))
                     {
                         command.ExecuteNonQuery();
                     }
