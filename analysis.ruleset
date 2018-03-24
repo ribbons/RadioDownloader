@@ -20,6 +20,7 @@
     <Rule Id="CA1019" Action="Warning" />
     <Rule Id="CA1021" Action="Warning" />
     <Rule Id="CA1023" Action="Warning" />
+    <Rule Id="CA1024" Action="Warning" />
     <Rule Id="CA1025" Action="Warning" />
     <Rule Id="CA1026" Action="Warning" />
     <Rule Id="CA1027" Action="Warning" />
@@ -27,6 +28,7 @@
     <Rule Id="CA1030" Action="Warning" />
     <Rule Id="CA1032" Action="Warning" />
     <Rule Id="CA1033" Action="Warning" />
+    <Rule Id="CA1034" Action="Warning" />
     <Rule Id="CA1035" Action="Warning" />
     <Rule Id="CA1036" Action="Warning" />
     <Rule Id="CA1038" Action="Warning" />
@@ -102,6 +104,7 @@
     <Rule Id="CA1725" Action="Warning" />
     <Rule Id="CA1726" Action="Warning" />
     <Rule Id="CA1800" Action="Warning" />
+    <Rule Id="CA1801" Action="Warning" />
     <Rule Id="CA1802" Action="Warning" />
     <Rule Id="CA1804" Action="Warning" />
     <Rule Id="CA1809" Action="Warning" />
@@ -202,6 +205,7 @@
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp" RuleNamespace="Microsoft.CodeAnalysis.CSharp">
     <Rule Id="CS8019" Action="Warning" />
     <Rule Id="CS8020" Action="Warning" />
+    <Rule Id="CS8040" Action="Warning" />
   </Rules>
   <Rules AnalyzerId="Microsoft.CodeAnalysis.CSharp.Features" RuleNamespace="Microsoft.CodeAnalysis.CSharp.Features">
     <Rule Id="IDE0001" Action="Warning" />
