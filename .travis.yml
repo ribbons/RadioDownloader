@@ -8,8 +8,8 @@ mono:
   - 4.2.1 # Default in Ubuntu Xenial, supported until April 2021
 
 install:
-    # nuget available in Travis env isn't new enough for some packages
-  - travis_retry curl -L -o nuget.exe https://dist.nuget.org/win-x86-commandline/latest/nuget.exe
+    # nuget in Travis with mono 4.2.1 isn't new enough for some packages
+  - travis_retry curl -L -o nuget.exe https://dist.nuget.org/win-x86-commandline/v3.3.0/nuget.exe
   - travis_retry mono ./nuget.exe restore
 
 script:
