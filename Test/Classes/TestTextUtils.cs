@@ -55,9 +55,14 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 Feb 09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 Feb '09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 Feb 2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 FEB 09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 FEB '09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 FEB 2009", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13-Feb-09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13-Feb-2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 13-FEB-09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 13-FEB-2009", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 February 09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13 February '09", date));
@@ -65,6 +70,7 @@ namespace RadioDldTest
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13th Feb 2009", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 13th February 2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 13th FEBRUARY 2009", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 2009-02-13", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 2009/02/13", date));
@@ -76,6 +82,9 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13 09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13 '09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13 2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test FEB 13 09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test FEB 13 '09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test FEB 13 2009", date));
 
             // test dates with leading zeros
             date = new DateTime(2009, 02, 03);
@@ -98,9 +107,14 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3 Feb 09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3 Feb '09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3 Feb 2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3 FEB 09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3 FEB '09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3 FEB 2009", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3-Feb-09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3-Feb-2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3-FEB-09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3-FEB-2009", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3 February 09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3 February '09", date));
@@ -108,6 +122,7 @@ namespace RadioDldTest
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3rd Feb 2009", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3rd February 2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3rd FEBRUARY 2009", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 2009-2-3", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 2009/2/3", date));
@@ -125,6 +140,9 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 03 09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 03 '09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 03 2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test FEB 03 09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test FEB 03 '09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test FEB 03 2009", date));
 
             // test dates in September including the potential 'Sept' abbreviation
             date = new DateTime(2009, 09, 13);
@@ -148,31 +166,40 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("1 Feb 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1 Feb '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1 Feb 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("1 FEB 2009 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1st Feb 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1st Feb '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1st Feb 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("1st FEB 2009 Test", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("1 February 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1 February '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1 February 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("1 FEBRUARY 2009 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1st February 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1st February '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("1st February 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("1st FEBRUARY 2009 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 Feb 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 Feb '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 Feb 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 FEB 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st Feb 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st Feb '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st Feb 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st FEB 2009 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 February 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 February '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 February 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 FEBRUARY 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st February 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st February '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st February 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1st FEBRUARY 2009 Test", date));
 
+            // test dates with leading zeros and different suffix
             date = new DateTime(2009, 02, 03);
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 3.2.09 Test", date));
@@ -214,28 +241,35 @@ namespace RadioDldTest
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 2009/02/3 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 2009.02.3 Test", date));
 
+            // test dates without leading zero on day value
             date = new DateTime(2009, 02, 13);
 
             Assert.Equal("Test", TextUtils.StripDateFromName("13 Feb 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13 Feb '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13 Feb 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("13 FEB 2009 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13th Feb 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13th Feb '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13th Feb 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("13th FEB 2009 Test", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("13 February 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13 February '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13 February 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("13 FEBRUARY 2009 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13th February 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13th February '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13th February 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("13th FEBRUARY 2009 Test", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("FEB 13th 2009 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13 '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13 2009 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("FEB 13 2009 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13.2.09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13.2.2009 Test", date));
@@ -282,30 +316,38 @@ namespace RadioDldTest
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13th 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13th '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13th 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test FEB 13th 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13 '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test FEB 13 2009 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 Feb 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 Feb '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 Feb 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 FEB 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13th Feb 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13th Feb '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13th Feb 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13th FEB 2009 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 February 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 February '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 February 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 FEBRUARY 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13th February 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13th February '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13th February 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13th FEBRUARY 2009 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13th 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13th '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13th 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test FEB 13th 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13 09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13 '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test Feb 13 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test FEB 13 2009 Test", date));
 
             // test dates in September with leading zero
             date = new DateTime(2009, 09, 01);
@@ -314,8 +356,11 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("2009/09/1 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 Sep 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 SEP 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 01 Sept '09 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 01 SEPT '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 Sept 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 1 SEPT 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 01/09/2009 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 2009/9/1 Test", date));
@@ -328,8 +373,11 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("2009/09/13 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 Sep 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 SEP 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 Sept '09 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 SEPT '09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 Sept 2009 Test", date));
+            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13 SEPT 2009 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13/09/2009 Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 2009/9/13 Test", date));

@@ -226,8 +226,9 @@ namespace RadioDld
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Duration, "Duration");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.EpisodeName, "Episode Name");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Progress, "Progress");
-            this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.ProgrammeName, "Programme Name");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.SmartName, "Smart Name");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
 
             FindNew.EpisodeAdded += this.ProgData_EpisodeAdded;
             FindNew.FindNewViewChange += this.ProgData_FindNewViewChange;
@@ -425,7 +426,7 @@ namespace RadioDld
                 infoText += TextUtils.DescDuration(epInfo.Duration) + Environment.NewLine;
                 infoText += "Auto download: " + (epInfo.AutoDownload ? "Yes" : "No");
 
-                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.Date), infoText, Model.Episode.GetImage(epid));
+                this.SetSideBar(this.DownloadList_GetSmartName(epid), infoText, Model.Episode.GetImage(epid));
             }
             else
             {
@@ -775,7 +776,7 @@ namespace RadioDld
 
                     buttons.Add(this.ButtonDelete);
                     infoText += Environment.NewLine + "Play count: " + info.PlayCount.ToString(CultureInfo.CurrentCulture);
-
+                    infoText += Environment.NewLine + "File path: " + info.DownloadPath.ToString(CultureInfo.CurrentCulture);
                     break;
                 case Model.Download.DownloadStatus.Errored:
                     string errorName = string.Empty;
@@ -825,7 +826,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
+            this.SetSideBar(this.DownloadList_GetSmartName(epid), infoText, Model.Episode.GetImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
@@ -1405,6 +1406,8 @@ namespace RadioDld
                         Model.Programme progInfo = new Model.Programme(info.Progid);
                         item.SubItems[column].Text = progInfo.Name;
                         break;
+                    case Model.Download.DownloadCols.SmartName:
+                        break;
                     default:
                         throw new InvalidDataException("Unknown column type of " + this.downloadColOrder[column].ToString());
                 }
@@ -1436,6 +1439,81 @@ namespace RadioDld
             return item;
         }
 
+        private void DownloadList_AddSmartName(int epid)
+        {
+            if (this.IsDisposed)
+            {
+                return;
+            }
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke((MethodInvoker)(() => { this.DownloadList_AddSmartName(epid); }));
+                return;
+            }
+
+            ListViewItem item = this.ListDownloads.Items[Convert.ToString(epid, CultureInfo.InvariantCulture)];
+
+            if (item == null)
+            {
+                return;
+            }
+
+            if (this.downloadColOrder.Contains(Model.Download.DownloadCols.SmartName))
+            {
+                if (string.IsNullOrEmpty(item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.SmartName)].Text))
+                {
+                    string progName = item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.ProgrammeName)].Text;
+                    string epName = item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.EpisodeName)].Text;
+                    string smartName = TextUtils.StripProgrammeNameFromEpisode(progName, epName);
+
+                    // DateTime epDate = (int)item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.EpisodeDate)].Text.ToString;
+                    // string smartName = TextUtils.StripProgrammeNameFromEpisode(progName, TextUtils.StripDateFromName(epName, epDate));
+                    if (!string.IsNullOrEmpty(smartName))
+                    {
+                        item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.SmartName)].Text = smartName;
+                    }
+                }
+            }
+        }
+
+        private string DownloadList_GetSmartName(int epid)
+        {
+            if (this.IsDisposed)
+            {
+                return string.Empty;
+            }
+
+            if (this.InvokeRequired)
+            {
+                this.Invoke((MethodInvoker)(() => { this.DownloadList_GetSmartName(epid); }));
+                return string.Empty;
+            }
+
+            ListViewItem item = this.ListDownloads.Items[Convert.ToString(epid, CultureInfo.InvariantCulture)];
+
+            if (item == null)
+            {
+                return string.Empty;
+            }
+
+            if (this.downloadColOrder.Contains(Model.Download.DownloadCols.SmartName))
+            {
+                if (!string.IsNullOrEmpty(item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.SmartName)].Text))
+                {
+                    return item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.SmartName)].Text;
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            else
+            {
+                return string.Empty;
+            }
+        }
+
         private void DataSearch_DownloadAdded(int epid)
         {
             if (this.IsDisposed)
@@ -1451,6 +1529,7 @@ namespace RadioDld
 
             Model.Download info = new Model.Download(epid);
             this.ListDownloads.Items.Add(this.DownloadListItem(info, null));
+            this.DownloadList_AddSmartName(Convert.ToInt32(epid, CultureInfo.InvariantCulture));
 
             if (this.view.CurrentView == ViewState.View.Downloads)
             {
@@ -2426,7 +2505,7 @@ namespace RadioDld
             this.ListDownloads.Clear();
             this.ListDownloads.HideAllProgress();
 
-            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.4";
+            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.4|6,1.2";
 
             if (string.IsNullOrEmpty(Settings.DownloadColSizes))
             {
@@ -2490,6 +2569,12 @@ namespace RadioDld
 
             // Add the whole array of ListItems at once
             this.ListDownloads.Items.AddRange(initItems);
+
+            // Add Smart Name to each of the items in the download list
+            foreach (ListViewItem item in this.ListDownloads.Items)
+            {
+                this.DownloadList_AddSmartName(Convert.ToInt32(item.Name, CultureInfo.InvariantCulture));
+            }
         }
 
         private void TextSearch_TextChanged(object sender, EventArgs e)

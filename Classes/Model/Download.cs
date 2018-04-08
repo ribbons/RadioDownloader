@@ -79,7 +79,8 @@ namespace RadioDld.Model
             Status = 2,
             Progress = 3,
             Duration = 4,
-            ProgrammeName = 5
+            ProgrammeName = 5,
+            SmartName = 6
         }
 
         internal enum DownloadStatus
@@ -696,25 +697,30 @@ namespace RadioDld.Model
                     switch (sortBy)
                     {
                         case DownloadCols.EpisodeName:
-                            orderBy = "episodes.name" + (sortAsc ? string.Empty : " desc");
+                            orderBy = " order by episodes.name" + (sortAsc ? string.Empty : " desc");
                             break;
                         case DownloadCols.EpisodeDate:
-                            orderBy = "date" + (sortAsc ? string.Empty : " desc");
+                            orderBy = " order by date" + (sortAsc ? string.Empty : " desc");
                             break;
                         case DownloadCols.Status:
-                            orderBy = "status = 0" + (sortAsc ? " desc" : string.Empty) + ", status" + (sortAsc ? " desc" : string.Empty) + ", playcount > 0" + (sortAsc ? string.Empty : " desc") + ", date" + (sortAsc ? " desc" : string.Empty);
+                            orderBy = " order by status = 0" + (sortAsc ? " desc" : string.Empty) + ", status" + (sortAsc ? " desc" : string.Empty) + ", playcount > 0" + (sortAsc ? string.Empty : " desc") + ", date" + (sortAsc ? " desc" : string.Empty);
                             break;
                         case DownloadCols.Duration:
-                            orderBy = "duration" + (sortAsc ? string.Empty : " desc");
+                            orderBy = " order by duration" + (sortAsc ? string.Empty : " desc");
                             break;
                         case DownloadCols.ProgrammeName:
-                            orderBy = "programmes.name" + (sortAsc ? string.Empty : " desc");
+                            orderBy = " order by programmes.name" + (sortAsc ? string.Empty : " desc");
+                            break;
+                        case DownloadCols.SmartName:
+                            // REVIEW - as there is no 'SmartName' field in db to sort on
+                            // sort on ProgrammeName, EpisodeName instead... should produce similar result
+                            orderBy = " order by programmes.name" + (sortAsc ? string.Empty : " desc") + ", episodes.name" + (sortAsc ? string.Empty : " desc");
                             break;
                         default:
                             throw new InvalidDataException("Invalid column: " + sortBy.ToString());
                     }
 
-                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes, programmes where downloads.epid=episodes.epid and episodes.progid=programmes.progid order by " + orderBy, FetchDbConn()))
+                    using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes, programmes where downloads.epid=episodes.epid and episodes.progid=programmes.progid" + orderBy, FetchDbConn()))
                     {
                         using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                         {

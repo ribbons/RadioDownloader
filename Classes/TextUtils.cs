@@ -24,6 +24,7 @@ namespace RadioDld
 
     public static class TextUtils
     {
+        // RegEx configuration for function 'StripDateFromName'
         // Common Groups
         private const string MatchDelim = @"(?:\.|\-|\/| )";
         private const string MatchDay = @"(?:3[01]|2\d|1\d|0?\d)(?:st|nd|rd|th)?";
@@ -42,9 +43,14 @@ namespace RadioDld
         // ## Date format: mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
         private const string MatchFormat3 = @"(" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchDelim + MatchYear + MatchWS;
 
+        // RegEx configuration for function 'StripProgrammeNameFromEpisode'
+        // Common Groups
+        private const string MatchEpNameDelim = @"(?:\:+)";
+        private const string MatchEpNameWS2 = @"(?:\s+)";
+
+        // RegEx configuration for function 'StripDateFromName'
         private static Regex matchStripDate = new Regex("(" + MatchFormat1 + "|" + MatchFormat2 + "|" + MatchFormat3 + ")", RegexOptions.IgnoreCase);
         private static Regex removeDaySuffix = new Regex(MatchDaySuffix, RegexOptions.IgnoreCase);
-
         private static int similarDateDayRange = 6;
 
         /// <summary>
@@ -62,7 +68,7 @@ namespace RadioDld
 
                 // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
                 dateStringFound = dateStringFound.Replace("'", string.Empty);
-                dateStringFound = dateStringFound.Replace("Sept", "Sep").Replace("sept", "sep");
+                dateStringFound = dateStringFound.Replace("Sept", "Sep").Replace("sept", "sep").Replace("SEPT", "SEP");
                 dateStringFound = removeDaySuffix.Replace(dateStringFound, " ");
 
                 // Convert to DateTime for comparison to similardate
@@ -92,6 +98,37 @@ namespace RadioDld
             return name;
         }
 
+        /// <summary>
+        /// Derive ‘SmartName’ from the ProgrammeName and EpisodeName values
+        /// Use regex to remove a number of different any duplication of the Programme Name.
+        /// </summary>
+        /// <param name="programmeName">Programme Name to be checked.</param>
+        /// <param name="episodeName">Episode Name to be used to form SmartName.</param>
+        /// <returns>Episode name with date content removed</returns>
+        public static string StripProgrammeNameFromEpisode(string programmeName, string episodeName)
+        {
+            string smartname = string.Empty;
+
+            // Construct smanrtName from ProgrammeName and EpisodeName
+            smartname = programmeName + ": " + episodeName;
+
+            // check if programme name exist in episode name then remove it and any delimiting and white space that follows
+            Regex matchStripProgNameFromEpisode = new Regex(@"^(?:" + programmeName + ".*)" + MatchEpNameDelim + MatchEpNameWS2, RegexOptions.IgnoreCase);
+
+            if (matchStripProgNameFromEpisode.IsMatch(episodeName))
+            {
+                episodeName = Regex.Replace(episodeName, "^(?:" + programmeName + ".*)" + MatchEpNameDelim + MatchEpNameWS2, string.Empty);
+                smartname = programmeName + ": " + episodeName;
+            }
+
+            return smartname;
+        }
+
+        /// <summary>
+        /// Set appropriate units for duration.
+        /// </summary>
+        /// <param name="duration">Duration value to check.</param>
+        /// <returns>duration unit e.g. hr(s) and or min</returns>
         public static string DescDuration(int duration)
         {
             string readable = string.Empty;
