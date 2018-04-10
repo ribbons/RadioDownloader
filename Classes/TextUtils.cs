@@ -68,7 +68,7 @@ namespace RadioDld
 
                 // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
                 dateStringFound = dateStringFound.Replace("'", string.Empty);
-                dateStringFound = dateStringFound.Replace("Sept", "Sep").Replace("sept", "sep").Replace("SEPT", "SEP");
+                dateStringFound = dateStringFound.Replace("Sept", "Sep").Replace("sept", "sep");
                 dateStringFound = removeDaySuffix.Replace(dateStringFound, " ");
 
                 // Convert to DateTime for comparison to similardate
