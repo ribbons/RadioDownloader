@@ -45,7 +45,7 @@ namespace RadioDld
 
         // RegEx configuration for function 'StripProgrammeNameFromEpisode'
         // Common Groups
-        private const string MatchEpNameDelim = @"(?:\:+)";
+        private const string MatchEpNameDelim = @"(?:\:|.-+)";
         private const string MatchEpNameWS2 = @"(?:\s+)";
 
         // RegEx configuration for function 'StripDateFromName'
@@ -108,11 +108,11 @@ namespace RadioDld
         public static string StripProgrammeNameFromEpisode(string programmeName, string episodeName)
         {
             // check if programme name exist in episode name then remove it and any delimiting and white space that follows
-            Regex matchStripProgNameFromEpisode = new Regex(@"^(?:" + programmeName + ".*)" + MatchEpNameDelim + MatchEpNameWS2, RegexOptions.IgnoreCase);
+            Regex matchStripProgNameFromEpisode = new Regex(@"^(?:" + programmeName + ")" + MatchEpNameDelim + MatchEpNameWS2, RegexOptions.IgnoreCase);
 
             if (matchStripProgNameFromEpisode.IsMatch(episodeName))
             {
-                episodeName = Regex.Replace(episodeName, "^(?:" + programmeName + ".*)" + MatchEpNameDelim + MatchEpNameWS2, string.Empty);
+                episodeName = Regex.Replace(episodeName, "^(?:" + programmeName + ")" + MatchEpNameDelim + MatchEpNameWS2, string.Empty);
             }
 
             return programmeName + ": " + episodeName;
