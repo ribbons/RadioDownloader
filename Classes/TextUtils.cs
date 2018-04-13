@@ -107,21 +107,15 @@ namespace RadioDld
         /// <returns>Episode name with date content removed</returns>
         public static string StripProgrammeNameFromEpisode(string programmeName, string episodeName)
         {
-            string smartname = string.Empty;
-
-            // Construct smanrtName from ProgrammeName and EpisodeName
-            smartname = programmeName + ": " + episodeName;
-
             // check if programme name exist in episode name then remove it and any delimiting and white space that follows
             Regex matchStripProgNameFromEpisode = new Regex(@"^(?:" + programmeName + ".*)" + MatchEpNameDelim + MatchEpNameWS2, RegexOptions.IgnoreCase);
 
             if (matchStripProgNameFromEpisode.IsMatch(episodeName))
             {
                 episodeName = Regex.Replace(episodeName, "^(?:" + programmeName + ".*)" + MatchEpNameDelim + MatchEpNameWS2, string.Empty);
-                smartname = programmeName + ": " + episodeName;
             }
 
-            return smartname;
+            return programmeName + ": " + episodeName;
         }
 
         /// <summary>
