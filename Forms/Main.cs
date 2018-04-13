@@ -776,7 +776,6 @@ namespace RadioDld
 
                     buttons.Add(this.ButtonDelete);
                     infoText += Environment.NewLine + "Play count: " + info.PlayCount.ToString(CultureInfo.CurrentCulture);
-                    infoText += Environment.NewLine + "File path: " + info.DownloadPath.ToString(CultureInfo.CurrentCulture);
                     break;
                 case Model.Download.DownloadStatus.Errored:
                     string errorName = string.Empty;
@@ -1352,6 +1351,7 @@ namespace RadioDld
 
             for (int column = 0; column <= this.downloadColOrder.Count - 1; column++)
             {
+                Model.Programme progInfo = new Model.Programme(info.Progid);
                 switch (this.downloadColOrder[column])
                 {
                     case Model.Download.DownloadCols.EpisodeName:
@@ -1403,10 +1403,10 @@ namespace RadioDld
                         item.SubItems[column].Text = durationText;
                         break;
                     case Model.Download.DownloadCols.ProgrammeName:
-                        Model.Programme progInfo = new Model.Programme(info.Progid);
                         item.SubItems[column].Text = progInfo.Name;
                         break;
                     case Model.Download.DownloadCols.SmartName:
+                        item.SubItems[column].Text = TextUtils.StripProgrammeNameFromEpisode(progInfo.Name, info.Name);
                         break;
                     default:
                         throw new InvalidDataException("Unknown column type of " + this.downloadColOrder[column].ToString());
