@@ -415,6 +415,7 @@ namespace RadioDld
             {
                 int epid = Convert.ToInt32(this.ListEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                 Model.Episode epInfo = new Model.Episode(epid);
+                Model.Programme progInfo = new Model.Programme(epInfo.Progid);
                 string infoText = string.Empty;
 
                 if (epInfo.Description != null)
@@ -426,7 +427,7 @@ namespace RadioDld
                 infoText += TextUtils.DescDuration(epInfo.Duration) + Environment.NewLine;
                 infoText += "Auto download: " + (epInfo.AutoDownload ? "Yes" : "No");
 
-                this.SetSideBar(this.DownloadList_GetSmartName(epid), infoText, Model.Episode.GetImage(epid));
+                this.SetSideBar(TextUtils.BuildEpisodeSmartName(progInfo.Name, epInfo.Name, epInfo.Date), infoText, Model.Episode.GetImage(epid));
             }
             else
             {
@@ -752,6 +753,7 @@ namespace RadioDld
         private void ShowDownloadInfo(int epid)
         {
             Model.Download info = new Model.Download(epid);
+            Model.Programme progInfo = new Model.Programme(info.Progid);
 
             string infoText = string.Empty;
 
@@ -825,7 +827,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(this.DownloadList_GetSmartName(epid), infoText, Model.Episode.GetImage(epid));
+            this.SetSideBar(TextUtils.BuildEpisodeSmartName(progInfo.Name, info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
         }
 
         private void SetSideBar(string title, string description, Bitmap picture)
@@ -1352,6 +1354,7 @@ namespace RadioDld
             for (int column = 0; column <= this.downloadColOrder.Count - 1; column++)
             {
                 Model.Programme progInfo = new Model.Programme(info.Progid);
+
                 switch (this.downloadColOrder[column])
                 {
                     case Model.Download.DownloadCols.EpisodeName:
@@ -1406,7 +1409,7 @@ namespace RadioDld
                         item.SubItems[column].Text = progInfo.Name;
                         break;
                     case Model.Download.DownloadCols.SmartName:
-                        item.SubItems[column].Text = TextUtils.StripProgrammeNameFromEpisode(progInfo.Name, info.Name);
+                        item.SubItems[column].Text = TextUtils.BuildEpisodeSmartName(progInfo.Name, info.Name, info.Date);
                         break;
                     default:
                         throw new InvalidDataException("Unknown column type of " + this.downloadColOrder[column].ToString());
@@ -1465,10 +1468,9 @@ namespace RadioDld
                 {
                     string progName = item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.ProgrammeName)].Text;
                     string epName = item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.EpisodeName)].Text;
-                    string smartName = TextUtils.StripProgrammeNameFromEpisode(progName, epName);
+                    DateTime epDate = Convert.ToDateTime(item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.EpisodeDate)], CultureInfo.InvariantCulture);
+                    string smartName = TextUtils.BuildEpisodeSmartName(progName, epName, epDate);
 
-                    // DateTime epDate = (int)item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.EpisodeDate)].Text.ToString;
-                    // string smartName = TextUtils.StripProgrammeNameFromEpisode(progName, TextUtils.StripDateFromName(epName, epDate));
                     if (!string.IsNullOrEmpty(smartName))
                     {
                         item.SubItems[this.downloadColOrder.IndexOf(Model.Download.DownloadCols.SmartName)].Text = smartName;
@@ -1529,7 +1531,6 @@ namespace RadioDld
 
             Model.Download info = new Model.Download(epid);
             this.ListDownloads.Items.Add(this.DownloadListItem(info, null));
-            this.DownloadList_AddSmartName(Convert.ToInt32(epid, CultureInfo.InvariantCulture));
 
             if (this.view.CurrentView == ViewState.View.Downloads)
             {
@@ -2569,12 +2570,6 @@ namespace RadioDld
 
             // Add the whole array of ListItems at once
             this.ListDownloads.Items.AddRange(initItems);
-
-            // Add Smart Name to each of the items in the download list
-            foreach (ListViewItem item in this.ListDownloads.Items)
-            {
-                this.DownloadList_AddSmartName(Convert.ToInt32(item.Name, CultureInfo.InvariantCulture));
-            }
         }
 
         private void TextSearch_TextChanged(object sender, EventArgs e)

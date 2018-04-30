@@ -411,19 +411,20 @@ namespace RadioDldTest
         }
 
         /// <summary>
-        /// Test that the StripProgrammeNameFromEpisode function correctly removes
+        /// Test that the BuildEpisodeSmartName function correctly removing
         /// the programmename portion from episodename
         /// </summary>
         [Fact]
-        public void StripProgrammeNameFromEpisode()
+        public void BuildEpisodeSmartName()
         {
-            // Test only matching and removing programmeName from episodeName
-            // Removing date from episodeName is tested elsewhere
-            Assert.Equal("Programme 1: Episode 1", TextUtils.StripProgrammeNameFromEpisode("Programme 1", "Episode 1"));
-            Assert.Equal("Programme 2: Episode 1", TextUtils.StripProgrammeNameFromEpisode("Programme 2", "Programme 2: Episode 1"));
-            Assert.Equal("Programme 3: Episode 1 - 05/12/2017", TextUtils.StripProgrammeNameFromEpisode("Programme 3", "Programme 3 - Episode 1 - 05/12/2017"));
-            Assert.Equal("Programme 4: Episode 1: 05/12/2017", TextUtils.StripProgrammeNameFromEpisode("Programme 4", "Episode 1: 05/12/2017"));
-            Assert.Equal("Programme 5: 05/12/2017", TextUtils.StripProgrammeNameFromEpisode("Programme 5", "05/12/2017"));
+            // Test matching and removing programmeName from episodeName (including removing date from episodeName)
+            DateTime date = new DateTime(2017, 12, 05);
+
+            Assert.Equal("Programme 1: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 1", "Episode 1", date));
+            Assert.Equal("Programme 2: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 2", "Programme 2: Episode 1", date));
+            Assert.Equal("Programme 3: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 3", "Programme 3 - Episode 1 - 05/12/2017", date));
+            Assert.Equal("Programme 4: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 4", "Episode 1: 05/12/2017", date));
+            Assert.Equal("Programme 5:", TextUtils.BuildEpisodeSmartName("Programme 5", "05/12/2017", date));
         }
     }
 }

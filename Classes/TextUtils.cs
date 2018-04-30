@@ -90,7 +90,7 @@ namespace RadioDld
                     // Check if date is within the +/- 'similardateday' range of 'date'
                     if (dateFound >= stripDate.AddDays(-similarDateDayRange) && dateFound <= stripDate.AddDays(similarDateDayRange))
                     {
-                       name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
+                        name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
                     }
                 }
             }
@@ -99,15 +99,19 @@ namespace RadioDld
         }
 
         /// <summary>
-        /// Derive ‘SmartName’ from the ProgrammeName and EpisodeName values
+        /// Build ‘SmartName’ from the ProgrammeName and EpisodeName values
         /// Use regex to remove a number of different any duplication of the Programme Name.
+        /// Includes removal of date from episodeName
         /// </summary>
         /// <param name="programmeName">Programme Name to be checked.</param>
         /// <param name="episodeName">Episode Name to be used to form SmartName.</param>
+        /// <param name="stripDate">Date value to be striped from the Episode Name.</param>
         /// <returns>Episode name with date content removed</returns>
-        public static string StripProgrammeNameFromEpisode(string programmeName, string episodeName)
+        public static string BuildEpisodeSmartName(string programmeName, string episodeName, DateTime stripDate)
         {
             // check if programme name exist in episode name then remove it and any delimiting and white space that follows
+            episodeName = StripDateFromName(episodeName, stripDate).ToString().Trim();
+
             Regex matchStripProgNameFromEpisode = new Regex(@"^(?:" + programmeName + ")" + MatchEpNameDelim + MatchEpNameWS2, RegexOptions.IgnoreCase);
 
             if (matchStripProgNameFromEpisode.IsMatch(episodeName))
@@ -115,14 +119,23 @@ namespace RadioDld
                 episodeName = Regex.Replace(episodeName, "^(?:" + programmeName + ")" + MatchEpNameDelim + MatchEpNameWS2, string.Empty);
             }
 
-            return programmeName + ": " + episodeName;
+            episodeName = Regex.Replace(episodeName, MatchEpNameDelim, string.Empty);
+
+            if (string.IsNullOrEmpty(episodeName))
+            {
+                return programmeName + ":";
+            }
+            else
+            {
+                return programmeName + ": " + episodeName;
+            }
         }
 
         /// <summary>
-        /// Set appropriate units for duration.
+        /// Convert duration value into a human readable string.
         /// </summary>
-        /// <param name="duration">Duration value to check.</param>
-        /// <returns>duration unit e.g. hr(s) and or min</returns>
+        /// <param name="duration">The duration value in seconds.</param>
+        /// <returns>A human readable string with the number of hours and/or minutes, rounded down to the nearest minute.</returns>
         public static string DescDuration(int duration)
         {
             string readable = string.Empty;
