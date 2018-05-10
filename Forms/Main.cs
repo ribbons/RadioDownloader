@@ -65,25 +65,22 @@ namespace RadioDld
 
         private void UpdateTrayStatus(bool active)
         {
-            if (OsUtils.WinSevenOrLater())
+            if (Model.Download.CountErrored() > 0)
             {
-                if (Model.Download.CountErrored() > 0)
+                this.tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_error, "Error");
+                this.tbarNotif.SetThumbnailTooltip(this, this.Text + ": Error");
+            }
+            else
+            {
+                if (active)
                 {
-                    this.tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_error, "Error");
-                    this.tbarNotif.SetThumbnailTooltip(this, this.Text + ": Error");
+                    this.tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_downloading, "Downloading");
+                    this.tbarNotif.SetThumbnailTooltip(this, this.Text + ": Downloading");
                 }
                 else
                 {
-                    if (active)
-                    {
-                        this.tbarNotif.SetOverlayIcon(this, Properties.Resources.overlay_downloading, "Downloading");
-                        this.tbarNotif.SetThumbnailTooltip(this, this.Text + ": Downloading");
-                    }
-                    else
-                    {
-                        this.tbarNotif.SetOverlayIcon(this, null, string.Empty);
-                        this.tbarNotif.SetThumbnailTooltip(this, null);
-                    }
+                    this.tbarNotif.SetOverlayIcon(this, null, string.Empty);
+                    this.tbarNotif.SetThumbnailTooltip(this, null);
                 }
             }
 
@@ -263,13 +260,9 @@ namespace RadioDld
             this.ListSubscribed.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Subscription);
             this.ListDownloads.ListViewItemSorter = new ListItemComparer(ListItemComparer.ListType.Download);
 
-            if (OsUtils.WinSevenOrLater())
-            {
-                // New style taskbar - initialise the taskbar notification class
-                this.tbarNotif = new TaskbarNotify();
-            }
+            this.tbarNotif = new TaskbarNotify();
 
-            if (!OsUtils.WinSevenOrLater() || Settings.CloseToSystray)
+            if (!this.tbarNotif.Supported || Settings.CloseToSystray)
             {
                 // Show a system tray icon
                 this.NotifyIcon.Visible = true;
@@ -1599,16 +1592,13 @@ namespace RadioDld
             {
                 this.UpdateTrayStatus(downloading);
 
-                if (OsUtils.WinSevenOrLater())
+                if (downloading)
                 {
-                    if (downloading)
-                    {
-                        this.tbarNotif.SetProgressValue(this, percent, 100);
-                    }
-                    else
-                    {
-                        this.tbarNotif.SetProgressNone(this);
-                    }
+                    this.tbarNotif.SetProgressValue(this, percent, 100);
+                }
+                else
+                {
+                    this.tbarNotif.SetProgressNone(this);
                 }
             }
         }
@@ -1660,7 +1650,7 @@ namespace RadioDld
             {
                 if (commandLineArg.ToUpperInvariant() == "/HIDEMAINWINDOW")
                 {
-                    if (OsUtils.WinSevenOrLater() && !Settings.CloseToSystray)
+                    if (this.tbarNotif.Supported && !Settings.CloseToSystray)
                     {
                         this.WindowState = FormWindowState.Minimized;
                     }
