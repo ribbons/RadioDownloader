@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,20 +62,6 @@ namespace RadioDld
         internal static bool Windows()
         {
             return Environment.OSVersion.Platform == PlatformID.Win32NT;
-        }
-
-        internal static bool WinSevenOrLater()
-        {
-            OperatingSystem curOs = Environment.OSVersion;
-
-            if (Windows() && (((curOs.Version.Major == 6) && (curOs.Version.Minor >= 1)) || (curOs.Version.Major > 6)))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
         }
 
         internal static bool WinVistaOrLater()

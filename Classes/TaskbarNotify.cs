@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,12 +29,36 @@ namespace RadioDld
 
         public TaskbarNotify()
         {
+            if (!OsUtils.Windows())
+            {
+                // OS doesn't support ITaskbarList3 interface
+                return;
+            }
+
             this.taskBarListInst = (NativeMethods.ITaskbarList3)new TaskbarList();
-            this.taskBarListInst.HrInit();
+
+            try
+            {
+                this.taskBarListInst.HrInit();
+            }
+            catch (NotImplementedException)
+            {
+                // Some third party Windows shells don't support ITaskbarList3
+                return;
+            }
+
+            this.Supported = true;
         }
+
+        public bool Supported { get; private set; }
 
         public void SetOverlayIcon(Form parentWin, Icon icon, string description)
         {
+            if (!this.Supported)
+            {
+                return;
+            }
+
             try
             {
                 this.taskBarListInst.SetOverlayIcon(parentWin.Handle, icon == null ? IntPtr.Zero : icon.Handle, description);
@@ -47,6 +71,11 @@ namespace RadioDld
 
         public void SetThumbnailTooltip(Form parentWin, string tooltip)
         {
+            if (!this.Supported)
+            {
+                return;
+            }
+
             try
             {
                 this.taskBarListInst.SetThumbnailTooltip(parentWin.Handle, tooltip);
@@ -59,6 +88,11 @@ namespace RadioDld
 
         public void SetProgressValue(Form parentWin, long value, long total)
         {
+            if (!this.Supported)
+            {
+                return;
+            }
+
             if (value < 0)
             {
                 throw new ArgumentException("value must not be negative", "value");
@@ -75,11 +109,21 @@ namespace RadioDld
 
         public void SetProgressMarquee(Form parentWin)
         {
+            if (!this.Supported)
+            {
+                return;
+            }
+
             this.taskBarListInst.SetProgressState(parentWin.Handle, NativeMethods.TBPFLAG.TBPF_INDETERMINATE);
         }
 
         public void SetProgressNone(Form parentWin)
         {
+            if (!this.Supported)
+            {
+                return;
+            }
+
             this.taskBarListInst.SetProgressState(parentWin.Handle, NativeMethods.TBPFLAG.TBPF_NOPROGRESS);
         }
 
