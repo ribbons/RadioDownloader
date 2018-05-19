@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2017 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -411,20 +411,22 @@ namespace RadioDldTest
         }
 
         /// <summary>
-        /// Test that the BuildEpisodeSmartName function correctly removing
-        /// the programmename portion from episodename
+        /// Test that the BuildEpisodeSmartName function correctly normalises
+        /// episode names
         /// </summary>
         [Fact]
         public void BuildEpisodeSmartName()
         {
-            // Test matching and removing programmeName from episodeName (including removing date from episodeName)
             DateTime date = new DateTime(2017, 12, 05);
 
             Assert.Equal("Programme 1: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 1", "Episode 1", date));
             Assert.Equal("Programme 2: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 2", "Programme 2: Episode 1", date));
             Assert.Equal("Programme 3: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 3", "Programme 3 - Episode 1 - 05/12/2017", date));
             Assert.Equal("Programme 4: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 4", "Episode 1: 05/12/2017", date));
-            Assert.Equal("Programme 5:", TextUtils.BuildEpisodeSmartName("Programme 5", "05/12/2017", date));
+            Assert.Equal("Programme 5", TextUtils.BuildEpisodeSmartName("Programme 5", "05/12/2017", date));
+            Assert.Equal("Programme 6", TextUtils.BuildEpisodeSmartName("Programme 6", "Programme 6", date));
+            Assert.Equal("Programme 7", TextUtils.BuildEpisodeSmartName("Programme 7", "Programme 7, 05/12/2017", date));
+            Assert.Equal("Programme - 8: Episode - 1", TextUtils.BuildEpisodeSmartName("Programme - 8", "Episode - 1", date));
         }
     }
 }
