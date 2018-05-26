@@ -245,6 +245,7 @@ namespace RadioDld
             if (this.cancelled)
             {
                 this.cancelResponse = true;
+                return;
             }
 
             finalName += "." + info.Extension;
