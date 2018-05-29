@@ -72,11 +72,30 @@ namespace RadioDld
                 WebRequest.DefaultWebProxy = null;
             }
 
-            // Add TLS 1.1 and 1.2 to the allowed protocols for HTTPS requests
-            // The constants are not defined until .NET 4.5, so use the values
-            ServicePointManager.SecurityProtocol |=
-                (SecurityProtocolType)0x00000300 | // SecurityProtocolType.Tls11
-                (SecurityProtocolType)0x00000C00;  // SecurityProtocolType.Tls12
+            try
+            {
+                // Add TLS 1.1 and 1.2 to allowed protocols for HTTPS requests
+                // Constants are not defined until .NET 4.5, so use the values
+                ServicePointManager.SecurityProtocol |=
+                    (SecurityProtocolType)0x00000300 | // SecurityProtocolType.Tls11
+                    (SecurityProtocolType)0x00000C00;  // SecurityProtocolType.Tls12
+            }
+            catch (NotSupportedException)
+            {
+                if (OsUtils.Windows())
+                {
+                    MessageBox.Show(
+                        "The .NET framework needs an update (to enable TLS 1.1 and 1.2) before Radio Downloader can run." + Environment.NewLine + Environment.NewLine +
+                        "Please check for available updates and install all of those which relate to the .NET framework.",
+                        Application.ProductName,
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Stop);
+
+                    Environment.Exit(1);
+                }
+
+                throw;
+            }
 
             // Set up the application database and perform any required updates or cleanup
             if (!DatabaseInit.Startup())
