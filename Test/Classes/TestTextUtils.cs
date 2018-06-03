@@ -425,8 +425,11 @@ namespace RadioDldTest
             Assert.Equal("Programme 4: Episode 1", TextUtils.BuildEpisodeSmartName("Programme 4", "Episode 1: 05/12/2017", date));
             Assert.Equal("Programme 5", TextUtils.BuildEpisodeSmartName("Programme 5", "05/12/2017", date));
             Assert.Equal("Programme 6", TextUtils.BuildEpisodeSmartName("Programme 6", "Programme 6", date));
-            Assert.Equal("Programme 7", TextUtils.BuildEpisodeSmartName("Programme 7", "Programme 7, 05/12/2017", date));
-            Assert.Equal("Programme - 8: Episode - 1", TextUtils.BuildEpisodeSmartName("Programme - 8", "Episode - 1", date));
+            Assert.Equal("Programme 7", TextUtils.BuildEpisodeSmartName("Programme 7", "Programme 7 05/12/2017", date));
+            Assert.Equal("Programme 8", TextUtils.BuildEpisodeSmartName("Programme 8", "Programme 8, 05/12/2017", date));
+            Assert.Equal("Programme - 9: Episode - 1", TextUtils.BuildEpisodeSmartName("Programme - 9", "Episode - 1", date));
+            Assert.Equal("Programme [10]: Episode (2)", TextUtils.BuildEpisodeSmartName("Programme [10]", "Episode (2)", date));
+            Assert.Equal("Programme^ 11?: Episode {3}", TextUtils.BuildEpisodeSmartName("Programme^ 11?", "Episode {3}", date));
         }
     }
 }

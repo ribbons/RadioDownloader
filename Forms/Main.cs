@@ -1054,7 +1054,7 @@ namespace RadioDld
             }
 
             item.Text = info.Date.ToShortDateString();
-            item.SubItems[1].Text = TextUtils.StripDateFromName(info.Name, info.Date);
+            item.SubItems[1].Text = info.Name;
             item.ImageKey = info.AutoDownload ? "episode_auto" : "episode_noauto";
 
             return item;
@@ -1351,7 +1351,7 @@ namespace RadioDld
                 switch (this.downloadColOrder[column])
                 {
                     case Model.Download.DownloadCols.EpisodeName:
-                        item.SubItems[column].Text = TextUtils.StripDateFromName(info.Name, info.Date);
+                        item.SubItems[column].Text = info.Name;
                         break;
                     case Model.Download.DownloadCols.EpisodeDate:
                         item.SubItems[column].Text = info.Date.ToShortDateString();
@@ -2422,7 +2422,7 @@ namespace RadioDld
             this.ListDownloads.Clear();
             this.ListDownloads.HideAllProgress();
 
-            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.4|6,1.2";
+            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.4|6,4.2";
 
             if (string.IsNullOrEmpty(Settings.DownloadColSizes))
             {

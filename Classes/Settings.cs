@@ -160,7 +160,7 @@ namespace RadioDld
         {
             get
             {
-                return GetValue("DownloadCols", "0,1,2,3");
+                return GetValue("DownloadCols", "6,1,2,3");
             }
 
             set

@@ -33,6 +33,7 @@ namespace RadioDld
         private const string MatchMonthText = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
         private const string MatchYear = @"(?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d]))";
         private const string MatchWS = @"(?: ?)";
+        private const string MatchWSDelimEnd = @"((?:\.|\-|\/| |:)(?=(?:\.|\-|\/| |:)|$))|(\s(?:\.|\-|\/| |:)(?=\s(?:\.|\-|\/| |:)|$))";
 
         // ## Date format: d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
         private const string MatchFormat1 = @MatchDay + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchYear + MatchWS;
@@ -42,11 +43,6 @@ namespace RadioDld
 
         // ## Date format: mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
         private const string MatchFormat3 = @"(" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchDelim + MatchYear + MatchWS;
-
-        // RegEx configuration for function 'StripProgrammeNameFromEpisode'
-        // Common Groups
-        private const string MatchEpNameDelim = @"(?:\:|.-+)";
-        private const string MatchEpNameWS2 = @"(?:\s+)";
 
         // RegEx configuration for function 'StripDateFromName'
         private static Regex matchStripDate = new Regex("(" + MatchFormat1 + "|" + MatchFormat2 + "|" + MatchFormat3 + ")", RegexOptions.IgnoreCase);
@@ -91,6 +87,7 @@ namespace RadioDld
                     if (dateFound >= stripDate.AddDays(-similarDateDayRange) && dateFound <= stripDate.AddDays(similarDateDayRange))
                     {
                         name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
+                        name = Regex.Replace(name, MatchWSDelimEnd, string.Empty);
                     }
                 }
             }
@@ -109,21 +106,29 @@ namespace RadioDld
         /// <returns>Episode name with date content removed</returns>
         public static string BuildEpisodeSmartName(string programmeName, string episodeName, DateTime stripDate)
         {
-            // check if programme name exist in episode name then remove it and any delimiting and white space that follows
-            episodeName = StripDateFromName(episodeName, stripDate).ToString().Trim();
+            // RegEx groups
+            const string MatchEpNameEndWSDelim = @"\s(?:\.|\-|\/| |,)(?=\s(?:\.|\-|\/| |,)|$)";
+            const string MatchEpNameDelim = @"(?:\s?)(?:\:|.- +|,+)(?:\s?)";
 
-            Regex matchStripProgNameFromEpisode = new Regex(@"^(?:" + programmeName + ")" + MatchEpNameDelim + MatchEpNameWS2, RegexOptions.IgnoreCase);
+            // clean episode name of any leading/trailing whitespace and trailing delim characters
+            episodeName = episodeName.Trim();
+            episodeName = Regex.Replace(episodeName, MatchEpNameEndWSDelim, string.Empty);
 
-            if (matchStripProgNameFromEpisode.IsMatch(episodeName))
-            {
-                episodeName = Regex.Replace(episodeName, "^(?:" + programmeName + ")" + MatchEpNameDelim + MatchEpNameWS2, string.Empty);
-            }
+            // check and remove programme name from episode name (and any delimiting and or white space that follows)
+            // programmeName = Regex.Escape(programmeName);
 
-            episodeName = Regex.Replace(episodeName, MatchEpNameDelim, string.Empty);
+            episodeName = Regex.Replace(episodeName, "^(?:" + Regex.Escape(programmeName) + ")" + MatchEpNameDelim, string.Empty);
+            episodeName = Regex.Replace(episodeName, "^(?:" + Regex.Escape(programmeName) + ")", string.Empty);
+            episodeName = episodeName.Trim();
+
+            // programmeName = Regex.Unescape(programmeName);
+
+            // check and remove date from episode name
+            episodeName = StripDateFromName(episodeName, stripDate).Trim();
 
             if (string.IsNullOrEmpty(episodeName))
             {
-                return programmeName + ":";
+                return programmeName;
             }
             else
             {
