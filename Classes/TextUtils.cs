@@ -115,13 +115,9 @@ namespace RadioDld
             episodeName = Regex.Replace(episodeName, MatchEpNameEndWSDelim, string.Empty);
 
             // check and remove programme name from episode name (and any delimiting and or white space that follows)
-            // programmeName = Regex.Escape(programmeName);
-
             episodeName = Regex.Replace(episodeName, "^(?:" + Regex.Escape(programmeName) + ")" + MatchEpNameDelim, string.Empty);
             episodeName = Regex.Replace(episodeName, "^(?:" + Regex.Escape(programmeName) + ")", string.Empty);
             episodeName = episodeName.Trim();
-
-            // programmeName = Regex.Unescape(programmeName);
 
             // check and remove date from episode name
             episodeName = StripDateFromName(episodeName, stripDate).Trim();
