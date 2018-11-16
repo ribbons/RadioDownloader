@@ -39,6 +39,11 @@ namespace PodcastProviderTest
             Assert.Equal(programme.Description, "Basic Podcast description");
             Assert.Null(programme.Image);
 
+            var episodes = instance.GetAvailableEpisodes(extId, programme, 0);
+            Assert.False(episodes.MoreAvailable);
+            Assert.Equal(2, episodes.EpisodeIds.Count);
+            Assert.Equal("http://example.com/programme1/episode1.mp3", episodes.EpisodeIds[1]);
+
             var episode = instance.GetEpisodeInfo(extId, programme, "http://example.com/programme1/episode1.mp3");
             Assert.Equal(episode.Name, "Episode 1");
             Assert.Equal(episode.Description, "Episode 1 description");
