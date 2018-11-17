@@ -50,5 +50,26 @@ namespace PodcastProviderTest
             Assert.Null(episode.Image);
             Assert.Null(episode.Duration);
         }
+
+        /// <summary>
+        /// Test that items with invalid data are filtered from available episodes
+        /// </summary>
+        [Fact]
+        public void EpisodeFiltering()
+        {
+            var instance = TestCommon.CreateInstance();
+            string extId = "http://example.com/EpisodeFiltering.xml";
+
+            var programme = instance.GetProgrammeInfo(extId);
+            var available = instance.GetAvailableEpisodes(extId, programme, 0).EpisodeIds;
+
+            Assert.DoesNotContain("filter-title-missing", available);
+            Assert.DoesNotContain("filter-title-empty", available);
+            Assert.DoesNotContain("filter-enclosure-missing", available);
+            Assert.DoesNotContain("filter-enclosure-no-url", available);
+            Assert.DoesNotContain("filter-enclosure-invalid-url", available);
+
+            Assert.Contains("nofilter-valid", available);
+        }
     }
 }

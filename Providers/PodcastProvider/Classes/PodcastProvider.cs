@@ -179,10 +179,29 @@ namespace PodcastProvider
             {
                 string itemId = this.ItemNodeToEpisodeID(itemNode);
 
-                if (!string.IsNullOrEmpty(itemId))
+                if (string.IsNullOrEmpty(itemId))
                 {
-                    available.EpisodeIds.Add(itemId);
+                    continue;
                 }
+
+                if (itemNode.SelectSingleNode("./title[text()]") == null)
+                {
+                    continue;
+                }
+
+                var urlAttrib = itemNode.SelectSingleNode("./enclosure/@url") as XmlAttribute;
+
+                if (urlAttrib == null)
+                {
+                    continue;
+                }
+
+                if (!Uri.IsWellFormedUriString(urlAttrib.Value, UriKind.Absolute))
+                {
+                    continue;
+                }
+
+                available.EpisodeIds.Add(itemId);
             }
 
             return available;
@@ -199,35 +218,8 @@ namespace PodcastProvider
                 return null;
             }
 
-            XmlNode titleNode = itemNode.SelectSingleNode("./title");
-            XmlNode pubDateNode = itemNode.SelectSingleNode("./pubDate");
-            XmlNode enclosureNode = itemNode.SelectSingleNode("./enclosure");
-
-            if (enclosureNode == null)
-            {
-                return null;
-            }
-
-            XmlAttribute urlAttrib = enclosureNode.Attributes["url"];
-
-            if (urlAttrib == null)
-            {
-                return null;
-            }
-
-            if (!Uri.IsWellFormedUriString(urlAttrib.Value, UriKind.Absolute))
-            {
-                return null;
-            }
-
             EpisodeInfo episodeInfo = new EpisodeInfo();
-
-            if (titleNode == null || string.IsNullOrEmpty(titleNode.InnerText))
-            {
-                return null;
-            }
-
-            episodeInfo.Name = titleNode.InnerText;
+            episodeInfo.Name = itemNode.SelectSingleNode("./title").InnerText;
 
             XmlNode descriptionNode = null;
 
@@ -282,6 +274,8 @@ namespace PodcastProvider
             {
                 episodeInfo.Duration = null;
             }
+
+            XmlNode pubDateNode = itemNode.SelectSingleNode("./pubDate");
 
             if (pubDateNode != null)
             {

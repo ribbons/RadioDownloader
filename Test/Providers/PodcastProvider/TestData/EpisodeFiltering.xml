@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Episode Filtering Podcast</title>
+        <link>http://example.com/EpisodeFiltering.xml</link>
+        <description>Episode Filtering Podcast description</description>
+
+        <item>
+            <guid isPermaLink="false">filter-title-missing</guid>
+            <enclosure url="http://example.com/" length="12345" type="audio/mpeg" />
+        </item>
+        <item>
+            <title></title>
+            <guid isPermaLink="false">filter-title-empty</guid>
+            <enclosure url="http://example.com/" length="12345" type="audio/mpeg" />
+        </item>
+        <item>
+            <title>Filter item without an enclosure node</title>
+            <guid isPermaLink="false">filter-enclosure-missing</guid>
+        </item>
+        <item>
+            <title>Filter item with enclosure missing URL attribute</title>
+            <guid isPermaLink="false">filter-enclosure-no-url</guid>
+            <enclosure />
+        </item>
+        <item>
+            <title>Filter item with invalid enclosure URL</title>
+            <guid isPermaLink="false">filter-enclosure-invalid-url</guid>
+            <enclosure url="INVALID" />
+        </item>
+
+        <item>
+            <title>Don't filter valid item</title>
+            <guid isPermaLink="false">nofilter-valid</guid>
+            <enclosure url="http://example.com/" length="12345" type="audio/mpeg" />
+        </item>
+    </channel>
+</rss>
