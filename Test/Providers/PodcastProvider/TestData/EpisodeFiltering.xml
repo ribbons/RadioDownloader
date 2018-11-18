@@ -34,5 +34,10 @@
             <guid isPermaLink="false">nofilter-valid</guid>
             <enclosure url="http://example.com/" length="12345" type="audio/mpeg" />
         </item>
+        <item>
+            <title>Don't filter items with enclosure URLs containing encoded characters</title>
+            <guid isPermaLink="false">nofilter-enclosure-encoded-url</guid>
+            <enclosure url="http://example.com/redir/http%3A%2F%2Fexample.com%2Fepisode.mp3" length="12345" type="audio/mpeg" />
+        </item>
     </channel>
 </rss>

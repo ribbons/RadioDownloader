@@ -70,6 +70,7 @@ namespace PodcastProviderTest
             Assert.DoesNotContain("filter-enclosure-invalid-url", available);
 
             Assert.Contains("nofilter-valid", available);
+            Assert.Contains("nofilter-enclosure-encoded-url", available);
         }
     }
 }

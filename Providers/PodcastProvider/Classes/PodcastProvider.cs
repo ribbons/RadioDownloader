@@ -196,7 +196,10 @@ namespace PodcastProvider
                     continue;
                 }
 
-                if (!Uri.IsWellFormedUriString(urlAttrib.Value, UriKind.Absolute))
+                Uri uri;
+                Uri.TryCreate(urlAttrib.Value, UriKind.Absolute, out uri);
+
+                if (uri == null)
                 {
                     continue;
                 }
