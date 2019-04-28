@@ -427,6 +427,8 @@ namespace RadioDld
             // 
             // TableToolbars
             // 
+            this.TableToolbars.AutoSize = true;
+            this.TableToolbars.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.TableToolbars.ColumnCount = 2;
             this.TableToolbars.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 90F));
             this.TableToolbars.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 10F));
@@ -437,7 +439,7 @@ namespace RadioDld
             this.TableToolbars.Name = "TableToolbars";
             this.TableToolbars.RowCount = 1;
             this.TableToolbars.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.TableToolbars.Size = new System.Drawing.Size(757, 34);
+            this.TableToolbars.Size = new System.Drawing.Size(757, 28);
             this.TableToolbars.TabIndex = 8;
             this.TableToolbars.Resize += new System.EventHandler(this.TableToolbars_Resize);
             // 
