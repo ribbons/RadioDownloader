@@ -2,7 +2,6 @@ Radio Downloader
 ================
 
 [![AppVeyor status](https://ci.appveyor.com/api/projects/status/933pimxj2u2eil9g/branch/master?svg=true)](https://ci.appveyor.com/project/ribbons/radiodownloader/branch/master)
-[![Travis CI status](https://travis-ci.org/ribbons/RadioDownloader.svg?branch=master)](https://travis-ci.org/ribbons/RadioDownloader)
 
 An easy to use Windows application for managing podcast subscriptions and
 downloads.
