@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -324,18 +324,12 @@ namespace PodcastProvider
                             pubDate = zoneFree;
                             break;
                         default:
-                            if (zone.Length >= 4 && (Microsoft.VisualBasic.Information.IsNumeric(zone) || Microsoft.VisualBasic.Information.IsNumeric(zone.Substring(1))))
+                            int value;
+
+                            if (zone.Length >= 4 && int.TryParse(zone, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out value))
                             {
-                                try
-                                {
-                                    int value = int.Parse(zone, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture);
-                                    offset = new TimeSpan(value / 100, value % 100, 0);
-                                    pubDate = zoneFree;
-                                }
-                                catch (FormatException)
-                                {
-                                    // The last part of the date was not a time offset
-                                }
+                                offset = new TimeSpan(value / 100, value % 100, 0);
+                                pubDate = zoneFree;
                             }
 
                             break;

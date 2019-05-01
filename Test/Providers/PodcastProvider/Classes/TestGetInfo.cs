@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 
 namespace PodcastProviderTest
 {
+    using System;
     using Xunit;
 
     /// <summary>
@@ -47,6 +48,7 @@ namespace PodcastProviderTest
             var episode = instance.GetEpisodeInfo(extId, programme, "http://example.com/programme1/episode1.mp3");
             Assert.Equal(episode.Name, "Episode 1");
             Assert.Equal(episode.Description, "Episode 1 description");
+            Assert.Equal(episode.Date, new DateTime(2018, 02, 09, 20, 00, 00, DateTimeKind.Utc));
             Assert.Null(episode.Image);
             Assert.Null(episode.Duration);
         }
