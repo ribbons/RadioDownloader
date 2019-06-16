@@ -19,15 +19,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputName>Radio_Downloader-win64</OutputName>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Signed|x86' ">
-    <OutputName>Radio_Downloader-win32</OutputName>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Signed|x64' ">
-    <OutputName>Radio_Downloader-win64</OutputName>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Radio Downloader.wxs" />
   </ItemGroup>
   <Import Project="$(WixTargetsPath)" />
-  <Import Project="..\build\SignTool.Targets" />
 </Project>

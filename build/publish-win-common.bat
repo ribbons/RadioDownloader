@@ -1,7 +1,7 @@
 @echo off
 
 rem This file is part of Radio Downloader.
-rem Copyright © 2007-2017 by the authors - see the AUTHORS file for details.
+rem Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
 rem
 rem This program is free software: you can redistribute it and/or modify
 rem it under the terms of the GNU General Public License as published by
@@ -34,9 +34,9 @@ setlocal ENABLEDELAYEDEXPANSION
 call "%VS140COMNTOOLS%\VsMSBuildCmd.bat"
 
 rem Build and sign Radio Downloader and the provider
-msbuild /p:Configuration=Signed /p:Platform=%platname% /t:Clean "../Radio Downloader.sln"
+msbuild /p:Configuration=Package /p:Platform=%platname% /t:Clean "../Radio Downloader.sln"
 if ERRORLEVEL 1 goto failed
-msbuild /p:Configuration=Signed /p:Platform=%platname% "../Radio Downloader.sln"
+msbuild /p:Configuration=Package /p:Platform=%platname% "../Radio Downloader.sln"
 if ERRORLEVEL 1 goto failed
 
 goto :EOF
