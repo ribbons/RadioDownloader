@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,10 +100,7 @@ namespace RadioDld
 
         private static void FindNewPluginInst_FindNewViewChange(object view)
         {
-            if (FindNewViewChange != null)
-            {
-                FindNewViewChange(view);
-            }
+            FindNewViewChange?.Invoke(view);
         }
 
         private static void FindNewPluginInst_FoundNew(string progExtId)
@@ -122,10 +119,7 @@ namespace RadioDld
             }
             catch (ProviderException provExp)
             {
-                if (FindNewFailed != null)
-                {
-                    FindNewFailed();
-                }
+                FindNewFailed?.Invoke();
 
                 if (MessageBox.Show("There was an unknown error encountered retrieving information about this programme." + Environment.NewLine + Environment.NewLine + "Would you like to send an error report to NerdoftheHerd.com to help improve the " + provExp.ProviderName + " provider?", Application.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation) == DialogResult.Yes)
                 {
@@ -138,19 +132,13 @@ namespace RadioDld
 
             if (progid == null)
             {
-                if (FindNewFailed != null)
-                {
-                    FindNewFailed();
-                }
+                FindNewFailed?.Invoke();
 
                 MessageBox.Show("There was a temporary problem retrieving information about this programme.  Please try again later.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 
-            if (FoundNew != null)
-            {
-                FoundNew(progid.Value);
-            }
+            FoundNew?.Invoke(progid.Value);
         }
 
         private static void InitEpisodeListThread(int progid)
@@ -181,10 +169,7 @@ namespace RadioDld
                                 return;
                             }
 
-                            if (EpisodeAdded != null)
-                            {
-                                EpisodeAdded(epid.Value);
-                            }
+                            EpisodeAdded?.Invoke(epid.Value);
                         }
                     }
                 }

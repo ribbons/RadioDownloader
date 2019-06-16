@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2014 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -223,10 +223,7 @@ namespace RadioDld.Model
                     sortCache = null;
                 }
 
-                if (Updated != null)
-                {
-                    Updated(progid);
-                }
+                Updated?.Invoke(progid);
             }
         }
 
@@ -255,11 +252,7 @@ namespace RadioDld.Model
                 }
             }
 
-            if (Added != null)
-            {
-                Added(progid);
-            }
-
+            Added?.Invoke(progid);
             RaiseUpdated(progid);
         }
 
@@ -280,11 +273,7 @@ namespace RadioDld.Model
             }
 
             RaiseUpdated(progid);
-
-            if (Removed != null)
-            {
-                Removed(progid);
-            }
+            Removed?.Invoke(progid);
         }
 
         private static void CheckSubscriptions()

@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -163,10 +163,7 @@ namespace RadioDld
                     {
                         // Fire an event to indicate the click has occurred.  Set the column number
                         // to -1 for all clicks, as this information isn't currently required.
-                        if (this.ColumnRightClick != null)
-                        {
-                            this.ColumnRightClick(this, new ColumnClickEventArgs(-1));
-                        }
+                        this.ColumnRightClick?.Invoke(this, new ColumnClickEventArgs(-1));
                     }
 
                     break;

@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -272,9 +272,9 @@ namespace RadioDld
         {
             this.AddDownload(epid);
 
-            if (this.DownloadAdded != null && this.DownloadIsVisible(epid))
+            if (this.DownloadIsVisible(epid))
             {
-                this.DownloadAdded(epid);
+                this.DownloadAdded?.Invoke(epid);
             }
         }
 
@@ -282,17 +282,17 @@ namespace RadioDld
         {
             this.AddDownload(epid);
 
-            if (this.DownloadUpdated != null && this.DownloadIsVisible(epid))
+            if (this.DownloadIsVisible(epid))
             {
-                this.DownloadUpdated(epid);
+                this.DownloadUpdated?.Invoke(epid);
             }
         }
 
         private void Download_Removed(int epid)
         {
-            if (this.DownloadRemoved != null && this.DownloadIsVisible(epid))
+            if (this.DownloadIsVisible(epid))
             {
-                this.DownloadRemoved(epid);
+                this.DownloadRemoved?.Invoke(epid);
             }
 
             lock (this.updateIndexLock)
@@ -309,9 +309,9 @@ namespace RadioDld
 
         private void Download_Progress(int epid, int percent, Provider.ProgressType type)
         {
-            if (this.DownloadProgress != null && this.DownloadIsVisible(epid))
+            if (this.DownloadIsVisible(epid))
             {
-                this.DownloadProgress(epid, percent, type);
+                this.DownloadProgress?.Invoke(epid, percent, type);
             }
         }
 

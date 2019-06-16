@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -284,10 +284,7 @@ namespace RadioDld.Model
                 sortCache = null;
             }
 
-            if (Updated != null)
-            {
-                Updated(epid);
-            }
+            Updated?.Invoke(epid);
         }
 
         public static void SetErrorred(int epid, Provider.ErrorType errorType, object details)
@@ -325,10 +322,7 @@ namespace RadioDld.Model
                 sortCache = null;
             }
 
-            if (Updated != null)
-            {
-                Updated(epid);
-            }
+            Updated?.Invoke(epid);
         }
 
         public static void Reset(int epid)
@@ -366,11 +360,7 @@ namespace RadioDld.Model
                 sortCache = null;
             }
 
-            if (Updated != null)
-            {
-                Updated(epid);
-            }
-
+            Updated?.Invoke(epid);
             DownloadManager.AddDownloads(new int[] { epid });
         }
 
@@ -776,10 +766,7 @@ namespace RadioDld.Model
                     sortCache = null;
                 }
 
-                if (Updated != null)
-                {
-                    Updated(epid);
-                }
+                Updated?.Invoke(epid);
             }
         }
 
@@ -823,12 +810,9 @@ namespace RadioDld.Model
                 }
             }
 
-            if (Added != null)
+            foreach (int epid in added)
             {
-                foreach (int epid in added)
-                {
-                    Added(epid);
-                }
+                Added?.Invoke(epid);
             }
 
             DownloadManager.AddDownloads(added.ToArray());
@@ -850,10 +834,7 @@ namespace RadioDld.Model
                 sortCache = null;
             }
 
-            if (Updated != null)
-            {
-                Updated(epid);
-            }
+            Updated?.Invoke(epid);
         }
 
         private static void RemoveAsync(int epid, bool auto)
@@ -906,16 +887,10 @@ namespace RadioDld.Model
             lock (sortCacheLock)
             {
                 // No need to clear the sort cache, just remove this episodes entry
-                if (sortCache != null)
-                {
-                    sortCache.Remove(epid);
-                }
+                sortCache?.Remove(epid);
             }
 
-            if (Removed != null)
-            {
-                Removed(epid);
-            }
+            Removed?.Invoke(epid);
         }
     }
 }

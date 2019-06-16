@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,11 +78,7 @@ namespace RadioDld
         public void SetView(MainTab tab, View view, object viewData)
         {
             this.StoreView(tab, view, viewData);
-
-            if (this.ViewChanged != null)
-            {
-                this.ViewChanged(view, tab, viewData);
-            }
+            this.ViewChanged?.Invoke(view, tab, viewData);
         }
 
         public void SetView(View view, object viewData)
@@ -106,10 +102,7 @@ namespace RadioDld
                 this.fwdData.Clear();
             }
 
-            if (this.UpdateNavBtnState != null)
-            {
-                this.UpdateNavBtnState(this.backData.Count > 1, false);
-            }
+            this.UpdateNavBtnState?.Invoke(this.backData.Count > 1, false);
         }
 
         public void StoreView(View view, object viewData)
@@ -127,35 +120,19 @@ namespace RadioDld
         public void NavBack()
         {
             this.fwdData.Push(this.backData.Pop());
-
             ViewData curView = this.backData.Peek();
 
-            if (this.UpdateNavBtnState != null)
-            {
-                this.UpdateNavBtnState(this.backData.Count > 1, this.fwdData.Count > 0);
-            }
-
-            if (this.ViewChanged != null)
-            {
-                this.ViewChanged(curView.View, curView.Tab, curView.Data);
-            }
+            this.UpdateNavBtnState?.Invoke(this.backData.Count > 1, this.fwdData.Count > 0);
+            this.ViewChanged?.Invoke(curView.View, curView.Tab, curView.Data);
         }
 
         public void NavFwd()
         {
             this.backData.Push(this.fwdData.Pop());
-
             ViewData curView = this.backData.Peek();
 
-            if (this.UpdateNavBtnState != null)
-            {
-                this.UpdateNavBtnState(this.backData.Count > 1, this.fwdData.Count > 0);
-            }
-
-            if (this.ViewChanged != null)
-            {
-                this.ViewChanged(curView.View, curView.Tab, curView.Data);
-            }
+            this.UpdateNavBtnState?.Invoke(this.backData.Count > 1, this.fwdData.Count > 0);
+            this.ViewChanged?.Invoke(curView.View, curView.Tab, curView.Data);
         }
 
         private struct ViewData

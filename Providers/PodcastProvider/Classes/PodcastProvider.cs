@@ -142,7 +142,7 @@ namespace PodcastProvider
                 descriptionNode = rss.SelectSingleNode("./rss/channel/itunes:summary", namespaceMgr);
             }
 
-            if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
+            if (!string.IsNullOrEmpty(descriptionNode?.InnerText))
             {
                 progInfo.Description = this.TidyUpWhitespace(descriptionNode.InnerText);
             }
@@ -151,7 +151,7 @@ namespace PodcastProvider
                 // Fall back to the standard description tag, but strip the HTML
                 descriptionNode = rss.SelectSingleNode("./rss/channel/description");
 
-                if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
+                if (!string.IsNullOrEmpty(descriptionNode?.InnerText))
                 {
                     progInfo.Description = this.TidyUpWhitespace(HtmlToText.ConvertHtml(descriptionNode.InnerText));
                 }
@@ -232,7 +232,7 @@ namespace PodcastProvider
                 descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
             }
 
-            if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
+            if (!string.IsNullOrEmpty(descriptionNode?.InnerText))
             {
                 episodeInfo.Description = this.TidyUpWhitespace(descriptionNode.InnerText);
             }
@@ -241,7 +241,7 @@ namespace PodcastProvider
                 // Fall back to the standard description tag, but strip the HTML
                 descriptionNode = itemNode.SelectSingleNode("./description");
 
-                if (descriptionNode != null && !string.IsNullOrEmpty(descriptionNode.InnerText))
+                if (!string.IsNullOrEmpty(descriptionNode?.InnerText))
                 {
                     episodeInfo.Description = this.TidyUpWhitespace(HtmlToText.ConvertHtml(descriptionNode.InnerText));
                 }
@@ -443,11 +443,7 @@ namespace PodcastProvider
                     throw this.doDownload.Error;
                 }
 
-                if (this.Progress != null)
-                {
-                    this.Progress(100, ProgressType.Processing);
-                }
-
+                this.Progress?.Invoke(100, ProgressType.Processing);
                 File.Move(downloadFile.FilePath, finalName);
             }
 
@@ -461,18 +457,12 @@ namespace PodcastProvider
 
         internal void RaiseFindNewException(Exception exception)
         {
-            if (this.FindNewException != null)
-            {
-                this.FindNewException(exception, true);
-            }
+            this.FindNewException?.Invoke(exception, true);
         }
 
         internal void RaiseFoundNew(string extId)
         {
-            if (this.FoundNew != null)
-            {
-                this.FoundNew(extId);
-            }
+            this.FoundNew?.Invoke(extId);
         }
 
         internal XmlDocument LoadFeedXml(Uri url)
@@ -500,24 +490,16 @@ namespace PodcastProvider
         {
             string itemId = string.Empty;
             XmlNode itemIdNode = itemNode.SelectSingleNode("./guid");
-
-            if (itemIdNode != null)
-            {
-                itemId = itemIdNode.InnerText;
-            }
+            itemId = itemIdNode?.InnerText;
 
             if (string.IsNullOrEmpty(itemId))
             {
                 itemIdNode = itemNode.SelectSingleNode("./enclosure");
+                XmlAttribute urlAttrib = itemIdNode?.Attributes["url"];
 
-                if (itemIdNode != null)
+                if (urlAttrib != null)
                 {
-                    XmlAttribute urlAttrib = itemIdNode.Attributes["url"];
-
-                    if (urlAttrib != null)
-                    {
-                        itemId = urlAttrib.Value;
-                    }
+                    itemId = urlAttrib.Value;
                 }
             }
 
@@ -644,7 +626,7 @@ namespace PodcastProvider
 
                 var hrefAttr = chapterNode.Attributes["href"];
 
-                if (hrefAttr != null && !string.IsNullOrEmpty(hrefAttr.Value))
+                if (!string.IsNullOrEmpty(hrefAttr?.Value))
                 {
                     chapter.Link = new Uri(hrefAttr.Value);
                 }
@@ -729,10 +711,7 @@ namespace PodcastProvider
                 percent = 99;
             }
 
-            if (this.Progress != null)
-            {
-                this.Progress(percent, ProgressType.Downloading);
-            }
+            this.Progress?.Invoke(percent, ProgressType.Downloading);
         }
 
         /// <summary>
