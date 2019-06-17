@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProductVersion>3.10</ProductVersion>
+    <ProjectGuid>a8b955c4-daf2-40a8-b471-2a7acf543be7</ProjectGuid>
+    <SchemaVersion>2.0</SchemaVersion>
+  </PropertyGroup>
+  <Target Name="Build">
+    <Exec Command="bash -e '$(MSBuildProjectDirectory)/package-linux'" />
+  </Target>
+</Project>

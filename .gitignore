@@ -8,6 +8,7 @@ bin/*/HtmlAgilityPack.dll
 bin/*/xunit.*
 installer/*.msi
 installer/*.wixpdb
+installer/radio-downloader-*.pkg.tar.xz
 obj
 Radio Downloader.sln.cache
 *.csproj.user

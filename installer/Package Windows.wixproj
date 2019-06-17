@@ -12,6 +12,7 @@
     <WixTargetsPath Condition=" '$(WixTargetsPath)' == '' ">$(MSBuildExtensionsPath)\Microsoft\WiX\v3.x\Wix.targets</WixTargetsPath>
     <DefineSolutionProperties>false</DefineSolutionProperties>
     <SuppressIces>ICE61</SuppressIces>
+    <Name>Package Windows</Name>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <OutputName>Radio_Downloader-win32</OutputName>

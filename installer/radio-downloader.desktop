@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Radio Downloader
+Type=Application
+Exec=radio-downloader
+Terminal=false
+Icon=/usr/share/pixmaps/radio-downloader.png
+Categories=AudioVideo;Audio
