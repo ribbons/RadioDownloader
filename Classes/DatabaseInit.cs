@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,12 @@ namespace RadioDld
                         }
                     }
 
+                    // Disable foreign keys so we can check them afterwards instead
+                    using (SQLiteCommand command = new SQLiteCommand("pragma foreign_keys = off", FetchDbConn()))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
                     // Start a transaction so we can roll back a half-completed upgrade on error
                     using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
                     {
@@ -131,6 +137,40 @@ namespace RadioDld
                         }
 
                         transMon.Trans.Commit();
+                    }
+
+                    // Re-enable foreign keys now all upgrades are completed
+                    using (SQLiteCommand command = new SQLiteCommand("pragma foreign_keys = on", FetchDbConn()))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                }
+            }
+
+            // Cleanup data which violates foreign key constraints
+            using (SQLiteCommand command = new SQLiteCommand("pragma foreign_key_check", FetchDbConn()))
+            {
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                {
+                    while (reader.Read())
+                    {
+                        string table = reader.GetString(0);
+                        int rowid = reader.GetInt32(1);
+
+                        if (reader.GetString(2) == "images")
+                        {
+                            using (SQLiteCommand nullCmd = new SQLiteCommand("update " + table + " set image=null where rowid=" + rowid, FetchDbConn()))
+                            {
+                                nullCmd.ExecuteNonQuery();
+                            }
+                        }
+                        else
+                        {
+                            using (SQLiteCommand deleteCmd = new SQLiteCommand("delete from " + table + " where rowid=" + rowid, FetchDbConn()))
+                            {
+                                deleteCmd.ExecuteNonQuery();
+                            }
+                        }
                     }
                 }
             }
@@ -219,14 +259,8 @@ namespace RadioDld
                                 // Fetch a list of common column names for transferring the data
                                 string columnNames = ColNames(specConn, updateConn, specName);
 
-                                // Rename the existing table to table_name_old
-                                using (SQLiteCommand updateCommand = new SQLiteCommand("alter table [" + specName + "] rename to [" + specName + "_old]", updateConn))
-                                {
-                                    updateCommand.ExecuteNonQuery();
-                                }
-
-                                // Create the new table with the correct structure
-                                using (SQLiteCommand updateCommand = new SQLiteCommand(specSql, updateConn))
+                                // Create a new table with the correct structure
+                                using (SQLiteCommand updateCommand = new SQLiteCommand(specSql.Insert("CREATE TABLE ".Length, "new_"), updateConn))
                                 {
                                     updateCommand.ExecuteNonQuery();
                                 }
@@ -234,14 +268,20 @@ namespace RadioDld
                                 // Copy across the data (discarding rows which violate any new constraints)
                                 if (!string.IsNullOrEmpty(columnNames))
                                 {
-                                    using (SQLiteCommand updateCommand = new SQLiteCommand("insert or ignore into [" + specName + "] (" + columnNames + ") select " + columnNames + " from [" + specName + "_old]", updateConn))
+                                    using (SQLiteCommand updateCommand = new SQLiteCommand("insert or ignore into [new_" + specName + "] (" + columnNames + ") select " + columnNames + " from [" + specName + "]", updateConn))
                                     {
                                         updateCommand.ExecuteNonQuery();
                                     }
                                 }
 
                                 // Delete the old table
-                                using (SQLiteCommand updateCommand = new SQLiteCommand("drop table [" + specName + "_old]", updateConn))
+                                using (SQLiteCommand updateCommand = new SQLiteCommand("drop table [" + specName + "]", updateConn))
+                                {
+                                    updateCommand.ExecuteNonQuery();
+                                }
+
+                                // Rename the new table to the correct name
+                                using (SQLiteCommand updateCommand = new SQLiteCommand("alter table [new_" + specName + "] rename to [" + specName + "]", updateConn))
                                 {
                                     updateCommand.ExecuteNonQuery();
                                 }

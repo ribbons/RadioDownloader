@@ -1,11 +1,5 @@
-bin/*/Radio Downloader.*
-bin/*/Radio Downloader Test.*
-bin/*/*Provider.*
-bin/*/*Provider Test.*
-bin/*/TestData/
-bin/*/store.db
-bin/*/HtmlAgilityPack.dll
-bin/*/xunit.*
+bin
+!bin/mono/Microsoft.VisualBasic.dll
 installer/*.msi
 installer/*.wixpdb
 installer/radio-downloader-*.pkg.tar.xz
