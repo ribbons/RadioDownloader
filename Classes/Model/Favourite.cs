@@ -207,7 +207,7 @@ namespace RadioDld.Model
                     }
                     catch (SQLiteException sqliteExp)
                     {
-                        if (sqliteExp.ResultCode == SQLiteErrorCode.Constraint)
+                        if (sqliteExp.ErrorCode == SQLiteErrorCode.Constraint)
                         {
                             // Already added while this was waiting in the threadpool
                             return;

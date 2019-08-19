@@ -80,7 +80,7 @@
                         <File Source="$(var.PlatformBin)\System.Data.SQLite.DLL" />
                     </Component>
                     <Component>
-                        <File Source="$(var.PlatformBin)\SQLite.Interop.dll" />
+                        <File Source="$(var.PlatformBin)\sqlite3.dll" />
                     </Component>
                     <Component>
                         <File Source="$(var.PlatformBin)\store.db" />
@@ -111,7 +111,7 @@
             <ComponentRef Id="Radio_Downloader.exe.config" />
             <ComponentRef Id="Radio_Downloader.pdb" />
             <ComponentRef Id="System.Data.SQLite.DLL" />
-            <ComponentRef Id="SQLite.Interop.dll" />
+            <ComponentRef Id="sqlite3.dll" />
             <ComponentRef Id="store.db" />
             <ComponentRef Id="LICENSE.txt" />
             <ComponentRef Id="AUTHORS.txt" />

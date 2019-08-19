@@ -1,4 +1,4 @@
-bin
+bin/*/*
 !bin/mono/Microsoft.VisualBasic.dll
 installer/*.msi
 installer/*.wixpdb
