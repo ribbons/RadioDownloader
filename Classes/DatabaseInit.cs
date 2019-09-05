@@ -27,6 +27,8 @@ namespace RadioDld
 
     internal class DatabaseInit : Database
     {
+        private const int VacuumMonths = 3;
+
         private enum UpdateType
         {
             None,
@@ -188,7 +190,7 @@ namespace RadioDld
             }
 
             // Vacuum the database every three months
-            if (Settings.LastVacuum.AddMonths(3) < DateTime.Now)
+            if (Settings.LastVacuum.AddMonths(VacuumMonths) < DateTime.Now)
             {
                 using (Status status = new Status())
                 {
@@ -343,14 +345,27 @@ namespace RadioDld
             status.StatusText = "Compacting database.  This may take several minutes...";
 
             // Make SQLite recreate the database to reduce the size on disk and remove fragmentation
-            lock (DbUpdateLock)
+            try
             {
-                using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
+                lock (DbUpdateLock)
                 {
-                    command.ExecuteNonQuery();
+                    using (SQLiteCommand command = new SQLiteCommand("vacuum", FetchDbConn()))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
+                    Settings.LastVacuum = DateTime.Now;
+                }
+            }
+            catch (SQLiteException exp)
+            {
+                if (exp.ErrorCode != SQLiteErrorCode.Full)
+                {
+                    throw;
                 }
 
-                Settings.LastVacuum = DateTime.Now;
+                // Not enough disk space to complete vacuum - try again in a week
+                Settings.LastVacuum = DateTime.Now.AddMonths(-VacuumMonths).AddDays(7);
             }
         }
 
