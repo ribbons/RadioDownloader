@@ -19,7 +19,6 @@
 namespace RadioDld
 {
     using System;
-    using System.Configuration;
     using System.Data.SQLite;
     using System.Drawing;
     using System.IO;
@@ -45,14 +44,7 @@ namespace RadioDld
         {
             if (dbConn == null)
             {
-                string storePath = ConfigurationManager.AppSettings["DatabasePath"];
-
-                if (string.IsNullOrEmpty(storePath) || !File.Exists(storePath))
-                {
-                    storePath = Path.Combine(FileUtils.GetAppDataFolder(), "store.db");
-                }
-
-                dbConn = new SQLiteConnection("Data Source=" + storePath + ";Version=3;New=False");
+                dbConn = new SQLiteConnection("Data Source=" + Path.Combine(FileUtils.GetAppDataFolder(), "store.db") + ";Version=3;New=False");
                 dbConn.Open();
 
                 using (SQLiteCommand command = new SQLiteCommand("pragma foreign_keys = on", FetchDbConn()))

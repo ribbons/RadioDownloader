@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 namespace RadioDld
 {
     using System;
+    using System.Configuration;
     using System.IO;
     using System.Windows.Forms;
 
@@ -57,8 +58,13 @@ namespace RadioDld
         public static string GetAppDataFolder()
         {
             string folderPath = Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Application.CompanyName), Application.ProductName);
-            Directory.CreateDirectory(folderPath);
 
+            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["AppDataDir"]))
+            {
+                folderPath = ConfigurationManager.AppSettings["AppDataDir"];
+            }
+
+            Directory.CreateDirectory(folderPath);
             return folderPath;
         }
     }
