@@ -37,6 +37,7 @@ fpm --input-type dir \
     --description "$description" \
     --chdir .. \
     "bin/mono/Radio Downloader.exe=/usr/share/radio-downloader/" \
+    "bin/mono/Radio Downloader.exe.config=/usr/share/radio-downloader/" \
     "bin/mono/System.Data.SQLite.dll=/usr/share/radio-downloader/" \
     "bin/mono/PodcastProvider.dll=/usr/share/radio-downloader/" \
     "bin/mono/HtmlAgilityPack.dll=/usr/share/radio-downloader/" \
