@@ -3,6 +3,7 @@ bin/*/*
 installer/*.msi
 installer/*.wixpdb
 installer/radio-downloader-*.pkg.tar.xz
+installer/radio-downloader_*.deb
 obj
 Radio Downloader.sln.cache
 *.csproj.user

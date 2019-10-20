@@ -43,6 +43,7 @@ for:
       - packages/xunit.runners.1.9.2/tools/xunit.console.exe "bin/mono/PodcastProvider Test.dll"
     artifacts:
       - path: installer/radio-downloader-*.pkg.tar.xz
+      - path: installer/radio-downloader_*.deb
 
 artifacts:
   - path: installer/Radio_Downloader-win*.msi

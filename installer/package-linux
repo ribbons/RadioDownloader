@@ -21,20 +21,14 @@ cd "$(dirname "$0")"
 version=$(git describe --abbrev=8)
 version="${version//-g/-}"
 
-description="An easy to use application for podcast subscriptions and downloads"
-url="https://nerdoftheherd.com/tools/radiodld/"
-
-chmod +x radio-downloader
-
-fpm --input-type dir \
-    --output-type pacman \
+common=(
     --name radio-downloader \
-    --version "${version//-/_}" \
+    --input-type dir \
     --architecture all \
-    --depends mono --depends sqlite \
     --license GPL3 \
-    --url "$url" \
-    --description "$description" \
+    --url "https://nerdoftheherd.com/tools/radiodld/" \
+    --description \
+        "Easy to use application for podcast subscriptions and downloads" \
     --chdir .. \
     "bin/mono/Radio Downloader.exe=/usr/share/radio-downloader/" \
     "bin/mono/Radio Downloader.exe.config=/usr/share/radio-downloader/" \
@@ -46,3 +40,19 @@ fpm --input-type dir \
     "Resources/icons/Icon.png=/usr/share/pixmaps/radio-downloader.png" \
     "installer/radio-downloader.desktop=/usr/share/applications/" \
     "installer/radio-downloader=/usr/bin/"
+)
+
+chmod +x radio-downloader
+
+fpm --output-type pacman \
+    --version "${version//-/_}" \
+    --depends mono \
+    --depends sqlite \
+    "${common[@]}"
+
+fpm --output-type deb \
+    --name radio-downloader \
+    --version "$version" \
+    --depends libmono-system-windows-forms4.0-cil \
+    --depends libsqlite3-0 \
+    "${common[@]}"
