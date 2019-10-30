@@ -53,6 +53,7 @@ fpm --output-type pacman \
 fpm --output-type deb \
     --name radio-downloader \
     --version "$version" \
+    --depends libmono-system-web4.0-cil \
     --depends libmono-system-windows-forms4.0-cil \
     --depends libsqlite3-0 \
     "${common[@]}"
