@@ -385,6 +385,41 @@ namespace RadioDld
                         command.ExecuteNonQuery();
                     }
 
+                    status.StatusText = "Pruning programme data...";
+
+                    // Remove old programmes which have never had an episode
+                    // downloaded and are not subscriptions or favourites
+                    using (SQLiteCommand command = new SQLiteCommand(
+                        @"delete from programmes where progid in
+                        (
+                            select progid from programmes p
+                            where lastupdate < date('now', '-1 year') and
+                                (
+                                    select count(*) from episodes e
+                                    where e.progid=p.progid and
+                                        (
+                                            autodownload=0 or
+                                            e.date > date('now', '-1 year')
+                                        )
+                                ) = 0 and
+                                (
+                                    select count(*) from episodes e
+                                    inner join downloads d
+                                        on e.progid=p.progid and e.epid=d.epid
+                                ) = 0 and
+                                (
+                                    select count(*) from subscriptions s
+                                    where s.progid=p.progid
+                                ) = 0 and
+                                (
+                                    select count(*) from favourites f
+                                    where f.progid=p.progid
+                                ) = 0
+                        )", FetchDbConn()))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+
                     status.StatusText = "Cleaning up unused images...";
 
                     // Remove images which are now no-longer referenced by a programme or episode

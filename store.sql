@@ -75,7 +75,7 @@ CREATE TABLE programmes
 CREATE TABLE episodes
 (
     epid integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-    progid integer NOT NULL REFERENCES programmes(progid),
+    progid integer NOT NULL REFERENCES programmes(progid) ON DELETE CASCADE,
     extid varchar NOT NULL,
     name varchar NOT NULL,
     description varchar,
@@ -89,7 +89,7 @@ CREATE TABLE episodes
 
 CREATE TABLE episodeext
 (
-    epid integer NOT NULL REFERENCES episodes(epid),
+    epid integer NOT NULL REFERENCES episodes(epid) ON DELETE CASCADE,
     name varchar NOT NULL,
     value varchar NOT NULL,
     PRIMARY KEY (epid, name)
@@ -97,7 +97,7 @@ CREATE TABLE episodeext
 
 CREATE TABLE chapters
 (
-    epid integer NOT NULL REFERENCES episodes(epid),
+    epid integer NOT NULL REFERENCES episodes(epid) ON DELETE CASCADE,
     start integer NOT NULL,
     name varchar NOT NULL,
     link varchar,
