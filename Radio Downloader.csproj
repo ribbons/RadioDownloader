@@ -396,10 +396,10 @@
     <Analyzer Include="packages\StyleCop.Analyzers.1.0.0\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup Condition=" '$(Platform)' != 'AnyCPU' ">
-    <Content Include="packages\SQLite.3.13.0\runtimes\win7-$(PlatformTarget)\native\sqlite3.dll">
-      <Link>%(Filename)%(Extension)</Link>
+    <ContentWithTargetPath Include="packages\SQLite.3.13.0\runtimes\win7-$(PlatformTarget)\native\sqlite3.dll">
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </ContentWithTargetPath>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="build\GitVersion.Targets" />
