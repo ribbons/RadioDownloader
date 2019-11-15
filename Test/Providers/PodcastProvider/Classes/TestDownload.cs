@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,26 @@ namespace PodcastProviderTest
     /// </summary>
     public class TestDownload
     {
+        /// <summary>
+        /// Test for a successful download
+        /// </summary>
+        [Fact]
+        public void Success()
+        {
+            string progExtId = "http://example.com/BasicPodcast.xml";
+            string epExtId = "http://example.com/programme1/episode1.mp3";
+            string tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            var instance = TestCommon.CreateInstance();
+
+            var programme = instance.GetProgrammeInfo(progExtId);
+            var episode = instance.GetEpisodeInfo(progExtId, programme, epExtId);
+            var download = instance.DownloadProgramme(progExtId, epExtId, programme, episode, tempFileName);
+
+            Assert.True(File.Exists(tempFileName + "." + download.Extension));
+            File.Delete(tempFileName + "." + download.Extension);
+        }
+
         /// <summary>
         /// Test retrieval of chapters from Podlove Simple Chapters example
         /// </summary>
