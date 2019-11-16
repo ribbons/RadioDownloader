@@ -38,7 +38,7 @@ namespace PodcastProvider
 
         public bool Complete { get; protected set; }
 
-        public Exception Error { get; private set; }
+        public Exception Error { get; protected set; }
 
         public bool Canceled { get; private set; }
 

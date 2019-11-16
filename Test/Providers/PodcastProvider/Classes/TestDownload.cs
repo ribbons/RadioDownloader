@@ -20,6 +20,7 @@ namespace PodcastProviderTest
 {
     using System;
     using System.IO;
+    using RadioDld.Provider;
     using Xunit;
 
     /// <summary>
@@ -45,6 +46,37 @@ namespace PodcastProviderTest
 
             Assert.True(File.Exists(tempFileName + "." + download.Extension));
             File.Delete(tempFileName + "." + download.Extension);
+        }
+
+        /// <summary>
+        /// Test that DownloadException is thrown with the correct values for download errors
+        /// </summary>
+        [Fact]
+        public void ErrorHandling()
+        {
+            string progExtId = "http://example.com/DownloadErrors.xml";
+            string epExtId = "http://example.com/errors/http504";
+            string tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+
+            var instance = TestCommon.CreateInstance();
+
+            var programme = instance.GetProgrammeInfo(progExtId);
+            var episode = instance.GetEpisodeInfo(progExtId, programme, epExtId);
+
+            var e = Assert.Throws<DownloadException>(() =>
+                instance.DownloadProgramme(progExtId, epExtId, programme, episode, tempFileName));
+
+            Assert.Equal(e.ErrorType, ErrorType.RemoteProblem);
+            Assert.Equal(e.Message, "The remote server returned an error: (504) Gateway Timeout.");
+
+            epExtId = "http://example.com/errors/untrustedCert";
+            episode = instance.GetEpisodeInfo(progExtId, programme, epExtId);
+
+            e = Assert.Throws<DownloadException>(() =>
+                instance.DownloadProgramme(progExtId, epExtId, programme, episode, tempFileName));
+
+            Assert.Equal(e.ErrorType, ErrorType.NetworkProblem);
+            Assert.Equal(e.Message, "The remote certificate is invalid according to the validation procedure.");
         }
 
         /// <summary>

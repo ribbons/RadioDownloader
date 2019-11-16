@@ -422,22 +422,11 @@ namespace PodcastProvider
                     {
                         WebException webExp = (WebException)this.doDownload.Error;
 
-                        if (webExp.Status == WebExceptionStatus.NameResolutionFailure)
-                        {
-                            throw new DownloadException(ErrorType.NetworkProblem, "Unable to resolve " + downloadUrl.Host + " to download this episode from.  Check your internet connection or try again later.");
-                        }
-                        else if (webExp.Response is HttpWebResponse)
-                        {
-                            HttpWebResponse webErrorResponse = (HttpWebResponse)webExp.Response;
-
-                            switch (webErrorResponse.StatusCode)
-                            {
-                                case HttpStatusCode.Forbidden:
-                                    throw new DownloadException(ErrorType.RemoteProblem, downloadUrl.Host + " returned a status 403 (Forbidden) in response to the request for this episode.  You may need to contact the podcast publisher if this problem persists.");
-                                case HttpStatusCode.NotFound:
-                                    throw new DownloadException(ErrorType.NotAvailable, "This episode appears to be no longer available.  You can either try again later, or cancel the download to remove it from the list and clear the error.");
-                            }
-                        }
+                        throw new DownloadException(
+                            webExp.Status == WebExceptionStatus.ProtocolError
+                                ? ErrorType.RemoteProblem
+                                : ErrorType.NetworkProblem,
+                            webExp.GetBaseException().Message);
                     }
 
                     throw this.doDownload.Error;

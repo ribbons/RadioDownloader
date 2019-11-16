@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Download Errors Podcast</title>
+        <link>http://example.com/DownloadErrors.xml</link>
+        <description>Download Errors Podcast description</description>
+
+        <item>
+            <title>Untrusted certificate</title>
+            <description>Untrusted certificate description</description>
+            <pubDate>Fri, 15 Nov 2019 20:00:00 +0000</pubDate>
+            <enclosure url="http://example.com/errors/untrustedCert" length="12345" type="audio/mpeg" />
+        </item>
+        <item>
+            <title>HTTP 504</title>
+            <description>HTTP 504 description</description>
+            <pubDate>Fri, 15 Nov 2019 20:00:00 +0000</pubDate>
+            <enclosure url="http://example.com/errors/http504" length="12345" type="audio/mpeg" />
+        </item>
+    </channel>
+</rss>
