@@ -171,6 +171,7 @@
   <ItemGroup>
     <Compile Include="Classes\AppInstance.cs" />
     <Compile Include="Classes\CachedWebClientBase.cs" />
+    <Compile Include="Classes\CompressedImage.cs" />
     <Compile Include="Classes\DownloadManager.cs" />
     <Compile Include="Classes\Model\Chapter.cs" />
     <Compile Include="Classes\Provider\ChapterInfo.cs" />

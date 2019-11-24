@@ -79,7 +79,7 @@ namespace RadioDld.Model
             ThreadPool.QueueUserWorkItem(delegate { SetAutoDownloadAsync(epids, autoDownload); });
         }
 
-        public static System.Drawing.Bitmap GetImage(int epid)
+        public static CompressedImage GetImage(int epid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn()))
             {

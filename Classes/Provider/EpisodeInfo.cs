@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ namespace RadioDld.Provider
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
 
     /// <summary>
     /// Class containing episode information to be passed to and from providers.
@@ -72,7 +71,7 @@ namespace RadioDld.Provider
         /// <summary>
         /// Gets or sets an image associated with the episode.
         /// </summary>
-        public Bitmap Image { get; set; }
+        public CompressedImage Image { get; set; }
 
         /// <summary>
         /// Gets a collection of name value pairs for the provider to use for storing arbitary data.

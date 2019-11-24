@@ -820,7 +820,7 @@ namespace RadioDld
             this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
         }
 
-        private void SetSideBar(string title, string description, Bitmap picture)
+        private void SetSideBar(string title, string description, CompressedImage picture)
         {
             this.LabelSidebarTitle.Text = title;
             this.TextSidebarDescript.Text = description;
@@ -833,8 +833,8 @@ namespace RadioDld
             {
                 if (picture.Width > this.ImageSidebar.MaximumSize.Width || picture.Height > this.ImageSidebar.MaximumSize.Height)
                 {
-                    int newWidth = 0;
-                    int newHeight = 0;
+                    int newWidth;
+                    int newHeight;
 
                     if (picture.Width > picture.Height)
                     {
@@ -847,19 +847,25 @@ namespace RadioDld
                         newWidth = (int)((newHeight / (float)picture.Height) * picture.Width);
                     }
 
-                    Bitmap origImg = picture;
-                    picture = new Bitmap(newWidth, newHeight);
-                    Graphics graph = null;
+                    var resized = new Bitmap(newWidth, newHeight);
 
-                    graph = Graphics.FromImage(picture);
-                    graph.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    using (Graphics graphics = Graphics.FromImage(resized))
+                    {
+                        graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
 
-                    graph.DrawImage(origImg, 0, 0, newWidth, newHeight);
+                        using (Image original = picture.Image)
+                        {
+                            graphics.DrawImage(original, 0, 0, newWidth, newHeight);
+                        }
+                    }
 
-                    origImg.Dispose();
+                    this.ImageSidebar.Image = resized;
+                }
+                else
+                {
+                    this.ImageSidebar.Image = picture.Image;
                 }
 
-                this.ImageSidebar.Image = picture;
                 this.ImageSidebar.Visible = true;
             }
             else

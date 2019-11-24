@@ -153,7 +153,7 @@ namespace RadioDld.Model
             Updated?.Invoke(progid);
         }
 
-        public static System.Drawing.Bitmap GetImage(int progid)
+        public static CompressedImage GetImage(int progid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
             {

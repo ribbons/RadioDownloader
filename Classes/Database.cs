@@ -20,7 +20,6 @@ namespace RadioDld
 {
     using System;
     using System.Data.SQLite;
-    using System.Drawing;
     using System.IO;
 
     public abstract class Database
@@ -56,7 +55,7 @@ namespace RadioDld
             return dbConn;
         }
 
-        protected internal static Bitmap RetrieveImage(int imgid)
+        protected internal static CompressedImage RetrieveImage(int imgid)
         {
             using (SQLiteCommand command = new SQLiteCommand("select image from images where imgid=@imgid", FetchDbConn()))
             {
@@ -74,33 +73,19 @@ namespace RadioDld
                     byte[] content = new byte[dataLength];
 
                     reader.GetBytes(reader.GetOrdinal("image"), 0, content, 0, dataLength);
-
-                    using (MemoryStream contentStream = new MemoryStream(content))
-                    {
-                        using (Bitmap streamBitmap = new Bitmap(contentStream))
-                        {
-                            return new Bitmap(streamBitmap);
-                        }
-                    }
+                    return new CompressedImage(content, false);
                 }
             }
         }
 
-        protected internal static int? StoreImage(Image image)
+        protected internal static int? StoreImage(CompressedImage image)
         {
             if (image == null)
             {
                 return null;
             }
 
-            // Convert the image into a byte array
-            byte[] imageAsBytes = null;
-
-            using (MemoryStream memstream = new MemoryStream())
-            {
-                image.Save(memstream, System.Drawing.Imaging.ImageFormat.Png);
-                imageAsBytes = memstream.ToArray();
-            }
+            byte[] imageAsBytes = image.GetBytes();
 
             lock (DbUpdateLock)
             {

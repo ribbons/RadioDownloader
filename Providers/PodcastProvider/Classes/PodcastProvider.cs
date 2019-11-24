@@ -517,7 +517,7 @@ namespace PodcastProvider
             return null;
         }
 
-        private Bitmap RSSNodeImage(XmlNode node, XmlNamespaceManager namespaceMgr)
+        private CompressedImage RSSNodeImage(XmlNode node, XmlNamespaceManager namespaceMgr)
         {
             try
             {
@@ -527,14 +527,7 @@ namespace PodcastProvider
                 {
                     Uri imageUrl = new Uri(imageNode.Attributes["href"].Value);
                     byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
-
-                    using (MemoryStream imageStream = new MemoryStream(imageData))
-                    {
-                        using (Bitmap streamBitmap = new Bitmap(imageStream))
-                        {
-                            return new Bitmap(streamBitmap);
-                        }
-                    }
+                    return new CompressedImage(imageData);
                 }
             }
             catch
@@ -550,14 +543,7 @@ namespace PodcastProvider
                 {
                     Uri imageUrl = new Uri(imageUrlNode.InnerText);
                     byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
-
-                    using (MemoryStream imageStream = new MemoryStream(imageData))
-                    {
-                        using (Bitmap streamBitmap = new Bitmap(imageStream))
-                        {
-                            return new Bitmap(streamBitmap);
-                        }
-                    }
+                    return new CompressedImage(imageData);
                 }
             }
             catch
@@ -573,14 +559,7 @@ namespace PodcastProvider
                 {
                     Uri imageUrl = new Uri(imageNode.Attributes["url"].Value);
                     byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
-
-                    using (MemoryStream imageStream = new MemoryStream(imageData))
-                    {
-                        using (Bitmap streamBitmap = new Bitmap(imageStream))
-                        {
-                            return new Bitmap(streamBitmap);
-                        }
-                    }
+                    return new CompressedImage(imageData);
                 }
             }
             catch
@@ -626,14 +605,7 @@ namespace PodcastProvider
                 {
                     Uri imageUrl = new Uri(imageAttr.Value);
                     byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
-
-                    using (MemoryStream imageStream = new MemoryStream(imageData))
-                    {
-                        using (Bitmap streamBitmap = new Bitmap(imageStream))
-                        {
-                            chapter.Image = new Bitmap(streamBitmap);
-                        }
-                    }
+                    chapter.Image = new CompressedImage(imageData);
                 }
 
                 chapters.Add(chapter);

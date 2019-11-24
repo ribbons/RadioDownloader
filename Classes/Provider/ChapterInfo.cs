@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@
 namespace RadioDld.Provider
 {
     using System;
-    using System.Drawing;
 
     /// <summary>
     /// Class representing an episode chapter to be passed to and from providers.
@@ -44,6 +43,6 @@ namespace RadioDld.Provider
         /// <summary>
         /// Gets or sets the image associated with the chapter.
         /// </summary>
-        public Bitmap Image { get; set; }
+        public CompressedImage Image { get; set; }
     }
 }

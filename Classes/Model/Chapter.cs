@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ namespace RadioDld.Model
     using System;
     using System.Collections.Generic;
     using System.Data.SQLite;
-    using System.Drawing;
 
     internal class Chapter : Database
     {
@@ -70,7 +69,7 @@ namespace RadioDld.Model
             }
         }
 
-        public Bitmap Image
+        public CompressedImage Image
         {
             get
             {

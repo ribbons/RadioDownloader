@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ namespace RadioDld
 {
     using System;
     using System.Collections.Generic;
-    using System.Drawing;
     using System.Globalization;
     using System.IO;
     using System.Net;
@@ -250,7 +249,7 @@ namespace RadioDld
                 return;
             }
 
-            Bitmap image = Model.Episode.GetImage(epid);
+            CompressedImage image = Model.Episode.GetImage(epid);
 
             if (image == null)
             {
@@ -275,7 +274,7 @@ namespace RadioDld
 
             try
             {
-                image.Save(context.Response.OutputStream, pngCodec, null);
+                image.Image.Save(context.Response.OutputStream, pngCodec, null);
             }
             catch (HttpListenerException)
             {
@@ -307,7 +306,7 @@ namespace RadioDld
             var download = new Model.Download(epid);
             var chapter = new Model.Chapter(download, start);
 
-            Bitmap image = chapter.Image;
+            CompressedImage image = chapter.Image;
 
             if (image == null)
             {
@@ -332,7 +331,7 @@ namespace RadioDld
 
             try
             {
-                image.Save(context.Response.OutputStream, pngCodec, null);
+                image.Image.Save(context.Response.OutputStream, pngCodec, null);
             }
             catch (HttpListenerException)
             {
