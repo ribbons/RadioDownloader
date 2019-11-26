@@ -249,7 +249,20 @@ namespace RadioDld
                 return;
             }
 
-            CompressedImage image = Model.Episode.GetImage(epid);
+            Model.Episode episode;
+
+            try
+            {
+                episode = new Model.Episode(epid);
+            }
+            catch (DataNotFoundException)
+            {
+                // Episode ID does not exist
+                this.ErrorPage404(context);
+                return;
+            }
+
+            CompressedImage image = episode.Image;
 
             if (image == null)
             {

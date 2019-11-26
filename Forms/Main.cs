@@ -417,7 +417,7 @@ namespace RadioDld
                 infoText += TextUtils.DescDuration(epInfo.Duration) + Environment.NewLine;
                 infoText += "Auto download: " + (epInfo.AutoDownload ? "Yes" : "No");
 
-                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.Date), infoText, Model.Episode.GetImage(epid));
+                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.Date), infoText, epInfo.Image);
             }
             else
             {
@@ -516,7 +516,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(info.Name, info.Description, Model.Programme.GetImage(progid));
+            this.SetSideBar(info.Name, info.Description, info.Image);
         }
 
         private void ListFavourites_ItemActivate(object sender, EventArgs e)
@@ -596,7 +596,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(info.Name, info.Description, Model.Programme.GetImage(progid));
+            this.SetSideBar(info.Name, info.Description, info.Image);
         }
 
         private void ListSubscribed_ItemActivate(object sender, EventArgs e)
@@ -817,7 +817,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, Model.Episode.GetImage(epid));
+            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, info.Image);
         }
 
         private void SetSideBar(string title, string description, CompressedImage picture)
@@ -1044,7 +1044,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(progInfo.Name, progInfo.Description, Model.Programme.GetImage(progid));
+            this.SetSideBar(progInfo.Name, progInfo.Description, progInfo.Image);
         }
 
         private ListViewItem EpisodeListItem(Model.Episode info, ListViewItem item)

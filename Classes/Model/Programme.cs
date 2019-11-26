@@ -25,9 +25,11 @@ namespace RadioDld.Model
 
     internal class Programme : Database
     {
-        internal const string Columns = "programmes.progid, programmes.extid, programmes.name, programmes.description, singleepisode, pluginid, latestdownload";
+        internal const string Columns = "programmes.progid, programmes.extid, programmes.name, programmes.description, singleepisode, pluginid, latestdownload, programmes.image";
 
         private string extId = null;
+        private int? imgid = null;
+
         private Provider.ShowMoreProgInfoEventHandler moreInfoHandler = null;
 
         public Programme()
@@ -78,6 +80,35 @@ namespace RadioDld.Model
             get
             {
                 return this.moreInfoHandler != null;
+            }
+        }
+
+        public CompressedImage Image
+        {
+            get
+            {
+                if (this.imgid != null)
+                {
+                    return RetrieveImage(this.imgid.Value);
+                }
+
+                // Find the id of the latest episode's image
+                using (var command = new SQLiteCommand(
+                    "select image from episodes where progid=@progid and image not null order by date desc limit 1",
+                    FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@progid", this.Progid));
+
+                    using (var reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                    {
+                        if (reader.Read())
+                        {
+                            return RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
+                        }
+                    }
+                }
+
+                return null;
             }
         }
 
@@ -151,40 +182,6 @@ namespace RadioDld.Model
             }
 
             Updated?.Invoke(progid);
-        }
-
-        public static CompressedImage GetImage(int progid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
-            {
-                command.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    if (reader.Read())
-                    {
-                        return RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
-                    }
-                    else
-                    {
-                        // Find the id of the latest episode's image
-                        using (SQLiteCommand latestCmd = new SQLiteCommand("select image from episodes where progid=@progid and image not null order by date desc limit 1", FetchDbConn()))
-                        {
-                            latestCmd.Parameters.Add(new SQLiteParameter("@progid", progid));
-
-                            using (SQLiteMonDataReader latestRdr = new SQLiteMonDataReader(latestCmd.ExecuteReader()))
-                            {
-                                if (latestRdr.Read())
-                                {
-                                    return RetrieveImage(latestRdr.GetInt32(latestRdr.GetOrdinal("image")));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            return null;
         }
 
         public static List<string> GetAvailableEpisodes(int progid, bool fetchAll)
@@ -368,6 +365,7 @@ namespace RadioDld.Model
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int latestdownloadOrdinal = reader.GetOrdinal("latestdownload");
+            int imageOrdinal = reader.GetOrdinal("image");
 
             this.Progid = reader.GetInt32(reader.GetOrdinal("progid"));
             this.extId = reader.GetString(reader.GetOrdinal("extid"));
@@ -396,6 +394,11 @@ namespace RadioDld.Model
             if (!reader.IsDBNull(latestdownloadOrdinal))
             {
                 this.LatestDownload = reader.GetDateTime(latestdownloadOrdinal);
+            }
+
+            if (!reader.IsDBNull(imageOrdinal))
+            {
+                this.imgid = reader.GetInt32(imageOrdinal);
             }
         }
 

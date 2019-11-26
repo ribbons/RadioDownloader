@@ -27,7 +27,9 @@ namespace RadioDld.Model
 
     internal class Episode : Database
     {
-        internal const string Columns = "episodes.epid, progid, name, description, date, duration, autodownload";
+        internal const string Columns = "episodes.epid, progid, name, description, date, duration, autodownload, image";
+
+        private int? imgid = null;
 
         public Episode()
         {
@@ -74,45 +76,37 @@ namespace RadioDld.Model
 
         public bool AutoDownload { get; set; }
 
-        public static void SetAutoDownload(int[] epids, bool autoDownload)
+        public CompressedImage Image
         {
-            ThreadPool.QueueUserWorkItem(delegate { SetAutoDownloadAsync(epids, autoDownload); });
-        }
-
-        public static CompressedImage GetImage(int epid)
-        {
-            using (SQLiteCommand command = new SQLiteCommand("select image, progid from episodes where epid=@epid", FetchDbConn()))
+            get
             {
-                command.Parameters.Add(new SQLiteParameter("@epid", epid));
-
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                if (this.imgid != null)
                 {
-                    if (reader.Read())
+                    return RetrieveImage(this.imgid.Value);
+                }
+
+                using (var command = new SQLiteCommand(
+                    "select image from programmes where progid=@progid and image not null",
+                    FetchDbConn()))
+                {
+                    command.Parameters.Add(new SQLiteParameter("@progid", this.Progid));
+
+                    using (var reader = new SQLiteMonDataReader(command.ExecuteReader()))
                     {
-                        int imageOrdinal = reader.GetOrdinal("image");
-
-                        if (!reader.IsDBNull(imageOrdinal))
+                        if (reader.Read())
                         {
-                            return RetrieveImage(reader.GetInt32(imageOrdinal));
-                        }
-
-                        using (SQLiteCommand progCmd = new SQLiteCommand("select image from programmes where progid=@progid and image not null", FetchDbConn()))
-                        {
-                            progCmd.Parameters.Add(new SQLiteParameter("@progid", reader.GetInt32(reader.GetOrdinal("progid"))));
-
-                            using (SQLiteMonDataReader progReader = new SQLiteMonDataReader(progCmd.ExecuteReader()))
-                            {
-                                if (progReader.Read())
-                                {
-                                    return RetrieveImage(progReader.GetInt32(progReader.GetOrdinal("image")));
-                                }
-                            }
+                            return RetrieveImage(reader.GetInt32(reader.GetOrdinal("image")));
                         }
                     }
                 }
-            }
 
-            return null;
+                return null;
+            }
+        }
+
+        public static void SetAutoDownload(int[] epids, bool autoDownload)
+        {
+            ThreadPool.QueueUserWorkItem(delegate { SetAutoDownloadAsync(epids, autoDownload); });
         }
 
         public static int? FetchInfo(int progid, string episodeExtId)
@@ -235,6 +229,7 @@ namespace RadioDld.Model
         {
             int descriptionOrdinal = reader.GetOrdinal("description");
             int durationOrdinal = reader.GetOrdinal("duration");
+            int imageOrdinal = reader.GetOrdinal("image");
 
             this.Epid = reader.GetInt32(reader.GetOrdinal("epid"));
             this.Progid = reader.GetInt32(reader.GetOrdinal("progid"));
@@ -252,6 +247,11 @@ namespace RadioDld.Model
             }
 
             this.AutoDownload = reader.GetInt32(reader.GetOrdinal("autodownload")) == 1;
+
+            if (!reader.IsDBNull(imageOrdinal))
+            {
+                this.imgid = reader.GetInt32(imageOrdinal);
+            }
         }
 
         private static int? UpdateInfo(int progid, string episodeExtId)
