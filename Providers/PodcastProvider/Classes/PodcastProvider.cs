@@ -382,6 +382,12 @@ namespace PodcastProvider
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
             XmlNode itemNode = this.ItemNodeFromEpisodeID(rss, episodeExtId);
+
+            if (itemNode == null)
+            {
+                throw new DownloadException(ErrorType.RemoveFromList);
+            }
+
             XmlNode enclosureNode = itemNode.SelectSingleNode("./enclosure");
             XmlAttribute urlAttrib = enclosureNode.Attributes["url"];
             Uri downloadUrl = new Uri(urlAttrib.Value);

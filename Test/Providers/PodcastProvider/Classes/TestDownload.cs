@@ -49,6 +49,29 @@ namespace PodcastProviderTest
         }
 
         /// <summary>
+        /// Test that DownloadException is thrown with an ErrorType of RemoveFromList
+        /// when an episode is no-longer listed in the podcast feed
+        /// </summary>
+        [Fact]
+        public void NoLongerInFeed()
+        {
+            string progExtId = "http://example.com/BasicPodcast.xml";
+            string epExtId = "http://example.com/programme1/episode1.mp3";
+            string notExistId = "http://example.com/programme1/episode0.mp3";
+
+            string tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            var instance = TestCommon.CreateInstance();
+
+            var programme = instance.GetProgrammeInfo(progExtId);
+            var episode = instance.GetEpisodeInfo(progExtId, programme, epExtId);
+
+            var e = Assert.Throws<DownloadException>(() =>
+                instance.DownloadProgramme(progExtId, notExistId, programme, episode, tempFileName));
+
+            Assert.Equal(e.ErrorType, ErrorType.RemoveFromList);
+        }
+
+        /// <summary>
         /// Test that DownloadException is thrown with the correct values for download errors
         /// </summary>
         [Fact]
