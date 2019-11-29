@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
+                   xmlns:media="http://search.yahoo.com/mrss">
+    <channel>
+        <title>Images Podcast</title>
+        <link>http://example.com/Images2.xml</link>
+        <description>Images Podcast 2 description</description>
+        <itunes:image href="http://example.com/errors/http404" />
+        <image>
+            <url>http://example.com/Image.png</url>
+            <title>Images Podcast</title>
+            <link>http://example.com/Images2.xml</link>
+        </image>
+
+        <item>
+            <title>Episode 1: HTTP 404</title>
+            <description>Episode 1 description</description>
+            <pubDate>Thu, 28 Nov 2019 20:00:00 +0000</pubDate>
+            <guid isPermaLink="false">skip-image-http-404</guid>
+            <enclosure url="http://example.com/programme1/episode1.mp3" length="12345" type="audio/mpeg" />
+            <itunes:image href="http://example.com/errors/http404" />
+            <media:thumbnail url="http://example.com/Image.png" />
+        </item>
+
+        <item>
+            <title>Episode 2: Invalid URI</title>
+            <description>Episode 2 description</description>
+            <pubDate>Fri, 29 Nov 2019 19:00:00 +0000</pubDate>
+            <guid isPermaLink="false">skip-image-invalid-uri</guid>
+            <enclosure url="http://example.com/programme1/episode2.mp3" length="12345" type="audio/mpeg" />
+            <itunes:image href="HELLO!" />
+            <media:thumbnail url="http://example.com/Image.png" />
+        </item>
+
+        <item>
+            <title>Episode 3: Invalid image</title>
+            <description>Episode 3 description</description>
+            <pubDate>Fri, 29 Nov 2019 20:00:00 +0000</pubDate>
+            <guid isPermaLink="false">skip-image-invalid</guid>
+            <enclosure url="http://example.com/programme1/episode3.mp3" length="12345" type="audio/mpeg" />
+            <itunes:image href="http://example.com/InvalidImage" />
+            <media:thumbnail url="http://example.com/Image.png" />
+        </item>
+    </channel>
+</rss>

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,11 +20,21 @@ namespace PodcastProviderTest
 {
     using System;
     using System.IO;
+    using System.Net;
 
     internal class CachedWebClientTest : RadioDld.CachedWebClientBase
     {
         public override byte[] DownloadData(Uri uri, int fetchIntervalHrs, string userAgent)
         {
+            if (uri.AbsolutePath == "/errors/http404")
+            {
+                throw new WebException(
+                    "The remote server returned an error: (404) Not Found.",
+                    null,
+                    WebExceptionStatus.ProtocolError,
+                    null);
+            }
+
             string file = uri.AbsolutePath.Substring(1);
             string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Path.Combine("TestData", file));
             return File.ReadAllBytes(path);

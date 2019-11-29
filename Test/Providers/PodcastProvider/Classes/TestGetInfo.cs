@@ -54,6 +54,50 @@ namespace PodcastProviderTest
         }
 
         /// <summary>
+        /// Test retrieval of programme (e.g. podcast-level) images.
+        /// Ensure that itunes:image is used in preference to image/url, but
+        /// fallback to image/url happens if an error occurs.
+        /// </summary>
+        [Fact]
+        public void ProgrammeImages()
+        {
+            var instance = TestCommon.CreateInstance();
+
+            var programme = instance.GetProgrammeInfo("http://example.com/Images1.xml");
+            Assert.Equal(16, programme.Image.Height);
+
+            programme = instance.GetProgrammeInfo("http://example.com/Images2.xml");
+            Assert.Equal(16, programme.Image.Height);
+        }
+
+        /// <summary>
+        /// Test retrieval of episode images.
+        /// Ensure that itunes:image is used in preference to media:thumbnail, but
+        /// fallback to media:thumbnail happens if various types of error occur.
+        /// </summary>
+        [Fact]
+        public void EpisodeImages()
+        {
+            var instance = TestCommon.CreateInstance();
+
+            string extId = "http://example.com/Images1.xml";
+            var programme = instance.GetProgrammeInfo(extId);
+            var episode = instance.GetEpisodeInfo(extId, programme, "http://example.com/programme1/episode1.mp3");
+            Assert.Equal(16, episode.Image.Height);
+
+            extId = "http://example.com/Images2.xml";
+            programme = instance.GetProgrammeInfo(extId);
+            episode = instance.GetEpisodeInfo(extId, programme, "skip-image-http-404");
+            Assert.Equal(16, episode.Image.Height);
+
+            episode = instance.GetEpisodeInfo(extId, programme, "skip-image-invalid-uri");
+            Assert.Equal(16, episode.Image.Height);
+
+            episode = instance.GetEpisodeInfo(extId, programme, "skip-image-invalid");
+            Assert.Equal(16, episode.Image.Height);
+        }
+
+        /// <summary>
         /// Test that items with invalid data are filtered from available episodes
         /// </summary>
         [Fact]

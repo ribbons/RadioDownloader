@@ -134,13 +134,8 @@ namespace PodcastProvider
             ProgrammeInfo progInfo = new ProgrammeInfo();
             progInfo.Name = titleNode.InnerText;
 
-            XmlNode descriptionNode = null;
-
             // If the channel has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
-            if (namespaceMgr.HasNamespace("itunes"))
-            {
-                descriptionNode = rss.SelectSingleNode("./rss/channel/itunes:summary", namespaceMgr);
-            }
+            var descriptionNode = rss.SelectSingleNode("./rss/channel/itunes:summary", namespaceMgr);
 
             if (!string.IsNullOrEmpty(descriptionNode?.InnerText))
             {
@@ -157,7 +152,12 @@ namespace PodcastProvider
                 }
             }
 
-            progInfo.Image = this.RSSNodeImage(rss.SelectSingleNode("./rss/channel"), namespaceMgr);
+            progInfo.Image = this.FetchImage(rss, "./rss/channel/itunes:image/@href", namespaceMgr);
+
+            if (progInfo.Image == null)
+            {
+                progInfo.Image = this.FetchImage(rss, "./rss/channel/image/url/text()", namespaceMgr);
+            }
 
             return progInfo;
         }
@@ -224,13 +224,8 @@ namespace PodcastProvider
             EpisodeInfo episodeInfo = new EpisodeInfo();
             episodeInfo.Name = itemNode.SelectSingleNode("./title").InnerText;
 
-            XmlNode descriptionNode = null;
-
             // If the item has an itunes:summary tag use this for the description (as it shouldn't contain HTML)
-            if (namespaceMgr.HasNamespace("itunes"))
-            {
-                descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
-            }
+            var descriptionNode = itemNode.SelectSingleNode("./itunes:summary", namespaceMgr);
 
             if (!string.IsNullOrEmpty(descriptionNode?.InnerText))
             {
@@ -373,7 +368,12 @@ namespace PodcastProvider
                 episodeInfo.Date = null;
             }
 
-            episodeInfo.Image = this.RSSNodeImage(itemNode, namespaceMgr);
+            episodeInfo.Image = this.FetchImage(itemNode, "./itunes:image/@href", namespaceMgr);
+
+            if (episodeInfo.Image == null)
+            {
+                episodeInfo.Image = this.FetchImage(itemNode, "./media:thumbnail/@url", namespaceMgr);
+            }
 
             return episodeInfo;
         }
@@ -523,57 +523,37 @@ namespace PodcastProvider
             return null;
         }
 
-        private CompressedImage RSSNodeImage(XmlNode node, XmlNamespaceManager namespaceMgr)
+        private CompressedImage FetchImage(XmlNode parent, string xpath, XmlNamespaceManager namespaceMgr)
         {
-            try
-            {
-                XmlNode imageNode = node.SelectSingleNode("itunes:image", namespaceMgr);
+            var urlNode = parent.SelectSingleNode(xpath, namespaceMgr);
 
-                if (imageNode != null)
-                {
-                    Uri imageUrl = new Uri(imageNode.Attributes["href"].Value);
-                    byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
-                    return new CompressedImage(imageData);
-                }
-            }
-            catch
+            if (urlNode == null)
             {
-                // Ignore errors and try the next option instead
+                return null;
             }
+
+            byte[] imageData;
 
             try
             {
-                XmlNode imageUrlNode = node.SelectSingleNode("image/url");
-
-                if (imageUrlNode != null)
-                {
-                    Uri imageUrl = new Uri(imageUrlNode.InnerText);
-                    byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
-                    return new CompressedImage(imageData);
-                }
+                imageData = this.CachedWebClient.DownloadData(
+                    new Uri(urlNode.Value),
+                    CacheHTTPHours,
+                    UserAgent);
             }
-            catch
+            catch (Exception e) when (e is UriFormatException || e is WebException)
             {
-                // Ignore errors and try the next option instead
+                return null;
             }
 
             try
             {
-                XmlNode imageNode = node.SelectSingleNode("media:thumbnail", namespaceMgr);
-
-                if (imageNode != null)
-                {
-                    Uri imageUrl = new Uri(imageNode.Attributes["url"].Value);
-                    byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
-                    return new CompressedImage(imageData);
-                }
+                return new CompressedImage(imageData);
             }
-            catch
+            catch (ArgumentException)
             {
-                // Ignore errors
+                return null;
             }
-
-            return null;
         }
 
         private void EpisodeChapters(Collection<ChapterInfo> chapters, XmlNode itemNode, XmlNamespaceManager namespaceMgr)
@@ -605,15 +585,7 @@ namespace PodcastProvider
                     chapter.Link = new Uri(hrefAttr.Value);
                 }
 
-                var imageAttr = chapterNode.Attributes["image"];
-
-                if (imageAttr != null)
-                {
-                    Uri imageUrl = new Uri(imageAttr.Value);
-                    byte[] imageData = this.CachedWebClient.DownloadData(imageUrl, CacheHTTPHours, UserAgent);
-                    chapter.Image = new CompressedImage(imageData);
-                }
-
+                chapter.Image = this.FetchImage(chapterNode, "./@image", namespaceMgr);
                 chapters.Add(chapter);
             }
         }
@@ -656,14 +628,8 @@ namespace PodcastProvider
         {
             XmlNamespaceManager manager = new XmlNamespaceManager(document.NameTable);
 
-            foreach (XmlAttribute attrib in document.SelectSingleNode("/*").Attributes)
-            {
-                if (attrib.Prefix == "xmlns")
-                {
-                    manager.AddNamespace(attrib.LocalName, attrib.Value);
-                }
-            }
-
+            manager.AddNamespace("itunes", "http://www.itunes.com/dtds/podcast-1.0.dtd");
+            manager.AddNamespace("media", "http://search.yahoo.com/mrss");
             manager.AddNamespace("psc", "http://podlove.org/simple-chapters");
 
             return manager;

@@ -148,7 +148,7 @@ namespace PodcastProviderTest
         [Fact]
         public void ChapterImage()
         {
-            string progExtId = "http://example.com/ChapterImage.xml";
+            string progExtId = "http://example.com/Images1.xml";
             string epExtId = "http://example.com/programme1/episode1.mp3";
             string tempFileName = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
 
