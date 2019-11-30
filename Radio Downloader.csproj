@@ -403,7 +403,7 @@
     </ContentWithTargetPath>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <Import Project="build\GitVersion.Targets" />
+  <Import Project="GitVersion.Targets" />
   <!-- Generate store.db from store.sql, but only when required -->
   <PropertyGroup>
     <CompileDependsOn>
