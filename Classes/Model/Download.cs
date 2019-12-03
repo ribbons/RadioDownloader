@@ -74,12 +74,13 @@ namespace RadioDld.Model
 
         internal enum DownloadCols
         {
-            EpisodeName = 0,
+            SmartName = 0,
             EpisodeDate = 1,
             Status = 2,
             Progress = 3,
             Duration = 4,
-            ProgrammeName = 5
+            ProgrammeName = 5,
+            EpisodeName = 6
         }
 
         internal enum DownloadStatus
@@ -699,6 +700,11 @@ namespace RadioDld.Model
                             break;
                         case DownloadCols.ProgrammeName:
                             orderBy = "programmes.name" + (sortAsc ? string.Empty : " desc");
+                            break;
+                        case DownloadCols.SmartName:
+                            // Smart name isn't a database column, so sort
+                            // by programme name then episode name
+                            orderBy = "programmes.name" + (sortAsc ? string.Empty : " desc") + ", episodes.name" + (sortAsc ? string.Empty : " desc");
                             break;
                         default:
                             throw new InvalidDataException("Invalid column: " + sortBy.ToString());

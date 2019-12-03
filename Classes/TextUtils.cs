@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,19 +31,21 @@ namespace RadioDld
         private const string MatchMonth = @"(?:2\d|1\d|0?\d)";
         private const string MatchMonthText = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
         private const string MatchYear = @"(?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d]))";
-        private const string MatchWS = @"(?: ?)";
+        private const string MatchDelimOrSpace = @" *[:,.-]? *";
 
         // ## Date format: d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
-        private const string MatchFormat1 = @MatchDay + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchYear + MatchWS;
+        private const string MatchFormat1 = @MatchDay + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchYear;
 
         // ## Date format: yyyy('yy)(yy)|m(mm)(mmm)|d(dd)(st|nd|rd|th)
-        private const string MatchFormat2 = @"(" + MatchYear + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchWS + ")";
+        private const string MatchFormat2 = @"(" + MatchYear + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchDay + ")";
 
         // ## Date format: mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
-        private const string MatchFormat3 = @"(" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchDelim + MatchYear + MatchWS;
+        private const string MatchFormat3 = @"(" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchDelim + MatchYear;
 
-        private static Regex matchStripDate = new Regex("(" + MatchFormat1 + "|" + MatchFormat2 + "|" + MatchFormat3 + ")", RegexOptions.IgnoreCase);
+        private static Regex matchStripDate = new Regex("(" + MatchFormat1 + "|" + MatchFormat2 + "|" + MatchFormat3 + ")" + MatchDelimOrSpace, RegexOptions.IgnoreCase);
         private static Regex removeDaySuffix = new Regex(MatchDaySuffix, RegexOptions.IgnoreCase);
+        private static Regex matchSpacesDelimsStart = new Regex("^" + MatchDelimOrSpace);
+        private static Regex matchSpacesDelimsEnd = new Regex(MatchDelimOrSpace + "$");
 
         private static int similarDateDayRange = 6;
 
@@ -58,7 +60,7 @@ namespace RadioDld
         {
             if (matchStripDate.IsMatch(name))
             {
-                string dateStringFound = matchStripDate.Match(name).ToString();
+                string dateStringFound = matchStripDate.Match(name).Groups[1].Value;
 
                 // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
                 dateStringFound = dateStringFound.Replace("'", string.Empty);
@@ -79,17 +81,47 @@ namespace RadioDld
                     "MM dd yy", "MM dd yyyy", "MMM d yy", "MMM d yyyy", "MMM dd yy", "MMM dd yyyy",
                 };
 
-                if (DateTime.TryParseExact(dateStringFound.Trim(), formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateFound))
+                if (DateTime.TryParseExact(dateStringFound, formats, CultureInfo.InvariantCulture, DateTimeStyles.None, out dateFound))
                 {
                     // Check if date is within the +/- 'similardateday' range of 'date'
                     if (dateFound >= stripDate.AddDays(-similarDateDayRange) && dateFound <= stripDate.AddDays(similarDateDayRange))
                     {
-                       name = matchStripDate.Replace(name, string.Empty).ToString().Trim();
+                        name = matchStripDate.Replace(name, string.Empty);
+                        name = matchSpacesDelimsEnd.Replace(name, string.Empty);
                     }
                 }
             }
 
             return name;
+        }
+
+        /// <summary>
+        /// Build a combined Programme and Episode name in the form Programme Name: Episode Name
+        /// The episode date is removed from the episode name if present
+        /// </summary>
+        /// <param name="programmeName">Name of the programme which the episode is part of</param>
+        /// <param name="episodeName">Name of the episode itself</param>
+        /// <param name="stripDate">Date value to be removed from the episode name if present</param>
+        /// <returns>Normalised, combined programme and episode name</returns>
+        public static string EpisodeSmartName(string programmeName, string episodeName, DateTime stripDate)
+        {
+            episodeName = StripDateFromName(episodeName, stripDate);
+
+            // Remove programme name if present at start of episode name
+            if (episodeName.StartsWith(programmeName, StringComparison.CurrentCulture))
+            {
+                episodeName = episodeName.Remove(0, programmeName.Length);
+                episodeName = matchSpacesDelimsStart.Replace(episodeName, string.Empty);
+            }
+
+            if (string.IsNullOrEmpty(episodeName))
+            {
+                return programmeName;
+            }
+            else
+            {
+                return programmeName + ": " + episodeName;
+            }
         }
 
         public static string DescDuration(int duration)

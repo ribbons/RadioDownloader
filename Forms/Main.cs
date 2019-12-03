@@ -223,8 +223,9 @@ namespace RadioDld
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Duration, "Duration");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.EpisodeName, "Episode Name");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.Progress, "Progress");
-            this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
             this.downloadColNames.Add((int)Model.Download.DownloadCols.ProgrammeName, "Programme Name");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.SmartName, "Name");
+            this.downloadColNames.Add((int)Model.Download.DownloadCols.Status, "Status");
 
             FindNew.EpisodeAdded += this.ProgData_EpisodeAdded;
             FindNew.FindNewViewChange += this.ProgData_FindNewViewChange;
@@ -406,6 +407,7 @@ namespace RadioDld
             {
                 int epid = Convert.ToInt32(this.ListEpisodes.SelectedItems[0].Name, CultureInfo.InvariantCulture);
                 Model.Episode epInfo = new Model.Episode(epid);
+                Model.Programme progInfo = new Model.Programme(epInfo.Progid);
                 string infoText = string.Empty;
 
                 if (epInfo.Description != null)
@@ -417,7 +419,7 @@ namespace RadioDld
                 infoText += TextUtils.DescDuration(epInfo.Duration) + Environment.NewLine;
                 infoText += "Auto download: " + (epInfo.AutoDownload ? "Yes" : "No");
 
-                this.SetSideBar(TextUtils.StripDateFromName(epInfo.Name, epInfo.Date), infoText, epInfo.Image);
+                this.SetSideBar(TextUtils.EpisodeSmartName(progInfo.Name, epInfo.Name, epInfo.Date), infoText, epInfo.Image);
             }
             else
             {
@@ -743,6 +745,7 @@ namespace RadioDld
         private void ShowDownloadInfo(int epid)
         {
             Model.Download info = new Model.Download(epid);
+            Model.Programme progInfo = new Model.Programme(info.Progid);
 
             string infoText = string.Empty;
 
@@ -767,7 +770,6 @@ namespace RadioDld
 
                     buttons.Add(this.ButtonDelete);
                     infoText += Environment.NewLine + "Play count: " + info.PlayCount.ToString(CultureInfo.CurrentCulture);
-
                     break;
                 case Model.Download.DownloadStatus.Errored:
                     string errorName = string.Empty;
@@ -817,7 +819,7 @@ namespace RadioDld
             }
 
             this.SetToolbarButtons(buttons.ToArray());
-            this.SetSideBar(TextUtils.StripDateFromName(info.Name, info.Date), infoText, info.Image);
+            this.SetSideBar(TextUtils.EpisodeSmartName(progInfo.Name, info.Name, info.Date), infoText, info.Image);
         }
 
         private void SetSideBar(string title, string description, CompressedImage picture)
@@ -1057,7 +1059,7 @@ namespace RadioDld
             }
 
             item.Text = info.Date.ToShortDateString();
-            item.SubItems[1].Text = TextUtils.StripDateFromName(info.Name, info.Date);
+            item.SubItems[1].Text = info.Name;
             item.ImageKey = info.AutoDownload ? "episode_auto" : "episode_noauto";
 
             return item;
@@ -1347,12 +1349,14 @@ namespace RadioDld
                 }
             }
 
+            Model.Programme progInfo = new Model.Programme(info.Progid);
+
             for (int column = 0; column <= this.downloadColOrder.Count - 1; column++)
             {
                 switch (this.downloadColOrder[column])
                 {
                     case Model.Download.DownloadCols.EpisodeName:
-                        item.SubItems[column].Text = TextUtils.StripDateFromName(info.Name, info.Date);
+                        item.SubItems[column].Text = info.Name;
                         break;
                     case Model.Download.DownloadCols.EpisodeDate:
                         item.SubItems[column].Text = info.Date.ToShortDateString();
@@ -1400,8 +1404,10 @@ namespace RadioDld
                         item.SubItems[column].Text = durationText;
                         break;
                     case Model.Download.DownloadCols.ProgrammeName:
-                        Model.Programme progInfo = new Model.Programme(info.Progid);
                         item.SubItems[column].Text = progInfo.Name;
+                        break;
+                    case Model.Download.DownloadCols.SmartName:
+                        item.SubItems[column].Text = TextUtils.EpisodeSmartName(progInfo.Name, info.Name, info.Date);
                         break;
                     default:
                         throw new InvalidDataException("Unknown column type of " + this.downloadColOrder[column].ToString());
@@ -2421,7 +2427,7 @@ namespace RadioDld
             this.ListDownloads.Clear();
             this.ListDownloads.HideAllProgress();
 
-            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.4";
+            const string DefaultColSizes = "0,2.49|1,0.81|2,1.28|3,1.04|4,0.6|5,1.4|6,2.49";
 
             if (string.IsNullOrEmpty(Settings.DownloadColSizes))
             {

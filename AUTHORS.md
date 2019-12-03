@@ -21,3 +21,4 @@ Optional path to the database in .config
 ### Neil Blanchard
 Programme Name column in downloads list
 Revised date stripping from episode titles
+Original implementation of 'Smart Name' column

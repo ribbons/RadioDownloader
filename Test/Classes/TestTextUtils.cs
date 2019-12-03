@@ -73,10 +73,10 @@ namespace RadioDldTest
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13th 09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13th '09", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13th 2009", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13 09", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13 '09", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Test Feb 13 2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test:Feb 13th 2009", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test. Feb 13 09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test, Feb 13 '09", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Test - Feb 13 2009", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("13 Feb 09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13 Feb '09 Test", date));
@@ -92,22 +92,22 @@ namespace RadioDldTest
             Assert.Equal("Test", TextUtils.StripDateFromName("13th February '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("13th February 2009 Test", date));
 
-            Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th 09 Test", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th '09 Test", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th 2009 Test", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13 09 Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th 09, Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th '09: Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13th 2009 - Test", date));
+            Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13 09.Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13 '09 Test", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Feb 13 2009 Test", date));
 
-            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13.2.09 Test", date));
-            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13.2.2009 Test", date));
-            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13.02.09 Test", date));
-            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13.02.2009 Test", date));
+            Assert.Equal("Test: Test", TextUtils.StripDateFromName("Test: 13.2.09: Test", date));
+            Assert.Equal("Test, Test", TextUtils.StripDateFromName("Test, 13.2.2009, Test", date));
+            Assert.Equal("Test - Test", TextUtils.StripDateFromName("Test - 13.02.09 - Test", date));
+            Assert.Equal("Test, Test", TextUtils.StripDateFromName("Test, 13.02.2009, Test", date));
 
-            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13-2-09 Test", date));
-            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13-2-2009 Test", date));
-            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13-02-09 Test", date));
-            Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13-02-2009 Test", date));
+            Assert.Equal("Test, Test", TextUtils.StripDateFromName("Test, 13-2-09: Test", date));
+            Assert.Equal("Test - Test", TextUtils.StripDateFromName("Test - 13-2-2009. Test", date));
+            Assert.Equal("Test. Test", TextUtils.StripDateFromName("Test. 13-02-09, Test", date));
+            Assert.Equal("Test: Test", TextUtils.StripDateFromName("Test: 13-02-2009 - Test", date));
 
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13/2/09 Test", date));
             Assert.Equal("Test Test", TextUtils.StripDateFromName("Test 13/2/2009 Test", date));
@@ -392,6 +392,63 @@ namespace RadioDldTest
             Assert.Equal("Test 24/02/2009", TextUtils.StripDateFromName("Test 24/02/2009", date));
             Assert.Equal("22/02/2009 Test", TextUtils.StripDateFromName("22/02/2009 Test", date));
             Assert.Equal("Test 22/02/2009 Test", TextUtils.StripDateFromName("Test 22/02/2009 Test", date));
+        }
+
+        /// <summary>
+        /// Test that the EpisodeSmartName function correctly normalises episode names
+        /// </summary>
+        [Fact]
+        public void EpisodeSmartName()
+        {
+            DateTime date = new DateTime(2017, 12, 05);
+
+            Assert.Equal(
+                "Programme 1: Episode 1",
+                TextUtils.EpisodeSmartName("Programme 1", "Episode 1", date));
+
+            Assert.Equal(
+                "Programme 2: Episode 1",
+                TextUtils.EpisodeSmartName("Programme 2", "Programme 2: Episode 1", date));
+
+            Assert.Equal(
+                "Programme 3: Episode 1",
+                TextUtils.EpisodeSmartName("Programme 3", "Programme 3 - Episode 1 - 05/12/2017", date));
+
+            Assert.Equal(
+                "Programme 4: Episode 1",
+                TextUtils.EpisodeSmartName("Programme 4", "Episode 1: 05/12/2017", date));
+
+            Assert.Equal(
+                "Programme 5",
+                TextUtils.EpisodeSmartName("Programme 5", "05/12/2017", date));
+
+            Assert.Equal(
+                "Programme 6",
+                TextUtils.EpisodeSmartName("Programme 6", "Programme 6", date));
+
+            Assert.Equal(
+                "Programme 7",
+                TextUtils.EpisodeSmartName("Programme 7", "Programme 7. 05/12/2017", date));
+
+            Assert.Equal(
+                "Programme 8",
+                TextUtils.EpisodeSmartName("Programme 8", "Programme 8, 05/12/2017", date));
+
+            Assert.Equal(
+                "Programme - 9: Episode - 1",
+                TextUtils.EpisodeSmartName("Programme - 9", "Episode - 1", date));
+
+            Assert.Equal(
+                "Programme [10]: Episode (2)",
+                TextUtils.EpisodeSmartName("Programme [10]", "Programme [10]: Episode (2)", date));
+
+            Assert.Equal(
+                "Programme 11: Episode 1",
+                TextUtils.EpisodeSmartName("Programme 11", "Programme 11: 05/12/2017: Episode 1", date));
+
+            Assert.Equal(
+                "Programme 12: Episode 1",
+                TextUtils.EpisodeSmartName("Programme 12", "05/12/2017: Programme 12, Episode 1", date));
         }
     }
 }
