@@ -24,43 +24,41 @@ namespace RadioDld
 
     public static class TextUtils
     {
-        // Common Groups
-        private const string MatchDelim = @"(?:\.|\-|\/| )";
-        private const string MatchDay = @"(?:3[01]|2\d|1\d|0?\d)(?:st|nd|rd|th)?";
-        private const string MatchDaySuffix = "(?<=[0-9])(?:st |nd |rd |th )";
-        private const string MatchMonth = @"(?:2\d|1\d|0?\d)";
-        private const string MatchMonthText = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
-        private const string MatchYear = @"(?:(?:\d{4})|(?:\d{2})(?![\\d])|(?:\')(?:\d{2})(?![\\d]))";
-        private const string MatchDelimOrSpace = @" *[:,.-]? *";
+        private const string DateDelimPattern = @"[./ -]";
+        private const string DayPattern = @"(?:3[01]|2\d|1\d|0?\d)(?:st|nd|rd|th)?";
+        private const string MonthNumPattern = @"(?:1[012]|0?\d)";
+        private const string MonthTextPattern = @"(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:t(?:ember)?)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)";
+        private const string YearPattern = @"(?:\d{4}|'?\d{2}(?![\\d]))";
+        private const string DelimOrSpacePattern = @" *[:,.-]? *";
 
-        // ## Date format: d(dd)(st | nd | rd | th) | m(mm)(mmm) | yyyy('yy)(yy)
-        private const string MatchFormat1 = @MatchDay + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchYear;
+        private static Regex matchDate = new Regex(
+            @"(" +
+                DayPattern + DateDelimPattern + "(?:" + MonthNumPattern + "|" + MonthTextPattern + ")" + DateDelimPattern + YearPattern +
+                "|" +
+                YearPattern + DateDelimPattern + "(?:" + MonthNumPattern + "|" + MonthTextPattern + ")" + DateDelimPattern + DayPattern +
+                "|" +
+                "(?:" + MonthTextPattern + ")" + DateDelimPattern + DayPattern + DateDelimPattern + YearPattern +
+            ")" + DelimOrSpacePattern,
+            RegexOptions.IgnoreCase);
 
-        // ## Date format: yyyy('yy)(yy)|m(mm)(mmm)|d(dd)(st|nd|rd|th)
-        private const string MatchFormat2 = @"(" + MatchYear + MatchDelim + "(" + MatchMonth + "|" + MatchMonthText + ")" + MatchDelim + MatchDay + ")";
-
-        // ## Date format: mmm|d(dd)(st|nd|rd|th)|yyyy('yy)(yy)
-        private const string MatchFormat3 = @"(" + MatchMonthText + ")" + MatchDelim + MatchDay + MatchDelim + MatchYear;
-
-        private static Regex matchStripDate = new Regex("(" + MatchFormat1 + "|" + MatchFormat2 + "|" + MatchFormat3 + ")" + MatchDelimOrSpace, RegexOptions.IgnoreCase);
-        private static Regex removeDaySuffix = new Regex(MatchDaySuffix, RegexOptions.IgnoreCase);
-        private static Regex matchSpacesDelimsStart = new Regex("^" + MatchDelimOrSpace);
-        private static Regex matchSpacesDelimsEnd = new Regex(MatchDelimOrSpace + "$");
+        private static Regex removeDaySuffix = new Regex("(?<=[0-9])(?:st |nd |rd |th )", RegexOptions.IgnoreCase);
+        private static Regex matchSpacesDelimsStart = new Regex("^" + DelimOrSpacePattern);
+        private static Regex matchSpacesDelimsEnd = new Regex(DelimOrSpacePattern + "$");
 
         private static int similarDateDayRange = 6;
 
         /// <summary>
-        /// Use regex to remove a number of different date formats from episode titles.
+        /// Remove a number of different date formats from episode titles.
         /// Will only remove dates within a set range (similarDateDayRange) eitherside of the programme date.
         /// </summary>
         /// <param name="name">Episode Name to be checked.</param>
-        /// <param name="stripDate">Date value to be striped from the Episode Name.</param>
-        /// <returns>Episode name with date content removed</returns>
+        /// <param name="stripDate">Date value to be stripped from the Episode Name.</param>
+        /// <returns>Episode name with date removed</returns>
         public static string StripDateFromName(string name, DateTime stripDate)
         {
-            if (matchStripDate.IsMatch(name))
+            if (matchDate.IsMatch(name))
             {
-                string dateStringFound = matchStripDate.Match(name).Groups[1].Value;
+                string dateStringFound = matchDate.Match(name).Groups[1].Value;
 
                 // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
                 dateStringFound = dateStringFound.Replace("'", string.Empty);
@@ -86,7 +84,7 @@ namespace RadioDld
                     // Check if date is within the +/- 'similardateday' range of 'date'
                     if (dateFound >= stripDate.AddDays(-similarDateDayRange) && dateFound <= stripDate.AddDays(similarDateDayRange))
                     {
-                        name = matchStripDate.Replace(name, string.Empty);
+                        name = matchDate.Replace(name, string.Empty);
                         name = matchSpacesDelimsEnd.Replace(name, string.Empty);
                     }
                 }
