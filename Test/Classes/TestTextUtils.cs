@@ -453,6 +453,10 @@ namespace RadioDldTest
             Assert.Equal(
                 "Programme 13",
                 TextUtils.EpisodeSmartName("Programme 13", "Programme 13 05/12/2017", date));
+
+            Assert.Equal(
+                "The Programme 14: Episode 1",
+                TextUtils.EpisodeSmartName("The Programme 14", "Programme 14: Episode 1", date));
         }
     }
 }

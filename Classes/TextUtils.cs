@@ -113,11 +113,22 @@ namespace RadioDld
         public static string EpisodeSmartName(string programmeName, string episodeName, DateTime stripDate)
         {
             episodeName = StripDateFromName(episodeName, stripDate);
+            int remove = 0;
 
             // Remove programme name if present at start of episode name
             if (episodeName.StartsWith(programmeName, StringComparison.CurrentCulture))
             {
-                episodeName = episodeName.Remove(0, programmeName.Length);
+                remove = programmeName.Length;
+            }
+            else if (programmeName.StartsWith("The ", StringComparison.CurrentCulture) &&
+                     episodeName.StartsWith(programmeName.Substring(4), StringComparison.CurrentCulture))
+            {
+                remove = programmeName.Length - 4;
+            }
+
+            if (remove > 0)
+            {
+                episodeName = episodeName.Remove(0, remove);
                 episodeName = matchSpacesDelimsStart.Replace(episodeName, string.Empty);
             }
 
