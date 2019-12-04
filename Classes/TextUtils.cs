@@ -56,9 +56,12 @@ namespace RadioDld
         /// <returns>Episode name with date removed</returns>
         public static string StripDateFromName(string name, DateTime stripDate)
         {
-            if (matchDate.IsMatch(name))
+            int startAt = 0;
+            Match match;
+
+            while ((match = matchDate.Match(name, startAt)).Success)
             {
-                string dateStringFound = matchDate.Match(name).Groups[1].Value;
+                string dateStringFound = match.Groups[1].Value;
 
                 // Strip trouble characters eg ' and check for 'sept' and remove 't' also remove (st | nd | rd | th) and keep numeric
                 dateStringFound = dateStringFound.Replace("'", string.Empty);
@@ -84,10 +87,16 @@ namespace RadioDld
                     // Check if date is within the +/- 'similardateday' range of 'date'
                     if (dateFound >= stripDate.AddDays(-similarDateDayRange) && dateFound <= stripDate.AddDays(similarDateDayRange))
                     {
-                        name = matchDate.Replace(name, string.Empty);
-                        name = matchSpacesDelimsEnd.Replace(name, string.Empty);
+                        name = name.Remove(match.Index, match.Length);
+                        return matchSpacesDelimsEnd.Replace(name, string.Empty);
                     }
+
+                    return name;
                 }
+
+                // Move start position along by the smallest possible
+                // distance between matches (one digit and a separator char)
+                startAt += 2;
             }
 
             return name;

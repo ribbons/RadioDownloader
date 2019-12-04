@@ -172,10 +172,10 @@ namespace RadioDldTest
             // test dates with leading zeros
             date = new DateTime(2009, 02, 03);
 
-            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3.2.09", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3.2.2009", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3.02.09", date));
-            Assert.Equal("Test", TextUtils.StripDateFromName("Test 3.02.2009", date));
+            Assert.Equal("Test 1", TextUtils.StripDateFromName("Test 1 3.2.09", date));
+            Assert.Equal("Test 2", TextUtils.StripDateFromName("Test 2 3.2.2009", date));
+            Assert.Equal("Test 3", TextUtils.StripDateFromName("Test 3 3.02.09", date));
+            Assert.Equal("Test 4", TextUtils.StripDateFromName("Test 4 3.02.2009", date));
 
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3-2-09", date));
             Assert.Equal("Test", TextUtils.StripDateFromName("Test 3-2-2009", date));
@@ -449,6 +449,10 @@ namespace RadioDldTest
             Assert.Equal(
                 "Programme 12: Episode 1",
                 TextUtils.EpisodeSmartName("Programme 12", "05/12/2017: Programme 12, Episode 1", date));
+
+            Assert.Equal(
+                "Programme 13",
+                TextUtils.EpisodeSmartName("Programme 13", "Programme 13 05/12/2017", date));
         }
     }
 }
