@@ -142,6 +142,11 @@ namespace RadioDld
             }
         }
 
+        /// <summary>
+        /// Convert duration value into a human readable string.
+        /// </summary>
+        /// <param name="duration">The duration value in seconds.</param>
+        /// <returns>A human readable string with the number of hours and/or minutes, rounded down to the nearest minute.</returns>
         public static string DescDuration(int duration)
         {
             string readable = string.Empty;
