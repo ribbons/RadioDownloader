@@ -1,7 +1,7 @@
 before_build:
   - cmd: appveyor-retry nuget restore
   - sh: nuget restore
-  - sh: gem install fpm
+  - sh: gem install fpm --no-document
   - sh: sudo apt-get update
   - sh: sudo apt-get -y install bsdtar
 
