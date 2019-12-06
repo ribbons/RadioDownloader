@@ -1,4 +1,8 @@
-Please only report one bug or make one enhancement request per issue - this makes it easier to track individual changes.
+---
+labels: bug
+---
+
+Please only report one bug per issue - this makes it easier to track individual changes.
 
 If Radio Downloader gives you the option to report an error, please send it and then include the error report number in this issue.
 
