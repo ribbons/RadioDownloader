@@ -1,4 +1,6 @@
 ---
+name: Enhancement Request
+about: Suggest an improvement to Radio Downloader
 labels: enhancement
 ---
 

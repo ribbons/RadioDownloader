@@ -1,4 +1,6 @@
 ---
+name: Bug Report
+about: Report a problem with Radio Downloader
 labels: bug
 ---
 
