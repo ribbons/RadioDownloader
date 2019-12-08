@@ -3,8 +3,7 @@ Radio Downloader
 
 [![AppVeyor status](https://ci.appveyor.com/api/projects/status/933pimxj2u2eil9g/branch/master?svg=true)](https://ci.appveyor.com/project/ribbons/radiodownloader/branch/master)
 
-An easy to use Windows application for managing podcast subscriptions and
-downloads.
+An easy to use application for managing podcast subscriptions and downloads.
 
 Radio Downloader also features a plugin framework that potentially allows it to
 provide podcast-like downloads of audio content from other providers who do not
