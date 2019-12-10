@@ -55,6 +55,7 @@ artifacts:
     name: msi64
 
 deploy:
+  tag: $(APPVEYOR_REPO_TAG_NAME)
   release: Radio Downloader $(APPVEYOR_REPO_TAG_NAME)
   description: 'This release adds the following new features:'
   provider: GitHub
