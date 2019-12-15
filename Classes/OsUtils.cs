@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -183,28 +183,25 @@ namespace RadioDld
 
         internal static void ApplyRunOnStartup()
         {
-            RegistryKey runKey;
-
             try
             {
-                runKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+                var runKey = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+
+                if (Settings.RunOnStartup)
+                {
+                    runKey.SetValue(Application.ProductName, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
+                }
+                else
+                {
+                    if (runKey.GetValue(Application.ProductName) != null)
+                    {
+                        runKey.DeleteValue(Application.ProductName);
+                    }
+                }
             }
             catch (UnauthorizedAccessException)
             {
                 // Access denied by non-standard ACL or antivirus
-                return;
-            }
-
-            if (Settings.RunOnStartup)
-            {
-                runKey.SetValue(Application.ProductName, "\"" + Application.ExecutablePath + "\" /hidemainwindow");
-            }
-            else
-            {
-                if (runKey.GetValue(Application.ProductName) != null)
-                {
-                    runKey.DeleteValue(Application.ProductName);
-                }
             }
         }
 
