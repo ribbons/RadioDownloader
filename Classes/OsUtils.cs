@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -251,6 +251,28 @@ namespace RadioDld
 
                 return (ulong)args[3];
             }
+        }
+
+        /// <summary>
+        /// Open the specified file with the default application for that type of file.
+        /// This is needed as Mono tries to run any files marked as executable which is a
+        /// problem when using an SMB mount where all files are marked as executable.
+        /// </summary>
+        /// <param name="filePath">The path of the file to open</param>
+        internal static void OpenFileWithDefaultApplication(string filePath)
+        {
+            if (Windows())
+            {
+                Process.Start(filePath);
+                return;
+            }
+
+            var info = new ProcessStartInfo();
+            info.UseShellExecute = false;
+            info.FileName = "xdg-open";
+            info.Arguments = "\"" + filePath + "\"";
+
+            Process.Start(info);
         }
     }
 }
