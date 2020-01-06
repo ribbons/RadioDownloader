@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ namespace RadioDld
     using System.Globalization;
     using System.Text.RegularExpressions;
 
-    public static class TextUtils
+    internal static class TextUtils
     {
         private const string DateDelimPattern = @"[./ -]";
         private const string DayPattern = @"(?:3[01]|2\d|1\d|0?\d)(?:st|nd|rd|th)?";
