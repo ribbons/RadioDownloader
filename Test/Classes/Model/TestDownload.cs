@@ -20,6 +20,7 @@ namespace RadioDldTest.Model
 {
     using System;
     using System.Globalization;
+    using System.IO;
 
     using RadioDld.Model;
     using Xunit;
@@ -45,6 +46,55 @@ namespace RadioDldTest.Model
             Assert.Equal(
                 episode.Date.ToString("PN EN yyyy yy MM MMM MMMM dd HH mm", CultureInfo.CurrentCulture),
                 Download.CreateSaveFileName("%progname% %epname% %longyear% %year% %month% %shortmonthname% %monthname% %day% %hour% %minute%", prog, episode));
+        }
+
+        /// <summary>
+        /// Test that CreateSaveFileName removes problematic characters
+        /// </summary>
+        [Fact]
+        public void CreateSaveFileNameCharacters()
+        {
+            var prog = new Programme();
+            prog.Name = ":\"<PN>/\x0\n";
+
+            var episode = new Episode();
+            episode.Name = "|EN\\\a?*";
+
+            Assert.Equal(
+                "PN EN",
+                Download.CreateSaveFileName("%progname% %epname%", prog, episode));
+        }
+
+        /// <summary>
+        /// Test that FindFreeSaveFileName creates subfolders
+        /// </summary>
+        [Fact]
+        public void FindFreeSaveFileNameSubfolders()
+        {
+            string tempBase = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempBase);
+
+            var prog = new Programme();
+            prog.Name = "PN1";
+
+            var episode = new Episode();
+            episode.Name = "EN";
+
+            Assert.Equal(
+                Path.Combine(tempBase, Path.Combine("PN1", "EN")),
+                Download.FindFreeSaveFileName(@"%progname%\%epname%", prog, episode, tempBase));
+
+            Assert.True(Directory.Exists(Path.Combine(tempBase, "PN1")));
+
+            prog.Name = "PN2";
+
+            Assert.Equal(
+                Path.Combine(tempBase, Path.Combine("PN2", "EN")),
+                Download.FindFreeSaveFileName(@"%progname%/%epname%", prog, episode, tempBase));
+
+            Assert.True(Directory.Exists(Path.Combine(tempBase, "PN2")));
+
+            Directory.Delete(tempBase, true);
         }
     }
 }

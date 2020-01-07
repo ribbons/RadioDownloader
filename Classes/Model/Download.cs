@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -469,14 +469,15 @@ namespace RadioDld.Model
                 return string.Empty;
             }
 
-            string fileName = formatString;
+            // Normalise slashes to main directory separator for platform
+            string fileName = Regex.Replace(formatString, @"[\\/]", Path.DirectorySeparatorChar.ToString());
 
             // Convert %title% -> %epname% for backwards compatability
             fileName = fileName.Replace("%title%", "%epname%");
 
             // Make variable substitutions
-            fileName = fileName.Replace("%progname%", progInfo.Name.Replace(Path.DirectorySeparatorChar, ' '));
-            fileName = fileName.Replace("%epname%", epInfo.Name.Replace(Path.DirectorySeparatorChar, ' '));
+            fileName = fileName.Replace("%progname%", Regex.Replace(progInfo.Name, @"[\\/]", " "));
+            fileName = fileName.Replace("%epname%", Regex.Replace(epInfo.Name, @"[\\/]", " "));
             fileName = fileName.Replace("%hour%", epInfo.Date.ToString("HH", CultureInfo.CurrentCulture));
             fileName = fileName.Replace("%minute%", epInfo.Date.ToString("mm", CultureInfo.CurrentCulture));
             fileName = fileName.Replace("%day%", epInfo.Date.ToString("dd", CultureInfo.CurrentCulture));
@@ -486,18 +487,10 @@ namespace RadioDld.Model
             fileName = fileName.Replace("%year%", epInfo.Date.ToString("yy", CultureInfo.CurrentCulture));
             fileName = fileName.Replace("%longyear%", epInfo.Date.ToString("yyyy", CultureInfo.CurrentCulture));
 
-            // Replace invalid file name characters with spaces (except for directory separators
-            // as this then allows the flexibility of storing the downloads in subdirectories)
-            foreach (char removeChar in Path.GetInvalidFileNameChars())
-            {
-                if (removeChar != Path.DirectorySeparatorChar)
-                {
-                    fileName = fileName.Replace(removeChar, ' ');
-                }
-            }
-
-            // Replace runs of spaces with a single space
-            fileName = Regex.Replace(fileName, " {2,}", " ");
+            // Replace problematic chars and runs of spaces with a single space
+            // Although most of these are permitted in Linux filenames, remove
+            // them anyway to prevent interoperability issues.
+            fileName = Regex.Replace(fileName, "[\x00-\x1f\"<>|:*? ]+", " ");
 
             return fileName.Trim();
         }
