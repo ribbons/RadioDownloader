@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2017 by the authors - see the AUTHORS file for details.
+ * Copyright © 2017-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ using System;
 using System.Reflection;
 using System.Resources;
 using System.Runtime.InteropServices;
-using System.Security;
 
 [assembly: AssemblyTitle("Radio Downloader Test")]
 [assembly: AssemblyDescription("Unit tests for Radio Downloader.")]
@@ -31,4 +30,3 @@ using System.Security;
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguage("en-GB")]
-[assembly: SecurityTransparent]

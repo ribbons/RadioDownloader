@@ -2,7 +2,7 @@
 
 <!--
     This file is part of Radio Downloader.
-    Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
+    Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -43,7 +43,12 @@
         <Property Id="ARPNOMODIFY" Value="1" />
         <Property Id="ARPPRODUCTICON" Value="RadioDownloader.exe" />
 
-        <Condition Message="[ProductName] requires the .NET Framework 2.0 or higher.">MsiNetAssemblySupport &gt;= "2.0.50727"</Condition>
+        <PropertyRef Id="NETFRAMEWORK45" />
+
+        <Condition Message="[ProductName] requires the .NET Framework 4.5.2 or higher.">
+            <![CDATA[Installed OR NETFRAMEWORK45>="#379893"]]>
+        </Condition>
+
         <Condition Message="This version of [ProductName] is already installed.  To remove it, right-click on the installer and choose 'Uninstall'.">NOT ((Installed AND NOT (REINSTALL OR REMOVE)))</Condition>
 
         <?if $(sys.BUILDARCH) = "x86" ?>

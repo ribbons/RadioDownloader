@@ -157,10 +157,14 @@
     <Rule Id="CA2138" Action="Warning" />
     <Rule Id="CA2139" Action="Warning" />
     <Rule Id="CA2140" Action="Warning" />
+    <Rule Id="CA2141" Action="Warning" />
+    <Rule Id="CA2142" Action="Warning" />
+    <Rule Id="CA2143" Action="Warning" />
     <Rule Id="CA2144" Action="Warning" />
     <Rule Id="CA2145" Action="Warning" />
     <Rule Id="CA2146" Action="Warning" />
     <Rule Id="CA2147" Action="Warning" />
+    <Rule Id="CA2149" Action="Warning" />
     <Rule Id="CA2151" Action="Warning" />
     <Rule Id="CA2200" Action="Warning" />
     <Rule Id="CA2201" Action="Warning" />

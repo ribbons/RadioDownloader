@@ -40,8 +40,8 @@ for:
     build_script:
       - msbuild "Radio Downloader.sln"
     test_script:
-      - packages/xunit.runners.1.9.2/tools/xunit.console.exe "bin/mono/Radio Downloader Test.dll"
-      - packages/xunit.runners.1.9.2/tools/xunit.console.exe "bin/mono/PodcastProvider Test.dll"
+      - packages/xunit.runner.console.2.4.1/tools/net452/xunit.console.exe "bin/mono/Radio Downloader Test.dll"
+      - packages/xunit.runner.console.2.4.1/tools/net452/xunit.console.exe "bin/mono/PodcastProvider Test.dll"
     artifacts:
       - path: installer/radio-downloader-*.pkg.tar.xz
         name: pkg

@@ -21,7 +21,6 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 
 [assembly: AssemblyTitle("Podcast Plugin")]
 [assembly: AssemblyDescription("Plugin to support downloading podcasts within Radio Downloader.")]
@@ -32,6 +31,5 @@ using System.Security;
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguage("en-GB")]
-[assembly: SecurityTransparent]
 
 [assembly: InternalsVisibleTo("PodcastProvider Test")]

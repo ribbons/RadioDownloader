@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2012 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ namespace RadioDld
 {
     using System;
     using System.Runtime.InteropServices;
-    using System.Security.Permissions;
     using System.Windows.Forms;
     using System.Windows.Forms.VisualStyles;
 
@@ -42,7 +41,6 @@ namespace RadioDld
             this.ExtendFrameIntoClientArea();
         }
 
-        [SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.UnmanagedCode)]
         protected override void WndProc(ref Message m)
         {
             switch (m.Msg)

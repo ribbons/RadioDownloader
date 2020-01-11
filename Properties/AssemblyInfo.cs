@@ -21,7 +21,6 @@ using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Security;
 
 [assembly: AssemblyTitle("Radio Downloader")]
 [assembly: AssemblyDescription("Utility to automatically download radio programmes made available online, using a plugin framework for provider specific implementation.")]
@@ -33,6 +32,5 @@ using System.Security;
 [assembly: CLSCompliant(true)]
 [assembly: ComVisible(false)]
 [assembly: NeutralResourcesLanguage("en-GB")]
-[assembly: SecurityTransparent]
 
 [assembly: InternalsVisibleTo("Radio Downloader Test")]
