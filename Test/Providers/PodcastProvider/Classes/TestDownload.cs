@@ -20,6 +20,7 @@ namespace PodcastProviderTest
 {
     using System;
     using System.IO;
+
     using RadioDld.Provider;
     using Xunit;
 

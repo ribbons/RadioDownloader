@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ namespace PodcastProviderTest
 {
     using System;
     using System.IO;
+
     using RadioDld;
 
     internal sealed class TempFileTest : TempFileBase, IDisposable

@@ -20,6 +20,7 @@ namespace PodcastProvider
 {
     using System;
     using System.Net;
+
     using Microsoft.Win32;
 
     internal class DownloadWrapper

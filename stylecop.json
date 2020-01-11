@@ -8,6 +8,9 @@
     },
     "layoutRules": {
       "newlineAtEndOfFile": "require"
+    },
+    "orderingRules": {
+      "blankLinesBetweenUsingGroups": "require"
     }
   }
 }

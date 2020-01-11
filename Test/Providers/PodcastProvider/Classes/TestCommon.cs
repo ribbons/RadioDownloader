@@ -19,6 +19,7 @@
 namespace PodcastProviderTest
 {
     using System;
+
     using PodcastProvider;
 
     internal static class TestCommon
