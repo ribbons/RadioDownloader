@@ -19,7 +19,7 @@ Develop
 
 You'll need the following before you can start developing:
 
-* [Microsoft Visual Studio Community 2015](https://www.visualstudio.com/products/visual-studio-community-vs)
+* [Microsoft Visual Studio Community 2017](https://visualstudio.microsoft.com/vs/community/)
 
 These items are optional:
 
