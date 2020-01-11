@@ -102,14 +102,12 @@ namespace RadioDld
             if (this.image == null)
             {
                 using (var stream = new MemoryStream(this.imageData))
+                using (var streamBitmap = new Bitmap(stream))
                 {
-                    using (var streamBitmap = new Bitmap(stream))
-                    {
-                        // Creating a copy of the bitmap allows us to dispose of the
-                        // MemoryStream immediately instead of it needing to be kept
-                        // open until the bitmap is no-longer required
-                        this.image = new Bitmap(streamBitmap);
-                    }
+                    // Creating a copy of the bitmap allows us to dispose of the
+                    // MemoryStream immediately instead of it needing to be kept
+                    // open until the bitmap is no-longer required
+                    this.image = new Bitmap(streamBitmap);
                 }
             }
 

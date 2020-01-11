@@ -74,17 +74,15 @@ namespace RadioDldTest
             var compressed = new CompressedImage(File.ReadAllBytes(path));
 
             using (var fileBitmap = new Bitmap(path))
+            using (Bitmap fromCompressed = (Bitmap)compressed.Image)
             {
-                using (Bitmap fromCompressed = (Bitmap)compressed.Image)
+                for (int column = 0; column < fileBitmap.Width; column++)
                 {
-                    for (int column = 0; column < fileBitmap.Width; column++)
+                    for (int row = 0; row < fileBitmap.Height; row++)
                     {
-                        for (int row = 0; row < fileBitmap.Height; row++)
-                        {
-                            Assert.Equal(
-                                fileBitmap.GetPixel(column, row),
-                                fromCompressed.GetPixel(column, row));
-                        }
+                        Assert.Equal(
+                            fileBitmap.GetPixel(column, row),
+                            fromCompressed.GetPixel(column, row));
                     }
                 }
             }

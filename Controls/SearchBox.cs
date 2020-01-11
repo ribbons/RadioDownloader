@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2016 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -156,25 +156,19 @@ namespace RadioDld
 
                 // Paint a 'classic textbox' border for the control
                 using (Pen controlDark = new Pen(SystemColors.ControlDark))
+                using (Pen controlDarkDark = new Pen(SystemColors.ControlDarkDark))
+                using (Pen controlLightLight = new Pen(SystemColors.ControlLightLight))
+                using (Pen controlLight = new Pen(SystemColors.ControlLight))
                 {
-                    using (Pen controlDarkDark = new Pen(SystemColors.ControlDarkDark))
-                    {
-                        using (Pen controlLightLight = new Pen(SystemColors.ControlLightLight))
-                        {
-                            using (Pen controlLight = new Pen(SystemColors.ControlLight))
-                            {
-                                e.Graphics.DrawLine(controlDark, 0, this.Height, 0, 0);
-                                e.Graphics.DrawLine(controlDark, 0, 0, this.Width, 0);
-                                e.Graphics.DrawLine(controlDarkDark, 1, this.Height - 1, 1, 1);
-                                e.Graphics.DrawLine(controlDarkDark, 1, 1, this.Width - 1, 1);
+                    e.Graphics.DrawLine(controlDark, 0, this.Height, 0, 0);
+                    e.Graphics.DrawLine(controlDark, 0, 0, this.Width, 0);
+                    e.Graphics.DrawLine(controlDarkDark, 1, this.Height - 1, 1, 1);
+                    e.Graphics.DrawLine(controlDarkDark, 1, 1, this.Width - 1, 1);
 
-                                e.Graphics.DrawLine(controlLight, this.Width - 2, 1, this.Width - 2, this.Height - 2);
-                                e.Graphics.DrawLine(controlLight, this.Width - 2, this.Height - 2, 1, this.Height - 2);
-                                e.Graphics.DrawLine(controlLightLight, this.Width - 1, 0, this.Width - 1, this.Height - 1);
-                                e.Graphics.DrawLine(controlLightLight, this.Width - 1, this.Height - 1, 0, this.Height - 1);
-                            }
-                        }
-                    }
+                    e.Graphics.DrawLine(controlLight, this.Width - 2, 1, this.Width - 2, this.Height - 2);
+                    e.Graphics.DrawLine(controlLight, this.Width - 2, this.Height - 2, 1, this.Height - 2);
+                    e.Graphics.DrawLine(controlLightLight, this.Width - 1, 0, this.Width - 1, this.Height - 1);
+                    e.Graphics.DrawLine(controlLightLight, this.Width - 1, this.Height - 1, 0, this.Height - 1);
                 }
             }
         }

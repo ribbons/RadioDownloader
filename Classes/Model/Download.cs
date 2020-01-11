@@ -173,13 +173,11 @@ namespace RadioDld.Model
             List<Download> items = new List<Download>();
 
             using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid", FetchDbConn()))
+            using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
             {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        items.Add(new Download(reader));
-                    }
+                    items.Add(new Download(reader));
                 }
             }
 
@@ -191,17 +189,15 @@ namespace RadioDld.Model
             List<Download> items = new List<Download>();
 
             using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from episodes, downloads where downloads.epid=episodes.epid", FetchDbConn()))
+            using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
             {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                {
-                    int epidOrdinal = reader.GetOrdinal("epid");
+                int epidOrdinal = reader.GetOrdinal("epid");
 
-                    while (reader.Read())
+                while (reader.Read())
+                {
+                    if (dataSearch.DownloadIsVisible(reader.GetInt32(epidOrdinal)))
                     {
-                        if (dataSearch.DownloadIsVisible(reader.GetInt32(epidOrdinal)))
-                        {
-                            items.Add(new Download(reader));
-                        }
+                        items.Add(new Download(reader));
                     }
                 }
             }
@@ -502,13 +498,11 @@ namespace RadioDld.Model
             List<Download> downloads = new List<Download>();
 
             using (SQLiteCommand command = new SQLiteCommand("select episodes.epid, progid, name, description, date, duration, autodownload, status, errortype, errordetails, filepath, playcount from episodes, downloads where episodes.epid=downloads.epid", FetchDbConn()))
+            using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
             {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        downloads.Add(new Download(reader));
-                    }
+                    downloads.Add(new Download(reader));
                 }
             }
 
@@ -704,16 +698,14 @@ namespace RadioDld.Model
                     }
 
                     using (SQLiteCommand command = new SQLiteCommand("select downloads.epid from downloads, episodes, programmes where downloads.epid=episodes.epid and episodes.progid=programmes.progid order by " + orderBy, FetchDbConn()))
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                     {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int epidOrdinal = reader.GetOrdinal("epid");
+                        int epidOrdinal = reader.GetOrdinal("epid");
 
-                            while (reader.Read())
-                            {
-                                sortCache.Add(reader.GetInt32(epidOrdinal), sort);
-                                sort += 1;
-                            }
+                        while (reader.Read())
+                        {
+                            sortCache.Add(reader.GetInt32(epidOrdinal), sort);
+                            sort += 1;
                         }
                     }
                 }

@@ -117,13 +117,11 @@ namespace RadioDld.Model
             List<Programme> items = new List<Programme>();
 
             using (SQLiteCommand command = new SQLiteCommand("select distinct " + Columns + " from programmes, episodes, downloads where downloads.epid=episodes.epid and episodes.progid=programmes.progid", FetchDbConn()))
+            using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
             {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        items.Add(new Programme(reader));
-                    }
+                    items.Add(new Programme(reader));
                 }
             }
 

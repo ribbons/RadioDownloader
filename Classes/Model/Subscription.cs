@@ -115,13 +115,11 @@ namespace RadioDld.Model
             List<Subscription> items = new List<Subscription>();
 
             using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from subscriptions, programmes where subscriptions.progid=programmes.progid", FetchDbConn()))
+            using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
             {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        items.Add(new Subscription(reader));
-                    }
+                    items.Add(new Subscription(reader));
                 }
             }
 
@@ -196,16 +194,14 @@ namespace RadioDld.Model
                     }
 
                     using (SQLiteCommand command = new SQLiteCommand("select subscriptions.progid from subscriptions, programmes where programmes.progid=subscriptions.progid order by " + orderBy, FetchDbConn()))
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                     {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int progidOrdinal = reader.GetOrdinal("progid");
+                        int progidOrdinal = reader.GetOrdinal("progid");
 
-                            while (reader.Read())
-                            {
-                                sortCache.Add(reader.GetInt32(progidOrdinal), sort);
-                                sort += 1;
-                            }
+                        while (reader.Read())
+                        {
+                            sortCache.Add(reader.GetInt32(progidOrdinal), sort);
+                            sort += 1;
                         }
                     }
                 }

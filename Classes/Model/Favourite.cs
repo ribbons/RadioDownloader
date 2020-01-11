@@ -105,13 +105,11 @@ namespace RadioDld.Model
             List<Favourite> items = new List<Favourite>();
 
             using (SQLiteCommand command = new SQLiteCommand("select " + Columns + " from favourites, programmes where favourites.progid=programmes.progid", FetchDbConn()))
+            using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
             {
-                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        items.Add(new Favourite(reader));
-                    }
+                    items.Add(new Favourite(reader));
                 }
             }
 
@@ -162,16 +160,14 @@ namespace RadioDld.Model
                     }
 
                     using (SQLiteCommand command = new SQLiteCommand("select favourites.progid from favourites, programmes where programmes.progid=favourites.progid order by " + orderBy, FetchDbConn()))
+                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                     {
-                        using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                        {
-                            int progidOrdinal = reader.GetOrdinal("progid");
+                        int progidOrdinal = reader.GetOrdinal("progid");
 
-                            while (reader.Read())
-                            {
-                                sortCache.Add(reader.GetInt32(progidOrdinal), sort);
-                                sort += 1;
-                            }
+                        while (reader.Read())
+                        {
+                            sortCache.Add(reader.GetInt32(progidOrdinal), sort);
+                            sort += 1;
                         }
                     }
                 }

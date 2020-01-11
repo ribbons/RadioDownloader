@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,15 +41,13 @@ namespace RadioDld
             lock (notInUse)
             {
                 using (SQLiteCommand command = new SQLiteCommand("select filepath from tempfiles", FetchDbConn()))
+                using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
                 {
-                    using (SQLiteMonDataReader reader = new SQLiteMonDataReader(command.ExecuteReader()))
-                    {
-                        int filePathOrdinal = reader.GetOrdinal("filepath");
+                    int filePathOrdinal = reader.GetOrdinal("filepath");
 
-                        while (reader.Read())
-                        {
-                            notInUse.Add(reader.GetString(filePathOrdinal));
-                        }
+                    while (reader.Read())
+                    {
+                        notInUse.Add(reader.GetString(filePathOrdinal));
                     }
                 }
             }
