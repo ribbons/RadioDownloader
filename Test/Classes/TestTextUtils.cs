@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2017-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2017-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,7 @@ namespace RadioDldTest
     using Xunit;
 
     /// <summary>
-    /// Tests for functions in the static TextUtils class
+    /// Tests for functions in the static TextUtils class.
     /// </summary>
     public class TestTextUtils
     {
@@ -322,7 +322,7 @@ namespace RadioDldTest
 
         /// <summary>
         /// Test that the StripDateFromName function strips dates within
-        /// a few days of the given date
+        /// a few days of the given date.
         /// </summary>
         [Fact]
         public void StripDateFromNameSimilarDate()
@@ -364,7 +364,7 @@ namespace RadioDldTest
 
         /// <summary>
         /// Test that the StripDateFromName function doesn't strip dates which
-        /// are completely different
+        /// are completely different.
         /// </summary>
         [Fact]
         public void StripDateFromNameIgnoreDifferent()
@@ -395,7 +395,7 @@ namespace RadioDldTest
         }
 
         /// <summary>
-        /// Test that the EpisodeSmartName function correctly normalises episode names
+        /// Test that the EpisodeSmartName function correctly normalises episode names.
         /// </summary>
         [Fact]
         public void EpisodeSmartName()

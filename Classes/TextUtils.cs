@@ -53,7 +53,7 @@ namespace RadioDld
         /// </summary>
         /// <param name="name">Episode Name to be checked.</param>
         /// <param name="stripDate">Date value to be stripped from the Episode Name.</param>
-        /// <returns>Episode name with date removed</returns>
+        /// <returns>Episode name with date removed.</returns>
         public static string StripDateFromName(string name, DateTime stripDate)
         {
             int startAt = 0;
@@ -104,12 +104,12 @@ namespace RadioDld
 
         /// <summary>
         /// Build a combined Programme and Episode name in the form Programme Name: Episode Name
-        /// The episode date is removed from the episode name if present
+        /// The episode date is removed from the episode name if present.
         /// </summary>
-        /// <param name="programmeName">Name of the programme which the episode is part of</param>
-        /// <param name="episodeName">Name of the episode itself</param>
-        /// <param name="stripDate">Date value to be removed from the episode name if present</param>
-        /// <returns>Normalised, combined programme and episode name</returns>
+        /// <param name="programmeName">Name of the programme which the episode is part of.</param>
+        /// <param name="episodeName">Name of the episode itself.</param>
+        /// <param name="stripDate">Date value to be removed from the episode name if present.</param>
+        /// <returns>Normalised, combined programme and episode name.</returns>
         public static string EpisodeSmartName(string programmeName, string episodeName, DateTime stripDate)
         {
             episodeName = StripDateFromName(episodeName, stripDate);

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2018-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,12 @@ namespace PodcastProviderTest
     using Xunit;
 
     /// <summary>
-    /// Tests for the DownloadProgramme function
+    /// Tests for the DownloadProgramme function.
     /// </summary>
     public class TestDownload
     {
         /// <summary>
-        /// Test for a successful download
+        /// Test for a successful download.
         /// </summary>
         [Fact]
         public void Success()
@@ -50,7 +50,7 @@ namespace PodcastProviderTest
 
         /// <summary>
         /// Test that DownloadException is thrown with an ErrorType of RemoveFromList
-        /// when an episode is no-longer listed in the podcast feed
+        /// when an episode is no-longer listed in the podcast feed.
         /// </summary>
         [Fact]
         public void NoLongerInFeed()
@@ -72,7 +72,7 @@ namespace PodcastProviderTest
         }
 
         /// <summary>
-        /// Test that DownloadException is thrown with the correct values for download errors
+        /// Test that DownloadException is thrown with the correct values for download errors.
         /// </summary>
         [Fact]
         public void ErrorHandling()
@@ -103,7 +103,7 @@ namespace PodcastProviderTest
         }
 
         /// <summary>
-        /// Test retrieval of chapters from Podlove Simple Chapters example
+        /// Test retrieval of chapters from Podlove Simple Chapters example.
         /// </summary>
         [Fact]
         public void ChaptersExample()
@@ -143,7 +143,7 @@ namespace PodcastProviderTest
         }
 
         /// <summary>
-        /// Test retrieval of images from Podlove Simple Chapter data
+        /// Test retrieval of images from Podlove Simple Chapter data.
         /// </summary>
         [Fact]
         public void ChapterImage()

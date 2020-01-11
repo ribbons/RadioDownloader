@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2013 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ namespace RadioDld
         internal enum TBATFLAG
         {
             TBATF_USEMDITHUMBNAIL = 0x1,
-            TBATF_USEMDILIVEPREVIEW = 0x2
+            TBATF_USEMDILIVEPREVIEW = 0x2,
         }
 
         [Flags]
@@ -125,7 +125,7 @@ namespace RadioDld
             TBPF_INDETERMINATE = 0x1,
             TBPF_NORMAL = 0x2,
             TBPF_ERROR = 0x4,
-            TBPF_PAUSED = 0x8
+            TBPF_PAUSED = 0x8,
         }
 
         [ComImport]

@@ -1393,7 +1393,7 @@ namespace RadioDld
 
                         if (info.Duration != 0)
                         {
-                            int mins = (int)Math.Round(info.Duration / (decimal)60, 0);
+                            int mins = (int)Math.Round(info.Duration / 60M, 0);
                             int hours = mins / 60;
                             mins = mins % 60;
 

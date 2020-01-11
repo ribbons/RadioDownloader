@@ -80,14 +80,14 @@ namespace RadioDld.Model
             Progress = 3,
             Duration = 4,
             ProgrammeName = 5,
-            EpisodeName = 6
+            EpisodeName = 6,
         }
 
         internal enum DownloadStatus
         {
             Waiting = 0,
             Downloaded = 1,
-            Errored = 2
+            Errored = 2,
         }
 
         public static DownloadCols SortByColumn
@@ -256,7 +256,7 @@ namespace RadioDld.Model
                 return false;
             }
 
-            ThreadPool.QueueUserWorkItem(delegate { AddAsync(addEpids.ToArray()); });
+            ThreadPool.QueueUserWorkItem(state => { AddAsync(addEpids.ToArray()); });
 
             return true;
         }
@@ -328,7 +328,7 @@ namespace RadioDld.Model
 
         public static void Reset(int epid)
         {
-            ThreadPool.QueueUserWorkItem(delegate { ResetAsync(epid, false); });
+            ThreadPool.QueueUserWorkItem(state => { ResetAsync(epid, false); });
         }
 
         public static void ResetAsync(int epid, bool auto)
@@ -367,12 +367,12 @@ namespace RadioDld.Model
 
         public static void BumpPlayCount(int epid)
         {
-            ThreadPool.QueueUserWorkItem(delegate { BumpPlayCountAsync(epid); });
+            ThreadPool.QueueUserWorkItem(state => { BumpPlayCountAsync(epid); });
         }
 
         public static void Remove(int epid)
         {
-            ThreadPool.QueueUserWorkItem(delegate { RemoveAsync(epid, false); });
+            ThreadPool.QueueUserWorkItem(state => { RemoveAsync(epid, false); });
         }
 
         public static void ReportError(int epid)

@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,9 +24,9 @@ namespace PodcastProviderTest
     internal static class TestCommon
     {
         /// <summary>
-        /// Create a Podcast Provider instance and inject the test dependencies into it
+        /// Create a Podcast Provider instance and inject the test dependencies into it.
         /// </summary>
-        /// <returns>A <see cref="PodcastProvider"/> instance ready to test</returns>
+        /// <returns>A <see cref="PodcastProvider"/> instance ready to test.</returns>
         public static PodcastProvider CreateInstance()
         {
             var instance = new PodcastProvider();

@@ -258,7 +258,7 @@ namespace RadioDld
         /// This is needed as Mono tries to run any files marked as executable which is a
         /// problem when using an SMB mount where all files are marked as executable.
         /// </summary>
-        /// <param name="filePath">The path of the file to open</param>
+        /// <param name="filePath">The path of the file to open.</param>
         internal static void OpenFileWithDefaultApplication(string filePath)
         {
             if (Windows())

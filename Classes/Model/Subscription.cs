@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace RadioDld.Model
             Programme.Updated += Programme_Updated;
 
             // Start regularly checking for new subscriptions in the background
-            ThreadPool.QueueUserWorkItem(delegate
+            ThreadPool.QueueUserWorkItem(state =>
             {
                 // Wait for 2 minutes while the application starts
                 Thread.Sleep(120000);
@@ -65,7 +65,7 @@ namespace RadioDld.Model
         {
             ProgrammeName = 0,
             LastDownload = 1,
-            Provider = 2
+            Provider = 2,
         }
 
         public static SubscriptionCols SortByColumn
@@ -158,14 +158,14 @@ namespace RadioDld.Model
                 }
             }
 
-            ThreadPool.QueueUserWorkItem(delegate { AddAsync(progid); });
+            ThreadPool.QueueUserWorkItem(state => { AddAsync(progid); });
 
             return true;
         }
 
         public static void Remove(int progid)
         {
-            ThreadPool.QueueUserWorkItem(delegate { RemoveAsync(progid); });
+            ThreadPool.QueueUserWorkItem(state => { RemoveAsync(progid); });
         }
 
         public static int Compare(int progid1, int progid2)
@@ -358,7 +358,7 @@ namespace RadioDld.Model
 
             // Queue the next subscription check.  This is used instead of a loop as
             // it frees up a slot in the thread pool in case other actions are waiting.
-            ThreadPool.QueueUserWorkItem(delegate { CheckSubscriptions(); });
+            ThreadPool.QueueUserWorkItem(state => { CheckSubscriptions(); });
         }
     }
 }

@@ -341,7 +341,7 @@ namespace PodcastProvider
                             "thu,",
                             "fri,",
                             "sat,",
-                            "sun,"
+                            "sun,",
                         };
 
                 foreach (string day in days)

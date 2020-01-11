@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -106,7 +106,7 @@ namespace RadioDld.Model
 
         public static void SetAutoDownload(int[] epids, bool autoDownload)
         {
-            ThreadPool.QueueUserWorkItem(delegate { SetAutoDownloadAsync(epids, autoDownload); });
+            ThreadPool.QueueUserWorkItem(state => { SetAutoDownloadAsync(epids, autoDownload); });
         }
 
         public static int? FetchInfo(int progid, string episodeExtId)
@@ -219,10 +219,10 @@ namespace RadioDld.Model
                 }
             }
 
-                foreach (int epid in epids)
-                {
-                    Updated?.Invoke(epid);
-                }
+            foreach (int epid in epids)
+            {
+                Updated?.Invoke(epid);
+            }
         }
 
         protected void FetchData(SQLiteMonDataReader reader)

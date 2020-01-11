@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ namespace RadioDld.Provider
     public enum ProgressType
     {
         Downloading,
-        Processing
+        Processing,
     }
 
     public abstract class RadioProvider
@@ -82,9 +82,9 @@ namespace RadioDld.Provider
         public abstract int ProgInfoUpdateFreqDays { get; }
 
         /// <summary>
-        /// Gets an event handler to be called to show an options dialog for the provider
+        /// Gets an event handler to be called to show an options dialog for the provider.
         /// </summary>
-        /// <returns>The event handler or null for none</returns>
+        /// <returns>The event handler or null for none.</returns>
         public virtual EventHandler ShowOptionsHandler
         {
             get
@@ -94,9 +94,9 @@ namespace RadioDld.Provider
         }
 
         /// <summary>
-        /// Gets an event handler to be called to show provider specific details about a programme
+        /// Gets an event handler to be called to show provider specific details about a programme.
         /// </summary>
-        /// <returns>The event handler or null to for none</returns>
+        /// <returns>The event handler or null to for none.</returns>
         public virtual ShowMoreProgInfoEventHandler ShowMoreProgInfoHandler
         {
             get

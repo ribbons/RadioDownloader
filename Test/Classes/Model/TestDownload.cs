@@ -26,12 +26,12 @@ namespace RadioDldTest.Model
     using Xunit;
 
     /// <summary>
-    /// Tests for the Model.Download class
+    /// Tests for the Model.Download class.
     /// </summary>
     public class TestDownload
     {
         /// <summary>
-        /// Test that CreateSaveFileName replaces all tokens in filename templates
+        /// Test that CreateSaveFileName replaces all tokens in filename templates.
         /// </summary>
         [Fact]
         public void CreateSaveFileNameTemplates()
@@ -49,7 +49,7 @@ namespace RadioDldTest.Model
         }
 
         /// <summary>
-        /// Test that CreateSaveFileName removes problematic characters
+        /// Test that CreateSaveFileName removes problematic characters.
         /// </summary>
         [Fact]
         public void CreateSaveFileNameCharacters()
@@ -66,7 +66,7 @@ namespace RadioDldTest.Model
         }
 
         /// <summary>
-        /// Test that FindFreeSaveFileName creates subfolders
+        /// Test that FindFreeSaveFileName creates subfolders.
         /// </summary>
         [Fact]
         public void FindFreeSaveFileNameSubfolders()

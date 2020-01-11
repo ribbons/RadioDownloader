@@ -1,6 +1,6 @@
 /*
  * This file is part of the Podcast Provider for Radio Downloader.
- * Copyright © 2018-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2018-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +22,12 @@ namespace PodcastProviderTest
     using Xunit;
 
     /// <summary>
-    /// Tests for the GetProgrammeInfo and GetEpisodeInfo functions
+    /// Tests for the GetProgrammeInfo and GetEpisodeInfo functions.
     /// </summary>
     public class TestGetInfo
     {
         /// <summary>
-        /// Test retrieval of basic podcast information
+        /// Test retrieval of basic podcast information.
         /// </summary>
         [Fact]
         public void BasicInfo()
@@ -98,7 +98,7 @@ namespace PodcastProviderTest
         }
 
         /// <summary>
-        /// Test that items with invalid data are filtered from available episodes
+        /// Test that items with invalid data are filtered from available episodes.
         /// </summary>
         [Fact]
         public void EpisodeFiltering()

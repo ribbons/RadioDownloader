@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2019-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ namespace RadioDld
     using System.IO;
 
     /// <summary>
-    /// Class for storing images in their compressed form (e.g. jpeg, png)
+    /// Class for storing images in their compressed form (e.g. jpeg, png).
     /// </summary>
     public class CompressedImage
     {
@@ -32,7 +32,7 @@ namespace RadioDld
         /// <summary>
         /// Initializes a new instance of the <see cref="CompressedImage"/> class.
         /// </summary>
-        /// <param name="imageData">The compressed image data</param>
+        /// <param name="imageData">The compressed image data.</param>
         public CompressedImage(byte[] imageData)
             : this(imageData, true)
         {
@@ -42,8 +42,8 @@ namespace RadioDld
         /// Initializes a new instance of the <see cref="CompressedImage"/> class,
         /// optionally without loading the image to validate it.
         /// </summary>
-        /// <param name="imageData">The compressed image data</param>
-        /// <param name="validate">If the data should be loaded to check the validity</param>
+        /// <param name="imageData">The compressed image data.</param>
+        /// <param name="validate">If the data should be loaded to check the validity.</param>
         internal CompressedImage(byte[] imageData, bool validate)
         {
             this.imageData = imageData;
@@ -55,7 +55,7 @@ namespace RadioDld
         }
 
         /// <summary>
-        /// Gets the width (in pixels), of this image
+        /// Gets the width (in pixels), of this image.
         /// </summary>
         public int Width
         {
@@ -66,7 +66,7 @@ namespace RadioDld
         }
 
         /// <summary>
-        /// Gets the height (in pixels), of this image
+        /// Gets the height (in pixels), of this image.
         /// </summary>
         public int Height
         {
@@ -77,7 +77,7 @@ namespace RadioDld
         }
 
         /// <summary>
-        /// Gets the compressed image content as an <see cref="Image"/> object
+        /// Gets the compressed image content as an <see cref="Image"/> object.
         /// </summary>
         public Image Image
         {
@@ -88,9 +88,9 @@ namespace RadioDld
         }
 
         /// <summary>
-        /// Return the originally passed compressed image data as a byte array
+        /// Return the originally passed compressed image data as a byte array.
         /// </summary>
-        /// <returns>The data originally passed to the constructor</returns>
+        /// <returns>The data originally passed to the constructor.</returns>
         public byte[] GetBytes()
         {
             // Use clone so if the caller modifies the array it doens't affect ours

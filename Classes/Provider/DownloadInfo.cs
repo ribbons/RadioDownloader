@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2018 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,12 +34,12 @@ namespace RadioDld.Provider
         }
 
         /// <summary>
-        /// Gets or sets the file extension for the downloaded audio file
+        /// Gets or sets the file extension for the downloaded audio file.
         /// </summary>
         public string Extension { get; set; }
 
         /// <summary>
-        /// Gets a list containing chapters for the download
+        /// Gets a list containing chapters for the download.
         /// </summary>
         public Collection<ChapterInfo> Chapters { get; private set; }
     }

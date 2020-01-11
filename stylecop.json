@@ -2,14 +2,12 @@
   "$schema": "https://raw.githubusercontent.com/DotNetAnalyzers/StyleCopAnalyzers/master/StyleCop.Analyzers/StyleCop.Analyzers/Settings/stylecop.schema.json",
   "settings": {
     "documentationRules": {
-      "documentInternalElements": "false",
-      "documentExposedElements": "false"
+      "documentInternalElements": false,
+      "documentExposedElements": false,
+      "xmlHeader": false
     },
-	"layoutRules": {
-		"newlineAtEndOfFile": "require"
-    },
-	"documentationRules": {
-		"xmlHeader": false
+    "layoutRules": {
+      "newlineAtEndOfFile": "require"
     }
   }
 }

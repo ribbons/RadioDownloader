@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2019-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,12 @@ namespace RadioDldTest
     using Xunit;
 
     /// <summary>
-    /// Tests for the CompressedImage class
+    /// Tests for the CompressedImage class.
     /// </summary>
     public class TestCompressedImage
     {
         /// <summary>
-        /// Test that GetBytes returns the exact compressed data passed to the ctor
+        /// Test that GetBytes returns the exact compressed data passed to the ctor.
         /// </summary>
         [Fact]
         public void UnchangedBytes()
@@ -43,7 +43,7 @@ namespace RadioDldTest
         }
 
         /// <summary>
-        /// Test that the ctor throws an ArgumentException when passed non-image data
+        /// Test that the ctor throws an ArgumentException when passed non-image data.
         /// </summary>
         [Fact]
         public void InvalidImage()
@@ -53,7 +53,7 @@ namespace RadioDldTest
         }
 
         /// <summary>
-        /// Test that the image width and height are set correctly
+        /// Test that the image width and height are set correctly.
         /// </summary>
         [Fact]
         public void Dimensions()
@@ -65,7 +65,7 @@ namespace RadioDldTest
         }
 
         /// <summary>
-        /// Test that the image content is returned correctly
+        /// Test that the image content is returned correctly.
         /// </summary>
         [Fact]
         public void ImageContent()
