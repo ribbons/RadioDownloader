@@ -69,7 +69,7 @@ namespace PodcastProviderTest
             var e = Assert.Throws<DownloadException>(() =>
                 instance.DownloadProgramme(progExtId, notExistId, programme, episode, tempFileName));
 
-            Assert.Equal(e.ErrorType, ErrorType.RemoveFromList);
+            Assert.Equal(ErrorType.RemoveFromList, e.ErrorType);
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace PodcastProviderTest
             var e = Assert.Throws<DownloadException>(() =>
                 instance.DownloadProgramme(progExtId, epExtId, programme, episode, tempFileName));
 
-            Assert.Equal(e.ErrorType, ErrorType.RemoteProblem);
-            Assert.Equal(e.Message, "The remote server returned an error: (504) Gateway Timeout.");
+            Assert.Equal(ErrorType.RemoteProblem, e.ErrorType);
+            Assert.Equal("The remote server returned an error: (504) Gateway Timeout.", e.Message);
 
             epExtId = "http://example.com/errors/untrustedCert";
             episode = instance.GetEpisodeInfo(progExtId, programme, epExtId);
@@ -99,8 +99,8 @@ namespace PodcastProviderTest
             e = Assert.Throws<DownloadException>(() =>
                 instance.DownloadProgramme(progExtId, epExtId, programme, episode, tempFileName));
 
-            Assert.Equal(e.ErrorType, ErrorType.NetworkProblem);
-            Assert.Equal(e.Message, "The remote certificate is invalid according to the validation procedure.");
+            Assert.Equal(ErrorType.NetworkProblem, e.ErrorType);
+            Assert.Equal("The remote certificate is invalid according to the validation procedure.", e.Message);
         }
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace PodcastProviderTest
             var download = instance.DownloadProgramme(progExtId, epExtId, programme, episode, tempFileName);
             File.Delete(tempFileName + "." + download.Extension);
 
-            Assert.Equal(1, download.Chapters.Count);
+            Assert.Single(download.Chapters);
             Assert.NotNull(download.Chapters[0].Image);
         }
     }

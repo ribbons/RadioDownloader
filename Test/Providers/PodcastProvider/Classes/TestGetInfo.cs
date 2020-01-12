@@ -37,8 +37,8 @@ namespace PodcastProviderTest
             string extId = "http://example.com/BasicPodcast.xml";
 
             var programme = instance.GetProgrammeInfo(extId);
-            Assert.Equal(programme.Name, "Basic Podcast");
-            Assert.Equal(programme.Description, "Basic Podcast description");
+            Assert.Equal("Basic Podcast", programme.Name);
+            Assert.Equal("Basic Podcast description", programme.Description);
             Assert.Null(programme.Image);
 
             var episodes = instance.GetAvailableEpisodes(extId, programme, 0);
@@ -47,8 +47,8 @@ namespace PodcastProviderTest
             Assert.Equal("http://example.com/programme1/episode1.mp3", episodes.EpisodeIds[1]);
 
             var episode = instance.GetEpisodeInfo(extId, programme, "http://example.com/programme1/episode1.mp3");
-            Assert.Equal(episode.Name, "Episode 1");
-            Assert.Equal(episode.Description, "Episode 1 description");
+            Assert.Equal("Episode 1", episode.Name);
+            Assert.Equal("Episode 1 description", episode.Description);
             Assert.Equal(episode.Date, new DateTime(2018, 02, 09, 20, 00, 00, DateTimeKind.Utc));
             Assert.Null(episode.Image);
             Assert.Null(episode.Duration);

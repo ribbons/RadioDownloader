@@ -20,6 +20,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <OutputName>Radio_Downloader-win64</OutputName>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(OutputName)' == '' ">
+    <OutputName>Radio Downloader</OutputName>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Radio Downloader.wxs" />
   </ItemGroup>
