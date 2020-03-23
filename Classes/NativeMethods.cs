@@ -21,7 +21,6 @@ namespace RadioDld
     using System;
     using System.Drawing;
     using System.Runtime.InteropServices;
-    using System.Text;
 
     internal static class NativeMethods
     {
@@ -57,13 +56,6 @@ namespace RadioDld
         public const int HTTRANSPARENT = -0x1;
         public const int HTCLIENT = 0x1;
         public const int HTCAPTION = 0x2;
-
-        // GetWindow flags
-        public const short GW_CHILD = 5;
-        public const short GW_HWNDNEXT = 2;
-
-        // DrawAnimatedRects 'type of animation' flag
-        public const short IDANI_CAPTION = 0x3;
 
         // Theme classes & parts
         public const string SEARCHBOX = "SearchBox";
@@ -201,23 +193,6 @@ namespace RadioDld
         [DllImport("msimg32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool AlphaBlend(IntPtr hdcDest, int xoriginDest, int yoriginDest, int wDest, int hDest, IntPtr hdcSrc, int xoriginSrc, int yoriginSrc, int wSrc, int hSrc, BLENDFUNCTION ftn);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool DrawAnimatedRects(IntPtr hWnd, int idAni, ref RECT lprcFrom, ref RECT lprcTo);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Ansi, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        public static extern IntPtr GetWindow(IntPtr hWnd, int wCmd);
-
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto, BestFitMapping = false, ThrowOnUnmappableChar = true)]
-        public static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
-
-        [DllImport("user32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
 
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         public static extern IntPtr LoadCursor(IntPtr hInstance, IntPtr lpCursorName);

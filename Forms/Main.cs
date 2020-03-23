@@ -349,7 +349,6 @@ namespace RadioDld
                 }
                 else
                 {
-                    OsUtils.TrayAnimate(this, true);
                     this.Visible = false;
                     eventArgs.Cancel = true;
 
@@ -904,7 +903,6 @@ namespace RadioDld
         {
             if (!this.Visible)
             {
-                OsUtils.TrayAnimate(this, false);
                 this.Visible = true;
             }
 
@@ -1667,7 +1665,6 @@ namespace RadioDld
                     }
                     else
                     {
-                        OsUtils.TrayAnimate(this, true);
                         this.Visible = false;
                     }
                 }
