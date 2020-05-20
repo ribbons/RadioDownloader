@@ -66,13 +66,56 @@ namespace RadioDldTest.Model
         }
 
         /// <summary>
-        /// Test that FindFreeSaveFileName creates subfolders.
+        /// Test that MoveToSaveFolder moves content files to the output folder, handles
+        /// duplicate filenames correctly and doesn't move files already correctly named.
         /// </summary>
         [Fact]
-        public void FindFreeSaveFileNameSubfolders()
+        public void MoveToSaveFolder()
         {
             string tempBase = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             Directory.CreateDirectory(tempBase);
+
+            var prog = new Programme();
+            prog.Name = "PN";
+
+            var episode = new Episode();
+            episode.Name = "EN";
+
+            // No duplicate handling required
+            string sourceFile = Path.GetTempFileName();
+            string destFile = Download.MoveToSaveFolder(@"%progname%", prog, episode, tempBase, "mp3", sourceFile);
+
+            Assert.Equal(Path.Combine(tempBase, "PN.mp3"), destFile);
+            Assert.False(File.Exists(sourceFile));
+            Assert.True(File.Exists(destFile));
+
+            // 'Move' existing file which is already correctly named
+            sourceFile = destFile;
+            destFile = Download.MoveToSaveFolder(@"%progname%", prog, episode, tempBase, "mp3", sourceFile);
+
+            Assert.Equal(sourceFile, destFile);
+            Assert.True(File.Exists(destFile));
+
+            // File already exists - duplicate handling is required
+            sourceFile = Path.GetTempFileName();
+            destFile = Download.MoveToSaveFolder(@"%progname%", prog, episode, tempBase, "mp3", sourceFile);
+
+            Assert.Equal(Path.Combine(tempBase, "PN1.mp3"), destFile);
+            Assert.False(File.Exists(sourceFile));
+            Assert.True(File.Exists(destFile));
+
+            Directory.Delete(tempBase, true);
+        }
+
+        /// <summary>
+        /// Test that MoveToSaveFolder creates subfolders.
+        /// </summary>
+        [Fact]
+        public void MoveToSaveFolderSubfolders()
+        {
+            string tempBase = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempBase);
+            string sourceFile = Path.GetTempFileName();
 
             var prog = new Programme();
             prog.Name = "PN1";
@@ -81,16 +124,17 @@ namespace RadioDldTest.Model
             episode.Name = "EN";
 
             Assert.Equal(
-                Path.Combine(tempBase, Path.Combine("PN1", "EN")),
-                Download.FindFreeSaveFileName(@"%progname%\%epname%", prog, episode, tempBase));
+                Path.Combine(tempBase, Path.Combine("PN1", "EN") + ".mp3"),
+                Download.MoveToSaveFolder(@"%progname%\%epname%", prog, episode, tempBase, "mp3", sourceFile));
 
             Assert.True(Directory.Exists(Path.Combine(tempBase, "PN1")));
 
             prog.Name = "PN2";
+            sourceFile = Path.GetTempFileName();
 
             Assert.Equal(
-                Path.Combine(tempBase, Path.Combine("PN2", "EN")),
-                Download.FindFreeSaveFileName(@"%progname%/%epname%", prog, episode, tempBase));
+                Path.Combine(tempBase, Path.Combine("PN2", "EN") + ".mp3"),
+                Download.MoveToSaveFolder(@"%progname%/%epname%", prog, episode, tempBase, "mp3", sourceFile));
 
             Assert.True(Directory.Exists(Path.Combine(tempBase, "PN2")));
 

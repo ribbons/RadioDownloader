@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -177,103 +177,109 @@ namespace RadioDld
                 this.pluginInstance.Progress += this.DownloadPluginInst_Progress;
             }
 
-            string finalName;
-            Provider.DownloadInfo info;
+            string saveLocation;
 
             try
             {
-                string saveLocation;
+                saveLocation = FileUtils.GetSaveFolder();
+            }
+            catch (DirectoryNotFoundException)
+            {
+                this.DownloadError(Provider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.");
+                return;
+            }
 
+            const int FreeMb = 250;
+            ulong availableSpace = OsUtils.PathAvailableSpace(saveLocation);
+
+            if (availableSpace <= FreeMb * 1024 * 1024)
+            {
+                this.DownloadError(Provider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes does not have enough free space.  Make sure that you have at least " + FreeMb.ToString(CultureInfo.CurrentCulture) + " MB free, or select a new location under Options -> Main Options.");
+                return;
+            }
+
+            Provider.DownloadInfo info = null;
+
+            try
+            {
                 try
                 {
-                    saveLocation = FileUtils.GetSaveFolder();
+                    info = this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo);
                 }
-                catch (DirectoryNotFoundException)
+                catch (Provider.DownloadException downloadExp)
                 {
-                    this.DownloadError(Provider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes no longer exists.  Select a new one under Options -> Main Options.");
+                    if (downloadExp.ErrorType == Provider.ErrorType.UnknownError)
+                    {
+                        this.DownloadError(downloadExp);
+                    }
+                    else
+                    {
+                        this.DownloadError(downloadExp.ErrorType, downloadExp.Message);
+                    }
+
+                    return;
+                }
+                catch (Exception unknownExp)
+                {
+                    this.DownloadError(unknownExp);
                     return;
                 }
 
-                const int FreeMb = 250;
-                ulong availableSpace = OsUtils.PathAvailableSpace(saveLocation);
-
-                if (availableSpace <= FreeMb * 1024 * 1024)
+                if (this.cancelled)
                 {
-                    this.DownloadError(Provider.ErrorType.LocalProblem, "Your chosen location for saving downloaded programmes does not have enough free space.  Make sure that you have at least " + FreeMb.ToString(CultureInfo.CurrentCulture) + " MB free, or select a new location under Options -> Main Options.");
+                    this.cancelResponse = true;
                     return;
                 }
 
+                string finalName;
+
                 try
                 {
-                    finalName = Model.Download.FindFreeSaveFileName(Settings.FileNameFormat, this.progInfo, this.episodeInfo, saveLocation);
+                    finalName = Model.Download.MoveToSaveFolder(Settings.FileNameFormat, this.progInfo, this.episodeInfo, saveLocation, info.Extension, info.Downloaded.FilePath);
                 }
                 catch (IOException ioExp)
                 {
-                    this.DownloadError(Provider.ErrorType.LocalProblem, "Encountered an error generating the download file name.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
+                    this.DownloadError(Provider.ErrorType.LocalProblem, "Encountered an error saving the downloaded file.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
                     return;
                 }
                 catch (UnauthorizedAccessException unAuthExp)
                 {
-                    this.DownloadError(Provider.ErrorType.LocalProblem, "Encountered a permissions problem generating the download file name.  " + unAuthExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
+                    this.DownloadError(Provider.ErrorType.LocalProblem, "Encountered a permissions problem saving the downloaded file.  " + unAuthExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
                     return;
                 }
 
-                info = this.pluginInstance.DownloadProgramme(this.progExtId, this.episodeExtId, this.providerProgInfo, this.providerEpisodeInfo, finalName);
-            }
-            catch (Provider.DownloadException downloadExp)
-            {
-                if (downloadExp.ErrorType == Provider.ErrorType.UnknownError)
+                lock (DbUpdateLock)
                 {
-                    this.DownloadError(downloadExp);
-                }
-                else
-                {
-                    this.DownloadError(downloadExp.ErrorType, downloadExp.Message);
+                    Model.Download.SetComplete(this.episodeInfo.Epid, finalName, info);
+                    Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.Date);
                 }
 
-                return;
-            }
-            catch (Exception unknownExp)
-            {
-                this.DownloadError(unknownExp);
-                return;
-            }
-
-            if (this.cancelled)
-            {
-                this.cancelResponse = true;
-                return;
-            }
-
-            finalName += "." + info.Extension;
-
-            lock (DbUpdateLock)
-            {
-                Model.Download.SetComplete(this.episodeInfo.Epid, finalName, info);
-                Model.Programme.SetLatestDownload(this.progInfo.Progid, this.episodeInfo.Date);
-            }
-
-            // Remove single episode subscriptions
-            if (Model.Subscription.IsSubscribed(this.progInfo.Progid))
-            {
-                if (this.progInfo.SingleEpisode)
+                // Remove single episode subscriptions
+                if (Model.Subscription.IsSubscribed(this.progInfo.Progid))
                 {
-                    Model.Subscription.Remove(this.progInfo.Progid);
+                    if (this.progInfo.SingleEpisode)
+                    {
+                        Model.Subscription.Remove(this.progInfo.Progid);
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(Settings.RunAfterCommand))
+                {
+                    try
+                    {
+                        // Use VB Interaction.Shell as Process.Start doesn't give the option of a non-focused window
+                        // The "comspec" environment variable gives the path to cmd.exe
+                        Microsoft.VisualBasic.Interaction.Shell("\"" + Environment.GetEnvironmentVariable("comspec") + "\" /c " + Settings.RunAfterCommand.Replace("%file%", finalName), Microsoft.VisualBasic.AppWinStyle.NormalNoFocus);
+                    }
+                    catch
+                    {
+                        // Just ignore the error, as it just means that something has gone wrong with the run after command.
+                    }
                 }
             }
-
-            if (!string.IsNullOrEmpty(Settings.RunAfterCommand))
+            finally
             {
-                try
-                {
-                    // Use VB Interaction.Shell as Process.Start doesn't give the option of a non-focused window
-                    // The "comspec" environment variable gives the path to cmd.exe
-                    Microsoft.VisualBasic.Interaction.Shell("\"" + Environment.GetEnvironmentVariable("comspec") + "\" /c " + Settings.RunAfterCommand.Replace("%file%", finalName), Microsoft.VisualBasic.AppWinStyle.NormalNoFocus);
-                }
-                catch
-                {
-                    // Just ignore the error, as it just means that something has gone wrong with the run after command.
-                }
+                info?.Dispose();
             }
 
             this.DownloadFinished();

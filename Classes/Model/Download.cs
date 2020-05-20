@@ -416,45 +416,38 @@ namespace RadioDld.Model
             }
         }
 
-        public static string FindFreeSaveFileName(string formatString, Programme progInfo, Episode epInfo, string baseSavePath)
+        public static string MoveToSaveFolder(string formatString, Programme progInfo, Episode epInfo, string baseSavePath, string extension, string sourceFile)
         {
             string rootName = Path.Combine(baseSavePath, CreateSaveFileName(formatString, progInfo, epInfo));
-            string savePath = rootName;
 
             // Make sure the save folder exists (to support subfolders in the save file name template)
-            string saveDir = Path.GetDirectoryName(savePath);
-            Directory.CreateDirectory(saveDir);
+            Directory.CreateDirectory(Path.GetDirectoryName(rootName));
 
-            string currentFileName = null;
-
-            // If the passed episode info is actually a download, get it's current path
-            if (typeof(Download) == epInfo.GetType())
+            for (int diffNum = 0; ; diffNum++)
             {
-                currentFileName = ((Download)epInfo).DownloadPath;
+                string savePath = rootName + (diffNum > 0 ? diffNum.ToString(CultureInfo.CurrentCulture) : string.Empty) + "." + extension;
 
-                // Remove the extension from the current name if applicable
-                if (currentFileName != null)
+                if (savePath == sourceFile)
                 {
-                    int extensionPos = currentFileName.LastIndexOf('.');
+                    // File is already named correctly, nothing to do
+                    return savePath;
+                }
 
-                    if (extensionPos > -1)
+                if (!File.Exists(savePath))
+                {
+                    try
                     {
-                        currentFileName = currentFileName.Substring(0, extensionPos);
+                        File.Move(sourceFile, savePath);
                     }
+                    catch (IOException)
+                    {
+                        // Destination file created since File.Exists check
+                        continue;
+                    }
+
+                    return savePath;
                 }
             }
-
-            int diffNum = 1;
-
-            // Check for a pre-existing file with the same name (ignoring the current name for this file)
-            while (Directory.GetFiles(saveDir, Path.GetFileName(savePath) + ".*").Length > 0 &&
-                   savePath != currentFileName)
-            {
-                savePath = rootName + Convert.ToString(diffNum, CultureInfo.CurrentCulture);
-                diffNum += 1;
-            }
-
-            return savePath;
         }
 
         public static string CreateSaveFileName(string formatString, Programme progInfo, Episode epInfo)
@@ -532,21 +525,15 @@ namespace RadioDld.Model
                                 programmes.Add(download.Progid, new Programme(download.Progid));
                             }
 
-                            string newDownloadPath = FindFreeSaveFileName(newFormat, programmes[download.Progid], download, newPath) + Path.GetExtension(download.DownloadPath);
+                            string newDownloadPath = MoveToSaveFolder(newFormat, programmes[download.Progid], download, newPath, Path.GetExtension(download.DownloadPath), download.DownloadPath);
 
                             if (newDownloadPath != download.DownloadPath)
                             {
                                 lock (DbUpdateLock)
                                 {
-                                    using (SQLiteMonTransaction transMon = new SQLiteMonTransaction(FetchDbConn().BeginTransaction()))
-                                    {
-                                        epidParam.Value = download.Epid;
-                                        filepathParam.Value = newDownloadPath;
-                                        command.ExecuteNonQuery();
-
-                                        File.Move(download.DownloadPath, newDownloadPath);
-                                        transMon.Trans.Commit();
-                                    }
+                                    epidParam.Value = download.Epid;
+                                    filepathParam.Value = newDownloadPath;
+                                    command.ExecuteNonQuery();
                                 }
                             }
                         }

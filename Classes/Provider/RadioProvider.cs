@@ -180,10 +180,9 @@ namespace RadioDld.Provider
         /// <param name="episodeExtId">The external id of the episode to download.</param>
         /// <param name="progInfo">Data from the last call to GetProgrammeInfo for this programme.</param>
         /// <param name="epInfo">Data from the last call to GetEpisodeInfo for this episode.</param>
-        /// <param name="finalName">The path and filename (minus file extension) to save this download as.</param>
         /// <exception cref="DownloadException">Thrown when an expected error is encountered whilst downloading.</exception>
         /// <returns>A <see cref="DownloadInfo" /> object containing information about the successful download.</returns>
-        public abstract DownloadInfo DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName);
+        public abstract DownloadInfo DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo);
 
         /// <summary>
         /// Cancel the episode download currently in progress.

@@ -379,7 +379,7 @@ namespace PodcastProvider
             return episodeInfo;
         }
 
-        public override DownloadInfo DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo, string finalName)
+        public override DownloadInfo DownloadProgramme(string progExtId, string episodeExtId, ProgrammeInfo progInfo, EpisodeInfo epInfo)
         {
             XmlDocument rss = this.LoadFeedXml(new Uri(progExtId));
             XmlNode itemNode = this.ItemNodeFromEpisodeID(rss, episodeExtId);
@@ -405,43 +405,37 @@ namespace PodcastProvider
                 info.Extension = downloadUrl.AbsolutePath.Substring(extensionPos + 1);
             }
 
-            using (TempFileBase downloadFile = this.GetTempFileInstance(info.Extension))
+            info.Downloaded = this.GetTempFileInstance(info.Extension);
+
+            this.doDownload = this.GetDownloadWrapperInstance(downloadUrl, info.Downloaded.FilePath);
+            this.doDownload.DownloadProgress += this.DoDownload_DownloadProgress;
+            this.doDownload.Download();
+
+            while ((!this.doDownload.Complete) && this.doDownload.Error == null)
             {
-                finalName += "." + info.Extension;
+                Thread.Sleep(500);
 
-                this.doDownload = this.GetDownloadWrapperInstance(downloadUrl, downloadFile.FilePath);
-                this.doDownload.DownloadProgress += this.DoDownload_DownloadProgress;
-                this.doDownload.Download();
-
-                while ((!this.doDownload.Complete) && this.doDownload.Error == null)
+                if (this.doDownload.Canceled)
                 {
-                    Thread.Sleep(500);
-
-                    if (this.doDownload.Canceled)
-                    {
-                        return null;
-                    }
+                    return null;
                 }
-
-                if (this.doDownload.Error != null)
-                {
-                    if (this.doDownload.Error is WebException)
-                    {
-                        WebException webExp = (WebException)this.doDownload.Error;
-
-                        throw new DownloadException(
-                            webExp.Status == WebExceptionStatus.ProtocolError
-                                ? ErrorType.RemoteProblem
-                                : ErrorType.NetworkProblem,
-                            webExp.GetBaseException().Message);
-                    }
-
-                    throw this.doDownload.Error;
-                }
-
-                this.Progress?.Invoke(100, ProgressType.Processing);
-                File.Move(downloadFile.FilePath, finalName);
             }
+
+            if (this.doDownload.Error != null)
+            {
+                if (this.doDownload.Error is WebException webExp)
+                {
+                    throw new DownloadException(
+                        webExp.Status == WebExceptionStatus.ProtocolError
+                            ? ErrorType.RemoteProblem
+                            : ErrorType.NetworkProblem,
+                        webExp.GetBaseException().Message);
+                }
+
+                throw this.doDownload.Error;
+            }
+
+            this.Progress?.Invoke(100, ProgressType.Downloading);
 
             return info;
         }
