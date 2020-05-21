@@ -124,7 +124,7 @@ namespace RadioDldTest.Model
             episode.Name = "EN";
 
             Assert.Equal(
-                Path.Combine(tempBase, Path.Combine("PN1", "EN") + ".mp3"),
+                Path.Combine(tempBase, "PN1", "EN" + ".mp3"),
                 Download.MoveToSaveFolder(@"%progname%\%epname%", prog, episode, tempBase, "mp3", sourceFile));
 
             Assert.True(Directory.Exists(Path.Combine(tempBase, "PN1")));
@@ -133,7 +133,7 @@ namespace RadioDldTest.Model
             sourceFile = Path.GetTempFileName();
 
             Assert.Equal(
-                Path.Combine(tempBase, Path.Combine("PN2", "EN") + ".mp3"),
+                Path.Combine(tempBase, "PN2", "EN" + ".mp3"),
                 Download.MoveToSaveFolder(@"%progname%/%epname%", prog, episode, tempBase, "mp3", sourceFile));
 
             Assert.True(Directory.Exists(Path.Combine(tempBase, "PN2")));

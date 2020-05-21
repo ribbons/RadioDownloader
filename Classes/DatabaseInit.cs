@@ -65,7 +65,7 @@ namespace RadioDld
                 }
 
                 // Migrate old (pre 0.26) version databases from www.nerdoftheherd.com -> NerdoftheHerd.com
-                string oldDbPath = Path.Combine(Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com"), Application.ProductName), DbFileName);
+                string oldDbPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "www.nerdoftheherd.com", Application.ProductName, DbFileName);
 
                 if (File.Exists(oldDbPath) && !File.Exists(appDbPath))
                 {
