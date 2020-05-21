@@ -333,6 +333,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="app.config" />
     <None Include="Resources\overlay icons\error.ico" />
     <None Include="Resources\overlay icons\downloading.ico" />

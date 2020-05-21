@@ -2,7 +2,7 @@
 * text=auto
 
 # Adjust default settings for specific files
-*.cs     diff=csharp
+*.cs     text eol=lf diff=csharp
 *.rtf    diff=astextplain
 *.RTF    diff=astextplain
 *.sln    text eol=crlf
