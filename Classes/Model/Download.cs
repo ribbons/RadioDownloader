@@ -439,10 +439,18 @@ namespace RadioDld.Model
                     {
                         File.Move(sourceFile, savePath);
                     }
-                    catch (IOException)
+                    catch (IOException e)
                     {
-                        // Destination file created since File.Exists check
-                        continue;
+                        // We only want to handle IOException itself as a
+                        // number of IOException subclasses are thrown for
+                        // other cases we don't want to handle
+                        if (e.GetType() == typeof(IOException))
+                        {
+                            // Destination file created since File.Exists check
+                            continue;
+                        }
+
+                        throw;
                     }
 
                     return savePath;
