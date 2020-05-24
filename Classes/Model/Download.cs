@@ -421,7 +421,7 @@ namespace RadioDld.Model
             string rootName = Path.Combine(baseSavePath, CreateSaveFileName(formatString, progInfo, epInfo));
 
             // Make sure the save folder exists (to support subfolders in the save file name template)
-            Directory.CreateDirectory(Path.GetDirectoryName(rootName));
+            Directory.CreateDirectory(OsUtils.GetDirectoryName(rootName));
 
             for (int diffNum = 0; ; diffNum++)
             {
@@ -437,7 +437,7 @@ namespace RadioDld.Model
                 {
                     try
                     {
-                        File.Move(sourceFile, savePath);
+                        OsUtils.MoveFile(sourceFile, savePath);
                     }
                     catch (IOException e)
                     {

@@ -22,6 +22,7 @@ namespace RadioDld
     using System.ComponentModel;
     using System.Diagnostics;
     using System.Drawing;
+    using System.IO;
     using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Web;
@@ -168,7 +169,7 @@ namespace RadioDld
             {
                 // Call the private Mono internal method System.IO.DriveInfo.GetDiskFreeSpace
                 // as this does exactly the same as GetDiskFreeSpaceEx does under Windows
-                MethodInfo dynMethod = typeof(System.IO.DriveInfo).GetMethod("GetDiskFreeSpace", BindingFlags.NonPublic | BindingFlags.Static);
+                MethodInfo dynMethod = typeof(DriveInfo).GetMethod("GetDiskFreeSpace", BindingFlags.NonPublic | BindingFlags.Static);
 
                 object[] args = new object[] { path, null, null, null };
                 dynMethod.Invoke(null, args);
@@ -197,6 +198,71 @@ namespace RadioDld
             info.Arguments = "\"" + filePath + "\"";
 
             Process.Start(info);
+        }
+
+        /// <summary>
+        /// A very basic version of System.IO.Path.GetDirectoryName which
+        /// doesn't mind if paths are longer than 260 characters.
+        /// This will no-longer be required under .NET Core as
+        /// GetDirectoryName can cope with long paths.
+        /// </summary>
+        /// <param name="path">The path to get the directory name for.</param>
+        /// <returns>The directory name for the given path.</returns>
+        internal static string GetDirectoryName(string path)
+        {
+            for (int i = path.Length - 1; i > 0; i--)
+            {
+                if (path[i] == Path.DirectorySeparatorChar || path[i] == Path.AltDirectorySeparatorChar)
+                {
+                    return path.Substring(0, i);
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Similar to System.IO.File.Move but able to handle paths longer than
+        /// 260 characters and doesn't support relative paths.
+        /// This will no-longer be required under .NET Core as File.Move
+        /// can cope with long paths.
+        /// </summary>
+        /// <param name="sourceFileName">The fully qualified path of the file to move.</param>
+        /// <param name="destFileName">The new fully qualified path and name for the file.</param>
+        internal static void MoveFile(string sourceFileName, string destFileName)
+        {
+            if (Windows())
+            {
+                // MoveFileW can be replaced by File.Move if targeting the
+                // .NET framework 4.6.2 or above.
+                if (!NativeMethods.MoveFileW(ToLongPathFormat(sourceFileName), ToLongPathFormat(destFileName)))
+                {
+                    throw new Win32Exception();
+                }
+            }
+            else
+            {
+                File.Move(sourceFileName, destFileName);
+            }
+        }
+
+        /// <summary>
+        /// Add the appropriate long path format prefix to the given path.
+        /// This will no-longer be required under .NET Core as this is done
+        /// internally if required.
+        /// </summary>
+        /// <param name="standardPath">The path in standard format.</param>
+        /// <returns>The path in the long path format.</returns>
+        private static string ToLongPathFormat(string standardPath)
+        {
+            if (standardPath.StartsWith(@"\\", StringComparison.Ordinal))
+            {
+                return @"\\?\UNC" + standardPath.Substring(1);
+            }
+            else
+            {
+                return @"\\?\" + standardPath;
+            }
         }
     }
 }

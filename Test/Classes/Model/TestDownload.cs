@@ -140,5 +140,31 @@ namespace RadioDldTest.Model
 
             Directory.Delete(tempBase, true);
         }
+
+        /// <summary>
+        /// Test that MoveToSaveFolder can successfully move files which end up
+        /// with a fully qualified path over 259 characters long.
+        /// </summary>
+        [Fact]
+        public void MoveToSaveFolderLongPath()
+        {
+            string tempBase = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            string tempLong = Path.Combine(tempBase, new string('P', 246 - tempBase.Length));
+
+            Directory.CreateDirectory(tempLong);
+            string sourceFile = Path.GetTempFileName();
+
+            var prog = new Programme();
+            prog.Name = "P1234567890";
+
+            var episode = new Episode();
+            episode.Name = "EN";
+
+            string destFile = Path.Combine(tempLong, "P1234567890.mp3");
+
+            Assert.Equal(
+                destFile,
+                Download.MoveToSaveFolder(@"%progname%", prog, episode, tempLong, "mp3", sourceFile));
+        }
     }
 }
