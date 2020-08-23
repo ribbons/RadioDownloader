@@ -39,5 +39,34 @@
             <guid isPermaLink="false">nofilter-enclosure-encoded-url</guid>
             <enclosure url="http://example.com/redir/http%3A%2F%2Fexample.com%2Fepisode.mp3" length="12345" type="audio/mpeg" />
         </item>
+
+        <item>
+            <guid isPermaLink="false">filter-nofilter-sameid</guid>
+            <enclosure url="http://example.com/" length="12345" type="audio/mpeg" />
+        </item>
+        <item>
+            <title></title>
+            <guid isPermaLink="false">filter-nofilter-sameid</guid>
+            <enclosure url="http://example.com/" length="12345" type="audio/mpeg" />
+        </item>
+        <item>
+            <title>FILTERED</title>
+            <guid isPermaLink="false">filter-nofilter-sameid</guid>
+        </item>
+        <item>
+            <title>FILTERED</title>
+            <guid isPermaLink="false">filter-nofilter-sameid</guid>
+            <enclosure />
+        </item>
+        <item>
+            <title>FILTERED</title>
+            <guid isPermaLink="false">filter-enclosure-invalid-url</guid>
+            <enclosure url="INVALID" />
+        </item>
+        <item>
+            <title>NOT FILTERED</title>
+            <guid isPermaLink="false">filter-nofilter-sameid</guid>
+            <enclosure url="http://example.com/" length="12345" type="audio/mpeg" />
+        </item>
     </channel>
 </rss>

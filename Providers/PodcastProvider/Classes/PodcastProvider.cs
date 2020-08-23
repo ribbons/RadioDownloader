@@ -185,22 +185,7 @@ namespace PodcastProvider
                     continue;
                 }
 
-                if (itemNode.SelectSingleNode("./title[text()]") == null)
-                {
-                    continue;
-                }
-
-                var urlAttrib = itemNode.SelectSingleNode("./enclosure/@url") as XmlAttribute;
-
-                if (urlAttrib == null)
-                {
-                    continue;
-                }
-
-                Uri uri;
-                Uri.TryCreate(urlAttrib.Value, UriKind.Absolute, out uri);
-
-                if (uri == null)
+                if (this.FilterItemNode(itemNode))
                 {
                     continue;
                 }
@@ -507,6 +492,11 @@ namespace PodcastProvider
 
             foreach (XmlNode itemNode in itemNodes)
             {
+                if (this.FilterItemNode(itemNode))
+                {
+                    continue;
+                }
+
                 string itemId = this.ItemNodeToEpisodeID(itemNode);
 
                 if (itemId == episodeExtId)
@@ -516,6 +506,28 @@ namespace PodcastProvider
             }
 
             return null;
+        }
+
+        private bool FilterItemNode(XmlNode itemNode)
+        {
+            if (itemNode.SelectSingleNode("./title[text()]") == null)
+            {
+                return true;
+            }
+
+            if (!(itemNode.SelectSingleNode("./enclosure/@url") is XmlAttribute urlAttrib))
+            {
+                return true;
+            }
+
+            Uri.TryCreate(urlAttrib.Value, UriKind.Absolute, out Uri uri);
+
+            if (uri == null)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private CompressedImage FetchImage(XmlNode parent, string xpath, XmlNamespaceManager namespaceMgr)

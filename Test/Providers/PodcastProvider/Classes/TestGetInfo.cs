@@ -119,5 +119,21 @@ namespace PodcastProviderTest
             Assert.Contains("nofilter-valid", available);
             Assert.Contains("nofilter-enclosure-encoded-url", available);
         }
+
+        /// <summary>
+        /// Test that correct podcast information can be retrieved for episodes
+        /// with the same id as a previous filtered episode.
+        /// </summary>
+        [Fact]
+        public void EpisodeSameIdAsFilteredInfo()
+        {
+            var instance = TestCommon.CreateInstance();
+            string extId = "http://example.com/EpisodeFiltering.xml";
+
+            var programme = instance.GetProgrammeInfo(extId);
+            var episode = instance.GetEpisodeInfo(extId, programme, "filter-nofilter-sameid");
+
+            Assert.Equal("NOT FILTERED", episode.Name);
+        }
     }
 }
