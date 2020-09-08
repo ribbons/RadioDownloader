@@ -107,6 +107,7 @@
   <ItemGroup>
     <Compile Include="Classes\Model\TestDownload.cs" />
     <Compile Include="Classes\TestCompressedImage.cs" />
+    <Compile Include="Classes\TestOsUtils.cs" />
     <Compile Include="Classes\TestTextUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <AdditionalFiles Include="..\stylecop.json" />

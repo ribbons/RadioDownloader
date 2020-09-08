@@ -102,6 +102,11 @@ namespace RadioDld
         // System cursors
         public const int IDC_HAND = 32649;
 
+        // Error codes
+        public const int ERROR_PATH_NOT_FOUND = 0x3;
+        public const int ERROR_INVALID_NAME = 0x7B;
+        public const int ERROR_ALREADY_EXISTS = 0xB7;
+
         // ITaskbarList3 Flags
         [Flags]
         internal enum TBATFLAG

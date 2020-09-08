@@ -237,7 +237,18 @@ namespace RadioDld
                 // .NET framework 4.6.2 or above.
                 if (!NativeMethods.MoveFileW(ToLongPathFormat(sourceFileName), ToLongPathFormat(destFileName)))
                 {
-                    throw new Win32Exception();
+                    var w32exp = new Win32Exception();
+
+                    switch (w32exp.NativeErrorCode)
+                    {
+                        case NativeMethods.ERROR_PATH_NOT_FOUND:
+                            throw new DirectoryNotFoundException(w32exp.Message, w32exp);
+                        case NativeMethods.ERROR_INVALID_NAME:
+                        case NativeMethods.ERROR_ALREADY_EXISTS:
+                            throw new IOException(w32exp.Message, w32exp);
+                    }
+
+                    throw w32exp;
                 }
             }
             else
