@@ -105,6 +105,7 @@ namespace RadioDld
         // Error codes
         public const int ERROR_PATH_NOT_FOUND = 0x3;
         public const int ERROR_ACCESS_DENIED = 0x5;
+        public const int ERROR_SHARING_VIOLATION = 0x20;
         public const int ERROR_INVALID_NAME = 0x7B;
         public const int ERROR_ALREADY_EXISTS = 0xB7;
 

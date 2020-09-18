@@ -63,6 +63,9 @@ namespace RadioDld
                     case NativeMethods.ERROR_ACCESS_DENIED:
                         message = string.Format(CultureInfo.InvariantCulture, "please run the following command as an administrator to resolve the problem:" + Environment.NewLine + Environment.NewLine + "netsh http add urlacl url=http://+:{0}/ user={1}", this.port, System.Security.Principal.WindowsIdentity.GetCurrent().Name);
                         break;
+                    case NativeMethods.ERROR_SHARING_VIOLATION:
+                        message = string.Format(CultureInfo.CurrentCulture, "port {0} is currently being used by a different application - please close the other application or change the server port in the main options.", this.port);
+                        break;
                     case NativeMethods.ERROR_ALREADY_EXISTS:
                         message = string.Format(CultureInfo.CurrentCulture, "port {0} is reserved for use by a different protocol - please change the server port in the main options.", this.port);
                         break;
