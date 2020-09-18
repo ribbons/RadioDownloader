@@ -56,15 +56,22 @@ namespace RadioDld
             }
             catch (HttpListenerException exp)
             {
-                if (exp.ErrorCode == 5)
+                string message;
+
+                switch (exp.ErrorCode)
                 {
-                    MessageBox.Show(string.Format(CultureInfo.InvariantCulture, "Unable to start the RSS server, please run the following command as an administrator to resolve the problem:" + Environment.NewLine + Environment.NewLine + "netsh http add urlacl url=http://+:{0}/ user={1}", this.port, System.Security.Principal.WindowsIdentity.GetCurrent().Name), Application.ProductName);
-                    return;
+                    case NativeMethods.ERROR_ACCESS_DENIED:
+                        message = string.Format(CultureInfo.InvariantCulture, "please run the following command as an administrator to resolve the problem:" + Environment.NewLine + Environment.NewLine + "netsh http add urlacl url=http://+:{0}/ user={1}", this.port, System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+                        break;
+                    case NativeMethods.ERROR_ALREADY_EXISTS:
+                        message = string.Format(CultureInfo.CurrentCulture, "port {0} is reserved for use by a different protocol - please change the server port in the main options.", this.port);
+                        break;
+                    default:
+                        throw;
                 }
-                else
-                {
-                    throw;
-                }
+
+                MessageBox.Show("Unable to start the RSS server, " + message, Application.ProductName);
+                return;
             }
 
             this.listener.BeginGetContext(new AsyncCallback(this.GetContextCallback), this.listener);
