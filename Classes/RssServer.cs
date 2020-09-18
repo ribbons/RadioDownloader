@@ -1,6 +1,6 @@
 /*
  * This file is part of Radio Downloader.
- * Copyright © 2007-2019 by the authors - see the AUTHORS file for details.
+ * Copyright © 2007-2020 by the authors - see the AUTHORS file for details.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,14 +34,22 @@ namespace RadioDld
         private const string ItunesNS = "http://www.itunes.com/dtds/podcast-1.0.dtd";
         private const string ChaptersNS = "http://podlove.org/simple-chapters/";
 
-        private HttpListener listener;
+        private readonly int port;
+        private readonly HttpListener listener;
 
         public RssServer(int port)
         {
-            // Initialise and start the http listener
+            this.port = port;
+
             this.listener = new HttpListener();
             this.listener.Prefixes.Add(string.Format(CultureInfo.InvariantCulture, "http://+:{0}/", port));
+        }
 
+        /// <summary>
+        /// Start the http listener and begin waiting for client requests.
+        /// </summary>
+        public void Start()
+        {
             try
             {
                 this.listener.Start();
@@ -50,20 +58,15 @@ namespace RadioDld
             {
                 if (exp.ErrorCode == 5)
                 {
-                    MessageBox.Show(string.Format(CultureInfo.InvariantCulture, "Unable to start the RSS server, please run the following command as an administrator to resolve the problem:" + Environment.NewLine + Environment.NewLine + "netsh http add urlacl url=http://+:{0}/ user={1}", port, System.Security.Principal.WindowsIdentity.GetCurrent().Name), Application.ProductName);
+                    MessageBox.Show(string.Format(CultureInfo.InvariantCulture, "Unable to start the RSS server, please run the following command as an administrator to resolve the problem:" + Environment.NewLine + Environment.NewLine + "netsh http add urlacl url=http://+:{0}/ user={1}", this.port, System.Security.Principal.WindowsIdentity.GetCurrent().Name), Application.ProductName);
+                    return;
                 }
                 else
                 {
                     throw;
                 }
             }
-        }
 
-        /// <summary>
-        /// Start waiting for the next client request.
-        /// </summary>
-        public void Start()
-        {
             this.listener.BeginGetContext(new AsyncCallback(this.GetContextCallback), this.listener);
         }
 
