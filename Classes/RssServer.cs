@@ -402,8 +402,11 @@ namespace RadioDld
             }
 
             context.Response.ContentType = this.MimeTypeForFile(download.DownloadPath);
-            context.Response.AddHeader("Content-Disposition", "attachment; filename=" + file.Name);
             context.Response.ContentLength64 = file.Length;
+
+            context.Response.AddHeader(
+                "Content-Disposition",
+                "attachment; filename*=UTF-8''" + HttpUtility.UrlEncode(file.Name).Replace("+", "%20"));
 
             using (FileStream fs = File.OpenRead(download.DownloadPath))
             {
