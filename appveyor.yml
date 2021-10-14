@@ -19,7 +19,7 @@ image:
 platform:
   - win32
   - win64
-  - mono
+#  - mono
 
 configuration: Package
 
