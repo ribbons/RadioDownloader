@@ -1,3 +1,4 @@
+---
 before_build:
   - cmd: appveyor-retry nuget restore
   - sh: nuget restore
@@ -41,8 +42,10 @@ for:
       - msbuild "Radio Downloader.sln"
     test_script:
       - nuget install xunit.runner.console -Version 2.4.1
-      - xunit.runner.console.2.4.1/tools/net452/xunit.console.exe "bin/mono/Radio Downloader Test.dll"
-      - xunit.runner.console.2.4.1/tools/net452/xunit.console.exe "bin/mono/PodcastProvider Test.dll"
+      - xunit.runner.console.2.4.1/tools/net452/xunit.console.exe
+          "bin/mono/Radio Downloader Test.dll"
+      - xunit.runner.console.2.4.1/tools/net452/xunit.console.exe
+          "bin/mono/PodcastProvider Test.dll"
     artifacts:
       - path: installer/radio-downloader-*.pkg.tar.xz
         name: pkg

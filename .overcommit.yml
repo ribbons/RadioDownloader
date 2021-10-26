@@ -1,0 +1,37 @@
+---
+PreCommit:
+
+  ALL:
+    problem_on_unmodified_line: warn
+    exclude:
+      - '*.sln'
+      - '**/*.csproj'
+      - '**/*.Designer.cs'
+      - '**/*.resx'
+      - '**/*.wixproj'
+
+  TrailingWhitespace:
+    enabled: true
+
+  FileEncoding:
+    description: Check text files are valid UTF-8
+    enabled: true
+
+  SingleNewlineAtEof:
+    description: Check text files end with a single newline
+    enabled: true
+
+  Copyright:
+    description: Check copyright notices are present and updated
+    enabled: true
+
+  ShellCheck:
+    enabled: true
+    on_warn: fail
+    include:
+      - installer/package-linux
+      - installer/radio-downloader
+
+  YamlLint:
+    enabled: true
+    on_warn: fail
