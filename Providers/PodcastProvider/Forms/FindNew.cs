@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2012 Matt Robinson
+ * Copyright © 2008-2022 Matt Robinson
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -69,16 +69,16 @@ namespace PodcastProvider
                     this.ButtonView.Enabled = true;
                     return;
                 }
-                catch (WebException)
+                catch (WebException exp)
                 {
-                    this.LabelResult.Text = "There was a problem requesting the feed from the specified URL.";
+                    this.LabelResult.Text = "There was a problem requesting the feed from the specified URL.  " + exp.Message;
                     this.LabelResult.ForeColor = System.Drawing.Color.Red;
                     this.ButtonView.Enabled = true;
                     return;
                 }
-                catch (XmlException)
+                catch (XmlException exp)
                 {
-                    this.LabelResult.Text = "The data returned from the specified URL was malformed.";
+                    this.LabelResult.Text = "The data returned from the specified URL was malformed.  " + exp.Message;
                     this.LabelResult.ForeColor = System.Drawing.Color.Red;
                     this.ButtonView.Enabled = true;
                     return;

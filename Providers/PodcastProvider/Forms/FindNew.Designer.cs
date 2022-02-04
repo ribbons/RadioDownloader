@@ -57,11 +57,12 @@ namespace PodcastProvider
             // 
             // LabelResult
             // 
-            this.LabelResult.AutoSize = true;
+            this.LabelResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.LabelResult.Location = new System.Drawing.Point(35, 108);
             this.LabelResult.Margin = new System.Windows.Forms.Padding(4, 20, 3, 0);
             this.LabelResult.Name = "LabelResult";
-            this.LabelResult.Size = new System.Drawing.Size(0, 13);
+            this.LabelResult.Size = new System.Drawing.Size(500, 75);
             this.LabelResult.TabIndex = 3;
             // 
             // LabelFeedUrl
