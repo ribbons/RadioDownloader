@@ -1,6 +1,7 @@
 ---
 name: CI
 on:
+  push:
   pull_request:
   schedule:
     - cron: '30 12 * * 5'
