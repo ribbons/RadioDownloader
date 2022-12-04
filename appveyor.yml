@@ -1,4 +1,8 @@
 ---
+branches:
+  except:
+    - /dependabot\/.+/
+
 before_build:
   - cmd: appveyor-retry nuget restore
   - sh: nuget restore
