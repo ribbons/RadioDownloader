@@ -1,5 +1,5 @@
 /*
- * Copyright © 2007-2020 Matt Robinson
+ * Copyright © 2007-2024 Matt Robinson
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -227,7 +227,7 @@ namespace RadioDld
                 }
                 catch (IOException ioExp)
                 {
-                    this.DownloadError(Provider.ErrorType.LocalProblem, "Encountered an error saving the downloaded file.  " + ioExp.Message + "  You may need to select a new location for saving downloaded programmes under Options -> Main Options.");
+                    this.DownloadError(Provider.ErrorType.LocalProblem, "Encountered an error saving the downloaded file.  " + ioExp.Message.TrimEnd('.') + ".  You may need to select a new location for saving downloaded programmes or adjust the file name format under Options -> Main Options.");
                     return;
                 }
                 catch (UnauthorizedAccessException unAuthExp)

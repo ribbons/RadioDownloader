@@ -1,5 +1,5 @@
 /*
- * Copyright © 2008-2020 Matt Robinson
+ * Copyright © 2008-2024 Matt Robinson
  * Copyright © 2017-2018 Neil Blanchard
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -428,12 +428,9 @@ namespace RadioDld.Model
                     {
                         OsUtils.MoveFile(sourceFile, savePath);
                     }
-                    catch (IOException e)
+                    catch (IOException)
                     {
-                        // We only want to handle IOException itself as a
-                        // number of IOException subclasses are thrown for
-                        // other cases we don't want to handle
-                        if (e.GetType() == typeof(IOException))
+                        if (File.Exists(savePath))
                         {
                             // Destination file created since File.Exists check
                             continue;

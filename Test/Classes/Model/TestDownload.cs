@@ -1,5 +1,5 @@
 /*
- * Copyright © 2020 Matt Robinson
+ * Copyright © 2020-2024 Matt Robinson
  *
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
@@ -153,6 +153,27 @@ namespace RadioDldTest.Model
             Assert.Equal(
                 destFile,
                 Download.MoveToSaveFolder(@"%progname%", prog, episode, tempLong, "mp3", sourceFile));
+        }
+
+        /// <summary>
+        /// Test that MoveToSaveFolder will throw an IOException if the destination
+        /// file ends up with a name longer than the filesystem supports.
+        /// </summary>
+        [Fact]
+        public void MoveToSaveFolderLongFileName()
+        {
+            string tempBase = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            Directory.CreateDirectory(tempBase);
+            string sourceFile = Path.GetTempFileName();
+
+            var prog = new Programme();
+            prog.Name = new string('P', 500);
+
+            var episode = new Episode();
+            episode.Name = "EN";
+
+            Assert.Throws<IOException>(() =>
+                Download.MoveToSaveFolder(@"%progname%", prog, episode, tempBase, "mp3", sourceFile));
         }
     }
 }
