@@ -18,7 +18,3 @@ subscriptions and list of downloads. You will also need to copy across the
 downloaded audio files from the source machine to the same path on the
 destination machine if you want to be able to access them from within Radio
 Downloader.
-
-There is [an issue
-raised](https://github.com/ribbons/RadioDownloader/issues/72) to add an export
-and import facility for data and settings to make this process easier.

@@ -16,11 +16,3 @@
 ## Troubleshooting
 
 * [Corrupt Database](corrupt-database.md)
-
-If you have found a problem then you can create [an
-issue](https://github.com/ribbons/RadioDownloader/issues).
-
-## Contribute
-
-Find out how you can [contribute to Radio
-Downloader](https://github.com/ribbons/RadioDownloader#contribute).

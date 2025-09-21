@@ -1,37 +1,16 @@
 Radio Downloader
 ================
 
-[![AppVeyor status](https://ci.appveyor.com/api/projects/status/933pimxj2u2eil9g/branch/master?svg=true)](https://ci.appveyor.com/project/ribbons/radiodownloader/branch/master)
+A Windows Forms application written in C# for managing podcast subscriptions
+and downloads which aimed to be easy to use.
 
-An easy to use application for managing podcast subscriptions and downloads.
+Radio Downloader also featured a plugin framework to potentially provide
+podcast-like downloads of audio content from non-podcast sources but the only
+plugin developed (for BBC Radio programmes) had to be [withdrawn][1].
 
-Radio Downloader also features a plugin framework that potentially allows it to
-provide podcast-like downloads of audio content from other providers who do not
-publish podcasts.
+[1]: https://nerdoftheherd.com/news/2013/06/26/radio-downloader-and-bbc-radio/
 
 Download
 --------
 
-You can find a link to the latest download and help with using Radio Downloader at http://nerdoftheherd.com/tools/radiodld/.
-
-Develop
--------
-
-You'll need the following before you can start developing:
-
-* [Microsoft Visual Studio Community 2017](https://visualstudio.microsoft.com/vs/community/)
-
-These items are optional:
-
-* [Git](http://msysgit.github.io/) in your PATH - for automatic version numbers
-* [WiX](http://wix.sourceforge.net/) - for building the installer
-
-Then you are ready to open the _Radio Downloader.sln_ solution file, and get stuck in...
-
-Contribute
-----------
-
-I don't have enough time to implement all of the [requested
-enhancements](https://github.com/ribbons/RadioDownloader/issues?labels=enhancement&amp;state=open)
-for Radio Downloader, so I would welcome pull requests to implement these, or
-to fix any bugs that you have found.
+You can find the final release at <http://nerdoftheherd.com/tools/radiodld/>.
